@@ -13,27 +13,27 @@ module BinData
 
   # @yield [@tracer]
   #
-  # source://bindata//lib/bindata/trace.rb#40
+  # source://bindata//lib/bindata/trace.rb#41
   def trace_message; end
 
   # Turn on trace information when reading a BinData object.
   # If +block+ is given then the tracing only occurs for that block.
   # This is useful for debugging a BinData declaration.
   #
-  # source://bindata//lib/bindata/trace.rb#26
+  # source://bindata//lib/bindata/trace.rb#6
   def trace_reading(io = T.unsafe(nil)); end
 
   class << self
     # @yield [@tracer]
     #
-    # source://bindata//lib/bindata/trace.rb#40
+    # source://bindata//lib/bindata/trace.rb#41
     def trace_message; end
 
     # Turn on trace information when reading a BinData object.
     # If +block+ is given then the tracing only occurs for that block.
     # This is useful for debugging a BinData declaration.
     #
-    # source://bindata//lib/bindata/trace.rb#26
+    # source://bindata//lib/bindata/trace.rb#6
     def trace_reading(io = T.unsafe(nil)); end
   end
 end
@@ -115,7 +115,7 @@ class BinData::AcceptedParametersPlugin::AcceptedParameters
   def to_syms(args); end
 
   class << self
-    # source://bindata//lib/bindata/params.rb#117
+    # source://bindata//lib/bindata/params.rb#118
     def invalid_parameter_names; end
   end
 end
@@ -314,13 +314,40 @@ class BinData::Array < ::BinData::Base
   def sum_num_bytes_for_all_elements; end
 end
 
+# Logic for the :initial_length parameter
+#
+# source://bindata//lib/bindata/array.rb#311
+module BinData::Array::InitialLengthPlugin
+  # source://bindata//lib/bindata/array.rb#312
+  def do_read(io); end
+
+  # source://bindata//lib/bindata/array.rb#316
+  def elements; end
+end
+
+# Logic for the read_until: :eof parameter
+#
+# source://bindata//lib/bindata/array.rb#296
+module BinData::Array::ReadUntilEOFPlugin
+  # source://bindata//lib/bindata/array.rb#297
+  def do_read(io); end
+end
+
+# Logic for the :read_until parameter
+#
 # source://bindata//lib/bindata/array.rb#284
-class BinData::ArrayArgProcessor < ::BinData::BaseArgProcessor
+module BinData::Array::ReadUntilPlugin
   # source://bindata//lib/bindata/array.rb#285
+  def do_read(io); end
+end
+
+# source://bindata//lib/bindata/array.rb#329
+class BinData::ArrayArgProcessor < ::BinData::BaseArgProcessor
+  # source://bindata//lib/bindata/array.rb#330
   def sanitize_parameters!(obj_class, params); end
 end
 
-# Add these offset options to Base
+# This is the abstract base class for all data objects.
 #
 # source://bindata//lib/bindata/base.rb#11
 class BinData::Base
@@ -331,30 +358,30 @@ class BinData::Base
   # source://bindata//lib/bindata/warnings.rb#12
   def initialize(*args); end
 
-  # source://bindata//lib/bindata/base.rb#231
+  # source://bindata//lib/bindata/base.rb#221
   def ==(other); end
 
   # Override and delegate =~ as it is defined in Object.
   #
-  # source://bindata//lib/bindata/base.rb#199
+  # source://bindata//lib/bindata/base.rb#201
   def =~(other); end
 
   # Returns the offset (in bytes) of this object with respect to its most
   # distant ancestor.
   #
-  # source://bindata//lib/bindata/base.rb#214
+  # source://bindata//lib/bindata/base.rb#212
   def abs_offset; end
 
   def base_respond_to?(*_arg0); end
 
   # Resets the internal state to that of a newly created object.
   #
-  # source://bindata//lib/bindata/base.rb#137
+  # source://bindata//lib/bindata/base.rb#139
   def clear; end
 
   # Returns a user friendly name of this object for debugging purposes.
   #
-  # source://bindata//lib/bindata/base.rb#204
+  # source://bindata//lib/bindata/base.rb#206
   def debug_name; end
 
   # Returns the result of evaluating the parameter identified by +key+.
@@ -364,21 +391,21 @@ class BinData::Base
   #
   # Returns nil if +key+ does not refer to any parameter.
   #
-  # source://bindata//lib/bindata/base.rb#110
+  # source://bindata//lib/bindata/base.rb#112
   def eval_parameter(key, overrides = T.unsafe(nil)); end
 
   # Returns the parameter referenced by +key+.
   # Use this method if you are sure the parameter is not to be evaluated.
   # You most likely want #eval_parameter.
   #
-  # source://bindata//lib/bindata/base.rb#127
+  # source://bindata//lib/bindata/base.rb#129
   def get_parameter(key); end
 
   # Returns whether +key+ exists in the +parameters+ hash.
   #
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/base.rb#132
+  # source://bindata//lib/bindata/base.rb#134
   def has_parameter?(key); end
 
   # source://bindata//lib/bindata/warnings.rb#25
@@ -389,25 +416,27 @@ class BinData::Base
 
   # Return a human readable representation of this data object.
   #
-  # source://bindata//lib/bindata/base.rb#184
+  # source://bindata//lib/bindata/base.rb#186
   def inspect; end
 
   # Returns a lazy evaluator for this object.
   #
-  # source://bindata//lib/bindata/base.rb#120
+  # source://bindata//lib/bindata/base.rb#122
   def lazy_evaluator; end
 
   # Creates a new data object based on this instance.
   #
+  # This implements the prototype design pattern.
+  #
   # All parameters will be be duplicated.  Use this method
   # when creating multiple objects with the same parameters.
   #
-  # source://bindata//lib/bindata/base.rb#95
+  # source://bindata//lib/bindata/base.rb#97
   def new(value = T.unsafe(nil), parent = T.unsafe(nil)); end
 
   # Returns the number of bytes it will take to write this data object.
   #
-  # source://bindata//lib/bindata/base.rb#167
+  # source://bindata//lib/bindata/base.rb#169
   def num_bytes; end
 
   # Returns the value of attribute parent.
@@ -417,17 +446,17 @@ class BinData::Base
 
   # Work with Ruby's pretty-printer library.
   #
-  # source://bindata//lib/bindata/base.rb#194
+  # source://bindata//lib/bindata/base.rb#196
   def pretty_print(pp); end
 
   # Reads data into this data object.
   #
-  # source://bindata//lib/bindata/base.rb#142
+  # source://bindata//lib/bindata/base.rb#144
   def read(io, &block); end
 
   # Returns the offset (in bytes) of this object with respect to its parent.
   #
-  # source://bindata//lib/bindata/base.rb#223
+  # source://bindata//lib/bindata/base.rb#217
   def rel_offset; end
 
   # A version of +respond_to?+ used by the lazy evaluator.  It doesn't
@@ -435,27 +464,27 @@ class BinData::Base
   #
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/base.rb#238
+  # source://bindata//lib/bindata/base.rb#228
   def safe_respond_to?(symbol, include_private = T.unsafe(nil)); end
 
   # Returns the string representation of this data object.
   #
-  # source://bindata//lib/bindata/base.rb#172
+  # source://bindata//lib/bindata/base.rb#174
   def to_binary_s(&block); end
 
   # Returns the hexadecimal string representation of this data object.
   #
-  # source://bindata//lib/bindata/base.rb#179
+  # source://bindata//lib/bindata/base.rb#181
   def to_hex(&block); end
 
   # Return a string representing this data object.
   #
-  # source://bindata//lib/bindata/base.rb#189
+  # source://bindata//lib/bindata/base.rb#191
   def to_s; end
 
   # Writes the value for this data object to +io+.
   #
-  # source://bindata//lib/bindata/base.rb#155
+  # source://bindata//lib/bindata/base.rb#157
   def write(io, &block); end
 
   protected
@@ -469,10 +498,10 @@ class BinData::Base
 
   private
 
-  # source://bindata//lib/bindata/base.rb#284
+  # source://bindata//lib/bindata/base.rb#274
   def binary_string(str); end
 
-  # source://bindata//lib/bindata/base.rb#247
+  # source://bindata//lib/bindata/base.rb#237
   def extract_args(args); end
 
   # Creates a new data object.
@@ -504,19 +533,19 @@ class BinData::Base
   #
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/base.rb#259
+  # source://bindata//lib/bindata/base.rb#249
   def reading?; end
 
-  # source://bindata//lib/bindata/base.rb#251
+  # source://bindata//lib/bindata/base.rb#241
   def start_read; end
 
-  # source://bindata//lib/bindata/base.rb#273
+  # source://bindata//lib/bindata/base.rb#263
   def top_level; end
 
-  # source://bindata//lib/bindata/base.rb#267
+  # source://bindata//lib/bindata/base.rb#257
   def top_level_get(sym); end
 
-  # source://bindata//lib/bindata/base.rb#263
+  # source://bindata//lib/bindata/base.rb#253
   def top_level_set(sym, value); end
 
   class << self
@@ -580,25 +609,25 @@ end
 # Any passed parameters are sanitized so the BinData object doesn't
 # need to perform error checking on the parameters.
 #
-# source://bindata//lib/bindata/base.rb#294
+# source://bindata//lib/bindata/base.rb#284
 class BinData::BaseArgProcessor
   # Takes the arguments passed to BinData::Base.new and
   # extracts [value, sanitized_parameters, parent].
   #
-  # source://bindata//lib/bindata/base.rb#299
+  # source://bindata//lib/bindata/base.rb#289
   def extract_args(obj_class, obj_args); end
 
   # Performs sanity checks on the given parameters.
   # This method converts the parameters to the form expected
   # by the data object.
   #
-  # source://bindata//lib/bindata/base.rb#332
+  # source://bindata//lib/bindata/base.rb#322
   def sanitize_parameters!(obj_class, obj_params); end
 
   # Separates the arguments passed to BinData::Base.new into
   # [value, parameters, parent].  Called by #extract_args.
   #
-  # source://bindata//lib/bindata/base.rb#308
+  # source://bindata//lib/bindata/base.rb#298
   def separate_args(_obj_class, obj_args); end
 end
 
@@ -649,7 +678,9 @@ end
 #
 # source://bindata//lib/bindata/base_primitive.rb#49
 class BinData::BasePrimitive < ::BinData::Base
-  # source://bindata//lib/bindata/base_primitive.rb#115
+  extend ::BinData::TraceHook
+
+  # source://bindata//lib/bindata/base_primitive.rb#110
   def <=>(other); end
 
   # @raise [ArgumentError]
@@ -662,24 +693,24 @@ class BinData::BasePrimitive < ::BinData::Base
   # source://bindata//lib/bindata/base_primitive.rb#68
   def clear?; end
 
-  # source://bindata//lib/bindata/base_primitive.rb#136
+  # source://bindata//lib/bindata/base_primitive.rb#131
   def do_num_bytes; end
 
-  # source://bindata//lib/bindata/base_primitive.rb#128
+  # source://bindata//lib/bindata/base_primitive.rb#123
   def do_read(io); end
 
-  # source://bindata//lib/bindata/trace.rb#58
+  # source://bindata//lib/bindata/trace.rb#66
   def do_read_with_hook(io); end
 
-  # source://bindata//lib/bindata/base_primitive.rb#132
+  # source://bindata//lib/bindata/base_primitive.rb#127
   def do_write(io); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/base_primitive.rb#119
+  # source://bindata//lib/bindata/base_primitive.rb#114
   def eql?(other); end
 
-  # source://bindata//lib/bindata/base_primitive.rb#124
+  # source://bindata//lib/bindata/base_primitive.rb#119
   def hash; end
 
   # source://bindata//lib/bindata/base_primitive.rb#64
@@ -688,24 +719,16 @@ class BinData::BasePrimitive < ::BinData::Base
   # source://bindata//lib/bindata/base_primitive.rb#56
   def initialize_shared_instance; end
 
-  # source://bindata//lib/bindata/base_primitive.rb#102
+  # source://bindata//lib/bindata/base_primitive.rb#96
   def method_missing(symbol, *args, &block); end
 
-  # @return [Boolean]
-  #
-  # source://bindata//lib/bindata/base_primitive.rb#97
-  def respond_to?(symbol, include_private = T.unsafe(nil)); end
-
-  # source://bindata//lib/bindata/base_primitive.rb#85
+  # source://bindata//lib/bindata/base_primitive.rb#79
   def snapshot; end
 
-  # source://bindata//lib/bindata/trace.rb#63
-  def trace_value; end
-
-  # source://bindata//lib/bindata/base_primitive.rb#89
+  # source://bindata//lib/bindata/base_primitive.rb#83
   def value; end
 
-  # source://bindata//lib/bindata/base_primitive.rb#93
+  # source://bindata//lib/bindata/base_primitive.rb#87
   def value=(val); end
 
   private
@@ -714,97 +737,105 @@ class BinData::BasePrimitive < ::BinData::Base
   # method.  This indirection is so that #snapshot can be overridden in
   # subclasses to modify the presentation value.
   #
-  # source://bindata//lib/bindata/base_primitive.rb#146
+  # source://bindata//lib/bindata/base_primitive.rb#141
   def _value; end
 
   # Read a number of bytes from +io+ and return the value they represent.
   #
   # @raise [NotImplementedError]
   #
-  # source://bindata//lib/bindata/base_primitive.rb#236
+  # source://bindata//lib/bindata/base_primitive.rb#240
   def read_and_return_value(io); end
+
+  # @return [Boolean]
+  #
+  # source://bindata//lib/bindata/base_primitive.rb#91
+  def respond_to_missing?(symbol, include_all = T.unsafe(nil)); end
 
   # Return a sensible default for this data.
   #
   # @raise [NotImplementedError]
   #
-  # source://bindata//lib/bindata/base_primitive.rb#241
+  # source://bindata//lib/bindata/base_primitive.rb#245
   def sensible_default; end
 
   # Return the string representation that +val+ will take when written.
   #
   # @raise [NotImplementedError]
   #
-  # source://bindata//lib/bindata/base_primitive.rb#231
+  # source://bindata//lib/bindata/base_primitive.rb#235
   def value_to_binary_string(val); end
 
   class << self
-    # source://bindata//lib/bindata/alignment.rb#72
+    # source://bindata//lib/bindata/alignment.rb#80
     def bit_aligned; end
 
     # source://bindata//lib/bindata/base.rb#53
     def inherited(subclass); end
-
-    # source://bindata//lib/bindata/trace.rb#53
-    def turn_off_tracing; end
-
-    # source://bindata//lib/bindata/trace.rb#48
-    def turn_on_tracing; end
   end
 end
 
 # Logic for the :assert parameter
 #
-# source://bindata//lib/bindata/base_primitive.rb#169
+# source://bindata//lib/bindata/base_primitive.rb#164
 module BinData::BasePrimitive::AssertPlugin
   # @raise [ValidityError]
   #
-  # source://bindata//lib/bindata/base_primitive.rb#180
+  # source://bindata//lib/bindata/base_primitive.rb#175
   def assert!; end
 
-  # source://bindata//lib/bindata/base_primitive.rb#170
+  # source://bindata//lib/bindata/base_primitive.rb#165
   def assign(val); end
 
-  # source://bindata//lib/bindata/base_primitive.rb#175
+  # source://bindata//lib/bindata/base_primitive.rb#170
   def do_read(io); end
 end
 
 # Logic for the :asserted_value parameter
 #
-# source://bindata//lib/bindata/base_primitive.rb#198
+# source://bindata//lib/bindata/base_primitive.rb#193
 module BinData::BasePrimitive::AssertedValuePlugin
-  # source://bindata//lib/bindata/base_primitive.rb#204
+  # source://bindata//lib/bindata/base_primitive.rb#199
   def _value; end
 
-  # source://bindata//lib/bindata/base_primitive.rb#213
+  # source://bindata//lib/bindata/base_primitive.rb#217
   def assert!; end
 
-  # source://bindata//lib/bindata/base_primitive.rb#217
+  # source://bindata//lib/bindata/base_primitive.rb#221
   def assert_value(current_value); end
 
-  # source://bindata//lib/bindata/base_primitive.rb#199
+  # The asserted value as a binary string.
+  #
+  # Rationale: while reading, +#to_binary_s+ will use the
+  # value read in, rather than the +:asserted_value+.
+  # This feature is used by Skip.
+  #
+  # source://bindata//lib/bindata/base_primitive.rb#208
+  def asserted_binary_s; end
+
+  # source://bindata//lib/bindata/base_primitive.rb#194
   def assign(val); end
 
-  # source://bindata//lib/bindata/base_primitive.rb#208
+  # source://bindata//lib/bindata/base_primitive.rb#212
   def do_read(io); end
 end
 
 # Logic for the :initial_value parameter
 #
-# source://bindata//lib/bindata/base_primitive.rb#162
+# source://bindata//lib/bindata/base_primitive.rb#157
 module BinData::BasePrimitive::InitialValuePlugin
-  # source://bindata//lib/bindata/base_primitive.rb#163
+  # source://bindata//lib/bindata/base_primitive.rb#158
   def _value; end
 end
 
 # Logic for the :value parameter
 #
-# source://bindata//lib/bindata/base_primitive.rb#151
+# source://bindata//lib/bindata/base_primitive.rb#146
 module BinData::BasePrimitive::ValuePlugin
-  # source://bindata//lib/bindata/base_primitive.rb#156
+  # source://bindata//lib/bindata/base_primitive.rb#151
   def _value; end
 
-  # source://bindata//lib/bindata/base_primitive.rb#152
+  # source://bindata//lib/bindata/base_primitive.rb#147
   def assign(val); end
 end
 
@@ -838,17 +869,17 @@ end
 module BinData::BitAligned
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/alignment.rb#55
+  # source://bindata//lib/bindata/alignment.rb#63
   def bit_aligned?; end
 
-  # source://bindata//lib/bindata/alignment.rb#63
+  # source://bindata//lib/bindata/alignment.rb#71
   def do_num_bytes; end
 
   # source://bindata//lib/bindata/alignment.rb#67
-  def do_write(io); end
+  def do_read(io); end
 
-  # source://bindata//lib/bindata/alignment.rb#59
-  def read_and_return_value(io); end
+  # source://bindata//lib/bindata/alignment.rb#75
+  def do_write(io); end
 end
 
 # source://bindata//lib/bindata/alignment.rb#44
@@ -858,8 +889,14 @@ class BinData::BitAligned::BitAlignedIO
   # source://bindata//lib/bindata/alignment.rb#45
   def initialize(io); end
 
-  # source://bindata//lib/bindata/alignment.rb#48
+  # source://bindata//lib/bindata/alignment.rb#49
+  def binary_string(str); end
+
+  # source://bindata//lib/bindata/alignment.rb#53
   def readbytes(n); end
+
+  # source://bindata//lib/bindata/alignment.rb#58
+  def writebytes(str); end
 end
 
 # Defines a number of classes that contain a bit based integer.
@@ -983,13 +1020,13 @@ class BinData::Buffer < ::BinData::Base
   # source://bindata//lib/bindata/buffer.rb#71
   def clear?; end
 
-  # source://bindata//lib/bindata/buffer.rb#103
+  # source://bindata//lib/bindata/buffer.rb#105
   def do_num_bytes; end
 
   # source://bindata//lib/bindata/buffer.rb#91
   def do_read(io); end
 
-  # source://bindata//lib/bindata/buffer.rb#97
+  # source://bindata//lib/bindata/buffer.rb#98
   def do_write(io); end
 
   # source://bindata//lib/bindata/buffer.rb#62
@@ -1003,43 +1040,61 @@ class BinData::Buffer < ::BinData::Base
   # source://bindata//lib/bindata/buffer.rb#67
   def raw_num_bytes; end
 
+  # source://bindata//lib/bindata/buffer.rb#79
+  def snapshot; end
+
+  private
+
   # @return [Boolean]
   #
   # source://bindata//lib/bindata/buffer.rb#83
-  def respond_to?(symbol, include_private = T.unsafe(nil)); end
-
-  # source://bindata//lib/bindata/buffer.rb#79
-  def snapshot; end
+  def respond_to_missing?(symbol, include_all = T.unsafe(nil)); end
 end
 
-# source://bindata//lib/bindata/buffer.rb#108
+# Transforms the IO stream to restrict access inside
+# a buffer of specified length.
+#
+# source://bindata//lib/bindata/buffer.rb#111
+class BinData::Buffer::BufferIO < ::BinData::IO::Transform
+  # @return [BufferIO] a new instance of BufferIO
+  #
+  # source://bindata//lib/bindata/buffer.rb#112
+  def initialize(length); end
+
+  # source://bindata//lib/bindata/buffer.rb#161
+  def after_read_transform; end
+
+  # source://bindata//lib/bindata/buffer.rb#165
+  def after_write_transform; end
+
+  # source://bindata//lib/bindata/buffer.rb#117
+  def before_transform; end
+
+  # source://bindata//lib/bindata/buffer.rb#169
+  def buffer_limited_n(n); end
+
+  # source://bindata//lib/bindata/buffer.rb#122
+  def num_bytes_remaining; end
+
+  # source://bindata//lib/bindata/buffer.rb#144
+  def read(n); end
+
+  # source://bindata//lib/bindata/buffer.rb#135
+  def seek_abs(n); end
+
+  # source://bindata//lib/bindata/buffer.rb#128
+  def skip(n); end
+
+  # source://bindata//lib/bindata/buffer.rb#151
+  def write(data); end
+end
+
+# source://bindata//lib/bindata/buffer.rb#186
 class BinData::BufferArgProcessor < ::BinData::BaseArgProcessor
   include ::BinData::MultiFieldArgSeparator
 
-  # source://bindata//lib/bindata/buffer.rb#111
+  # source://bindata//lib/bindata/buffer.rb#189
   def sanitize_parameters!(obj_class, params); end
-end
-
-# Align fields to a multiple of :byte_align
-#
-# source://bindata//lib/bindata/struct.rb#294
-module BinData::ByteAlignPlugin
-  # @return [Boolean]
-  #
-  # source://bindata//lib/bindata/struct.rb#343
-  def align_obj?(obj); end
-
-  # source://bindata//lib/bindata/struct.rb#338
-  def bytes_to_align(obj, rel_offset); end
-
-  # source://bindata//lib/bindata/struct.rb#295
-  def do_read(io); end
-
-  # source://bindata//lib/bindata/struct.rb#308
-  def do_write(io); end
-
-  # source://bindata//lib/bindata/struct.rb#321
-  def sum_num_bytes_below_index(index); end
 end
 
 # A Choice is a collection of data objects of which only one is active
@@ -1101,13 +1156,14 @@ end
 # source://bindata//lib/bindata/choice.rb#60
 class BinData::Choice < ::BinData::Base
   extend ::BinData::DSLMixin
+  extend ::BinData::TraceHook
 
   def assign(*args); end
   def clear?(*args); end
   def do_num_bytes(*args); end
   def do_read(*args); end
 
-  # source://bindata//lib/bindata/trace.rb#83
+  # source://bindata//lib/bindata/trace.rb#79
   def do_read_with_hook(io); end
 
   def do_write(*args); end
@@ -1118,13 +1174,13 @@ class BinData::Choice < ::BinData::Base
   # source://bindata//lib/bindata/choice.rb#69
   def initialize_shared_instance; end
 
-  # source://bindata//lib/bindata/choice.rb#92
+  # source://bindata//lib/bindata/choice.rb#93
   def method_missing(symbol, *args, &block); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/choice.rb#88
-  def respond_to?(symbol, include_private = T.unsafe(nil)); end
+  # source://bindata//lib/bindata/choice.rb#89
+  def respond_to?(symbol, include_all = T.unsafe(nil)); end
 
   # Returns the current selection.
   #
@@ -1133,57 +1189,46 @@ class BinData::Choice < ::BinData::Base
 
   def snapshot(*args); end
 
-  # source://bindata//lib/bindata/trace.rb#88
-  def trace_selection; end
-
   private
 
-  # source://bindata//lib/bindata/choice.rb#107
+  # source://bindata//lib/bindata/choice.rb#108
   def current_choice; end
 
-  # source://bindata//lib/bindata/choice.rb#112
+  # source://bindata//lib/bindata/choice.rb#113
   def instantiate_choice(selection); end
-
-  class << self
-    # source://bindata//lib/bindata/trace.rb#78
-    def turn_off_tracing; end
-
-    # source://bindata//lib/bindata/trace.rb#73
-    def turn_on_tracing; end
-  end
 end
 
-# source://bindata//lib/bindata/choice.rb#121
+# source://bindata//lib/bindata/choice.rb#124
 class BinData::ChoiceArgProcessor < ::BinData::BaseArgProcessor
-  # source://bindata//lib/bindata/choice.rb#122
+  # source://bindata//lib/bindata/choice.rb#125
   def sanitize_parameters!(obj_class, params); end
 
   private
 
-  # source://bindata//lib/bindata/choice.rb#135
+  # source://bindata//lib/bindata/choice.rb#138
   def choices_as_hash(choices); end
 
-  # source://bindata//lib/bindata/choice.rb#151
+  # source://bindata//lib/bindata/choice.rb#154
   def ensure_valid_keys(choices); end
 
-  # source://bindata//lib/bindata/choice.rb#143
+  # source://bindata//lib/bindata/choice.rb#146
   def key_array_by_index(array); end
 end
 
 # Logic for the :copy_on_change parameter
 #
-# source://bindata//lib/bindata/choice.rb#162
+# source://bindata//lib/bindata/choice.rb#165
 module BinData::CopyOnChangePlugin
-  # source://bindata//lib/bindata/choice.rb#169
+  # source://bindata//lib/bindata/choice.rb#172
   def copy_previous_value(obj); end
 
-  # source://bindata//lib/bindata/choice.rb#163
+  # source://bindata//lib/bindata/choice.rb#166
   def current_choice; end
 
-  # source://bindata//lib/bindata/choice.rb#176
+  # source://bindata//lib/bindata/choice.rb#179
   def get_previous_choice(selection); end
 
-  # source://bindata//lib/bindata/choice.rb#182
+  # source://bindata//lib/bindata/choice.rb#185
   def remember_current_selection(selection); end
 end
 
@@ -1238,128 +1283,128 @@ end
 # This option creates two subclasses, each handling
 # :big or :little endian.
 #
-# source://bindata//lib/bindata/dsl.rb#255
+# source://bindata//lib/bindata/dsl.rb#256
 class BinData::DSLMixin::DSLBigAndLittleEndianHandler
   class << self
-    # source://bindata//lib/bindata/dsl.rb#323
+    # source://bindata//lib/bindata/dsl.rb#324
     def class_with_endian(class_name, endian); end
 
-    # source://bindata//lib/bindata/dsl.rb#269
+    # source://bindata//lib/bindata/dsl.rb#270
     def create_subclasses_with_endian(bnl_class); end
 
-    # source://bindata//lib/bindata/dsl.rb#290
+    # source://bindata//lib/bindata/dsl.rb#291
     def delegate_field_creation(bnl_class); end
 
-    # source://bindata//lib/bindata/dsl.rb#303
+    # source://bindata//lib/bindata/dsl.rb#304
     def fixup_subclass_hierarchy(bnl_class); end
 
-    # source://bindata//lib/bindata/dsl.rb#257
+    # source://bindata//lib/bindata/dsl.rb#258
     def handle(bnl_class); end
 
-    # source://bindata//lib/bindata/dsl.rb#265
+    # source://bindata//lib/bindata/dsl.rb#266
     def make_class_abstract(bnl_class); end
 
-    # source://bindata//lib/bindata/dsl.rb#331
+    # source://bindata//lib/bindata/dsl.rb#332
     def obj_attribute(obj, attr); end
 
-    # source://bindata//lib/bindata/dsl.rb#274
+    # source://bindata//lib/bindata/dsl.rb#275
     def override_new_in_class(bnl_class); end
   end
 end
 
 # Extracts the details from a field declaration.
 #
-# source://bindata//lib/bindata/dsl.rb#338
+# source://bindata//lib/bindata/dsl.rb#339
 class BinData::DSLMixin::DSLFieldParser
   # @return [DSLFieldParser] a new instance of DSLFieldParser
   #
-  # source://bindata//lib/bindata/dsl.rb#339
+  # source://bindata//lib/bindata/dsl.rb#340
   def initialize(hints, symbol, *args, &block); end
 
   # Returns the value of attribute name.
   #
-  # source://bindata//lib/bindata/dsl.rb#346
+  # source://bindata//lib/bindata/dsl.rb#347
   def name; end
 
-  # source://bindata//lib/bindata/dsl.rb#348
+  # source://bindata//lib/bindata/dsl.rb#349
   def name_from_field_declaration(args); end
 
   # Returns the value of attribute params.
   #
-  # source://bindata//lib/bindata/dsl.rb#346
+  # source://bindata//lib/bindata/dsl.rb#347
   def params; end
 
-  # source://bindata//lib/bindata/dsl.rb#367
+  # source://bindata//lib/bindata/dsl.rb#368
   def params_from_args(args); end
 
-  # source://bindata//lib/bindata/dsl.rb#374
+  # source://bindata//lib/bindata/dsl.rb#375
   def params_from_block(&block); end
 
-  # source://bindata//lib/bindata/dsl.rb#357
+  # source://bindata//lib/bindata/dsl.rb#358
   def params_from_field_declaration(args, &block); end
 
   # Returns the value of attribute type.
   #
-  # source://bindata//lib/bindata/dsl.rb#346
+  # source://bindata//lib/bindata/dsl.rb#347
   def type; end
 end
 
 # Validates a field defined in a DSLMixin.
 #
-# source://bindata//lib/bindata/dsl.rb#398
+# source://bindata//lib/bindata/dsl.rb#400
 class BinData::DSLMixin::DSLFieldValidator
   # @return [DSLFieldValidator] a new instance of DSLFieldValidator
   #
-  # source://bindata//lib/bindata/dsl.rb#399
+  # source://bindata//lib/bindata/dsl.rb#401
   def initialize(the_class, parser); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/dsl.rb#448
+  # source://bindata//lib/bindata/dsl.rb#450
   def all_or_none_names_failed?(name); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/dsl.rb#463
+  # source://bindata//lib/bindata/dsl.rb#465
   def duplicate_name?(name); end
 
-  # source://bindata//lib/bindata/dsl.rb#420
+  # source://bindata//lib/bindata/dsl.rb#422
   def ensure_valid_name(name); end
 
-  # source://bindata//lib/bindata/dsl.rb#475
+  # source://bindata//lib/bindata/dsl.rb#477
   def fields; end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/dsl.rb#459
+  # source://bindata//lib/bindata/dsl.rb#461
   def malformed_name?(name); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/dsl.rb#444
+  # source://bindata//lib/bindata/dsl.rb#446
   def must_have_a_name_failed?(name); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/dsl.rb#440
+  # source://bindata//lib/bindata/dsl.rb#442
   def must_not_have_a_name_failed?(name); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/dsl.rb#471
+  # source://bindata//lib/bindata/dsl.rb#473
   def name_is_reserved?(name); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/dsl.rb#467
+  # source://bindata//lib/bindata/dsl.rb#469
   def name_shadows_method?(name); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/dsl.rb#479
+  # source://bindata//lib/bindata/dsl.rb#481
   def option?(opt); end
 
-  # source://bindata//lib/bindata/dsl.rb#404
+  # source://bindata//lib/bindata/dsl.rb#406
   def validate_field(name); end
 end
 
@@ -1404,57 +1449,57 @@ class BinData::DSLMixin::DSLParser
 
   private
 
-  # source://bindata//lib/bindata/dsl.rb#190
+  # source://bindata//lib/bindata/dsl.rb#191
   def append_field(type, name, params); end
 
   # @raise [exception]
   #
-  # source://bindata//lib/bindata/dsl.rb#206
+  # source://bindata//lib/bindata/dsl.rb#207
   def dsl_raise(exception, msg); end
 
-  # source://bindata//lib/bindata/dsl.rb#142
+  # source://bindata//lib/bindata/dsl.rb#143
   def ensure_hints; end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/dsl.rb#176
+  # source://bindata//lib/bindata/dsl.rb#177
   def fields?; end
 
-  # source://bindata//lib/bindata/dsl.rb#147
+  # source://bindata//lib/bindata/dsl.rb#148
   def hints; end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/dsl.rb#138
+  # source://bindata//lib/bindata/dsl.rb#139
   def option?(opt); end
 
-  # source://bindata//lib/bindata/dsl.rb#196
+  # source://bindata//lib/bindata/dsl.rb#197
   def parent_attribute(attr, default = T.unsafe(nil)); end
 
-  # source://bindata//lib/bindata/dsl.rb#172
+  # source://bindata//lib/bindata/dsl.rb#173
   def parent_fields; end
 
-  # source://bindata//lib/bindata/dsl.rb#180
+  # source://bindata//lib/bindata/dsl.rb#181
   def parse_and_append_field(*args, &block); end
 
   # source://bindata//lib/bindata/dsl.rb#126
   def parser_abilities; end
 
-  # source://bindata//lib/bindata/dsl.rb#151
+  # source://bindata//lib/bindata/dsl.rb#152
   def set_endian(endian); end
 
-  # source://bindata//lib/bindata/dsl.rb#224
+  # source://bindata//lib/bindata/dsl.rb#225
   def to_choice_params(key); end
 
-  # source://bindata//lib/bindata/dsl.rb#213
+  # source://bindata//lib/bindata/dsl.rb#214
   def to_object_params(key); end
 
-  # source://bindata//lib/bindata/dsl.rb#236
-  def to_struct_params(*unused); end
+  # source://bindata//lib/bindata/dsl.rb#237
+  def to_struct_params(*_); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/dsl.rb#168
+  # source://bindata//lib/bindata/dsl.rb#169
   def valid_endian?(endian); end
 end
 
@@ -1563,11 +1608,6 @@ class BinData::DelayedIO < ::BinData::Base
   # source://bindata//lib/bindata/delayed_io.rb#103
   def rel_offset; end
 
-  # @return [Boolean]
-  #
-  # source://bindata//lib/bindata/delayed_io.rb#86
-  def respond_to?(symbol, include_private = T.unsafe(nil)); end
-
   # source://bindata//lib/bindata/delayed_io.rb#78
   def snapshot; end
 
@@ -1578,6 +1618,13 @@ class BinData::DelayedIO < ::BinData::Base
   #
   # source://bindata//lib/bindata/delayed_io.rb#137
   def write_now!; end
+
+  private
+
+  # @return [Boolean]
+  #
+  # source://bindata//lib/bindata/delayed_io.rb#86
+  def respond_to_missing?(symbol, include_all = T.unsafe(nil)); end
 end
 
 # source://bindata//lib/bindata/delayed_io.rb#146
@@ -1670,14 +1717,14 @@ module BinData::Framework
   #
   # @raise [NotImplementedError]
   #
-  # source://bindata//lib/bindata/framework.rb#29
+  # source://bindata//lib/bindata/framework.rb#27
   def assign(val); end
 
   # Is this object aligned on non-byte boundaries?
   #
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/framework.rb#51
+  # source://bindata//lib/bindata/framework.rb#49
   def bit_aligned?; end
 
   # Returns true if the object has not been changed since creation.
@@ -1685,26 +1732,26 @@ module BinData::Framework
   # @raise [NotImplementedError]
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/framework.rb#23
+  # source://bindata//lib/bindata/framework.rb#21
   def clear?; end
 
   # Returns the debug name of +child+.  This only needs to be implemented
   # by objects that contain child objects.
   #
-  # source://bindata//lib/bindata/framework.rb#40
+  # source://bindata//lib/bindata/framework.rb#38
   def debug_name_of(child); end
 
   # Returns the offset of +child+.  This only needs to be implemented
   # by objects that contain child objects.
   #
-  # source://bindata//lib/bindata/framework.rb#46
+  # source://bindata//lib/bindata/framework.rb#44
   def offset_of(child); end
 
   # Returns a snapshot of this data object.
   #
   # @raise [NotImplementedError]
   #
-  # source://bindata//lib/bindata/framework.rb#34
+  # source://bindata//lib/bindata/framework.rb#32
   def snapshot; end
 
   protected
@@ -1713,21 +1760,21 @@ module BinData::Framework
   #
   # @raise [NotImplementedError]
   #
-  # source://bindata//lib/bindata/framework.rb#66
+  # source://bindata//lib/bindata/framework.rb#64
   def do_num_bytes; end
 
   # Reads the data for this data object from +io+.
   #
   # @raise [NotImplementedError]
   #
-  # source://bindata//lib/bindata/framework.rb#56
+  # source://bindata//lib/bindata/framework.rb#54
   def do_read(io); end
 
   # Writes the value for this data to +io+.
   #
   # @raise [NotImplementedError]
   #
-  # source://bindata//lib/bindata/framework.rb#61
+  # source://bindata//lib/bindata/framework.rb#59
   def do_write(io); end
 
   # Initializes the state of the object.  All instance variables that
@@ -1743,7 +1790,7 @@ module BinData::Framework
   # between all objects that are initialized with the same parameters.
   # This method is called only once for a particular set of parameters.
   #
-  # source://bindata//lib/bindata/framework.rb#19
+  # source://bindata//lib/bindata/framework.rb#18
   def initialize_shared_instance; end
 end
 
@@ -1755,106 +1802,49 @@ module BinData::IO
   class << self
     # Creates a StringIO around +str+.
     #
-    # source://bindata//lib/bindata/io.rb#215
+    # source://bindata//lib/bindata/io.rb#9
     def create_string_io(str = T.unsafe(nil)); end
   end
 end
 
-# Common operations for both Read and Write.
+# API used to access the raw data stream.
 #
-# source://bindata//lib/bindata/io.rb#9
-module BinData::IO::Common
-  # source://bindata//lib/bindata/io.rb#10
+# source://bindata//lib/bindata/io.rb#315
+class BinData::IO::RawIO
+  # @return [RawIO] a new instance of RawIO
+  #
+  # source://bindata//lib/bindata/io.rb#316
   def initialize(io); end
-
-  private
-
-  # source://bindata//lib/bindata/io.rb#40
-  def buffer_limited_n(n); end
-
-  # source://bindata//lib/bindata/io.rb#36
-  def seek(n); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/io.rb#30
+  # source://bindata//lib/bindata/io.rb#327
+  def is_seekable?(io); end
+
+  # source://bindata//lib/bindata/io.rb#337
+  def num_bytes_remaining; end
+
+  # source://bindata//lib/bindata/io.rb#346
+  def offset; end
+
+  # source://bindata//lib/bindata/io.rb#361
+  def read(n); end
+
+  # source://bindata//lib/bindata/io.rb#356
+  def seek_abs(n); end
+
+  # @return [Boolean]
+  #
+  # source://bindata//lib/bindata/io.rb#333
   def seekable?; end
 
-  # source://bindata//lib/bindata/io.rb#54
-  def with_buffer_common(n); end
-end
-
-# Use #seek and #pos on seekable streams
-#
-# source://bindata//lib/bindata/io.rb#69
-module BinData::IO::Common::SeekableStream
-  # The number of bytes remaining in the input stream.
-  #
-  # source://bindata//lib/bindata/io.rb#71
-  def num_bytes_remaining; end
-
-  # All io calls in +block+ are rolled back after this
-  # method completes.
-  #
-  # source://bindata//lib/bindata/io.rb#90
-  def with_readahead; end
-
-  private
-
-  # source://bindata//lib/bindata/io.rb#106
-  def offset_raw; end
-
-  # source://bindata//lib/bindata/io.rb#114
-  def read_raw(n); end
-
-  # source://bindata//lib/bindata/io.rb#110
-  def seek_raw(n); end
-
-  # source://bindata//lib/bindata/io.rb#102
-  def stream_init; end
-
-  # source://bindata//lib/bindata/io.rb#118
-  def write_raw(data); end
-end
-
-# Manually keep track of offset for unseekable streams.
-#
-# source://bindata//lib/bindata/io.rb#124
-module BinData::IO::Common::UnSeekableStream
-  # The number of bytes remaining in the input stream.
-  #
   # @raise [IOError]
   #
-  # source://bindata//lib/bindata/io.rb#130
-  def num_bytes_remaining; end
+  # source://bindata//lib/bindata/io.rb#350
+  def skip(n); end
 
-  # source://bindata//lib/bindata/io.rb#125
-  def offset_raw; end
-
-  # All io calls in +block+ are rolled back after this
-  # method completes.
-  #
-  # source://bindata//lib/bindata/io.rb#136
-  def with_readahead; end
-
-  private
-
-  # source://bindata//lib/bindata/io.rb#161
-  def read_raw(n); end
-
-  # source://bindata//lib/bindata/io.rb#167
-  def read_raw_with_readahead(n); end
-
-  # @raise [IOError]
-  #
-  # source://bindata//lib/bindata/io.rb#199
-  def seek_raw(n); end
-
-  # source://bindata//lib/bindata/io.rb#157
-  def stream_init; end
-
-  # source://bindata//lib/bindata/io.rb#194
-  def write_raw(data); end
+  # source://bindata//lib/bindata/io.rb#365
+  def write(data); end
 end
 
 # Create a new IO Read wrapper around +io+.  +io+ must provide #read,
@@ -1874,30 +1864,27 @@ end
 # In little endian format:
 #   readbits(6), readbits(5) #=> [543210, a9876]
 #
-# source://bindata//lib/bindata/io.rb#238
+# source://bindata//lib/bindata/io.rb#31
 class BinData::IO::Read
-  include ::BinData::IO::Common
-
   # @return [Read] a new instance of Read
   #
-  # source://bindata//lib/bindata/io.rb#241
+  # source://bindata//lib/bindata/io.rb#32
   def initialize(io); end
 
-  # Returns the current offset of the io stream.  Offset will be rounded
-  # up when reading bitfields.
+  # The number of bytes remaining in the io steam.
   #
-  # source://bindata//lib/bindata/io.rb#261
-  def offset; end
+  # source://bindata//lib/bindata/io.rb#68
+  def num_bytes_remaining; end
 
   # Reads all remaining bytes from the stream.
   #
-  # source://bindata//lib/bindata/io.rb#282
+  # source://bindata//lib/bindata/io.rb#95
   def read_all_bytes; end
 
   # Reads exactly +nbits+ bits from the stream. +endian+ specifies whether
   # the bits are stored in +:big+ or +:little+ endian format.
   #
-  # source://bindata//lib/bindata/io.rb#289
+  # source://bindata//lib/bindata/io.rb#102
   def readbits(nbits, endian); end
 
   # Reads exactly +n+ bytes from +io+.
@@ -1906,45 +1893,202 @@ class BinData::IO::Read
   #
   # If the data read is too short an IOError is raised.
   #
-  # source://bindata//lib/bindata/io.rb#276
+  # source://bindata//lib/bindata/io.rb#89
   def readbytes(n); end
 
   # Discards any read bits so the stream becomes aligned at the
   # next byte boundary.
   #
-  # source://bindata//lib/bindata/io.rb#305
+  # source://bindata//lib/bindata/io.rb#118
   def reset_read_bits; end
+
+  # Seek to an absolute offset within the io stream.
+  #
+  # source://bindata//lib/bindata/io.rb#79
+  def seek_to_abs_offset(n); end
 
   # Seek +n+ bytes from the current position in the io stream.
   #
-  # source://bindata//lib/bindata/io.rb#266
-  def seekbytes(n); end
+  # source://bindata//lib/bindata/io.rb#73
+  def skipbytes(n); end
 
-  # Sets a buffer of +n+ bytes on the io stream.  Any reading or seeking
-  # calls inside the +block+ will be contained within this buffer.
+  # Allow transforming data in the input stream.
+  # See +BinData::Buffer+ as an example.
   #
-  # source://bindata//lib/bindata/io.rb#252
-  def with_buffer(n); end
+  # +io+ must be an instance of +Transform+.
+  #
+  # yields +self+ and +io+ to the given block
+  #
+  # source://bindata//lib/bindata/io.rb#56
+  def transform(io); end
 
   private
 
-  # source://bindata//lib/bindata/io.rb#334
+  # source://bindata//lib/bindata/io.rb#147
   def accumulate_big_endian_bits; end
 
-  # source://bindata//lib/bindata/io.rb#352
+  # source://bindata//lib/bindata/io.rb#165
   def accumulate_little_endian_bits; end
 
-  # source://bindata//lib/bindata/io.rb#358
+  # source://bindata//lib/bindata/io.rb#171
   def mask(nbits); end
 
-  # source://bindata//lib/bindata/io.rb#313
+  # source://bindata//lib/bindata/io.rb#126
   def read(n = T.unsafe(nil)); end
 
-  # source://bindata//lib/bindata/io.rb#322
+  # source://bindata//lib/bindata/io.rb#135
   def read_big_endian_bits(nbits); end
 
-  # source://bindata//lib/bindata/io.rb#340
+  # source://bindata//lib/bindata/io.rb#153
   def read_little_endian_bits(nbits); end
+end
+
+# An IO stream may be transformed before processing.
+# e.g. encoding, compression, buffered.
+#
+# Multiple transforms can be chained together.
+#
+# To create a new transform layer, subclass +Transform+.
+# Override the public methods +#read+ and +#write+ at a minimum.
+# Additionally the hook, +#before_transform+, +#after_read_transform+
+# and +#after_write_transform+ are available as well.
+#
+# IMPORTANT!  If your transform changes the size of the underlying
+# data stream (e.g. compression), then call
+# +::transform_changes_stream_length!+ in your subclass.
+#
+# source://bindata//lib/bindata/io.rb#383
+class BinData::IO::Transform
+  # @return [Transform] a new instance of Transform
+  #
+  # source://bindata//lib/bindata/io.rb#392
+  def initialize; end
+
+  # Flushes the input stream.
+  #
+  # Called after the final read operation.
+  #
+  # source://bindata//lib/bindata/io.rb#404
+  def after_read_transform; end
+
+  # Flushes the output stream.
+  #
+  # Called after the final write operation.
+  #
+  # source://bindata//lib/bindata/io.rb#409
+  def after_write_transform; end
+
+  # Initialises this transform.
+  #
+  # Called before any IO operations.
+  #
+  # source://bindata//lib/bindata/io.rb#399
+  def before_transform; end
+
+  # How many bytes are available for reading?
+  #
+  # source://bindata//lib/bindata/io.rb#426
+  def num_bytes_remaining; end
+
+  # The current offset within the stream.
+  #
+  # source://bindata//lib/bindata/io.rb#431
+  def offset; end
+
+  # Prepends this transform to the given +chain+.
+  #
+  # Returns self (the new head of chain).
+  #
+  # source://bindata//lib/bindata/io.rb#414
+  def prepend_to_chain(chain); end
+
+  # Reads +n+ bytes from the stream.
+  #
+  # source://bindata//lib/bindata/io.rb#446
+  def read(n); end
+
+  # Seeks to the given absolute position.
+  #
+  # source://bindata//lib/bindata/io.rb#441
+  def seek_abs(n); end
+
+  # Is the IO seekable?
+  #
+  # @return [Boolean]
+  #
+  # source://bindata//lib/bindata/io.rb#421
+  def seekable?; end
+
+  # Skips forward +n+ bytes in the input stream.
+  #
+  # source://bindata//lib/bindata/io.rb#436
+  def skip(n); end
+
+  # Writes +data+ to the stream.
+  #
+  # source://bindata//lib/bindata/io.rb#451
+  def write(data); end
+
+  private
+
+  # source://bindata//lib/bindata/io.rb#466
+  def chain_num_bytes_remaining; end
+
+  # source://bindata//lib/bindata/io.rb#470
+  def chain_offset; end
+
+  # source://bindata//lib/bindata/io.rb#482
+  def chain_read(n); end
+
+  # source://bindata//lib/bindata/io.rb#478
+  def chain_seek_abs(n); end
+
+  # @return [Boolean]
+  #
+  # source://bindata//lib/bindata/io.rb#462
+  def chain_seekable?; end
+
+  # source://bindata//lib/bindata/io.rb#474
+  def chain_skip(n); end
+
+  # source://bindata//lib/bindata/io.rb#486
+  def chain_write(data); end
+
+  # source://bindata//lib/bindata/io.rb#458
+  def create_empty_binary_string; end
+
+  class << self
+    # Indicates that this transform changes the length of the
+    # underlying data. e.g. performs compression or error correction
+    #
+    # source://bindata//lib/bindata/io.rb#387
+    def transform_changes_stream_length!; end
+  end
+end
+
+# A module to be prepended to +RawIO+ or +Transform+ when the data
+# stream is not seekable.  This is either due to underlying stream
+# being unseekable or the transform changes the number of bytes.
+#
+# source://bindata//lib/bindata/io.rb#494
+module BinData::IO::UnSeekableIO
+  # @raise [IOError]
+  #
+  # source://bindata//lib/bindata/io.rb#499
+  def num_bytes_remaining; end
+
+  # source://bindata//lib/bindata/io.rb#514
+  def seek_abs(n); end
+
+  # @return [Boolean]
+  #
+  # source://bindata//lib/bindata/io.rb#495
+  def seekable?; end
+
+  # @raise [IOError]
+  #
+  # source://bindata//lib/bindata/io.rb#503
+  def skip(n); end
 end
 
 # Create a new IO Write wrapper around +io+.  +io+ must provide #write.
@@ -1955,79 +2099,64 @@ end
 #
 # See IO::Read for more information.
 #
-# source://bindata//lib/bindata/io.rb#370
+# source://bindata//lib/bindata/io.rb#183
 class BinData::IO::Write
-  include ::BinData::IO::Common
-
   # @return [Write] a new instance of Write
   #
-  # source://bindata//lib/bindata/io.rb#372
+  # source://bindata//lib/bindata/io.rb#184
   def initialize(io); end
 
   # To be called after all +writebits+ have been applied.
   #
-  # source://bindata//lib/bindata/io.rb#428
+  # source://bindata//lib/bindata/io.rb#251
   def flush; end
 
   # To be called after all +writebits+ have been applied.
   #
-  # source://bindata//lib/bindata/io.rb#428
+  # source://bindata//lib/bindata/io.rb#251
   def flushbits; end
 
-  # Returns the current offset of the io stream.  Offset will be rounded
-  # up when writing bitfields.
+  # Seek to an absolute offset within the io stream.
   #
-  # source://bindata//lib/bindata/io.rb#393
-  def offset; end
+  # @raise [IOError]
+  #
+  # source://bindata//lib/bindata/io.rb#219
+  def seek_to_abs_offset(n); end
 
-  # Seek +n+ bytes from the current position in the io stream.
+  # Allow transforming data in the output stream.
+  # See +BinData::Buffer+ as an example.
   #
-  # source://bindata//lib/bindata/io.rb#398
-  def seekbytes(n); end
-
-  # Sets a buffer of +n+ bytes on the io stream.  Any writes inside the
-  # +block+ will be contained within this buffer.  If less than +n+ bytes
-  # are written inside the block, the remainder will be padded with '\0'
-  # bytes.
+  # +io+ must be an instance of +Transform+.
   #
-  # source://bindata//lib/bindata/io.rb#384
-  def with_buffer(n); end
+  # yields +self+ and +io+ to the given block
+  #
+  # source://bindata//lib/bindata/io.rb#207
+  def transform(io); end
 
   # Writes +nbits+ bits from +val+ to the stream. +endian+ specifies whether
   # the bits are to be stored in +:big+ or +:little+ endian format.
   #
-  # source://bindata//lib/bindata/io.rb#411
+  # source://bindata//lib/bindata/io.rb#234
   def writebits(val, nbits, endian); end
 
   # Writes the given string of bytes to the io stream.
   #
-  # source://bindata//lib/bindata/io.rb#404
+  # source://bindata//lib/bindata/io.rb#227
   def writebytes(str); end
 
   private
 
-  # source://bindata//lib/bindata/io.rb#491
+  # source://bindata//lib/bindata/io.rb#309
   def mask(nbits); end
 
-  # source://bindata//lib/bindata/io.rb#440
+  # source://bindata//lib/bindata/io.rb#263
   def write(data); end
 
-  # source://bindata//lib/bindata/io.rb#449
+  # source://bindata//lib/bindata/io.rb#267
   def write_big_endian_bits(val, nbits); end
 
-  # source://bindata//lib/bindata/io.rb#470
+  # source://bindata//lib/bindata/io.rb#288
   def write_little_endian_bits(val, nbits); end
-end
-
-# Logic for the :initial_length parameter
-#
-# source://bindata//lib/bindata/array.rb#328
-module BinData::InitialLengthPlugin
-  # source://bindata//lib/bindata/array.rb#329
-  def do_read(io); end
-
-  # source://bindata//lib/bindata/array.rb#333
-  def elements; end
 end
 
 # Defines a number of classes that contain an integer.  The integer
@@ -2057,7 +2186,7 @@ module BinData::Int
     def create_raw_read_code(nbits, endian, signed); end
 
     # source://bindata//lib/bindata/int.rb#101
-    def create_read_assemble_code(nbits, endian, signed); end
+    def create_read_assemble_code(nbits, endian); end
 
     # source://bindata//lib/bindata/int.rb#72
     def create_read_code(nbits, endian, signed); end
@@ -2080,7 +2209,7 @@ module BinData::Int
     def pack_directive(nbits, endian, signed); end
 
     # source://bindata//lib/bindata/int.rb#130
-    def val_as_packed_words(nbits, endian, signed); end
+    def val_as_packed_words(nbits, endian); end
   end
 end
 
@@ -2301,7 +2430,7 @@ class BinData::Primitive < ::BinData::BasePrimitive
   def set(v); end
 
   class << self
-    # source://bindata//lib/bindata/alignment.rb#76
+    # source://bindata//lib/bindata/alignment.rb#84
     def bit_aligned; end
   end
 end
@@ -2310,22 +2439,6 @@ end
 class BinData::PrimitiveArgProcessor < ::BinData::BaseArgProcessor
   # source://bindata//lib/bindata/primitive.rb#139
   def sanitize_parameters!(obj_class, params); end
-end
-
-# Logic for the read_until: :eof parameter
-#
-# source://bindata//lib/bindata/array.rb#313
-module BinData::ReadUntilEOFPlugin
-  # source://bindata//lib/bindata/array.rb#314
-  def do_read(io); end
-end
-
-# Logic for the :read_until parameter
-#
-# source://bindata//lib/bindata/array.rb#301
-module BinData::ReadUntilPlugin
-  # source://bindata//lib/bindata/array.rb#302
-  def do_read(io); end
 end
 
 # A Record is a declarative wrapper around Struct.
@@ -2399,40 +2512,40 @@ BinData::RegisteredClasses = T.let(T.unsafe(nil), BinData::Registry)
 class BinData::Registry
   # @return [Registry] a new instance of Registry
   #
-  # source://bindata//lib/bindata/registry.rb#22
+  # source://bindata//lib/bindata/registry.rb#21
   def initialize; end
 
-  # source://bindata//lib/bindata/registry.rb#39
+  # source://bindata//lib/bindata/registry.rb#38
   def lookup(name, hints = T.unsafe(nil)); end
 
-  # source://bindata//lib/bindata/registry.rb#26
+  # source://bindata//lib/bindata/registry.rb#25
   def register(name, class_to_register); end
 
   # Convert CamelCase +name+ to underscore style.
   #
-  # source://bindata//lib/bindata/registry.rb#51
+  # source://bindata//lib/bindata/registry.rb#50
   def underscore_name(name); end
 
-  # source://bindata//lib/bindata/registry.rb#35
+  # source://bindata//lib/bindata/registry.rb#34
   def unregister(name); end
 
   private
 
-  # source://bindata//lib/bindata/registry.rb#96
+  # source://bindata//lib/bindata/registry.rb#95
   def name_with_endian(name, endian); end
 
-  # source://bindata//lib/bindata/registry.rb#87
+  # source://bindata//lib/bindata/registry.rb#86
   def name_with_prefix(name, prefix); end
 
-  # source://bindata//lib/bindata/registry.rb#64
+  # source://bindata//lib/bindata/registry.rb#63
   def normalize_name(name, hints); end
 
-  # source://bindata//lib/bindata/registry.rb#113
+  # source://bindata//lib/bindata/registry.rb#112
   def register_dynamic_class(name); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/registry.rb#107
+  # source://bindata//lib/bindata/registry.rb#106
   def registered?(name); end
 
   # source://bindata//lib/bindata/registry.rb#123
@@ -2503,22 +2616,22 @@ end
 
 # ----------------------------------------------------------------------------
 #
-# source://bindata//lib/bindata/sanitize.rb#157
+# source://bindata//lib/bindata/sanitize.rb#149
 class BinData::SanitizedBigEndian < ::BinData::SanitizedParameter
-  # source://bindata//lib/bindata/sanitize.rb#158
+  # source://bindata//lib/bindata/sanitize.rb#150
   def endian; end
 end
 
 # ----------------------------------------------------------------------------
 #
-# source://bindata//lib/bindata/sanitize.rb#132
+# source://bindata//lib/bindata/sanitize.rb#124
 class BinData::SanitizedChoices < ::BinData::SanitizedParameter
   # @return [SanitizedChoices] a new instance of SanitizedChoices
   #
-  # source://bindata//lib/bindata/sanitize.rb#133
+  # source://bindata//lib/bindata/sanitize.rb#125
   def initialize(choices, hints); end
 
-  # source://bindata//lib/bindata/sanitize.rb#151
+  # source://bindata//lib/bindata/sanitize.rb#143
   def [](key); end
 end
 
@@ -2533,13 +2646,15 @@ class BinData::SanitizedField < ::BinData::SanitizedParameter
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/sanitize.rb#62
+  # source://bindata//lib/bindata/sanitize.rb#58
   def has_parameter?(param); end
 
-  # source://bindata//lib/bindata/sanitize.rb#66
+  # source://bindata//lib/bindata/sanitize.rb#62
   def instantiate(value = T.unsafe(nil), parent = T.unsafe(nil)); end
 
-  # source://bindata//lib/bindata/sanitize.rb#58
+  # Returns the value of attribute name.
+  #
+  # source://bindata//lib/bindata/sanitize.rb#52
   def name; end
 
   # source://bindata//lib/bindata/sanitize.rb#54
@@ -2553,62 +2668,62 @@ end
 
 # ----------------------------------------------------------------------------
 #
-# source://bindata//lib/bindata/sanitize.rb#72
+# source://bindata//lib/bindata/sanitize.rb#68
 class BinData::SanitizedFields < ::BinData::SanitizedParameter
   include ::Enumerable
 
   # @return [SanitizedFields] a new instance of SanitizedFields
   #
-  # source://bindata//lib/bindata/sanitize.rb#75
+  # source://bindata//lib/bindata/sanitize.rb#71
   def initialize(hints, base_fields = T.unsafe(nil)); end
 
-  # source://bindata//lib/bindata/sanitize.rb#94
+  # source://bindata//lib/bindata/sanitize.rb#86
   def [](idx); end
 
-  # source://bindata//lib/bindata/sanitize.rb#84
+  # source://bindata//lib/bindata/sanitize.rb#76
   def add_field(type, name, params); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/sanitize.rb#118
+  # source://bindata//lib/bindata/sanitize.rb#110
   def all_field_names_blank?; end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/sanitize.rb#126
+  # source://bindata//lib/bindata/sanitize.rb#118
   def any_field_has_parameter?(parameter); end
 
-  # source://bindata//lib/bindata/sanitize.rb#106
+  # source://bindata//lib/bindata/sanitize.rb#98
   def each(&block); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/sanitize.rb#98
+  # source://bindata//lib/bindata/sanitize.rb#90
   def empty?; end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/sanitize.rb#114
+  # source://bindata//lib/bindata/sanitize.rb#106
   def field_name?(name); end
 
-  # source://bindata//lib/bindata/sanitize.rb#110
+  # source://bindata//lib/bindata/sanitize.rb#102
   def field_names; end
 
-  # source://bindata//lib/bindata/sanitize.rb#102
+  # source://bindata//lib/bindata/sanitize.rb#94
   def length; end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/sanitize.rb#122
+  # source://bindata//lib/bindata/sanitize.rb#114
   def no_field_names_blank?; end
 
-  # source://bindata//lib/bindata/sanitize.rb#90
+  # source://bindata//lib/bindata/sanitize.rb#82
   def raw_fields; end
 end
 
-# source://bindata//lib/bindata/sanitize.rb#163
+# source://bindata//lib/bindata/sanitize.rb#155
 class BinData::SanitizedLittleEndian < ::BinData::SanitizedParameter
-  # source://bindata//lib/bindata/sanitize.rb#164
+  # source://bindata//lib/bindata/sanitize.rb#156
   def endian; end
 end
 
@@ -2629,24 +2744,24 @@ class BinData::SanitizedParameter; end
 # is to recursively sanitize the parameters of an entire BinData object chain
 # at a single time.
 #
-# source://bindata//lib/bindata/sanitize.rb#181
+# source://bindata//lib/bindata/sanitize.rb#174
 class BinData::SanitizedParameters < ::Hash
   # @return [SanitizedParameters] a new instance of SanitizedParameters
   #
-  # source://bindata//lib/bindata/sanitize.rb#197
+  # source://bindata//lib/bindata/sanitize.rb#188
   def initialize(parameters, the_class, hints); end
 
-  # source://bindata//lib/bindata/sanitize.rb#287
+  # source://bindata//lib/bindata/sanitize.rb#280
   def create_sanitized_params(params, the_class); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/sanitize.rb#215
+  # source://bindata//lib/bindata/sanitize.rb#206
   def has_at_least_one_of?(*keys); end
 
   def has_parameter?(_arg0); end
 
-  # source://bindata//lib/bindata/sanitize.rb#291
+  # source://bindata//lib/bindata/sanitize.rb#284
   def hints; end
 
   # def warn_renamed_parameter(old_key, new_key)
@@ -2658,76 +2773,76 @@ class BinData::SanitizedParameters < ::Hash
   #      end
   #    end
   #
-  # source://bindata//lib/bindata/sanitize.rb#239
+  # source://bindata//lib/bindata/sanitize.rb#230
   def must_be_integer(*keys); end
 
-  # source://bindata//lib/bindata/sanitize.rb#253
+  # source://bindata//lib/bindata/sanitize.rb#244
   def rename_parameter(old_key, new_key); end
 
-  # source://bindata//lib/bindata/sanitize.rb#281
+  # source://bindata//lib/bindata/sanitize.rb#274
   def sanitize(key, &block); end
 
-  # source://bindata//lib/bindata/sanitize.rb#271
+  # source://bindata//lib/bindata/sanitize.rb#264
   def sanitize_choices(key, &block); end
 
-  # source://bindata//lib/bindata/sanitize.rb#277
+  # source://bindata//lib/bindata/sanitize.rb#270
   def sanitize_endian(key); end
 
-  # source://bindata//lib/bindata/sanitize.rb#263
+  # source://bindata//lib/bindata/sanitize.rb#256
   def sanitize_fields(key, &block); end
 
-  # source://bindata//lib/bindata/sanitize.rb#259
+  # source://bindata//lib/bindata/sanitize.rb#250
   def sanitize_object_prototype(key); end
 
-  # source://bindata//lib/bindata/sanitize.rb#223
+  # source://bindata//lib/bindata/sanitize.rb#214
   def warn_replacement_parameter(bad_key, suggested_key); end
 
   private
 
-  # source://bindata//lib/bindata/sanitize.rb#359
+  # source://bindata//lib/bindata/sanitize.rb#352
   def create_sanitized_choices(choices); end
 
-  # source://bindata//lib/bindata/sanitize.rb#347
+  # source://bindata//lib/bindata/sanitize.rb#340
   def create_sanitized_endian(endian); end
 
-  # source://bindata//lib/bindata/sanitize.rb#363
+  # source://bindata//lib/bindata/sanitize.rb#356
   def create_sanitized_fields; end
 
-  # source://bindata//lib/bindata/sanitize.rb#367
+  # source://bindata//lib/bindata/sanitize.rb#360
   def create_sanitized_object_prototype(obj_type, obj_params); end
 
-  # source://bindata//lib/bindata/sanitize.rb#327
+  # source://bindata//lib/bindata/sanitize.rb#320
   def ensure_mandatory_parameters_exist; end
 
-  # source://bindata//lib/bindata/sanitize.rb#336
+  # source://bindata//lib/bindata/sanitize.rb#329
   def ensure_mutual_exclusion_of_parameters; end
 
-  # source://bindata//lib/bindata/sanitize.rb#312
+  # source://bindata//lib/bindata/sanitize.rb#305
   def ensure_no_nil_values; end
 
-  # source://bindata//lib/bindata/sanitize.rb#321
+  # source://bindata//lib/bindata/sanitize.rb#314
   def merge_default_parameters!; end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/sanitize.rb#308
+  # source://bindata//lib/bindata/sanitize.rb#301
   def needs_sanitizing?(key); end
 
-  # source://bindata//lib/bindata/sanitize.rb#298
+  # source://bindata//lib/bindata/sanitize.rb#291
   def sanitize!; end
 
   class << self
-    # source://bindata//lib/bindata/sanitize.rb#188
+    # source://bindata//lib/bindata/sanitize.rb#179
     def sanitize(parameters, the_class); end
   end
 end
 
 # Memoized constants
 #
-# source://bindata//lib/bindata/sanitize.rb#184
+# source://bindata//lib/bindata/sanitize.rb#175
 BinData::SanitizedParameters::BIG_ENDIAN = T.let(T.unsafe(nil), BinData::SanitizedBigEndian)
 
-# source://bindata//lib/bindata/sanitize.rb#185
+# source://bindata//lib/bindata/sanitize.rb#176
 BinData::SanitizedParameters::LITTLE_ENDIAN = T.let(T.unsafe(nil), BinData::SanitizedLittleEndian)
 
 # source://bindata//lib/bindata/sanitize.rb#8
@@ -2772,6 +2887,88 @@ class BinData::SbitLe < ::BinData::BasePrimitive
   def sensible_default; end
 end
 
+# A Section is a layer on top of a stream that transforms the underlying
+# data.  This allows BinData to process a stream that has multiple
+# encodings.  e.g.  Some data data is compressed or encrypted.
+#
+#   require 'bindata'
+#
+#   class XorTransform < BinData::IO::Transform
+#      def initialize(xor)
+#        super()
+#        @xor = xor
+#      end
+#
+#      def read(n)
+#        chain_read(n).bytes.map { |byte| (byte ^ @xor).chr }.join
+#      end
+#
+#      def write(data)
+#        chain_write(data.bytes.map { |byte| (byte ^ @xor).chr }.join)
+#      end
+#   end
+#
+#   obj = BinData::Section.new(transform: -> { XorTransform.new(0xff) },
+#                              type: [:string, read_length: 5])
+#
+#   obj.read("\x97\x9A\x93\x93\x90") #=> "hello"
+#
+#
+# == Parameters
+#
+# Parameters may be provided at initialisation to control the behaviour of
+# an object.  These params are:
+#
+# <tt>:transform</tt>:: A callable that returns a new BinData::IO::Transform.
+# <tt>:type</tt>::      The single type inside the buffer.  Use a struct if
+#                       multiple fields are required.
+#
+# source://bindata//lib/bindata/section.rb#40
+class BinData::Section < ::BinData::Base
+  extend ::BinData::DSLMixin
+
+  # source://bindata//lib/bindata/section.rb#56
+  def assign(val); end
+
+  # @return [Boolean]
+  #
+  # source://bindata//lib/bindata/section.rb#52
+  def clear?; end
+
+  # source://bindata//lib/bindata/section.rb#84
+  def do_num_bytes; end
+
+  # source://bindata//lib/bindata/section.rb#72
+  def do_read(io); end
+
+  # source://bindata//lib/bindata/section.rb#78
+  def do_write(io); end
+
+  # source://bindata//lib/bindata/section.rb#48
+  def initialize_instance; end
+
+  # source://bindata//lib/bindata/section.rb#68
+  def method_missing(symbol, *args, &block); end
+
+  # source://bindata//lib/bindata/section.rb#60
+  def snapshot; end
+
+  private
+
+  # @return [Boolean]
+  #
+  # source://bindata//lib/bindata/section.rb#64
+  def respond_to_missing?(symbol, include_all = T.unsafe(nil)); end
+end
+
+# source://bindata//lib/bindata/section.rb#89
+class BinData::SectionArgProcessor < ::BinData::BaseArgProcessor
+  include ::BinData::MultiFieldArgSeparator
+
+  # source://bindata//lib/bindata/section.rb#92
+  def sanitize_parameters!(obj_class, params); end
+end
+
 # Skip will skip over bytes from the input stream.  If the stream is not
 # seekable, then the bytes are consumed and discarded.
 #
@@ -2789,12 +2986,14 @@ end
 #
 #
 #   class B < BinData::Record
-#     skip until_valid: [:string, {read_length: 2, assert: "ef"} ]
-#     string :b, read_length: 5
+#     skip do
+#       string read_length: 2, assert: 'ef'
+#     end
+#     string :s, read_length: 5
 #   end
 #
 #   obj = B.read("abcdefghij")
-#   obj.b #=> "efghi"
+#   obj.s #=> "efghi"
 #
 #
 # == Parameters
@@ -2804,62 +3003,96 @@ end
 #
 # <tt>:length</tt>::        The number of bytes to skip.
 # <tt>:to_abs_offset</tt>:: Skips to the given absolute offset.
-# <tt>:until_valid</tt>::   Skips untils a given byte pattern is matched.
+# <tt>:until_valid</tt>::   Skips until a given byte pattern is matched.
 #                           This parameter contains a type that will raise
 #                           a BinData::ValidityError unless an acceptable byte
 #                           sequence is found.  The type is represented by a
-#                           Symbol, or if the type is to have params #
-#                           passed to it, then it should be provided as #
+#                           Symbol, or if the type is to have params
+#                           passed to it, then it should be provided as
 #                           <tt>[type_symbol, hash_params]</tt>.
 #
-# source://bindata//lib/bindata/skip.rb#44
+# source://bindata//lib/bindata/skip.rb#47
 class BinData::Skip < ::BinData::BasePrimitive
-  # source://bindata//lib/bindata/skip.rb#50
+  extend ::BinData::DSLMixin
+
+  # source://bindata//lib/bindata/skip.rb#56
   def initialize_shared_instance; end
 
   private
 
-  # source://bindata//lib/bindata/skip.rb#69
+  # source://bindata//lib/bindata/skip.rb#76
   def read_and_return_value(io); end
 
-  # source://bindata//lib/bindata/skip.rb#79
+  # source://bindata//lib/bindata/skip.rb#87
   def sensible_default; end
 
-  # source://bindata//lib/bindata/skip.rb#60
-  def value_to_binary_string(val); end
-end
-
-# source://bindata//lib/bindata/skip.rb#84
-class BinData::SkipArgProcessor < ::BinData::BaseArgProcessor
-  # source://bindata//lib/bindata/skip.rb#85
-  def sanitize_parameters!(obj_class, params); end
+  # source://bindata//lib/bindata/skip.rb#66
+  def value_to_binary_string(_); end
 end
 
 # Logic for the :length parameter
 #
-# source://bindata//lib/bindata/skip.rb#96
-module BinData::SkipLengthPlugin
-  # source://bindata//lib/bindata/skip.rb#97
+# source://bindata//lib/bindata/skip.rb#92
+module BinData::Skip::SkipLengthPlugin
+  # source://bindata//lib/bindata/skip.rb#93
   def skip_length; end
 end
 
 # Logic for the :to_abs_offset parameter
 #
-# source://bindata//lib/bindata/skip.rb#103
-module BinData::SkipToAbsOffsetPlugin
-  # source://bindata//lib/bindata/skip.rb#104
+# source://bindata//lib/bindata/skip.rb#99
+module BinData::Skip::SkipToAbsOffsetPlugin
+  # source://bindata//lib/bindata/skip.rb#100
   def skip_length; end
 end
 
 # Logic for the :until_valid parameter
 #
-# source://bindata//lib/bindata/skip.rb#110
-module BinData::SkipUntilValidPlugin
-  # source://bindata//lib/bindata/skip.rb#116
-  def read_and_return_value(io); end
+# source://bindata//lib/bindata/skip.rb#106
+module BinData::Skip::SkipUntilValidPlugin
+  # source://bindata//lib/bindata/skip.rb#145
+  def fast_search_for(obj); end
+
+  # If a search object has an +asserted_value+ field then we
+  # perform a faster search for a valid object.
+  #
+  # source://bindata//lib/bindata/skip.rb#155
+  def fast_search_for_obj(obj); end
+
+  # source://bindata//lib/bindata/skip.rb#170
+  def next_search_index(io, fs); end
 
   # source://bindata//lib/bindata/skip.rb#111
+  def read_and_return_value(io); end
+
+  # source://bindata//lib/bindata/skip.rb#137
+  def seek_to_pos(pos, io); end
+
+  # source://bindata//lib/bindata/skip.rb#107
   def skip_length; end
+end
+
+# A fast search has a pattern string at a specific offset.
+#
+# source://bindata//lib/bindata/skip.rb#143
+BinData::Skip::SkipUntilValidPlugin::FastSearch = Struct
+
+# source://bindata//lib/bindata/skip.rb#193
+class BinData::Skip::SkipUntilValidPlugin::ReadaheadIO < ::BinData::IO::Transform
+  # source://bindata//lib/bindata/skip.rb#194
+  def before_transform; end
+
+  # source://bindata//lib/bindata/skip.rb#202
+  def rollback; end
+end
+
+# source://bindata//lib/bindata/skip.rb#168
+BinData::Skip::SkipUntilValidPlugin::SEARCH_SIZE = T.let(T.unsafe(nil), Integer)
+
+# source://bindata//lib/bindata/skip.rb#209
+class BinData::SkipArgProcessor < ::BinData::BaseArgProcessor
+  # source://bindata//lib/bindata/skip.rb#210
+  def sanitize_parameters!(obj_class, params); end
 end
 
 # A String is a sequence of bytes.  This is the same as strings in Ruby 1.8.
@@ -2939,14 +3172,22 @@ class BinData::String < ::BinData::BasePrimitive
   def value_to_binary_string(val); end
 end
 
+# Warns when reading if :value && no :read_length
+#
 # source://bindata//lib/bindata/string.rb#126
-class BinData::StringArgProcessor < ::BinData::BaseArgProcessor
+module BinData::String::WarnNoReadLengthPlugin
   # source://bindata//lib/bindata/string.rb#127
+  def read_and_return_value(io); end
+end
+
+# source://bindata//lib/bindata/string.rb#134
+class BinData::StringArgProcessor < ::BinData::BaseArgProcessor
+  # source://bindata//lib/bindata/string.rb#135
   def sanitize_parameters!(obj_class, params); end
 
   private
 
-  # source://bindata//lib/bindata/string.rb#137
+  # source://bindata//lib/bindata/string.rb#145
   def sanitized_pad_byte(byte); end
 end
 
@@ -2976,33 +3217,33 @@ end
 #
 # source://bindata//lib/bindata/stringz.rb#27
 class BinData::Stringz < ::BinData::BasePrimitive
-  # source://bindata//lib/bindata/stringz.rb#31
+  # source://bindata//lib/bindata/stringz.rb#30
   def assign(val); end
 
-  # source://bindata//lib/bindata/stringz.rb#35
+  # source://bindata//lib/bindata/stringz.rb#34
   def snapshot; end
 
   private
 
-  # source://bindata//lib/bindata/stringz.rb#90
+  # source://bindata//lib/bindata/stringz.rb#92
   def append_zero_byte_if_needed!(str); end
 
-  # source://bindata//lib/bindata/stringz.rb#48
+  # source://bindata//lib/bindata/stringz.rb#47
   def read_and_return_value(io); end
 
-  # source://bindata//lib/bindata/stringz.rb#64
+  # source://bindata//lib/bindata/stringz.rb#63
   def sensible_default; end
 
-  # source://bindata//lib/bindata/stringz.rb#68
+  # source://bindata//lib/bindata/stringz.rb#67
   def trim_and_zero_terminate(str); end
 
-  # source://bindata//lib/bindata/stringz.rb#80
+  # source://bindata//lib/bindata/stringz.rb#85
   def trim_to!(str, max_length = T.unsafe(nil)); end
 
-  # source://bindata//lib/bindata/stringz.rb#76
+  # source://bindata//lib/bindata/stringz.rb#81
   def truncate_after_first_zero_byte!(str); end
 
-  # source://bindata//lib/bindata/stringz.rb#44
+  # source://bindata//lib/bindata/stringz.rb#43
   def value_to_binary_string(val); end
 end
 
@@ -3056,116 +3297,119 @@ end
 # [<tt>:byte_align</tt>] This field's rel_offset must be a multiple of
 #                        <tt>:byte_align</tt>.
 #
-# source://bindata//lib/bindata/struct.rb#59
+# source://bindata//lib/bindata/struct.rb#58
 class BinData::Struct < ::BinData::Base
-  # source://bindata//lib/bindata/struct.rb#153
+  # source://bindata//lib/bindata/struct.rb#154
   def [](key); end
 
-  # source://bindata//lib/bindata/struct.rb#157
+  # source://bindata//lib/bindata/struct.rb#158
   def []=(key, value); end
 
-  # source://bindata//lib/bindata/struct.rb#101
+  # source://bindata//lib/bindata/struct.rb#102
   def assign(val); end
 
-  # source://bindata//lib/bindata/struct.rb#93
+  # source://bindata//lib/bindata/struct.rb#94
   def clear; end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/struct.rb#97
+  # source://bindata//lib/bindata/struct.rb#98
   def clear?; end
 
-  # source://bindata//lib/bindata/struct.rb#127
+  # source://bindata//lib/bindata/struct.rb#128
   def debug_name_of(child); end
 
-  # source://bindata//lib/bindata/struct.rb#148
+  # source://bindata//lib/bindata/struct.rb#149
   def do_num_bytes; end
 
-  # source://bindata//lib/bindata/struct.rb#138
+  # source://bindata//lib/bindata/struct.rb#139
   def do_read(io); end
 
-  # :nodoc
-  #
-  # source://bindata//lib/bindata/struct.rb#143
+  # source://bindata//lib/bindata/struct.rb#144
   def do_write(io); end
 
-  # source://bindata//lib/bindata/struct.rb#168
-  def each_pair; end
+  # Calls the given block for each field_name-field_obj pair.
+  #
+  # Does not include anonymous or hidden fields unless
+  # +include_all+ is true.
+  #
+  # source://bindata//lib/bindata/struct.rb#170
+  def each_pair(include_all = T.unsafe(nil)); end
 
   # Returns a list of the names of all fields accessible through this
   # object.  +include_hidden+ specifies whether to include hidden names
   # in the listing.
   #
-  # source://bindata//lib/bindata/struct.rb#118
+  # source://bindata//lib/bindata/struct.rb#119
   def field_names(include_hidden = T.unsafe(nil)); end
 
   # has_key? is deprecated
   #
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/struct.rb#164
+  # source://bindata//lib/bindata/struct.rb#162
   def has_key?(key); end
 
-  # source://bindata//lib/bindata/struct.rb#89
+  # source://bindata//lib/bindata/struct.rb#90
   def initialize_instance; end
 
-  # source://bindata//lib/bindata/struct.rb#81
+  # source://bindata//lib/bindata/struct.rb#82
   def initialize_shared_instance; end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/struct.rb#164
+  # source://bindata//lib/bindata/struct.rb#162
   def key?(key); end
 
-  # source://bindata//lib/bindata/struct.rb#132
+  # source://bindata//lib/bindata/struct.rb#133
   def offset_of(child); end
 
-  # source://bindata//lib/bindata/struct.rb#106
+  # source://bindata//lib/bindata/struct.rb#107
   def snapshot; end
 
   private
 
-  # source://bindata//lib/bindata/struct.rb#239
+  # source://bindata//lib/bindata/struct.rb#247
   def as_stringified_hash(val); end
 
-  # source://bindata//lib/bindata/struct.rb#228
+  # source://bindata//lib/bindata/struct.rb#236
   def assign_fields(val); end
 
-  # source://bindata//lib/bindata/struct.rb#213
+  # source://bindata//lib/bindata/struct.rb#221
   def base_field_name(name); end
 
-  # source://bindata//lib/bindata/struct.rb#177
+  # source://bindata//lib/bindata/struct.rb#187
   def define_field_accessors; end
 
-  # source://bindata//lib/bindata/struct.rb#184
+  # source://bindata//lib/bindata/struct.rb#194
   def define_field_accessors_for(name, index); end
 
-  # source://bindata//lib/bindata/struct.rb#199
+  # source://bindata//lib/bindata/struct.rb#209
   def find_index_of(obj); end
 
-  # source://bindata//lib/bindata/struct.rb#203
+  # source://bindata//lib/bindata/struct.rb#213
   def find_obj_for_name(name); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/struct.rb#273
+  # source://bindata//lib/bindata/struct.rb#281
   def include_obj?(obj); end
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/struct.rb#267
+  # source://bindata//lib/bindata/struct.rb#275
   def include_obj_for_io?(obj); end
 
-  # source://bindata//lib/bindata/struct.rb#217
+  # source://bindata//lib/bindata/struct.rb#225
   def instantiate_all_objs; end
 
-  # source://bindata//lib/bindata/struct.rb#221
+  # source://bindata//lib/bindata/struct.rb#229
   def instantiate_obj_at(index); end
 
-  # source://bindata//lib/bindata/struct.rb#255
+  # source://bindata//lib/bindata/struct.rb#263
   def sum_num_bytes_below_index(index); end
 
-  # source://bindata//lib/bindata/struct.rb#251
+  # source://bindata//lib/bindata/struct.rb#259
   def sum_num_bytes_for_all_fields; end
 
   class << self
@@ -3174,67 +3418,100 @@ class BinData::Struct < ::BinData::Base
   end
 end
 
+# Align fields to a multiple of :byte_align
+#
+# source://bindata//lib/bindata/struct.rb#301
+module BinData::Struct::ByteAlignPlugin
+  # @return [Boolean]
+  #
+  # source://bindata//lib/bindata/struct.rb#361
+  def align_obj?(obj); end
+
+  # source://bindata//lib/bindata/struct.rb#356
+  def bytes_to_align(obj, rel_offset); end
+
+  # source://bindata//lib/bindata/struct.rb#302
+  def do_read(io); end
+
+  # source://bindata//lib/bindata/struct.rb#320
+  def do_write(io); end
+
+  # source://bindata//lib/bindata/struct.rb#338
+  def sum_num_bytes_below_index(index); end
+end
+
 # These reserved words may not be used as field names
 #
-# source://bindata//lib/bindata/struct.rb#66
+# source://bindata//lib/bindata/struct.rb#65
 BinData::Struct::RESERVED = T.let(T.unsafe(nil), Hash)
 
 # A hash that can be accessed via attributes.
 #
-# source://bindata//lib/bindata/struct.rb#278
+# source://bindata//lib/bindata/struct.rb#286
 class BinData::Struct::Snapshot < ::Hash
-  # source://bindata//lib/bindata/struct.rb#279
+  # source://bindata//lib/bindata/struct.rb#287
   def []=(key, value); end
 
-  # source://bindata//lib/bindata/struct.rb#287
+  # source://bindata//lib/bindata/struct.rb#295
   def method_missing(symbol, *args); end
+
+  private
 
   # @return [Boolean]
   #
-  # source://bindata//lib/bindata/struct.rb#283
-  def respond_to?(symbol, include_private = T.unsafe(nil)); end
+  # source://bindata//lib/bindata/struct.rb#291
+  def respond_to_missing?(symbol, include_all = T.unsafe(nil)); end
 end
 
-# source://bindata//lib/bindata/struct.rb#348
+# source://bindata//lib/bindata/struct.rb#367
 class BinData::StructArgProcessor < ::BinData::BaseArgProcessor
-  # source://bindata//lib/bindata/struct.rb#349
+  # source://bindata//lib/bindata/struct.rb#368
   def sanitize_parameters!(obj_class, params); end
 
   private
 
-  # source://bindata//lib/bindata/struct.rb#403
+  # source://bindata//lib/bindata/struct.rb#420
   def ensure_field_names_are_valid(obj_class, field_names); end
 
-  # source://bindata//lib/bindata/struct.rb#399
+  # source://bindata//lib/bindata/struct.rb#416
   def hidden_field_names(hidden); end
 
-  # source://bindata//lib/bindata/struct.rb#359
+  # source://bindata//lib/bindata/struct.rb#378
   def sanitize_endian(params); end
 
-  # source://bindata//lib/bindata/struct.rb#375
+  # source://bindata//lib/bindata/struct.rb#392
   def sanitize_fields(obj_class, params); end
 
-  # source://bindata//lib/bindata/struct.rb#386
+  # source://bindata//lib/bindata/struct.rb#403
   def sanitize_hide(params); end
 
-  # source://bindata//lib/bindata/struct.rb#363
+  # source://bindata//lib/bindata/struct.rb#382
   def sanitize_search_prefix(params); end
 
-  # source://bindata//lib/bindata/struct.rb#395
+  # source://bindata//lib/bindata/struct.rb#412
   def sanitized_field_names(sanitized_fields); end
 end
 
-# source://bindata//lib/bindata/trace.rb#5
+# source://bindata//lib/bindata/trace.rb#47
+module BinData::TraceHook
+  # source://bindata//lib/bindata/trace.rb#55
+  def turn_off_tracing; end
+
+  # source://bindata//lib/bindata/trace.rb#48
+  def turn_on_tracing; end
+end
+
+# source://bindata//lib/bindata/trace.rb#23
 class BinData::Tracer
   # @return [Tracer] a new instance of Tracer
   #
-  # source://bindata//lib/bindata/trace.rb#6
+  # source://bindata//lib/bindata/trace.rb#24
   def initialize(io); end
 
-  # source://bindata//lib/bindata/trace.rb#10
+  # source://bindata//lib/bindata/trace.rb#28
   def trace(msg); end
 
-  # source://bindata//lib/bindata/trace.rb#14
+  # source://bindata//lib/bindata/trace.rb#32
   def trace_obj(obj_name, val); end
 end
 
@@ -3293,6 +3570,8 @@ class BinData::Uint8ArrayArgProcessor < ::BinData::BaseArgProcessor
   def sanitize_parameters!(obj_class, params); end
 end
 
+# Raised when #lookup fails.
+#
 # source://bindata//lib/bindata/registry.rb#3
 class BinData::UnRegisteredTypeError < ::StandardError; end
 
@@ -3318,7 +3597,7 @@ class BinData::ValidityError < ::StandardError; end
 #
 #   obj = A.read("abcdeabcde")
 #   obj.a #=> "abcde"
-#   obj.c.offset #=> 10
+#   obj.c.rel_offset #=> 10
 #
 #   obj = A.read("abcdeABCDE") #=> BinData::ValidityError: assertion failed for obj.c
 #
@@ -3333,23 +3612,15 @@ class BinData::ValidityError < ::StandardError; end
 #
 # source://bindata//lib/bindata/virtual.rb#31
 class BinData::Virtual < ::BinData::BasePrimitive
-  # source://bindata//lib/bindata/virtual.rb#39
+  # source://bindata//lib/bindata/virtual.rb#36
   def do_num_bytes; end
 
-  # source://bindata//lib/bindata/virtual.rb#33
+  # source://bindata//lib/bindata/virtual.rb#32
   def do_read(io); end
 
-  # source://bindata//lib/bindata/virtual.rb#36
+  # source://bindata//lib/bindata/virtual.rb#34
   def do_write(io); end
 
-  # source://bindata//lib/bindata/virtual.rb#43
+  # source://bindata//lib/bindata/virtual.rb#40
   def sensible_default; end
-end
-
-# Warns when reading if :value && no :read_length
-#
-# source://bindata//lib/bindata/string.rb#147
-module BinData::WarnNoReadLengthPlugin
-  # source://bindata//lib/bindata/string.rb#148
-  def read_and_return_value(io); end
 end
