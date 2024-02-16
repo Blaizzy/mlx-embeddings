@@ -733,7 +733,8 @@ module Homebrew
         rescue FormulaUnreadableError, FormulaClassUnavailableError,
                TapFormulaUnreadableError, TapFormulaClassUnavailableError => e
           formula_unavailable_exceptions << e
-        rescue FormulaUnavailableError, TapFormulaAmbiguityError
+        rescue FormulaUnavailableError,
+               TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
           nil
         end
         return if formula_unavailable_exceptions.empty?
@@ -751,7 +752,7 @@ module Homebrew
           else
             begin
               Formulary.from_rack(rack).keg_only?
-            rescue FormulaUnavailableError, TapFormulaAmbiguityError
+            rescue FormulaUnavailableError, TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
               false
             end
           end
@@ -834,30 +835,16 @@ module Homebrew
         kegs = Keg.all
 
         deleted_formulae = kegs.map do |keg|
-          tap = Tab.for_keg(keg).tap
+          next if Formulary.tap_paths(keg.name).any?
 
-          loadable = [
-            Formulary::FromAPILoader,
-            Formulary::FromDefaultNameLoader,
-            Formulary::FromNameLoader,
-          ].any? do |loader_class|
-            loader = begin
-              loader_class.try_new(keg.name, warn: false)
-            rescue TapFormulaAmbiguityError => e
-              e.loaders.first
-            end
-
-            if loader
-              # If we know the tap, ignore all other taps.
-              next false if tap && loader.tap != tap
-
-              next true
-            end
-
-            false
+          unless EnvConfig.no_install_from_api?
+            # Formulae installed from the API should not count as deleted formulae
+            # but may not have a tap listed in their tab
+            tap = Tab.for_keg(keg).tap
+            next if (tap.blank? || tap.core_tap?) && Homebrew::API::Formula.all_formulae.key?(keg.name)
           end
 
-          keg.name unless loadable
+          keg.name
         end.compact.uniq
 
         return if deleted_formulae.blank?

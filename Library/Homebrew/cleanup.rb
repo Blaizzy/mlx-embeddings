@@ -130,7 +130,7 @@ module Homebrew
 
         formula = begin
           Formulary.from_rack(HOMEBREW_CELLAR/formula_name)
-        rescue FormulaUnavailableError, TapFormulaAmbiguityError
+        rescue FormulaUnavailableError, TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
           nil
         end
 
@@ -300,7 +300,7 @@ module Homebrew
         args.each do |arg|
           formula = begin
             Formulary.resolve(arg)
-          rescue FormulaUnavailableError, TapFormulaAmbiguityError
+          rescue FormulaUnavailableError, TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
             nil
           end
 
