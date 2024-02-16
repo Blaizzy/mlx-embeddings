@@ -161,9 +161,13 @@ Follow these steps to do this.
 Expect to spend some time [searching Homebrew's formulae and cask list](https://formulae.brew.sh/)
 for replacements for deprecated, disabled, or removed formulae.
 
-Once you are satisfied with the state of your new `/opt/homebrew` Homebrew installation, you can uninstall the old `/usr/local` installation with these next steps.
+Once you are satisfied with the state of your new `/opt/homebrew` Homebrew installation,
+you can uninstall the old `/usr/local` installation.
+Download and run [the uninstaller](https://github.com/Homebrew/install/#uninstall-homebrew) script:
 
-1. Download and run [the uninstaller](https://github.com/Homebrew/install/#uninstall-homebrew) script: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)" -- --path=/usr/local`
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)" -- --path=/usr/local
+```
 
 For more information, see [this discussion](https://github.com/orgs/Homebrew/discussions/4397#discussioncomment-5567441).
 
