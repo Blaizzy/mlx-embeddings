@@ -175,6 +175,7 @@ module Homebrew
 
     sig { params(path: Pathname).returns(T.nilable(Tap)) }
     def self.tap_from_source_download(path)
+      path = path.expand_path
       source_relative_path = path.relative_path_from(Homebrew::API::HOMEBREW_CACHE_API_SOURCE)
       return if source_relative_path.to_s.start_with?("../")
 
