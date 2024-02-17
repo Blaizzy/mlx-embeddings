@@ -680,11 +680,12 @@ class Tap
   # @private
   sig { returns(T::Array[String]) }
   def aliases
-    @aliases ||= alias_files.map { |f| alias_file_to_name(f) }
+    @aliases ||= alias_table.keys
   end
 
   # a table mapping alias to formula name
   # @private
+  sig { returns(T::Hash[String, String]) }
   def alias_table
     return @alias_table if @alias_table
 
@@ -1133,11 +1134,13 @@ class CoreTap < AbstractCoreTap
   end
 
   # @private
-  sig { returns(T::Array[String]) }
-  def aliases
-    return super if Homebrew::EnvConfig.no_install_from_api?
-
-    Homebrew::API::Formula.all_aliases.keys
+  sig { returns(T::Hash[String, String]) }
+  def alias_table
+    @alias_table ||= if Homebrew::EnvConfig.no_install_from_api?
+      super
+    else
+      Homebrew::API::Formula.all_aliases
+    end
   end
 
   # @private
