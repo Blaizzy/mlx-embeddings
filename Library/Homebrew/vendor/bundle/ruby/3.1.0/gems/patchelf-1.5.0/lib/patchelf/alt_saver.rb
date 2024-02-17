@@ -177,7 +177,7 @@ module PatchELF
     end
 
     def modify_needed
-      # due to gsoc time constraints only implmenting features used by brew.
+      # due to gsoc time constraints only implementing features used by brew.
       raise NotImplementedError
     end
 
@@ -257,7 +257,7 @@ module PatchELF
       new_rpath_strtab_idx = shdr_dynstr.sh_size.to_i
       new_dynstr[new_rpath_strtab_idx..(new_rpath_strtab_idx + new_rpath.size)] = "#{new_rpath}\x00"
 
-      dyn_tags.each do |_, dyn|
+      dyn_tags.each_value do |dyn|
         dyn[:header].d_val = new_rpath_strtab_idx
         with_buf_at(dyn[:offset]) { |b| dyn[:header].write(b) }
       end
@@ -273,7 +273,7 @@ module PatchELF
     def modify_soname
       return unless ehdr.e_type == ELFTools::Constants::ET_DYN
 
-      # due to gsoc time constraints only implmenting features used by brew.
+      # due to gsoc time constraints only implementing features used by brew.
       raise NotImplementedError
     end
 
@@ -306,7 +306,7 @@ module PatchELF
       # consider DT_NULL when copying
       replacement_size = (dt_null_idx + 1) * dyn_num_bytes
 
-      # make space for dt_runpath tag at the top, shift data by one tag positon
+      # make space for dt_runpath tag at the top, shift data by one tag position
       new_dynamic_data[dyn_num_bytes..(replacement_size + dyn_num_bytes)] = new_dynamic_data[0..replacement_size]
 
       dyn_rpath = ELFTools::Structs::ELF_Dyn.new endian: endian, elf_class: elf_class
@@ -966,7 +966,7 @@ module PatchELF
     def overwrite_replaced_sections
       # the original source says this has to be done separately to
       # prevent clobbering the previously written section contents.
-      @replaced_sections.each do |rsec_name, _|
+      @replaced_sections.each_key do |rsec_name|
         shdr = find_section(rsec_name)&.header
         next unless shdr
 
@@ -976,7 +976,7 @@ module PatchELF
       end
     end
 
-    def write_section_aligment(shdr)
+    def write_section_alignment(shdr)
       return if shdr.sh_type == ELFTools::Constants::SHT_NOTE && shdr.sh_addralign <= @section_alignment
 
       shdr.sh_addralign = @section_alignment
@@ -1012,7 +1012,7 @@ module PatchELF
         shdr.sh_addr = start_addr + (cur_off - start_offset)
         shdr.sh_size = rsec_data.size
 
-        write_section_aligment(shdr)
+        write_section_alignment(shdr)
 
         seg_type = {
           '.interp' => ELFTools::Constants::PT_INTERP,

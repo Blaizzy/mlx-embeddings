@@ -26,7 +26,7 @@ module ELFTools
         @offset_from_vma = offset_from_vma
       end
 
-      # Return +header.sh_type+ in a simplier way.
+      # Return +header.sh_type+ in a simpler way.
       # @return [Integer]
       #   The type, meaning of types are defined in {Constants::SHT}.
       def type
