@@ -58,14 +58,6 @@ module Homebrew
       Formulary.enable_factory_cache!
       Formula.generating_hash!
 
-      homebrew_core_tap_hash = {
-        "tap_git_head"   => tap.git_head,
-        "aliases"        => tap.alias_table,
-        "renames"        => tap.formula_renames,
-        "tap_migrations" => tap.tap_migrations,
-        "formulae"       => {},
-      }
-
       tap.formula_names.each do |name|
         formula = Formulary.factory(name)
         name = formula.name
@@ -77,15 +69,12 @@ module Homebrew
           File.write("api/formula/#{name}.json", FORMULA_JSON_TEMPLATE)
           File.write("formula/#{name}.html", html_template_name)
         end
-
-        homebrew_core_tap_hash["formulae"][formula.name] =
-          formula.to_hash_with_variations(hash_method: :to_api_hash)
       rescue
         onoe "Error while generating data for formula '#{name}'."
         raise
       end
 
-      homebrew_core_tap_json = JSON.generate(homebrew_core_tap_hash)
+      homebrew_core_tap_json = JSON.generate(tap.to_api_hash)
       File.write("api/internal/v3/homebrew-core.json", homebrew_core_tap_json) unless args.dry_run?
       canonical_json = JSON.pretty_generate(tap.formula_renames.merge(tap.alias_table))
       File.write("_data/formula_canonical.json", "#{canonical_json}\n") unless args.dry_run?

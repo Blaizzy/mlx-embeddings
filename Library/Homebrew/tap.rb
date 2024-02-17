@@ -1190,6 +1190,23 @@ class CoreTap < AbstractCoreTap
       hash[name] = Pathname(new_path) if existing_path.nil? || existing_path.to_s.length < new_path.length
     end
   end
+
+  sig { returns(T::Hash[String, T.untyped]) }
+  def to_api_hash
+    formulae_api_hash = formula_names.to_h do |name|
+      formula = Formulary.factory(name)
+      formula_hash = formula.to_hash_with_variations(hash_method: :to_api_hash)
+      [name, formula_hash]
+    end
+
+    {
+      "tap_git_head"   => git_head,
+      "aliases"        => alias_table,
+      "renames"        => formula_renames,
+      "tap_migrations" => tap_migrations,
+      "formulae"       => formulae_api_hash,
+    }
+  end
 end
 
 # A specialized {Tap} class for homebrew-cask.
