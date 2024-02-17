@@ -20,7 +20,7 @@ module ELFTools
         @offset_from_vma = offset_from_vma
       end
 
-      # Return +header.p_type+ in a simplier way.
+      # Return +header.p_type+ in a simpler way.
       # @return [Integer]
       #   The type, meaning of types are defined in {Constants::PT}.
       def type
@@ -35,19 +35,19 @@ module ELFTools
       end
 
       # Is this segment readable?
-      # @return [Boolean] Ture or false.
+      # @return [Boolean] True or false.
       def readable?
         (header.p_flags & 4) == 4
       end
 
       # Is this segment writable?
-      # @return [Boolean] Ture or false.
+      # @return [Boolean] True or false.
       def writable?
         (header.p_flags & 2) == 2
       end
 
       # Is this segment executable?
-      # @return [Boolean] Ture or false.
+      # @return [Boolean] True or false.
       def executable?
         (header.p_flags & 1) == 1
       end

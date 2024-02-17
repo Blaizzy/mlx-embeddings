@@ -5,7 +5,7 @@ module ELFTools
   module Util
     # Class methods.
     module ClassMethods
-      # Round up the number to be mulitple of
+      # Round up the number to be multiple of
       # +2**bit+.
       # @param [Integer] num Number to be rounded-up.
       # @param [Integer] bit How many bit to be aligned.
