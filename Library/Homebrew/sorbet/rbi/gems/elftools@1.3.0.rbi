@@ -3163,7 +3163,7 @@ class ELFTools::ELFFile
   #   #=>  #<ELFTools::Segments::NoteSegment:0x005629dda1e4f8>
   #
   #   # this is ok
-  #   elf.segment_by_type('note') # will be tranformed into `PT_NOTE`
+  #   elf.segment_by_type('note') # will be transformed into `PT_NOTE`
   #   #=>  #<ELFTools::Segments::NoteSegment:0x005629dda1e4f8>
   # @example
   #   elf.segment_by_type(1337)
@@ -3622,7 +3622,7 @@ class ELFTools::Sections::Section
   # source://elftools//lib/elftools/sections/section.rb#9
   def stream; end
 
-  # Return +header.sh_type+ in a simplier way.
+  # Return +header.sh_type+ in a simpler way.
   #
   # @return [Integer] The type, meaning of types are defined in {Constants::SHT}.
   #
@@ -3939,7 +3939,7 @@ class ELFTools::Segments::Segment
 
   # Is this segment executable?
   #
-  # @return [Boolean] Ture or false.
+  # @return [Boolean] True or false.
   #
   # source://elftools//lib/elftools/segments/segment.rb#51
   def executable?; end
@@ -3951,7 +3951,7 @@ class ELFTools::Segments::Segment
 
   # Is this segment readable?
   #
-  # @return [Boolean] Ture or false.
+  # @return [Boolean] True or false.
   #
   # source://elftools//lib/elftools/segments/segment.rb#39
   def readable?; end
@@ -3961,7 +3961,7 @@ class ELFTools::Segments::Segment
   # source://elftools//lib/elftools/segments/segment.rb#8
   def stream; end
 
-  # Return +header.p_type+ in a simplier way.
+  # Return +header.p_type+ in a simpler way.
   #
   # @return [Integer] The type, meaning of types are defined in {Constants::PT}.
   #
@@ -3970,7 +3970,7 @@ class ELFTools::Segments::Segment
 
   # Is this segment writable?
   #
-  # @return [Boolean] Ture or false.
+  # @return [Boolean] True or false.
   #
   # source://elftools//lib/elftools/segments/segment.rb#45
   def writable?; end
@@ -4000,10 +4000,10 @@ module ELFTools::Structs; end
 # source://elftools//lib/elftools/structs.rb#123
 class ELFTools::Structs::ELF32_Phdr < ::ELFTools::Structs::ELFStruct
   class << self
-    # source://bindata/2.4.15/lib/bindata/base.rb#53
+    # source://bindata/2.5.0/lib/bindata/base.rb#53
     def inherited(subclass); end
 
-    # source://bindata/2.4.15/lib/bindata/dsl.rb#279
+    # source://bindata/2.5.0/lib/bindata/dsl.rb#280
     def new(*args); end
   end
 end
@@ -4013,10 +4013,10 @@ end
 # source://elftools//lib/elftools/structs.rb#155
 class ELFTools::Structs::ELF32_sym < ::ELFTools::Structs::ELFStruct
   class << self
-    # source://bindata/2.4.15/lib/bindata/base.rb#53
+    # source://bindata/2.5.0/lib/bindata/base.rb#53
     def inherited(subclass); end
 
-    # source://bindata/2.4.15/lib/bindata/dsl.rb#279
+    # source://bindata/2.5.0/lib/bindata/dsl.rb#280
     def new(*args); end
   end
 end
@@ -4026,10 +4026,10 @@ end
 # source://elftools//lib/elftools/structs.rb#136
 class ELFTools::Structs::ELF64_Phdr < ::ELFTools::Structs::ELFStruct
   class << self
-    # source://bindata/2.4.15/lib/bindata/base.rb#53
+    # source://bindata/2.5.0/lib/bindata/base.rb#53
     def inherited(subclass); end
 
-    # source://bindata/2.4.15/lib/bindata/dsl.rb#279
+    # source://bindata/2.5.0/lib/bindata/dsl.rb#280
     def new(*args); end
   end
 end
@@ -4039,10 +4039,10 @@ end
 # source://elftools//lib/elftools/structs.rb#166
 class ELFTools::Structs::ELF64_sym < ::ELFTools::Structs::ELFStruct
   class << self
-    # source://bindata/2.4.15/lib/bindata/base.rb#53
+    # source://bindata/2.5.0/lib/bindata/base.rb#53
     def inherited(subclass); end
 
-    # source://bindata/2.4.15/lib/bindata/dsl.rb#279
+    # source://bindata/2.5.0/lib/bindata/dsl.rb#280
     def new(*args); end
   end
 end
@@ -4080,11 +4080,11 @@ class ELFTools::Structs::ELFStruct < ::BinData::Record
 
   # BinData hash(Snapshot) that behaves like HashWithIndifferentAccess
   #
-  # source://bindata/2.4.15/lib/bindata/struct.rb#106
+  # source://bindata/2.5.0/lib/bindata/struct.rb#107
   def to_h; end
 
   class << self
-    # source://bindata/2.4.15/lib/bindata/base.rb#53
+    # source://bindata/2.5.0/lib/bindata/base.rb#53
     def inherited(subclass); end
 
     # Hooks the constructor.
@@ -4123,10 +4123,10 @@ ELFTools::Structs::ELFStruct::CHOICE_SIZE_T = T.let(T.unsafe(nil), Proc)
 # source://elftools//lib/elftools/structs.rb#191
 class ELFTools::Structs::ELF_Dyn < ::ELFTools::Structs::ELFStruct
   class << self
-    # source://bindata/2.4.15/lib/bindata/base.rb#53
+    # source://bindata/2.5.0/lib/bindata/base.rb#53
     def inherited(subclass); end
 
-    # source://bindata/2.4.15/lib/bindata/dsl.rb#279
+    # source://bindata/2.5.0/lib/bindata/dsl.rb#280
     def new(*args); end
   end
 end
@@ -4136,10 +4136,10 @@ end
 # source://elftools//lib/elftools/structs.rb#80
 class ELFTools::Structs::ELF_Ehdr < ::ELFTools::Structs::ELFStruct
   class << self
-    # source://bindata/2.4.15/lib/bindata/base.rb#53
+    # source://bindata/2.5.0/lib/bindata/base.rb#53
     def inherited(subclass); end
 
-    # source://bindata/2.4.15/lib/bindata/dsl.rb#279
+    # source://bindata/2.5.0/lib/bindata/dsl.rb#280
     def new(*args); end
   end
 end
@@ -4149,10 +4149,10 @@ end
 # source://elftools//lib/elftools/structs.rb#183
 class ELFTools::Structs::ELF_Nhdr < ::ELFTools::Structs::ELFStruct
   class << self
-    # source://bindata/2.4.15/lib/bindata/base.rb#53
+    # source://bindata/2.5.0/lib/bindata/base.rb#53
     def inherited(subclass); end
 
-    # source://bindata/2.4.15/lib/bindata/dsl.rb#279
+    # source://bindata/2.5.0/lib/bindata/dsl.rb#280
     def new(*args); end
   end
 end
@@ -4172,10 +4172,10 @@ class ELFTools::Structs::ELF_Rel < ::ELFTools::Structs::ELFStruct
   def r_addend; end
 
   class << self
-    # source://bindata/2.4.15/lib/bindata/base.rb#53
+    # source://bindata/2.5.0/lib/bindata/base.rb#53
     def inherited(subclass); end
 
-    # source://bindata/2.4.15/lib/bindata/dsl.rb#279
+    # source://bindata/2.5.0/lib/bindata/dsl.rb#280
     def new(*args); end
   end
 end
@@ -4185,10 +4185,10 @@ end
 # source://elftools//lib/elftools/structs.rb#212
 class ELFTools::Structs::ELF_Rela < ::ELFTools::Structs::ELFStruct
   class << self
-    # source://bindata/2.4.15/lib/bindata/base.rb#53
+    # source://bindata/2.5.0/lib/bindata/base.rb#53
     def inherited(subclass); end
 
-    # source://bindata/2.4.15/lib/bindata/dsl.rb#279
+    # source://bindata/2.5.0/lib/bindata/dsl.rb#280
     def new(*args); end
   end
 end
@@ -4198,10 +4198,10 @@ end
 # source://elftools//lib/elftools/structs.rb#108
 class ELFTools::Structs::ELF_Shdr < ::ELFTools::Structs::ELFStruct
   class << self
-    # source://bindata/2.4.15/lib/bindata/base.rb#53
+    # source://bindata/2.5.0/lib/bindata/base.rb#53
     def inherited(subclass); end
 
-    # source://bindata/2.4.15/lib/bindata/dsl.rb#279
+    # source://bindata/2.5.0/lib/bindata/dsl.rb#280
     def new(*args); end
   end
 end
@@ -4222,7 +4222,7 @@ end
 #
 # source://elftools//lib/elftools/util.rb#7
 module ELFTools::Util::ClassMethods
-  # Round up the number to be mulitple of
+  # Round up the number to be multiple of
   # +2**bit+.
   #
   # @example
