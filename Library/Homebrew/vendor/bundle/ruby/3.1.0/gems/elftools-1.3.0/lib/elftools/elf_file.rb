@@ -36,7 +36,7 @@ module ELFTools
       return @header if defined?(@header)
 
       stream.pos = 0
-      @header = Structs::ELF_Ehdr.new(endian: endian, offset: stream.pos)
+      @header = Structs::ELF_Ehdr.new(endian:, offset: stream.pos)
       @header.elf_class = elf_class
       @header.read(stream)
     end
@@ -237,7 +237,7 @@ module ELFTools
     #   #=>  #<ELFTools::Segments::NoteSegment:0x005629dda1e4f8>
     #
     #   # this is ok
-    #   elf.segment_by_type('note') # will be tranformed into `PT_NOTE`
+    #   elf.segment_by_type('note') # will be transformed into `PT_NOTE`
     #   #=>  #<ELFTools::Segments::NoteSegment:0x005629dda1e4f8>
     # @example
     #   elf.segment_by_type(1337)
@@ -358,7 +358,7 @@ module ELFTools
 
     def create_section(n)
       stream.pos = header.e_shoff + n * header.e_shentsize
-      shdr = Structs::ELF_Shdr.new(endian: endian, offset: stream.pos)
+      shdr = Structs::ELF_Shdr.new(endian:, offset: stream.pos)
       shdr.elf_class = elf_class
       shdr.read(stream)
       Sections::Section.create(shdr, stream,
@@ -369,7 +369,7 @@ module ELFTools
 
     def create_segment(n)
       stream.pos = header.e_phoff + n * header.e_phentsize
-      phdr = Structs::ELF_Phdr[elf_class].new(endian: endian, offset: stream.pos)
+      phdr = Structs::ELF_Phdr[elf_class].new(endian:, offset: stream.pos)
       phdr.elf_class = elf_class
       Segments::Segment.create(phdr.read(stream), stream, offset_from_vma: method(:offset_from_vma))
     end

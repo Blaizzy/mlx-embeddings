@@ -63,11 +63,11 @@ module PatchELF
 
     def patch_requests
       @options[:set].each do |sym, val|
-        patcher.__send__("#{sym}=".to_sym, val)
+        patcher.__send__(:"#{sym}=", val)
       end
 
       @options[:needed].each do |type, val|
-        patcher.__send__("#{type}_needed".to_sym, *val)
+        patcher.__send__(:"#{type}_needed", *val)
       end
     end
 
