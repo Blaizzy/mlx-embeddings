@@ -25,8 +25,6 @@ describe Cask::Upgrade, :cask do
     installed.each do |cask|
       Cask::Installer.new(Cask::CaskLoader.load(cask_path(cask))).install
     end
-
-    allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
   end
 
   context "when the upgrade is a dry run" do
