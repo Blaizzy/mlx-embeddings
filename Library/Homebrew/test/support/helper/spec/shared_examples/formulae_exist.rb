@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-shared_examples "formulae exist" do |array|
+RSpec.shared_examples "formulae exist" do |array|
   array.each do |f|
     it "#{f} formula exists" do
       core_tap = Pathname("#{HOMEBREW_LIBRARY_PATH}/../Taps/homebrew/homebrew-core")

@@ -2,7 +2,7 @@
 
 require "cask/staged"
 
-shared_examples Cask::Staged do
+RSpec.shared_examples Cask::Staged do
   let(:existing_path) { Pathname("/path/to/file/that/exists") }
   let(:non_existent_path) { Pathname("/path/to/file/that/does/not/exist") }
 
