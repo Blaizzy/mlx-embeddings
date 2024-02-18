@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "livecheck/livecheck"
 require "livecheck/skip_conditions"
 
 describe Homebrew::Livecheck::SkipConditions do

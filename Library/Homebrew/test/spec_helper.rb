@@ -66,6 +66,7 @@ RSpec.configure do |config|
   config.order = :random
 
   config.raise_errors_for_deprecations!
+  config.warnings = true
 
   config.filter_run_when_matching :focus
 
@@ -179,6 +180,7 @@ RSpec.configure do |config|
   end
 
   config.around do |example|
+    undef find_files if defined? find_files
     def find_files
       return [] unless File.exist?(TEST_TMPDIR)
 
