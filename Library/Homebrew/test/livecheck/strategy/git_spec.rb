@@ -2,7 +2,7 @@
 
 require "livecheck/strategy"
 
-describe Homebrew::Livecheck::Strategy::Git do
+RSpec.describe Homebrew::Livecheck::Strategy::Git do
   subject(:git) { described_class }
 
   let(:git_url) { "https://github.com/Homebrew/brew.git" }

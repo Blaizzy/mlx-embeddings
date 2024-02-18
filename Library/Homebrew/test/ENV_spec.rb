@@ -2,7 +2,7 @@
 
 require "extend/ENV"
 
-describe "ENV" do
+RSpec.describe "ENV" do
   shared_examples EnvActivation do
     subject(:env) { env_activation.extend(described_class) }
 

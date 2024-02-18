@@ -2,7 +2,7 @@
 
 require "language/java"
 
-describe Language::Java do
+RSpec.describe Language::Java do
   let(:f) do
     formula("openjdk") do
       url "openjdk"

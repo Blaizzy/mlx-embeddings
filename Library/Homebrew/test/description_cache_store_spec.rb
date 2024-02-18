@@ -3,7 +3,7 @@
 require "cmd/update-report"
 require "description_cache_store"
 
-describe DescriptionCacheStore do
+RSpec.describe DescriptionCacheStore do
   subject(:cache_store) { described_class.new(database) }
 
   let(:database) { instance_double(CacheStoreDatabase, "database") }

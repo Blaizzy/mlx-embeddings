@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe OS do
+RSpec.describe OS do
   describe "::kernel_version" do
     it "is not NULL" do
       expect(described_class.kernel_version).not_to be_null

@@ -2,7 +2,7 @@
 
 require "missing_formula"
 
-describe Homebrew::MissingFormula do
+RSpec.describe Homebrew::MissingFormula do
   describe "::reason" do
     subject { described_class.reason("gem") }
 

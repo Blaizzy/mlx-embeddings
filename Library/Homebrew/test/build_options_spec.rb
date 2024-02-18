@@ -3,7 +3,7 @@
 require "build_options"
 require "options"
 
-describe BuildOptions do
+RSpec.describe BuildOptions do
   alias_matcher :be_built_with, :be_with
   alias_matcher :be_built_without, :be_without
 

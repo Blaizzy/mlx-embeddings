@@ -2,7 +2,7 @@
 
 require "rubocops/rubocop-cask"
 
-describe RuboCop::Cop::Cask::HomepageUrlTrailingSlash, :config do
+RSpec.describe RuboCop::Cop::Cask::HomepageUrlTrailingSlash, :config do
   it "accepts a homepage URL ending with a slash" do
     expect_no_offenses <<~CASK
       cask 'foo' do

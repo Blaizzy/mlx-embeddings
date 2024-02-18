@@ -2,7 +2,7 @@
 
 require "language/node"
 
-describe Language::Node do
+RSpec.describe Language::Node do
   let(:npm_pack_cmd) { ["npm", "pack", "--ignore-scripts"] }
 
   describe "#setup_npm_environment" do

@@ -2,7 +2,7 @@
 
 require "rubocops/lines"
 
-describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
+RSpec.describe RuboCop::Cop::FormulaAudit::OptionDeclarations do
   subject(:cop) { described_class.new }
 
   context "when auditing options" do

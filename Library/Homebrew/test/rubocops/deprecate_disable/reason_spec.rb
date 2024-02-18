@@ -2,7 +2,7 @@
 
 require "rubocops/deprecate_disable"
 
-describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
+RSpec.describe RuboCop::Cop::FormulaAudit::DeprecateDisableReason do
   subject(:cop) { described_class.new }
 
   context "when auditing `deprecate!`" do

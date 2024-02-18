@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew --repository" do
+RSpec.describe "brew --repository" do
   it_behaves_like "parseable arguments"
 
   it "prints Homebrew's repository", :integration_test do

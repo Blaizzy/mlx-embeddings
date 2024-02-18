@@ -2,7 +2,7 @@
 
 require "rubocops/lines"
 
-describe RuboCop::Cop::FormulaAudit::QuicTLSCheck do
+RSpec.describe RuboCop::Cop::FormulaAudit::QuicTLSCheck do
   subject(:cop) { described_class.new }
 
   context "when auditing formula dependencies" do

@@ -2,7 +2,7 @@
 
 require "dependable"
 
-describe Dependable do
+RSpec.describe Dependable do
   alias_matcher :be_a_build_dependency, :be_build
 
   subject(:dependable) do

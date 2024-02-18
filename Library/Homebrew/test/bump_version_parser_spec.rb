@@ -2,7 +2,7 @@
 
 require "bump_version_parser"
 
-describe Homebrew::BumpVersionParser do
+RSpec.describe Homebrew::BumpVersionParser do
   let(:general_version) { "1.2.3" }
   let(:intel_version) { "2.3.4" }
   let(:arm_version) { "3.4.5" }

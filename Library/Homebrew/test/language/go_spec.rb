@@ -2,7 +2,7 @@
 
 require "language/go"
 
-describe Language::Go do
+RSpec.describe Language::Go do
   specify "#stage_deps" do
     ENV.delete("HOMEBREW_DEVELOPER")
 

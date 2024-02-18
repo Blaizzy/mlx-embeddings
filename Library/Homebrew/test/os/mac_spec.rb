@@ -3,7 +3,7 @@
 require "locale"
 require "os/mac"
 
-describe OS::Mac do
+RSpec.describe OS::Mac do
   describe "::languages" do
     it "returns a list of all languages" do
       expect(described_class.languages).not_to be_empty

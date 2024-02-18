@@ -2,7 +2,7 @@
 
 require "cli/named_args"
 
-describe Homebrew::CLI::NamedArgs do
+RSpec.describe Homebrew::CLI::NamedArgs do
   def setup_unredable_formula(name)
     error = FormulaUnreadableError.new(name, RuntimeError.new("testing"))
     allow(Formulary).to receive(:factory).with(name, any_args).and_raise(error)

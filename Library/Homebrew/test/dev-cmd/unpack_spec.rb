@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew unpack" do
+RSpec.describe "brew unpack" do
   it_behaves_like "parseable arguments"
 
   it "unpacks a given Formula's archive", :integration_test do

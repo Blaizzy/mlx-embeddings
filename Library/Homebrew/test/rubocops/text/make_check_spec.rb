@@ -2,7 +2,7 @@
 
 require "rubocops/lines"
 
-describe RuboCop::Cop::FormulaAuditStrict::MakeCheck do
+RSpec.describe RuboCop::Cop::FormulaAuditStrict::MakeCheck do
   subject(:cop) { described_class.new }
 
   let(:path) { Tap::TAP_DIRECTORY/"homebrew/homebrew-core" }

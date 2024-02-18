@@ -5,7 +5,7 @@ require "utils/git"
 require "tap"
 require "cmd/shared_examples/args_parse"
 
-describe "brew pr-pull" do
+RSpec.describe "brew pr-pull" do
   it_behaves_like "parseable arguments"
 
   describe Homebrew do

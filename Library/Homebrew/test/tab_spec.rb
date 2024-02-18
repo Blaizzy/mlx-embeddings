@@ -3,7 +3,7 @@
 require "tab"
 require "formula"
 
-describe Tab do
+RSpec.describe Tab do
   alias_matcher :be_built_with, :be_with
 
   matcher :be_poured_from_bottle do

@@ -2,7 +2,7 @@
 
 require "utils/backtrace"
 
-describe Utils::Backtrace do
+RSpec.describe Utils::Backtrace do
   let(:backtrace_no_sorbet_paths) do
     [
       "/Library/Homebrew/downloadable.rb:75:in",

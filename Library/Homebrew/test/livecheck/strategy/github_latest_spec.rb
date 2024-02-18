@@ -3,7 +3,7 @@
 require "livecheck/strategy/github_releases"
 require "livecheck/strategy/github_latest"
 
-describe Homebrew::Livecheck::Strategy::GithubLatest do
+RSpec.describe Homebrew::Livecheck::Strategy::GithubLatest do
   subject(:github_latest) { described_class }
 
   let(:github_urls) do

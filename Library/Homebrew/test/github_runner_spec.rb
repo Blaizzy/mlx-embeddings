@@ -2,7 +2,7 @@
 
 require "github_runner"
 
-describe GitHubRunner do
+RSpec.describe GitHubRunner do
   let(:runner) do
     spec = MacOSRunnerSpec.new(name: "macOS 11-arm64", runner: "11-arm64", timeout: 90, cleanup: true)
     version = MacOSVersion.new("11")

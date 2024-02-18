@@ -2,7 +2,7 @@
 
 require "utils/fork"
 
-describe Utils do
+RSpec.describe Utils do
   describe "#safe_fork" do
     it "raises a RuntimeError on an error that isn't ErrorDuringExecution" do
       expect do

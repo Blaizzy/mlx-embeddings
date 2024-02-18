@@ -2,7 +2,7 @@
 
 require "version"
 
-describe Version do
+RSpec.describe Version do
   subject(:version) { described_class.new("1.2.3") }
 
   specify ".formula_optionally_versioned_regex" do

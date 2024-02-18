@@ -3,7 +3,7 @@
 require "cask/installer"
 require "cask/reinstall"
 
-describe Cask::Reinstall, :cask do
+RSpec.describe Cask::Reinstall, :cask do
   it "displays the reinstallation progress" do
     caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
 

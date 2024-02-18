@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew readall" do
+RSpec.describe "brew readall" do
   it_behaves_like "parseable arguments"
 
   it "imports all Formulae for a given Tap", :integration_test do

@@ -2,7 +2,7 @@
 
 require_relative "shared_examples"
 
-describe UnpackStrategy::Xar, :needs_macos do
+RSpec.describe UnpackStrategy::Xar, :needs_macos do
   let(:path) { TEST_FIXTURE_DIR/"cask/container.xar" }
 
   include_examples "UnpackStrategy::detect"

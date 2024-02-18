@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe MacOS, :cask do
+RSpec.describe MacOS, :cask do
   it "says '/' is undeletable" do
     expect(described_class).to be_undeletable(
       "/",

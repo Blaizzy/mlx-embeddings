@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew linkage" do
+RSpec.describe "brew linkage" do
   it_behaves_like "parseable arguments"
 
   it "works when no arguments are provided", :integration_test do

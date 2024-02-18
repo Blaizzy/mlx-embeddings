@@ -2,7 +2,7 @@
 
 require "dependency"
 
-describe Dependency do
+RSpec.describe Dependency do
   def build_dep(name, tags = [], deps = [])
     dep = described_class.new(name.to_s, tags)
     allow(dep).to receive(:to_formula).and_return \

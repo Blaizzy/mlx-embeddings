@@ -2,7 +2,7 @@
 
 require "rubocops/rubocop-cask"
 
-describe RuboCop::Cop::Cask::SharedFilelistGlob, :config do
+RSpec.describe RuboCop::Cop::Cask::SharedFilelistGlob, :config do
   it "reports an offense when a zap trash array includes an .sfl2 or .sfl3 file" do
     expect_offense(<<~CASK)
       cask "foo" do

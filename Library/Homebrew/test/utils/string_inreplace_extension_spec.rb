@@ -2,7 +2,7 @@
 
 require "utils/string_inreplace_extension"
 
-describe StringInreplaceExtension do
+RSpec.describe StringInreplaceExtension do
   subject(:string_extension) { described_class.new(string.dup) }
 
   describe "#change_make_var!" do

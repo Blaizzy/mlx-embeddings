@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::Config, :cask do
+RSpec.describe Cask::Config, :cask do
   subject(:config) { described_class.new }
 
   describe "::from_json" do

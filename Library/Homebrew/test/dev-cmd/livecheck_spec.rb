@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew livecheck" do
+RSpec.describe "brew livecheck" do
   it_behaves_like "parseable arguments"
 
   it "reports the latest version of a Formula", :integration_test, :needs_network do

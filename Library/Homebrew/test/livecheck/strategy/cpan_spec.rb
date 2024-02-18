@@ -2,7 +2,7 @@
 
 require "livecheck/strategy"
 
-describe Homebrew::Livecheck::Strategy::Cpan do
+RSpec.describe Homebrew::Livecheck::Strategy::Cpan do
   subject(:cpan) { described_class }
 
   let(:cpan_urls) do

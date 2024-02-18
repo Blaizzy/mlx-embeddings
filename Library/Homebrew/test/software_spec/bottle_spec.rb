@@ -2,7 +2,7 @@
 
 require "software_spec"
 
-describe BottleSpecification do
+RSpec.describe BottleSpecification do
   subject(:bottle_spec) { described_class.new }
 
   describe "#sha256" do

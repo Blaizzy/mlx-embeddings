@@ -3,7 +3,7 @@
 require "cmd/search"
 require "cmd/shared_examples/args_parse"
 
-describe "brew search" do
+RSpec.describe "brew search" do
   it_behaves_like "parseable arguments"
 
   it "finds formula in search", :integration_test do

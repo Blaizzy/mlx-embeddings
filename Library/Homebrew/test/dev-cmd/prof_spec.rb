@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew prof" do
+RSpec.describe "brew prof" do
   it_behaves_like "parseable arguments"
 
   describe "integration tests", :integration_test, :needs_network do

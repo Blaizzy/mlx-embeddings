@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::Installer, :cask do
+RSpec.describe Cask::Installer, :cask do
   describe "install" do
     it "downloads and installs a nice fresh Cask" do
       caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))

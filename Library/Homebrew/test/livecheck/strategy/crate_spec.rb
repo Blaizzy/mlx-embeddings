@@ -2,7 +2,7 @@
 
 require "livecheck/strategy"
 
-describe Homebrew::Livecheck::Strategy::Crate do
+RSpec.describe Homebrew::Livecheck::Strategy::Crate do
   subject(:crate) { described_class }
 
   let(:crate_url) { "https://static.crates.io/crates/example/example-0.1.0.crate" }

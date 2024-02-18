@@ -2,7 +2,7 @@
 
 require "rubocops/rubocop-cask"
 
-describe RuboCop::Cop::Cask::Desc, :config do
+RSpec.describe RuboCop::Cop::Cask::Desc, :config do
   it "does not start with an article" do
     expect_no_offenses <<~RUBY
       cask "foo" do

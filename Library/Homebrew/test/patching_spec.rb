@@ -2,7 +2,7 @@
 
 require "formula"
 
-describe "patching" do
+RSpec.describe "patching" do
   let(:formula_subclass) do
     Class.new(Formula) do
       # These are defined within an anonymous class to avoid polluting the global namespace.

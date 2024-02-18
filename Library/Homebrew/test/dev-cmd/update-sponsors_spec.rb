@@ -2,6 +2,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew update-sponsors" do
+RSpec.describe "brew update-sponsors" do
   it_behaves_like "parseable arguments"
 end

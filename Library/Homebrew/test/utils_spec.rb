@@ -2,7 +2,7 @@
 
 require "utils"
 
-describe Utils do
+RSpec.describe Utils do
   describe ".deconstantize" do
     it "removes the rightmost segment from the constant expression in the string" do
       expect(described_class.deconstantize("Net::HTTP")).to eq("Net")

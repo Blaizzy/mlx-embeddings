@@ -2,7 +2,7 @@
 
 require "rubocops/lines"
 
-describe RuboCop::Cop::FormulaAudit::MacOSOnLinux do
+RSpec.describe RuboCop::Cop::FormulaAudit::MacOSOnLinux do
   subject(:cop) { described_class.new }
 
   it "reports an offense when `MacOS` is used in the `Formula` class" do

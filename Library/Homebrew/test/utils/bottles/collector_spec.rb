@@ -2,7 +2,7 @@
 
 require "utils/bottles"
 
-describe Utils::Bottles::Collector do
+RSpec.describe Utils::Bottles::Collector do
   subject(:collector) { described_class.new }
 
   let(:catalina) { Utils::Bottles::Tag.from_symbol(:catalina) }

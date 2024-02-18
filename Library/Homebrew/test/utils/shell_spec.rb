@@ -2,7 +2,7 @@
 
 require "utils/shell"
 
-describe Utils::Shell do
+RSpec.describe Utils::Shell do
   describe "::profile" do
     it "returns ~/.profile by default" do
       ENV["SHELL"] = "/bin/another_shell"

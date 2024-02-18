@@ -2,7 +2,7 @@
 
 require "version/parser"
 
-describe Version::Parser do
+RSpec.describe Version::Parser do
   specify "::new" do
     expect { described_class.new }
       .to raise_error("Version::Parser is declared as abstract; it cannot be instantiated")

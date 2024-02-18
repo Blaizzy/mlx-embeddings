@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew command" do
+RSpec.describe "brew command" do
   it_behaves_like "parseable arguments"
 
   it "returns the file for a given command", :integration_test do

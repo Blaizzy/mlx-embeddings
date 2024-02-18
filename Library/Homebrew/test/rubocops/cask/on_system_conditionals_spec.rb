@@ -2,7 +2,7 @@
 
 require "rubocops/rubocop-cask"
 
-describe RuboCop::Cop::Cask::OnSystemConditionals, :config do
+RSpec.describe RuboCop::Cop::Cask::OnSystemConditionals, :config do
   context "when auditing `postflight` stanzas" do
     it "accepts when there are no `on_*` blocks" do
       expect_no_offenses <<~CASK

@@ -2,7 +2,7 @@
 
 require "linux_runner_spec"
 
-describe LinuxRunnerSpec do
+RSpec.describe LinuxRunnerSpec do
   let(:spec) do
     described_class.new(
       name:      "Linux",

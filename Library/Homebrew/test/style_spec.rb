@@ -2,7 +2,7 @@
 
 require "style"
 
-describe Homebrew::Style do
+RSpec.describe Homebrew::Style do
   around do |example|
     FileUtils.ln_s HOMEBREW_LIBRARY_PATH, HOMEBREW_LIBRARY/"Homebrew"
     FileUtils.ln_s HOMEBREW_LIBRARY_PATH.parent/".rubocop.yml", HOMEBREW_LIBRARY/".rubocop.yml"

@@ -2,7 +2,7 @@
 
 require "lock_file"
 
-describe LockFile do
+RSpec.describe LockFile do
   subject(:lock_file) { described_class.new("foo") }
 
   describe "#lock" do

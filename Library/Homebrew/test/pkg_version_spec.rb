@@ -2,7 +2,7 @@
 
 require "pkg_version"
 
-describe PkgVersion do
+RSpec.describe PkgVersion do
   describe "::parse" do
     it "parses versions from a string" do
       expect(described_class.parse("1.0_1")).to eq(described_class.new(Version.new("1.0"), 1))

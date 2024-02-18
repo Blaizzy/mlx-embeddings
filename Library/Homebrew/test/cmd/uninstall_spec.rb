@@ -4,7 +4,7 @@ require "cmd/uninstall"
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew uninstall" do
+RSpec.describe "brew uninstall" do
   it_behaves_like "parseable arguments"
 
   it "uninstalls a given Formula", :integration_test do

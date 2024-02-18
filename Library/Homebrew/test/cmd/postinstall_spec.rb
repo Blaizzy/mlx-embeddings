@@ -2,6 +2,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew postinstall" do
+RSpec.describe "brew postinstall" do
   it_behaves_like "parseable arguments"
 end

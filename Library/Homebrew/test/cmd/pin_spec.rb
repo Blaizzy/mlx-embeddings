@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew pin" do
+RSpec.describe "brew pin" do
   it_behaves_like "parseable arguments"
 
   it "pins a Formula's version", :integration_test do

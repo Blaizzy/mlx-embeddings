@@ -2,7 +2,7 @@
 
 require "open3"
 
-describe "Bash" do
+RSpec.describe "Bash" do
   matcher :have_valid_bash_syntax do
     match do |file|
       stdout, stderr, status = Open3.capture3("/bin/bash", "-n", file)

@@ -2,7 +2,7 @@
 
 require "bundle_version"
 
-describe Homebrew::BundleVersion do
+RSpec.describe Homebrew::BundleVersion do
   describe "#<=>" do
     it "compares both the `short_version` and `version`" do
       expect(described_class.new("1.2.3", "3000")).to be < described_class.new("1.2.3", "4000")

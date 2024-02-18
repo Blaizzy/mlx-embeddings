@@ -2,7 +2,7 @@
 
 require_relative "shared_examples"
 
-describe UnpackStrategy::Directory do
+RSpec.describe UnpackStrategy::Directory do
   subject(:strategy) { described_class.new(path) }
 
   let(:path) do

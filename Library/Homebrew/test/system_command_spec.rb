@@ -2,7 +2,7 @@
 
 require "system_command"
 
-describe SystemCommand do
+RSpec.describe SystemCommand do
   describe "#initialize" do
     subject(:command) do
       described_class.new(

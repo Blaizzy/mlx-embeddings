@@ -2,6 +2,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew vendor-gems" do
+RSpec.describe "brew vendor-gems" do
   it_behaves_like "parseable arguments"
 end

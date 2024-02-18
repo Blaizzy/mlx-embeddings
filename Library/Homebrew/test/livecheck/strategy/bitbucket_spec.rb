@@ -2,7 +2,7 @@
 
 require "livecheck/strategy"
 
-describe Homebrew::Livecheck::Strategy::Bitbucket do
+RSpec.describe Homebrew::Livecheck::Strategy::Bitbucket do
   subject(:bitbucket) { described_class }
 
   let(:bitbucket_urls) do

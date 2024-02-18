@@ -2,7 +2,7 @@
 
 require "exceptions"
 
-describe "Exception" do
+RSpec.describe "Exception" do
   describe MultipleVersionsInstalledError do
     subject do
       described_class.new <<~EOS

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::Artifact::App, :cask do
+RSpec.describe Cask::Artifact::App, :cask do
   describe "multiple apps" do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-two-apps-correct")) }
 

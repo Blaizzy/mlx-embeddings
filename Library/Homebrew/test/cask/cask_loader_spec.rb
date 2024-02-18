@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::CaskLoader, :cask do
+RSpec.describe Cask::CaskLoader, :cask do
   describe "::for" do
     let(:tap) { CoreCaskTap.instance }
 

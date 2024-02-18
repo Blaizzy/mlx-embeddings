@@ -3,7 +3,7 @@
 require "extend/ENV"
 require "requirement"
 
-describe Requirement do
+RSpec.describe Requirement do
   alias_matcher :be_a_build_requirement, :be_a_build
 
   subject(:requirement) { klass.new }

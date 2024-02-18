@@ -2,7 +2,7 @@
 
 require_relative "shared_examples"
 
-describe UnpackStrategy::Zip do
+RSpec.describe UnpackStrategy::Zip do
   let(:path) { TEST_FIXTURE_DIR/"cask/MyFancyApp.zip" }
 
   include_examples "UnpackStrategy::detect"

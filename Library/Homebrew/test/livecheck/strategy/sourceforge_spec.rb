@@ -2,7 +2,7 @@
 
 require "livecheck/strategy/sourceforge"
 
-describe Homebrew::Livecheck::Strategy::Sourceforge do
+RSpec.describe Homebrew::Livecheck::Strategy::Sourceforge do
   subject(:sourceforge) { described_class }
 
   let(:sourceforge_urls) do

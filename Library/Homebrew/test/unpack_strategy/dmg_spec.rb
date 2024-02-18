@@ -2,7 +2,7 @@
 
 require_relative "shared_examples"
 
-describe UnpackStrategy::Dmg, :needs_macos do
+RSpec.describe UnpackStrategy::Dmg, :needs_macos do
   describe "#mount" do
     let(:path) { TEST_FIXTURE_DIR/"cask/container.dmg" }
 

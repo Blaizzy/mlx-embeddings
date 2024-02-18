@@ -2,7 +2,7 @@
 
 require "requirements"
 
-describe Requirements do
+RSpec.describe Requirements do
   subject(:requirements) { described_class.new }
 
   describe "#<<" do

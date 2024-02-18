@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew list" do
+RSpec.describe "brew list" do
   let(:formulae) { %w[bar foo qux] }
 
   it_behaves_like "parseable arguments"

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "rubocops/rubocop-cask"
-describe RuboCop::Cop::Cask::UninstallMethodsOrder, :config do
+RSpec.describe RuboCop::Cop::Cask::UninstallMethodsOrder, :config do
   context "with uninstall blocks" do
     context "when methods are incorrectly ordered" do
       it "detects and corrects ordering offenses in the uninstall block when each method contains a single item" do

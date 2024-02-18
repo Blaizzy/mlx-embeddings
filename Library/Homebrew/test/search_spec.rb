@@ -2,7 +2,7 @@
 
 require "search"
 
-describe Homebrew::Search do
+RSpec.describe Homebrew::Search do
   describe "#query_regexp" do
     it "correctly parses a regex query" do
       expect(described_class.query_regexp("/^query$/")).to eq(/^query$/)

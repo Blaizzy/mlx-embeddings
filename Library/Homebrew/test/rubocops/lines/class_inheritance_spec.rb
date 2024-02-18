@@ -2,7 +2,7 @@
 
 require "rubocops/lines"
 
-describe RuboCop::Cop::FormulaAudit::ClassInheritance do
+RSpec.describe RuboCop::Cop::FormulaAudit::ClassInheritance do
   subject(:cop) { described_class.new }
 
   context "when auditing formula class inheritance" do

@@ -3,7 +3,7 @@
 require "tempfile"
 require "utils/inreplace"
 
-describe Utils::Inreplace do
+RSpec.describe Utils::Inreplace do
   let(:file) { Tempfile.new("test") }
 
   before do

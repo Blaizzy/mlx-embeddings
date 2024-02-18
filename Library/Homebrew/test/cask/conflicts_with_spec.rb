@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe "conflicts_with", :cask do
+RSpec.describe "conflicts_with", :cask do
   describe "conflicts_with cask" do
     let(:local_caffeine) do
       Cask::CaskLoader.load(cask_path("local-caffeine"))

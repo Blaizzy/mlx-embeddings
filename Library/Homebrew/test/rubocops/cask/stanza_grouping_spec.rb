@@ -2,7 +2,7 @@
 
 require "rubocops/rubocop-cask"
 
-describe RuboCop::Cop::Cask::StanzaGrouping, :config do
+RSpec.describe RuboCop::Cop::Cask::StanzaGrouping, :config do
   it "accepts a sole stanza" do
     expect_no_offenses <<~CASK
       cask 'foo' do

@@ -2,7 +2,7 @@
 
 require "requirements/arch_requirement"
 
-describe ArchRequirement do
+RSpec.describe ArchRequirement do
   subject(:requirement) { described_class.new([Hardware::CPU.type]) }
 
   describe "#satisfied?" do

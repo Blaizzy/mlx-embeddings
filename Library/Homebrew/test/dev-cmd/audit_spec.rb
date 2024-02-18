@@ -5,7 +5,7 @@ require "formulary"
 require "cmd/shared_examples/args_parse"
 require "utils/spdx"
 
-describe "brew audit" do
+RSpec.describe "brew audit" do
   it_behaves_like "parseable arguments"
 end
 

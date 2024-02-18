@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::Pkg, :cask do
+RSpec.describe Cask::Pkg, :cask do
   describe "#uninstall" do
     let(:fake_system_command) { NeverSudoSystemCommand }
     let(:empty_response) do

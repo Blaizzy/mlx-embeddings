@@ -2,7 +2,7 @@
 
 require "livecheck/strategy/xorg"
 
-describe Homebrew::Livecheck::Strategy::Xorg do
+RSpec.describe Homebrew::Livecheck::Strategy::Xorg do
   subject(:xorg) { described_class }
 
   let(:xorg_urls) do

@@ -2,7 +2,7 @@
 
 require_relative "../../cli/parser"
 
-describe Homebrew::CLI::Parser do
+RSpec.describe Homebrew::CLI::Parser do
   describe "test switch options" do
     subject(:parser) do
       described_class.new do

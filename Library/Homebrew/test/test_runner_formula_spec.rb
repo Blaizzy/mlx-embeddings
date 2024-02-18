@@ -3,7 +3,7 @@
 require "test_runner_formula"
 require "test/support/fixtures/testball"
 
-describe TestRunnerFormula do
+RSpec.describe TestRunnerFormula do
   let(:testball) { Testball.new }
   let(:xcode_helper) { setup_test_formula("xcode-helper", [:macos]) }
   let(:linux_kernel_requirer) { setup_test_formula("linux-kernel-requirer", [:linux]) }

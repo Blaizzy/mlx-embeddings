@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew --env" do
+RSpec.describe "brew --env" do
   it_behaves_like "parseable arguments"
 
   describe "--shell=bash", :integration_test do

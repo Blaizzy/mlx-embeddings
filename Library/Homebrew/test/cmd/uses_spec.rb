@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew uses" do
+RSpec.describe "brew uses" do
   it_behaves_like "parseable arguments"
 
   it "prints the Formulae a given Formula is used by", :integration_test do

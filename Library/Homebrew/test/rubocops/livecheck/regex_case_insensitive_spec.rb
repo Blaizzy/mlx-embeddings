@@ -2,7 +2,7 @@
 
 require "rubocops/livecheck"
 
-describe RuboCop::Cop::FormulaAudit::LivecheckRegexCaseInsensitive do
+RSpec.describe RuboCop::Cop::FormulaAudit::LivecheckRegexCaseInsensitive do
   subject(:cop) { described_class.new }
 
   it "reports an offense when the `regex` is not case-insensitive" do

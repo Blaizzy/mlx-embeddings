@@ -2,7 +2,7 @@
 
 require "utils/spdx"
 
-describe SPDX do
+RSpec.describe SPDX do
   describe ".license_data" do
     it "has the license list version" do
       expect(described_class.license_data["licenseListVersion"]).not_to be_nil

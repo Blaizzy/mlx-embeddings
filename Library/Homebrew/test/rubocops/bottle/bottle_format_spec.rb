@@ -2,7 +2,7 @@
 
 require "rubocops/bottle"
 
-describe RuboCop::Cop::FormulaAudit::BottleFormat do
+RSpec.describe RuboCop::Cop::FormulaAudit::BottleFormat do
   subject(:cop) { described_class.new }
 
   it "reports no offenses for `bottle :unneeded`" do

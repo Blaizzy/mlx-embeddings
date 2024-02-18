@@ -2,7 +2,7 @@
 
 require "rubocops/rubocop-cask"
 
-describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators, :config do
+RSpec.describe RuboCop::Cop::Cask::UrlLegacyCommaSeparators, :config do
   it "accepts a simple `version` interpolation" do
     expect_no_offenses <<~'CASK'
       cask 'foo' do

@@ -2,7 +2,7 @@
 
 require "options"
 
-describe Option do
+RSpec.describe Option do
   subject(:option) { described_class.new("foo") }
 
   specify "#to_s" do

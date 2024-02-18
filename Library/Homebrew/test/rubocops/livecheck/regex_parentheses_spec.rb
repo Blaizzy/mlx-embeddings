@@ -2,7 +2,7 @@
 
 require "rubocops/livecheck"
 
-describe RuboCop::Cop::FormulaAudit::LivecheckRegexParentheses do
+RSpec.describe RuboCop::Cop::FormulaAudit::LivecheckRegexParentheses do
   subject(:cop) { described_class.new }
 
   it "reports an offense when the `regex` call in the livecheck block does not use parentheses" do

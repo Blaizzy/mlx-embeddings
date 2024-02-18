@@ -3,7 +3,7 @@
 require "messages"
 require "spec_helper"
 
-describe Messages do
+RSpec.describe Messages do
   let(:messages) { described_class.new }
   let(:test_formula) { formula("foo") { url("https://brew.sh/foo-0.1.tgz") } }
   let(:elapsed_time) { 1.1 }

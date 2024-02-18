@@ -2,7 +2,7 @@
 
 require "options"
 
-describe Options do
+RSpec.describe Options do
   subject(:options) { described_class.new }
 
   it "removes duplicate options" do

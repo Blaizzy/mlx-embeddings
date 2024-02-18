@@ -2,7 +2,7 @@
 
 require "checksum"
 
-describe Checksum do
+RSpec.describe Checksum do
   describe "#empty?" do
     subject { described_class.new("") }
 

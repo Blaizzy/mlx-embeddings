@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew analytics" do
+RSpec.describe "brew analytics" do
   it_behaves_like "parseable arguments"
 
   it "when HOMEBREW_NO_ANALYTICS is unset is disabled after running `brew analytics off`", :integration_test do

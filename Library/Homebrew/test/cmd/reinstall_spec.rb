@@ -3,7 +3,7 @@
 require "extend/ENV"
 require "cmd/shared_examples/args_parse"
 
-describe "brew reinstall" do
+RSpec.describe "brew reinstall" do
   it_behaves_like "parseable arguments"
 
   it "reinstalls a Formula", :integration_test do

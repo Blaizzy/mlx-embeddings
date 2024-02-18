@@ -26,7 +26,7 @@ RSpec.shared_context "custom internal commands" do # rubocop:disable RSpec/Conte
   end
 end
 
-describe Commands do
+RSpec.describe Commands do
   include_context "custom internal commands"
 
   specify "::internal_commands" do

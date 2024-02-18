@@ -2,7 +2,7 @@
 
 require "dependency"
 
-describe Dependency do
+RSpec.describe Dependency do
   alias_matcher :be_a_build_dependency, :be_build
 
   describe "::new" do

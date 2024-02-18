@@ -2,6 +2,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew bump-formula-pr" do
+RSpec.describe "brew bump-formula-pr" do
   it_behaves_like "parseable arguments"
 end

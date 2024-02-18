@@ -9,7 +9,7 @@ require "test/support/fixtures/testball"
 require "test/support/fixtures/testball_bottle"
 require "test/support/fixtures/failball"
 
-describe FormulaInstaller do
+RSpec.describe FormulaInstaller do
   matcher :be_poured_from_bottle do
     match(&:poured_from_bottle)
   end

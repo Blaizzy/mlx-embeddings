@@ -3,7 +3,7 @@
 require "formula"
 require "software_spec"
 
-describe Bottle::Filename do
+RSpec.describe Bottle::Filename do
   subject { described_class.new(name, version, tag, rebuild) }
 
   let(:name) { "user/repo/foo" }

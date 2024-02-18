@@ -2,7 +2,7 @@
 
 require "test/cask/dsl/shared_examples/base"
 
-describe Cask::DSL::Caveats, :cask do
+RSpec.describe Cask::DSL::Caveats, :cask do
   subject(:caveats) { described_class.new(cask) }
 
   let(:cask) { Cask::CaskLoader.load(cask_path("basic-cask")) }

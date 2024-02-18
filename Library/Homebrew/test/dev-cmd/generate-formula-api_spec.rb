@@ -2,6 +2,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew generate-formula-api" do
+RSpec.describe "brew generate-formula-api" do
   it_behaves_like "parseable arguments"
 end

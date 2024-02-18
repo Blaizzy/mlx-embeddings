@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew autoremove" do
+RSpec.describe "brew autoremove" do
   it_behaves_like "parseable arguments"
 
   describe "integration test" do

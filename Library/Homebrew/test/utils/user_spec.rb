@@ -2,7 +2,7 @@
 
 require "utils/user"
 
-describe User do
+RSpec.describe User do
   subject { described_class.current }
 
   it { is_expected.to eq ENV.fetch("USER") }

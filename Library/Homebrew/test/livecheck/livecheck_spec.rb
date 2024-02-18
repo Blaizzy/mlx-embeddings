@@ -2,7 +2,7 @@
 
 require "livecheck/livecheck"
 
-describe Homebrew::Livecheck do
+RSpec.describe Homebrew::Livecheck do
   subject(:livecheck) { described_class }
 
   let(:cask_url) { "https://brew.sh/test-0.0.1.dmg" }

@@ -2,7 +2,7 @@
 
 require "livecheck/strategy/npm"
 
-describe Homebrew::Livecheck::Strategy::Npm do
+RSpec.describe Homebrew::Livecheck::Strategy::Npm do
   subject(:npm) { described_class }
 
   let(:npm_urls) do

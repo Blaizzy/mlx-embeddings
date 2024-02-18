@@ -2,7 +2,7 @@
 
 require "utils/ast"
 
-describe Utils::AST do
+RSpec.describe Utils::AST do
   describe ".stanza_text" do
     let(:compound_license) do
       <<-RUBY

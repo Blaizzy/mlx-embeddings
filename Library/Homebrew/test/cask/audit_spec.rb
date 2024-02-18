@@ -2,7 +2,7 @@
 
 require "cask/audit"
 
-describe Cask::Audit, :cask do
+RSpec.describe Cask::Audit, :cask do
   def include_msg?(problems, msg)
     if msg.is_a?(Regexp)
       Array(problems).any? { |problem| msg.match?(problem[:message]) }

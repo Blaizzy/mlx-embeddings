@@ -3,7 +3,7 @@
 require "language/perl"
 require "utils/shebang"
 
-describe Language::Perl::Shebang do
+RSpec.describe Language::Perl::Shebang do
   let(:file) { Tempfile.new("perl-shebang") }
   let(:f) do
     f = {}

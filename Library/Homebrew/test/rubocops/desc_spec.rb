@@ -2,7 +2,7 @@
 
 require "rubocops/desc"
 
-describe RuboCop::Cop::FormulaAudit::Desc do
+RSpec.describe RuboCop::Cop::FormulaAudit::Desc do
   subject(:cop) { described_class.new }
 
   context "when auditing formula `desc` methods" do

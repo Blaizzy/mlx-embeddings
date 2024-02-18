@@ -2,7 +2,7 @@
 
 require "cask/upgrade"
 
-describe Cask::Upgrade, :cask do
+RSpec.describe Cask::Upgrade, :cask do
   let(:version_latest_paths) do
     [
       version_latest.config.appdir.join("Caffeine Mini.app"),

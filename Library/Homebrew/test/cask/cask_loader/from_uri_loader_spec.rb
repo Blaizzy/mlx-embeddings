@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::CaskLoader::FromURILoader do
+RSpec.describe Cask::CaskLoader::FromURILoader do
   describe "::try_new" do
     it "returns a loader when given an URI" do
       expect(described_class.try_new(URI("https://brew.sh/"))).not_to be_nil
