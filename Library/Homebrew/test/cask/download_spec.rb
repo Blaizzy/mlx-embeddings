@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Cask
-  describe Download, :cask do
+  RSpec.describe Download, :cask do
     describe "#verify_download_integrity" do
       subject(:verification) { described_class.new(cask).verify_download_integrity(downloaded_path) }
 

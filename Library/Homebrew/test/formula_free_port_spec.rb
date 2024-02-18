@@ -4,7 +4,7 @@ require "socket"
 require "formula_free_port"
 
 module Homebrew
-  describe FreePort do
+  RSpec.describe FreePort do
     include described_class
 
     describe "#free_port" do
