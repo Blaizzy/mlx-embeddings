@@ -321,7 +321,7 @@ module Homebrew
       sig { returns(T.nilable(String)) }
       def screen_saverdir; end
 
-      sig { returns(T::Array[String])}
+      sig { returns(T::Array[String]) }
       def repositories; end
 
       sig { returns(T.nilable(String)) }

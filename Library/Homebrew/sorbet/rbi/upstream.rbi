@@ -7,6 +7,7 @@
 class Array
   include JSON::Ext::Generator::GeneratorMethods::Array
 end
+
 class Hash
   include JSON::Ext::Generator::GeneratorMethods::Hash
 end
@@ -31,108 +32,108 @@ end
 
 # https://github.com/sorbet/sorbet/pull/7678
 class String
-  sig do
+  sig {
     params(
-        arg0: Integer,
-        arg1: Integer,
+      arg0: Integer,
+      arg1: Integer,
     )
-    .returns(T.nilable(String))
-  end
-  sig do
+      .returns(T.nilable(String))
+  }
+  sig {
     params(
-        arg0: T.any(T::Range[Integer], Regexp),
+      arg0: T.any(T::Range[Integer], Regexp),
     )
-    .returns(T.nilable(String))
-  end
-  sig do
+      .returns(T.nilable(String))
+  }
+  sig {
     params(
-        arg0: Regexp,
-        arg1: Integer,
+      arg0: Regexp,
+      arg1: Integer,
     )
-    .returns(T.nilable(String))
-  end
-   sig do
-     params(
-         arg0: Regexp,
-         arg1: T.any(String, Symbol),
-     )
-     .returns(T.nilable(String))
-   end
-  sig do
+      .returns(T.nilable(String))
+  }
+  sig {
     params(
-        arg0: String,
+      arg0: Regexp,
+      arg1: T.any(String, Symbol),
     )
-    .returns(T.nilable(String))
-  end
-  def [](arg0, arg1=T.unsafe(nil)); end
+      .returns(T.nilable(String))
+  }
+  sig {
+    params(
+      arg0: String,
+    )
+      .returns(T.nilable(String))
+  }
+  def [](arg0, arg1 = T.unsafe(nil)); end
 
-  sig do
-     params(
-         arg0: Integer,
-         arg1: Integer,
-     )
-     .returns(T.nilable(String))
-  end
-  sig do
+  sig {
     params(
-        arg0: T.any(T::Range[Integer], Regexp),
+      arg0: Integer,
+      arg1: Integer,
     )
-    .returns(T.nilable(String))
-  end
-  sig do
+      .returns(T.nilable(String))
+  }
+  sig {
     params(
-        arg0: Regexp,
-        arg1: Integer,
+      arg0: T.any(T::Range[Integer], Regexp),
     )
-    .returns(T.nilable(String))
-  end
-   sig do
-     params(
-         arg0: Regexp,
-         arg1: T.any(String, Symbol),
-     )
-     .returns(T.nilable(String))
-   end
-  sig do
+      .returns(T.nilable(String))
+  }
+  sig {
     params(
-        arg0: String,
+      arg0: Regexp,
+      arg1: Integer,
     )
-    .returns(T.nilable(String))
-  end
-  def slice!(arg0, arg1=T.unsafe(nil)); end
+      .returns(T.nilable(String))
+  }
+  sig {
+    params(
+      arg0: Regexp,
+      arg1: T.any(String, Symbol),
+    )
+      .returns(T.nilable(String))
+  }
+  sig {
+    params(
+      arg0: String,
+    )
+      .returns(T.nilable(String))
+  }
+  def slice!(arg0, arg1 = T.unsafe(nil)); end
 
-  sig do
+  sig {
     params(
-        arg0: Integer,
-        arg1: Integer,
+      arg0: Integer,
+      arg1: Integer,
     )
-    .returns(T.nilable(String))
-  end
-  sig do
+      .returns(T.nilable(String))
+  }
+  sig {
     params(
-        arg0: T.any(T::Range[Integer], Regexp),
+      arg0: T.any(T::Range[Integer], Regexp),
     )
-    .returns(T.nilable(String))
-  end
-  sig do
+      .returns(T.nilable(String))
+  }
+  sig {
     params(
-        arg0: Regexp,
-        arg1: Integer,
+      arg0: Regexp,
+      arg1: Integer,
     )
-    .returns(T.nilable(String))
-  end
-  sig do
+      .returns(T.nilable(String))
+  }
+  sig {
     params(
-        arg0: Regexp,
-        arg1: T.any(String, Symbol),
+      arg0: Regexp,
+      arg1: T.any(String, Symbol),
     )
-    .returns(T.nilable(String))
-  end
-  sig do
+      .returns(T.nilable(String))
+  }
+  sig {
     params(
-        arg0: String,
+      arg0: String,
     )
-    .returns(T.nilable(String))
-  end
-  def slice(arg0, arg1=T.unsafe(nil)); end
+      .returns(T.nilable(String))
+  }
+  def slice(arg0, arg1 = T.unsafe(nil)); end
 end
