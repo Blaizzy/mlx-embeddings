@@ -131,13 +131,13 @@ module FormulaCellarChecks
   end
 
   def check_easy_install_pth(lib)
-    pth_found = Dir["#{lib}/python{2.7,3}*/site-packages/easy-install.pth"].map { |f| File.dirname(f) }
+    pth_found = Dir["#{lib}/python3*/site-packages/easy-install.pth"].map { |f| File.dirname(f) }
     return if pth_found.empty?
 
     <<~EOS
       'easy-install.pth' files were found.
       These '.pth' files are likely to cause link conflicts.
-      Please invoke `setup.py` using 'Language::Python.setup_install_args'.
+      Easy install is now deprecated, do not use it.
       The offending files are:
         #{pth_found * "\n  "}
     EOS
