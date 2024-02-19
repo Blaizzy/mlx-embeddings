@@ -106,7 +106,7 @@ class Requirement
       cc:           T.nilable(String),
       build_bottle: T::Boolean,
       bottle_arch:  T.nilable(String),
-    ).returns(T.untyped)
+    ).void
   }
   def modify_build_environment(env: nil, cc: nil, build_bottle: false, bottle_arch: nil)
     satisfied?(env: env, cc: cc, build_bottle: build_bottle, bottle_arch: bottle_arch)

@@ -177,7 +177,7 @@ RSpec.describe Requirement do
       let(:klass) { Class.new(described_class) }
 
       it "returns nil" do
-        expect(requirement.modify_build_environment).to be_nil
+        expect { requirement.modify_build_environment }.not_to raise_error
       end
     end
   end
