@@ -3,7 +3,7 @@
 require "resource"
 require "livecheck"
 
-describe Resource do
+RSpec.describe Resource do
   subject(:resource) { described_class.new("test") }
 
   let(:livecheck_resource) do

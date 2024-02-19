@@ -3,7 +3,7 @@
 require "utils/formatter"
 require "utils/tty"
 
-describe Formatter do
+RSpec.describe Formatter do
   describe "::columns" do
     subject(:columns) { described_class.columns(input) }
 

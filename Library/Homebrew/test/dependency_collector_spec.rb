@@ -2,7 +2,7 @@
 
 require "dependency_collector"
 
-describe DependencyCollector do
+RSpec.describe DependencyCollector do
   alias_matcher :be_a_build_requirement, :be_build
 
   subject(:collector) { described_class.new }

@@ -2,7 +2,7 @@
 
 require "utils/github/actions"
 
-describe GitHub::Actions::Annotation do
+RSpec.describe GitHub::Actions::Annotation do
   let(:message) { "lorem ipsum" }
 
   describe "#new" do

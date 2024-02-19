@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Utils do
+RSpec.describe Utils do
   describe "ruby_check_version_script" do
     subject do
       homebrew_env = ENV.select { |key, _| key.start_with?("HOMEBREW_") }

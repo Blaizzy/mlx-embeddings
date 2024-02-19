@@ -3,7 +3,7 @@
 require "compilers"
 require "software_spec"
 
-describe CompilerSelector do
+RSpec.describe CompilerSelector do
   subject(:selector) { described_class.new(software_spec, versions, compilers) }
 
   let(:compilers) { [:clang, :gnu] }

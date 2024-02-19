@@ -2,7 +2,7 @@
 
 require "dependency_collector"
 
-describe DependencyCollector do
+RSpec.describe DependencyCollector do
   alias_matcher :need_tar_xz_dependency, :be_tar_needs_xz_dependency
 
   subject(:collector) { described_class.new }

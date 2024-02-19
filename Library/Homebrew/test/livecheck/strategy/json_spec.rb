@@ -2,7 +2,7 @@
 
 require "livecheck/strategy"
 
-describe Homebrew::Livecheck::Strategy::Json do
+RSpec.describe Homebrew::Livecheck::Strategy::Json do
   subject(:json) { described_class }
 
   let(:http_url) { "https://brew.sh/blog/" }

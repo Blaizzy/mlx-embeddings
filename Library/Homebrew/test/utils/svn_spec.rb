@@ -2,7 +2,7 @@
 
 require "utils/svn"
 
-describe Utils::Svn do
+RSpec.describe Utils::Svn do
   before do
     described_class.clear_version_cache
   end

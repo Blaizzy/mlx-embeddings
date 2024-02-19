@@ -2,7 +2,7 @@
 
 require "settings"
 
-describe Homebrew::SimulateSystem do
+RSpec.describe Homebrew::SimulateSystem do
   after do
     described_class.clear
   end

@@ -2,7 +2,7 @@
 
 require "diagnostic"
 
-describe Homebrew::Diagnostic::Checks do
+RSpec.describe Homebrew::Diagnostic::Checks do
   subject(:checks) { described_class.new }
 
   specify "#check_for_unsupported_macos" do

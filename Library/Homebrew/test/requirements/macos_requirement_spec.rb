@@ -2,7 +2,7 @@
 
 require "requirements/macos_requirement"
 
-describe MacOSRequirement do
+RSpec.describe MacOSRequirement do
   subject(:requirement) { described_class.new }
 
   describe "#satisfied?" do

@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew log" do
+RSpec.describe "brew log" do
   it_behaves_like "parseable arguments"
 
   it "shows the Git log for a given Formula", :integration_test do

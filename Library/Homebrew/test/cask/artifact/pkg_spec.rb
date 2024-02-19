@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::Artifact::Pkg, :cask do
+RSpec.describe Cask::Artifact::Pkg, :cask do
   let(:cask) { Cask::CaskLoader.load(cask_path("with-installable")) }
   let(:fake_system_command) { class_double(SystemCommand) }
 

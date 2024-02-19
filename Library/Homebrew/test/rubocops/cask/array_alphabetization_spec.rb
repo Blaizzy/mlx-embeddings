@@ -2,7 +2,7 @@
 
 require "rubocops/rubocop-cask"
 
-describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
+RSpec.describe RuboCop::Cop::Cask::ArrayAlphabetization, :config do
   it "reports an offense when a single `zap trash` path is specified in an array" do
     expect_offense(<<~CASK)
       cask "foo" do

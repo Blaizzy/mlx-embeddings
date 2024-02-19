@@ -2,7 +2,7 @@
 
 require "formula_pin"
 
-describe FormulaPin do
+RSpec.describe FormulaPin do
   subject(:formula_pin) { described_class.new(formula) }
 
   let(:name) { "double" }

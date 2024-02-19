@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew upgrade" do
+RSpec.describe "brew upgrade" do
   it_behaves_like "parseable arguments"
 
   it "upgrades a Formula and cleans up old versions", :integration_test do

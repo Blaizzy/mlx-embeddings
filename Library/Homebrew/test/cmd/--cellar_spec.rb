@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew --cellar" do
+RSpec.describe "brew --cellar" do
   it_behaves_like "parseable arguments"
 
   it "prints Homebrew's Cellar", :integration_test do

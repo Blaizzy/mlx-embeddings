@@ -2,7 +2,7 @@
 
 require "rubocops/livecheck"
 
-describe RuboCop::Cop::FormulaAudit::LivecheckUrlProvided do
+RSpec.describe RuboCop::Cop::FormulaAudit::LivecheckUrlProvided do
   subject(:cop) { described_class.new }
 
   it "reports an offense when a `url` is not specified in the livecheck block" do

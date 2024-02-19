@@ -2,7 +2,7 @@
 
 require "rubocops/lines"
 
-describe RuboCop::Cop::FormulaAudit::Comments do
+RSpec.describe RuboCop::Cop::FormulaAudit::Comments do
   subject(:cop) { described_class.new }
 
   context "when auditing comment text" do

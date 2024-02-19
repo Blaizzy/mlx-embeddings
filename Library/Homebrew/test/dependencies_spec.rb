@@ -3,7 +3,7 @@
 require "dependencies"
 require "dependency"
 
-describe Dependencies do
+RSpec.describe Dependencies do
   subject(:dependencies) { described_class.new }
 
   describe "#<<" do

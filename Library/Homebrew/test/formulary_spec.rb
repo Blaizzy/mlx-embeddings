@@ -4,7 +4,7 @@ require "formula"
 require "formula_installer"
 require "utils/bottles"
 
-describe Formulary do
+RSpec.describe Formulary do
   let(:formula_name) { "testball_bottle" }
   let(:formula_path) { CoreTap.new.new_formula_path(formula_name) }
   let(:formula_content) do

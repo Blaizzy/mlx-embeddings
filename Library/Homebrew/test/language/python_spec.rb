@@ -2,7 +2,7 @@
 
 require "language/python"
 
-describe Language::Python, :needs_python do
+RSpec.describe Language::Python, :needs_python do
   describe "#major_minor_version" do
     it "returns a Version for Python 2" do
       expect(described_class).to receive(:major_minor_version).and_return(Version)

@@ -2,7 +2,7 @@
 
 require "download_strategy"
 
-describe VCSDownloadStrategy do
+RSpec.describe VCSDownloadStrategy do
   let(:url) { "https://example.com/bar" }
   let(:version) { nil }
 

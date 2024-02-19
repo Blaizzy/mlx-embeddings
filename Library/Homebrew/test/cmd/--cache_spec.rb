@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew --cache" do
+RSpec.describe "brew --cache" do
   it_behaves_like "parseable arguments"
 
   it "prints all cache files for a given Formula", :integration_test do

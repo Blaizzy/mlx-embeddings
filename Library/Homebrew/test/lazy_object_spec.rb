@@ -2,7 +2,7 @@
 
 require "lazy_object"
 
-describe LazyObject do
+RSpec.describe LazyObject do
   describe "#initialize" do
     it "does not evaluate the block" do
       expect do |block|

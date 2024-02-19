@@ -2,7 +2,7 @@
 
 require "utils/ast"
 
-describe Utils::AST::FormulaAST do
+RSpec.describe Utils::AST::FormulaAST do
   subject(:formula_ast) do
     described_class.new <<~RUBY
       class Foo < Formula

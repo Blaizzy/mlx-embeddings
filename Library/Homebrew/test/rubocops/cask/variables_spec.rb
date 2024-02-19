@@ -2,7 +2,7 @@
 
 require "rubocops/rubocop-cask"
 
-describe RuboCop::Cop::Cask::Variables, :config do
+RSpec.describe RuboCop::Cop::Cask::Variables, :config do
   it "accepts when there are no variables" do
     expect_no_offenses <<~CASK
       cask "foo" do

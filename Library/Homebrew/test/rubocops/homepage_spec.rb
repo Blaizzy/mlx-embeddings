@@ -2,7 +2,7 @@
 
 require "rubocops/homepage"
 
-describe RuboCop::Cop::FormulaAudit::Homepage do
+RSpec.describe RuboCop::Cop::FormulaAudit::Homepage do
   subject(:cop) { described_class.new }
 
   context "when auditing homepage" do

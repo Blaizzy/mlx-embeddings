@@ -2,7 +2,7 @@
 
 require "software_spec"
 
-describe SoftwareSpec do
+RSpec.describe SoftwareSpec do
   alias_matcher :have_defined_resource, :be_resource_defined
   alias_matcher :have_defined_option, :be_option_defined
 

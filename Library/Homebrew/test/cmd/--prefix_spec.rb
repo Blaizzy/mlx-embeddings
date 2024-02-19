@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew --prefix" do
+RSpec.describe "brew --prefix" do
   it_behaves_like "parseable arguments"
 
   it "prints Homebrew's prefix", :integration_test do

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::CaskLoader::FromTapLoader do
+RSpec.describe Cask::CaskLoader::FromTapLoader do
   let(:cask_name) { "testball" }
   let(:cask_full_name) { "homebrew/cask/#{cask_name}" }
   let(:cask_path) { CoreCaskTap.instance.cask_dir/"#{cask_name}.rb" }

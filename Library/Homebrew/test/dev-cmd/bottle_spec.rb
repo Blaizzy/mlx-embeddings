@@ -3,7 +3,7 @@
 require "cmd/shared_examples/args_parse"
 require "dev-cmd/bottle"
 
-describe "brew bottle" do
+RSpec.describe "brew bottle" do
   def stub_hash(parameters)
     <<~EOS
       {

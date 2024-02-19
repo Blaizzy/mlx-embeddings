@@ -39,6 +39,7 @@ require_relative "../global"
 
 require "test/support/quiet_progress_formatter"
 require "test/support/helper/cask"
+require "test/support/helper/files"
 require "test/support/helper/fixtures"
 require "test/support/helper/formula"
 require "test/support/helper/mktmpdir"
@@ -66,6 +67,8 @@ RSpec.configure do |config|
   config.order = :random
 
   config.raise_errors_for_deprecations!
+  config.warnings = true
+  config.disable_monkey_patching!
 
   config.filter_run_when_matching :focus
 
@@ -85,6 +88,24 @@ RSpec.configure do |config|
   # Don't want the nicer default retry behaviour when using BuildPulse to
   # identify flaky tests.
   config.default_retry_count = 2 unless ENV["BUILDPULSE"]
+
+  config.expect_with :rspec do |expectations|
+    # This option will default to `true` in RSpec 4. It makes the `description`
+    # and `failure_message` of custom matchers include text for helper methods
+    # defined using `chain`, e.g.:
+    #     be_bigger_than(2).and_smaller_than(4).description
+    #     # => "be bigger than 2 and smaller than 4"
+    # ...rather than:
+    #     # => "be bigger than 2"
+    expectations.include_chain_clauses_in_custom_matcher_descriptions = true
+  end
+  config.mock_with :rspec do |mocks|
+    # Prevents you from mocking or stubbing a method that does not exist on
+    # a real object. This is generally recommended, and will default to
+    # `true` in RSpec 4.
+    mocks.verify_partial_doubles = true
+  end
+  config.shared_context_metadata_behavior = :apply_to_host_groups
 
   # Increase timeouts for integration tests (as we expect them to take longer).
   config.around(:each, :integration_test) do |example|
@@ -179,15 +200,6 @@ RSpec.configure do |config|
   end
 
   config.around do |example|
-    def find_files
-      return [] unless File.exist?(TEST_TMPDIR)
-
-      Find.find(TEST_TMPDIR)
-          .reject { |f| File.basename(f) == ".DS_Store" }
-          .reject { |f| TEST_DIRECTORIES.include?(Pathname(f)) }
-          .map { |f| f.sub(TEST_TMPDIR, "") }
-    end
-
     Homebrew.raise_deprecation_exceptions = true
 
     Formulary.clear_cache
@@ -208,7 +220,7 @@ RSpec.configure do |config|
 
     @__homebrew_failed = Homebrew.failed?
 
-    @__files_before_test = find_files
+    @__files_before_test = Test::Helper::Files.find_files
 
     @__env = ENV.to_hash # dup doesn't work on ENV
 
@@ -283,7 +295,7 @@ RSpec.configure do |config|
         *Pathname.glob("#{HOMEBREW_CELLAR}/*/"),
       ]
 
-      files_after_test = find_files
+      files_after_test = Test::Helper::Files.find_files
 
       diff = Set.new(@__files_before_test) ^ Set.new(files_after_test)
       expect(diff).to be_empty, <<~EOS

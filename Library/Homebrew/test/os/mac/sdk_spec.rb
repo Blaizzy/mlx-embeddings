@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe OS::Mac::CLTSDKLocator do
+RSpec.describe OS::Mac::CLTSDKLocator do
   subject(:locator) { described_class.new }
 
   let(:big_sur_sdk) { OS::Mac::SDK.new(MacOSVersion.new("11"), "/some/path/MacOSX.sdk", :clt) }

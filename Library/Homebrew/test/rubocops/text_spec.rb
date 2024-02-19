@@ -2,7 +2,7 @@
 
 require "rubocops/text"
 
-describe RuboCop::Cop::FormulaAudit::Text do
+RSpec.describe RuboCop::Cop::FormulaAudit::Text do
   subject(:cop) { described_class.new }
 
   context "when auditing formula text" do

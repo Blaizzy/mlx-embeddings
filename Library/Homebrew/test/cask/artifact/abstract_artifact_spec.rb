@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::Artifact::AbstractArtifact, :cask do
+RSpec.describe Cask::Artifact::AbstractArtifact, :cask do
   describe ".read_script_arguments" do
     let(:stanza) { :installer }
 

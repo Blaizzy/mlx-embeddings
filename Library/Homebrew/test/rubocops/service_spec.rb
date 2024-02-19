@@ -2,7 +2,7 @@
 
 require "rubocops/service"
 
-describe RuboCop::Cop::FormulaAudit::Service do
+RSpec.describe RuboCop::Cop::FormulaAudit::Service do
   subject(:cop) { described_class.new }
 
   it "reports offenses when a service block is missing a required command" do

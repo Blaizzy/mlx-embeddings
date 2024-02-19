@@ -2,7 +2,7 @@
 
 require "macos_version"
 
-describe MacOSVersion do
+RSpec.describe MacOSVersion do
   let(:version) { described_class.new("10.14") }
   let(:big_sur_major) { described_class.new("11.0") }
   let(:big_sur_update) { described_class.new("11.1") }

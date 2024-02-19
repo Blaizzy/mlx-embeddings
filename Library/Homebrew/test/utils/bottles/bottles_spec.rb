@@ -2,7 +2,7 @@
 
 require "utils/bottles"
 
-describe Utils::Bottles do
+RSpec.describe Utils::Bottles do
   describe "#tag", :needs_macos do
     it "returns :big_sur or :arm64_big_sur on Big Sur" do
       allow(MacOS).to receive(:version).and_return(MacOSVersion.new("11.0"))

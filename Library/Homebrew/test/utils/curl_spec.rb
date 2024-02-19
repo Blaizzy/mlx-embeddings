@@ -2,7 +2,7 @@
 
 require "utils/curl"
 
-describe "Utils::Curl" do
+RSpec.describe "Utils::Curl" do
   include Utils::Curl
 
   let(:details) do

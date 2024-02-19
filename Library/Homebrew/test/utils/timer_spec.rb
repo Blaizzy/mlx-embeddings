@@ -2,7 +2,7 @@
 
 require "utils/timer"
 
-describe Utils::Timer do
+RSpec.describe Utils::Timer do
   describe "#remaining" do
     it "returns nil when nil" do
       expect(described_class.remaining(nil)).to be_nil

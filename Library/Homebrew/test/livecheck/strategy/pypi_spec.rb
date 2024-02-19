@@ -2,7 +2,7 @@
 
 require "livecheck/strategy"
 
-describe Homebrew::Livecheck::Strategy::Pypi do
+RSpec.describe Homebrew::Livecheck::Strategy::Pypi do
   subject(:pypi) { described_class }
 
   let(:pypi_url) { "https://files.pythonhosted.org/packages/ab/cd/efg/example-1.2.3.tar.gz" }

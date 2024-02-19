@@ -4,7 +4,7 @@ require "cmd/info"
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew info" do
+RSpec.describe "brew info" do
   it_behaves_like "parseable arguments"
 
   it "prints as json with the --json=v1 flag", :integration_test do

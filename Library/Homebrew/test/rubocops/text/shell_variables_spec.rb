@@ -2,7 +2,7 @@
 
 require "rubocops/lines"
 
-describe RuboCop::Cop::FormulaAudit::ShellVariables do
+RSpec.describe RuboCop::Cop::FormulaAudit::ShellVariables do
   subject(:cop) { described_class.new }
 
   context "when auditing shell variables" do

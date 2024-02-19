@@ -2,7 +2,7 @@
 
 require "completions"
 
-describe Homebrew::Completions do
+RSpec.describe Homebrew::Completions do
   let(:completions_dir) { HOMEBREW_REPOSITORY/"completions" }
   let(:internal_path) { HOMEBREW_REPOSITORY/"Library/Taps/homebrew/homebrew-bar" }
   let(:external_path) { HOMEBREW_REPOSITORY/"Library/Taps/foo/homebrew-bar" }

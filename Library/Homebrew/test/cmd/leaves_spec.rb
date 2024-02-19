@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew leaves" do
+RSpec.describe "brew leaves" do
   it_behaves_like "parseable arguments"
 
   context "when there are no installed Formulae", :integration_test do

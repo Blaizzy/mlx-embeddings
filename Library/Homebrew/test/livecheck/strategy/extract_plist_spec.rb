@@ -3,7 +3,7 @@
 require "livecheck/strategy"
 require "bundle_version"
 
-describe Homebrew::Livecheck::Strategy::ExtractPlist do
+RSpec.describe Homebrew::Livecheck::Strategy::ExtractPlist do
   subject(:extract_plist) { described_class }
 
   let(:http_url) { "https://brew.sh/blog/" }

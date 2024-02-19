@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe UnpackStrategy do
+RSpec.describe UnpackStrategy do
   describe "#extract_nestedly" do
     subject(:strategy) { described_class.detect(path) }
 

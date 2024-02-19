@@ -2,7 +2,7 @@
 
 require "rubocops/urls"
 
-describe RuboCop::Cop::FormulaAuditStrict::GitUrls do
+RSpec.describe RuboCop::Cop::FormulaAuditStrict::GitUrls do
   subject(:cop) { described_class.new }
 
   context "when a git URL is used" do

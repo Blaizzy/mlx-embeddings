@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-shared_examples "parseable arguments" do
+RSpec.shared_examples "parseable arguments" do
   subject(:method_name) { "#{command_name.tr("-", "_")}_args" }
 
   let(:command_name) do |example|

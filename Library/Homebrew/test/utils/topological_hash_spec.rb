@@ -2,7 +2,7 @@
 
 require "utils/topological_hash"
 
-describe Utils::TopologicalHash do
+RSpec.describe Utils::TopologicalHash do
   describe "#tsort" do
     it "returns a topologically sorted array" do
       hash = described_class.new

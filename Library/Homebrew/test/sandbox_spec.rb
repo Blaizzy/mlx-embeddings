@@ -2,7 +2,7 @@
 
 require "sandbox"
 
-describe Sandbox, :needs_macos do
+RSpec.describe Sandbox, :needs_macos do
   define_negated_matcher :not_matching, :matching
 
   subject(:sandbox) { described_class.new }

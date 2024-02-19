@@ -2,7 +2,7 @@
 
 require "livecheck/strategy/launchpad"
 
-describe Homebrew::Livecheck::Strategy::Launchpad do
+RSpec.describe Homebrew::Livecheck::Strategy::Launchpad do
   subject(:launchpad) { described_class }
 
   let(:launchpad_urls) do

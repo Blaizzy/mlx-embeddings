@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew tap" do
+RSpec.describe "brew tap" do
   it_behaves_like "parseable arguments"
 
   it "taps a given Tap", :integration_test do

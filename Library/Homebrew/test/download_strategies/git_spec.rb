@@ -2,7 +2,7 @@
 
 require "download_strategy"
 
-describe GitDownloadStrategy do
+RSpec.describe GitDownloadStrategy do
   subject(:strategy) { described_class.new(url, name, version) }
 
   let(:name) { "baz" }

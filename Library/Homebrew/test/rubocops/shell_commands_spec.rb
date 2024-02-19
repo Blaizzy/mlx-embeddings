@@ -5,7 +5,7 @@ require "rubocops/shell_commands"
 module RuboCop
   module Cop
     module Homebrew
-      describe ShellCommands do
+      ::RSpec.describe ShellCommands do
         subject(:cop) { described_class.new }
 
         context "when auditing shell commands" do
@@ -213,7 +213,7 @@ module RuboCop
         end
       end
 
-      describe ExecShellMetacharacters do
+      ::RSpec.describe ExecShellMetacharacters do
         subject(:cop) { described_class.new }
 
         context "when auditing exec calls" do

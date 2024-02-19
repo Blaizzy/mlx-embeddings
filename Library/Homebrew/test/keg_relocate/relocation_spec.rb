@@ -2,7 +2,7 @@
 
 require "keg_relocate"
 
-describe Keg::Relocation do
+RSpec.describe Keg::Relocation do
   let(:prefix) { HOMEBREW_PREFIX.to_s }
   let(:cellar) { HOMEBREW_CELLAR.to_s }
   let(:repository) { HOMEBREW_REPOSITORY.to_s }

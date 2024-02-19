@@ -2,7 +2,7 @@
 
 require "extend/blank"
 
-describe Object do
+RSpec.describe Object do
   let(:empty_true) do
     Class.new(described_class) do
       def empty?

@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew unlink" do
+RSpec.describe "brew unlink" do
   it_behaves_like "parseable arguments"
 
   it "unlinks a Formula", :integration_test do

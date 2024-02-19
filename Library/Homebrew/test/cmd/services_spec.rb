@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe "brew services", :integration_test, :needs_network do
+RSpec.describe "brew services", :integration_test, :needs_network do
   it "allows controlling services" do
     setup_remote_tap "homebrew/services"
 

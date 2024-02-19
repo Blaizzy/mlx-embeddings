@@ -2,7 +2,7 @@
 
 require "livecheck/strategy"
 
-describe Homebrew::Livecheck::Strategy::ElectronBuilder do
+RSpec.describe Homebrew::Livecheck::Strategy::ElectronBuilder do
   subject(:electron_builder) { described_class }
 
   let(:http_url) { "https://www.example.com/example/latest-mac.yml" }

@@ -3,7 +3,7 @@
 require "livecheck/strategy"
 require "bundle_version"
 
-describe Homebrew::Livecheck::Strategy::Sparkle do
+RSpec.describe Homebrew::Livecheck::Strategy::Sparkle do
   subject(:sparkle) { described_class }
 
   def create_appcast_xml(items_str = "")

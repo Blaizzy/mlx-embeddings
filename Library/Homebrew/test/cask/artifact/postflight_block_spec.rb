@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::Artifact::PostflightBlock, :cask do
+RSpec.describe Cask::Artifact::PostflightBlock, :cask do
   describe "install_phase" do
     it "calls the specified block after installing, passing a Cask mini-dsl" do
       called = false

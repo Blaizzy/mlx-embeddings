@@ -2,7 +2,7 @@
 
 require "rubocops/lines"
 
-describe RuboCop::Cop::FormulaAudit::PythonVersions do
+RSpec.describe RuboCop::Cop::FormulaAudit::PythonVersions do
   subject(:cop) { described_class.new }
 
   context "when auditing Python versions" do

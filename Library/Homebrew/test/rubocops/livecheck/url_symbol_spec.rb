@@ -2,7 +2,7 @@
 
 require "rubocops/livecheck"
 
-describe RuboCop::Cop::FormulaAudit::LivecheckUrlSymbol do
+RSpec.describe RuboCop::Cop::FormulaAudit::LivecheckUrlSymbol do
   subject(:cop) { described_class.new }
 
   it "reports an offense when the `url` specified in the livecheck block is identical to a formula URL" do

@@ -2,7 +2,7 @@
 
 require "download_strategy"
 
-describe AbstractDownloadStrategy do
+RSpec.describe AbstractDownloadStrategy do
   subject(:strategy) { described_class.new(url, name, version, **specs) }
 
   let(:specs) { {} }

@@ -2,7 +2,7 @@
 
 require "cask/audit"
 
-describe Cask::Audit, :cask do
+RSpec.describe Cask::Audit, :cask do
   def include_msg?(problems, msg)
     if msg.is_a?(Regexp)
       Array(problems).any? { |problem| msg.match?(problem[:message]) }
@@ -472,7 +472,6 @@ describe Cask::Audit, :cask do
 
       before do
         allow(audit).to receive_messages(download: download_double, signing?: true)
-        allow(audit).to receive(:check_https_availability)
       end
 
       context "when cask is not using a signed artifact" do
@@ -1024,7 +1023,6 @@ describe Cask::Audit, :cask do
 
       before do
         allow(audit).to receive(:download).and_return(download_double)
-        allow(audit).to receive(:check_https_availability)
         allow(UnpackStrategy).to receive(:detect).and_return(nil)
       end
 

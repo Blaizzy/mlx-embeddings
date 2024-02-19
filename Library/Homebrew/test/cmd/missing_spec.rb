@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew missing" do
+RSpec.describe "brew missing" do
   it_behaves_like "parseable arguments"
 
   it "prints missing dependencies", :integration_test do

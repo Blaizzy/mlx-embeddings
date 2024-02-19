@@ -5,7 +5,7 @@ require "cleanup"
 require "cask/cache"
 require "fileutils"
 
-describe Homebrew::Cleanup do
+RSpec.describe Homebrew::Cleanup do
   subject(:cleanup) { described_class.new }
 
   let(:ds_store) { Pathname.new("#{HOMEBREW_CELLAR}/.DS_Store") }

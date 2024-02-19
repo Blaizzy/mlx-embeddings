@@ -2,7 +2,7 @@
 
 require "rubocops/rubocop-cask"
 
-describe RuboCop::Cop::Cask::Url, :config do
+RSpec.describe RuboCop::Cop::Cask::Url, :config do
   it "accepts a `verified` value that does not start with a protocol" do
     expect_no_offenses <<~CASK
       cask "foo" do

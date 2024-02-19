@@ -2,7 +2,7 @@
 
 require "locale"
 
-describe Locale do
+RSpec.describe Locale do
   describe "::parse" do
     it "parses a string in the correct format" do
       expect(described_class.parse("zh")).to eql(described_class.new("zh", nil, nil))

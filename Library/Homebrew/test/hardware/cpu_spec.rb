@@ -2,7 +2,7 @@
 
 require "hardware"
 
-describe Hardware::CPU do
+RSpec.describe Hardware::CPU do
   describe "::type" do
     let(:cpu_types) do
       [

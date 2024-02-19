@@ -2,7 +2,7 @@
 
 require "api"
 
-describe Homebrew::API do
+RSpec.describe Homebrew::API do
   let(:text) { "foo" }
   let(:json) { '{"foo":"bar"}' }
   let(:json_hash) { JSON.parse(json) }

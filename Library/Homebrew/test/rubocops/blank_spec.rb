@@ -2,7 +2,7 @@
 
 require "rubocops/blank"
 
-describe RuboCop::Cop::Homebrew::Blank, :config do
+RSpec.describe RuboCop::Cop::Homebrew::Blank, :config do
   shared_examples "offense" do |source, correction, message|
     it "registers an offense and corrects" do
       expect_offense(<<~RUBY, source: source, message: message)

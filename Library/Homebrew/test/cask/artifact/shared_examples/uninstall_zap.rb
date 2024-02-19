@@ -2,7 +2,7 @@
 
 require "benchmark"
 
-shared_examples "#uninstall_phase or #zap_phase" do
+RSpec.shared_examples "#uninstall_phase or #zap_phase" do
   subject { artifact }
 
   let(:artifact_dsl_key) { described_class.dsl_key }

@@ -2,7 +2,7 @@
 
 require "utils/autoremove"
 
-describe Utils::Autoremove do
+RSpec.describe Utils::Autoremove do
   shared_context "with formulae for dependency testing" do
     let(:formula_with_deps) do
       formula "zero" do

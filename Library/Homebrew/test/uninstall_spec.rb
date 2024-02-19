@@ -2,7 +2,7 @@
 
 require "uninstall"
 
-describe Homebrew::Uninstall do
+RSpec.describe Homebrew::Uninstall do
   let(:dependency) { formula("dependency") { url "f-1" } }
 
   let(:dependent_formula) do

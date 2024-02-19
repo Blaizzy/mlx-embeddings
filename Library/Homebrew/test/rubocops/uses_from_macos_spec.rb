@@ -2,7 +2,7 @@
 
 require "rubocops/uses_from_macos"
 
-describe RuboCop::Cop::FormulaAudit::UsesFromMacos do
+RSpec.describe RuboCop::Cop::FormulaAudit::UsesFromMacos do
   subject(:cop) { described_class.new }
 
   context "when auditing `uses_from_macos` dependencies" do

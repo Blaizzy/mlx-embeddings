@@ -2,6 +2,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew gist-logs" do
+RSpec.describe "brew gist-logs" do
   it_behaves_like "parseable arguments"
 end

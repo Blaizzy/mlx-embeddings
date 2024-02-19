@@ -2,7 +2,7 @@
 
 require "cask/uninstall"
 
-describe Cask::Uninstall, :cask do
+RSpec.describe Cask::Uninstall, :cask do
   it "displays the uninstallation progress" do
     caffeine = Cask::CaskLoader.load(cask_path("local-caffeine"))
 

@@ -2,6 +2,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew style" do
+RSpec.describe "brew style" do
   it_behaves_like "parseable arguments"
 end

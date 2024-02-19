@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew home" do
+RSpec.describe "brew home" do
   let(:testballhome_homepage) do
     Formula["testballhome"].homepage
   end

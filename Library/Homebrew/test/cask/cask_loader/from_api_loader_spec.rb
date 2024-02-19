@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::CaskLoader::FromAPILoader, :cask do
+RSpec.describe Cask::CaskLoader::FromAPILoader, :cask do
   shared_context "with API setup" do |new_token|
     let(:token) { new_token }
     let(:cask_from_source) { Cask::CaskLoader.load(token) }

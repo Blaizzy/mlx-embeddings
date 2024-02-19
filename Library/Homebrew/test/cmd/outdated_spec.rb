@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew outdated" do
+RSpec.describe "brew outdated" do
   it_behaves_like "parseable arguments"
 
   it "outputs JSON", :integration_test do

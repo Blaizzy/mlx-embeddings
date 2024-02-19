@@ -2,7 +2,7 @@
 
 require "livecheck/strategy"
 
-describe Homebrew::Livecheck::Strategy::Apache do
+RSpec.describe Homebrew::Livecheck::Strategy::Apache do
   subject(:apache) { described_class }
 
   let(:apache_urls) do

@@ -2,7 +2,7 @@
 
 require "build_environment"
 
-describe BuildEnvironment do
+RSpec.describe BuildEnvironment do
   let(:env) { described_class.new }
 
   describe "#<<" do

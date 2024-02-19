@@ -2,7 +2,7 @@
 
 require "utils/gzip"
 
-describe Utils::Gzip do
+RSpec.describe Utils::Gzip do
   describe "compress_with_options" do
     it "uses the explicitly specified mtime, orig_name, and output path when passed" do
       mktmpdir do |path|

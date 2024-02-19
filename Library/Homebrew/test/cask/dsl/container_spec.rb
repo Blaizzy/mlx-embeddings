@@ -2,7 +2,7 @@
 
 require "test/cask/dsl/shared_examples/base"
 
-describe Cask::DSL::Container do
+RSpec.describe Cask::DSL::Container do
   subject(:container) { described_class.new(**params) }
 
   describe "#pairs" do

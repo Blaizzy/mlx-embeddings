@@ -2,7 +2,7 @@
 
 require "software_spec"
 
-describe HeadSoftwareSpec do
+RSpec.describe HeadSoftwareSpec do
   subject(:head_spec) { described_class.new }
 
   specify "#version" do

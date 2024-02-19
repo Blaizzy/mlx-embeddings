@@ -2,7 +2,7 @@
 
 require "cache_store"
 
-describe CacheStoreDatabase do
+RSpec.describe CacheStoreDatabase do
   subject(:sample_db) { described_class.new(:sample) }
 
   describe "self.use" do

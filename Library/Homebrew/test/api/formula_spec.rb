@@ -2,7 +2,7 @@
 
 require "api"
 
-describe Homebrew::API::Formula do
+RSpec.describe Homebrew::API::Formula do
   let(:cache_dir) { mktmpdir }
 
   before do

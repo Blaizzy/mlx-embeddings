@@ -3,7 +3,7 @@
 require "test/support/fixtures/testball"
 require "formula"
 
-describe Formula do
+RSpec.describe Formula do
   describe "#uses_from_macos" do
     before do
       allow(OS).to receive(:mac?).and_return(false)

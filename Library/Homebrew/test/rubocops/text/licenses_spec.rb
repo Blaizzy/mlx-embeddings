@@ -2,7 +2,7 @@
 
 require "rubocops/lines"
 
-describe RuboCop::Cop::FormulaAudit::Licenses do
+RSpec.describe RuboCop::Cop::FormulaAudit::Licenses do
   subject(:cop) { described_class.new }
 
   context "when auditing licenses" do

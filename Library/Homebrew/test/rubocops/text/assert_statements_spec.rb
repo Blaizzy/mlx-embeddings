@@ -2,7 +2,7 @@
 
 require "rubocops/lines"
 
-describe RuboCop::Cop::FormulaAudit::AssertStatements do
+RSpec.describe RuboCop::Cop::FormulaAudit::AssertStatements do
   subject(:cop) { described_class.new }
 
   context "when auditing formula assertions" do

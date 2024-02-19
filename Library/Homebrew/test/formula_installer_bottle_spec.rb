@@ -9,7 +9,7 @@ require "test/support/fixtures/testball"
 require "test/support/fixtures/testball_bottle"
 require "test/support/fixtures/testball_bottle_cellar"
 
-describe FormulaInstaller do
+RSpec.describe FormulaInstaller do
   alias_matcher :pour_bottle, :be_pour_bottle
 
   matcher :be_poured_from_bottle do

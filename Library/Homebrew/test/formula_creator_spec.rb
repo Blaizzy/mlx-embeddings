@@ -2,7 +2,7 @@
 
 require "formula_creator"
 
-describe Homebrew::FormulaCreator do
+RSpec.describe Homebrew::FormulaCreator do
   it "gets name from GitHub archive URL" do
     t = described_class.name_from_url("https://github.com/abitrolly/lapce/archive/v0.3.0.tar.gz")
     expect(t).to eq("lapce")

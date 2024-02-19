@@ -2,7 +2,7 @@
 
 require "rubocops/class"
 
-describe RuboCop::Cop::FormulaAuditStrict::TestPresent do
+RSpec.describe RuboCop::Cop::FormulaAuditStrict::TestPresent do
   subject(:cop) { described_class.new }
 
   it "reports an offense when there is no test block" do

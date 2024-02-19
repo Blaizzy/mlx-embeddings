@@ -3,7 +3,7 @@
 require "formula"
 require "service"
 
-describe Homebrew::Service do
+RSpec.describe Homebrew::Service do
   let(:name) { "formula_name" }
 
   def stub_formula(&block)

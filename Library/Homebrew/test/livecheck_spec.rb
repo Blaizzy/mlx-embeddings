@@ -3,7 +3,7 @@
 require "formula"
 require "livecheck"
 
-describe Livecheck do
+RSpec.describe Livecheck do
   let(:f) do
     formula do
       homepage "https://brew.sh"

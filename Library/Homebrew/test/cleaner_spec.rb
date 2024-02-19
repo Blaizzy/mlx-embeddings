@@ -3,7 +3,7 @@
 require "cleaner"
 require "formula"
 
-describe Cleaner do
+RSpec.describe Cleaner do
   include FileUtils
 
   describe "#clean" do

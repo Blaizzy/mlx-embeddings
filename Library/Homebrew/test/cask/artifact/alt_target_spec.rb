@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::Artifact::App, :cask do
+RSpec.describe Cask::Artifact::App, :cask do
   describe "activate to alternate target" do
     let(:cask) { Cask::CaskLoader.load(cask_path("with-alt-target")) }
 

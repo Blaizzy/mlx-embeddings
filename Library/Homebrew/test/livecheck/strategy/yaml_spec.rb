@@ -2,7 +2,7 @@
 
 require "livecheck/strategy"
 
-describe Homebrew::Livecheck::Strategy::Yaml do
+RSpec.describe Homebrew::Livecheck::Strategy::Yaml do
   subject(:yaml) { described_class }
 
   let(:http_url) { "https://brew.sh/blog/" }

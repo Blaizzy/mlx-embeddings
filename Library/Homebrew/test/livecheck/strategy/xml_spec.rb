@@ -3,7 +3,7 @@
 require "livecheck/strategy"
 require "rexml/document"
 
-describe Homebrew::Livecheck::Strategy::Xml do
+RSpec.describe Homebrew::Livecheck::Strategy::Xml do
   subject(:xml) { described_class }
 
   let(:http_url) { "https://brew.sh/blog/" }

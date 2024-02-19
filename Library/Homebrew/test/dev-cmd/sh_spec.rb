@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew sh" do
+RSpec.describe "brew sh" do
   it_behaves_like "parseable arguments"
 
   it "runs a shell with the Homebrew environment", :integration_test do

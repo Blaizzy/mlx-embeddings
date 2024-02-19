@@ -2,7 +2,7 @@
 
 require "rubocops/urls"
 
-describe RuboCop::Cop::FormulaAudit::Urls do
+RSpec.describe RuboCop::Cop::FormulaAudit::Urls do
   subject(:cop) { described_class.new }
 
   let(:offense_list) do

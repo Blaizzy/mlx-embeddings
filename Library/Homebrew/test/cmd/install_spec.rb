@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew install" do
+RSpec.describe "brew install" do
   it_behaves_like "parseable arguments"
 
   it "installs formulae", :integration_test do

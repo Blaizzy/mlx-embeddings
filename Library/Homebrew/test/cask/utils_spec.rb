@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::Utils do
+RSpec.describe Cask::Utils do
   let(:command) { NeverSudoSystemCommand }
   let(:dir) { mktmpdir }
   let(:path) { dir/"a/b/c" }

@@ -2,7 +2,7 @@
 
 require "diagnostic"
 
-describe Homebrew::EnvConfig do
+RSpec.describe Homebrew::EnvConfig do
   subject(:env_config) { described_class }
 
   describe ".env_method_name" do

@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew migrate" do
+RSpec.describe "brew migrate" do
   it_behaves_like "parseable arguments"
 
   it "migrates a renamed Formula", :integration_test do

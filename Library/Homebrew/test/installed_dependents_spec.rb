@@ -2,7 +2,7 @@
 
 require "installed_dependents"
 
-describe InstalledDependents do
+RSpec.describe InstalledDependents do
   include FileUtils
 
   def stub_formula(name, version = "1.0", &block)

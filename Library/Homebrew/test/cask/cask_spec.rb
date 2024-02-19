@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::Cask, :cask do
+RSpec.describe Cask::Cask, :cask do
   let(:cask) { described_class.new("versioned-cask") }
 
   context "when multiple versions are installed" do

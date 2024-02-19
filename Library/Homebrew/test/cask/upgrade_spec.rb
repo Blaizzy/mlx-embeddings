@@ -2,7 +2,7 @@
 
 require "cask/upgrade"
 
-describe Cask::Upgrade, :cask do
+RSpec.describe Cask::Upgrade, :cask do
   let(:version_latest_paths) do
     [
       version_latest.config.appdir.join("Caffeine Mini.app"),
@@ -25,8 +25,6 @@ describe Cask::Upgrade, :cask do
     installed.each do |cask|
       Cask::Installer.new(Cask::CaskLoader.load(cask_path(cask))).install
     end
-
-    allow_any_instance_of(described_class).to receive(:verbose?).and_return(true)
   end
 
   context "when the upgrade is a dry run" do

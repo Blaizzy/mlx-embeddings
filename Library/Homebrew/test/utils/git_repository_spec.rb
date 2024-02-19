@@ -2,7 +2,7 @@
 
 require "utils/git_repository"
 
-describe Utils do
+RSpec.describe Utils do
   shared_examples "git_repository helper function" do |method_name|
     context "when directory is not a Git repository" do
       it "returns nil if `safe` parameter is `false`" do

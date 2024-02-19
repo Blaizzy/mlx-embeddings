@@ -2,7 +2,7 @@
 
 require "language/node"
 
-describe Language::Node do
+RSpec.describe Language::Node do
   let(:npm_pack_cmd) { ["npm", "pack", "--ignore-scripts"] }
 
   describe "#setup_npm_environment" do
@@ -11,12 +11,16 @@ describe Language::Node do
         url "node-test-v1.0"
       end
       stub_formula_loader(node)
-      expect(ENV).to receive(:prepend_path)
+      without_partial_double_verification do
+        expect(ENV).to receive(:prepend_path)
+      end
       described_class.instance_variable_set(:@env_set, false)
       expect(described_class.setup_npm_environment).to be_nil
 
       expect(described_class.instance_variable_get(:@env_set)).to be(true)
-      expect(ENV).not_to receive(:prepend_path)
+      without_partial_double_verification do
+        expect(ENV).not_to receive(:prepend_path)
+      end
       expect(described_class.setup_npm_environment).to be_nil
     end
 

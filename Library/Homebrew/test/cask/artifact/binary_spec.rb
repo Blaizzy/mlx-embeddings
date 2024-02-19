@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::Artifact::Binary, :cask do
+RSpec.describe Cask::Artifact::Binary, :cask do
   let(:cask) do
     Cask::CaskLoader.load(cask_path("with-binary")).tap do |cask|
       InstallHelper.install_without_artifacts(cask)

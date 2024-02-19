@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew irb" do
+RSpec.describe "brew irb" do
   it_behaves_like "parseable arguments"
 
   describe "integration test" do

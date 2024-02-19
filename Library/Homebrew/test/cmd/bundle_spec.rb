@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe "brew bundle", :integration_test do
+RSpec.describe "brew bundle", :integration_test do
   describe "check" do
     it "checks if a Brewfile's dependencies are satisfied", :needs_network do
       setup_remote_tap "homebrew/bundle"

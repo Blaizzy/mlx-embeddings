@@ -3,7 +3,7 @@
 require "utils/analytics"
 require "formula_installer"
 
-describe Utils::Analytics do
+RSpec.describe Utils::Analytics do
   before do
     described_class.clear_cache
   end

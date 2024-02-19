@@ -2,7 +2,7 @@
 
 require "utils/bottles"
 
-describe Utils::Bottles::Tag do
+RSpec.describe Utils::Bottles::Tag do
   it "can parse macOS symbols with archs" do
     symbol = :arm64_big_sur
     tag = described_class.from_symbol(symbol)

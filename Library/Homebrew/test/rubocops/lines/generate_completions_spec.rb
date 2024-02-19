@@ -2,7 +2,7 @@
 
 require "rubocops/lines"
 
-describe RuboCop::Cop::FormulaAudit do
+RSpec.describe RuboCop::Cop::FormulaAudit do
   describe RuboCop::Cop::FormulaAudit::GenerateCompletionsDSL do
     subject(:cop) { described_class.new }
 

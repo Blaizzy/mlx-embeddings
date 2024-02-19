@@ -2,7 +2,7 @@
 
 require_relative "shared_examples"
 
-describe UnpackStrategy::Zstd do
+RSpec.describe UnpackStrategy::Zstd do
   let(:path) { TEST_FIXTURE_DIR/"cask/container.tar.zst" }
 
   it "is correctly detected" do

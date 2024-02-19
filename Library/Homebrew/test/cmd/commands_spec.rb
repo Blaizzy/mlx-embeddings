@@ -5,7 +5,7 @@ require "fileutils"
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew commands" do
+RSpec.describe "brew commands" do
   it_behaves_like "parseable arguments"
 
   it "prints a list of all available commands", :integration_test do

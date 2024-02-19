@@ -2,7 +2,7 @@
 
 require "rubocops/rubocop-cask"
 
-describe RuboCop::Cop::Cask::Discontinued, :config do
+RSpec.describe RuboCop::Cop::Cask::Discontinued, :config do
   it "reports no offenses when there is no `caveats` stanza" do
     expect_no_offenses <<~CASK
       cask "foo" do

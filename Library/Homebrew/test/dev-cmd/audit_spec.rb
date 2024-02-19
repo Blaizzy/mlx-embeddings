@@ -5,7 +5,7 @@ require "formulary"
 require "cmd/shared_examples/args_parse"
 require "utils/spdx"
 
-describe "brew audit" do
+RSpec.describe "brew audit" do
   it_behaves_like "parseable arguments"
 end
 
@@ -17,7 +17,7 @@ module Count
 end
 
 module Homebrew
-  describe FormulaTextAuditor do
+  RSpec.describe FormulaTextAuditor do
     alias_matcher :have_data, :be_data
     alias_matcher :have_end, :be_end
     alias_matcher :have_trailing_newline, :be_trailing_newline
@@ -56,7 +56,7 @@ module Homebrew
     end
   end
 
-  describe FormulaAuditor do
+  RSpec.describe FormulaAuditor do
     let(:dir) { mktmpdir }
     let(:foo_version) { Count.increment }
     let(:formula_subpath) { "Formula/foo#{foo_version}.rb" }

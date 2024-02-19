@@ -1,8 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "livecheck/livecheck"
-
 module Homebrew
   module Livecheck
     # The `Livecheck::SkipConditions` module primarily contains methods that

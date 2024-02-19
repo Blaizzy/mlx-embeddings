@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew fetch" do
+RSpec.describe "brew fetch" do
   it_behaves_like "parseable arguments"
 
   it "downloads the Formula's URL", :integration_test do

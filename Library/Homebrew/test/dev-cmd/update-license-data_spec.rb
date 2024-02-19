@@ -2,6 +2,6 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew update-license-data" do
+RSpec.describe "brew update-license-data" do
   it_behaves_like "parseable arguments"
 end

@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew extract" do
+RSpec.describe "brew extract" do
   it_behaves_like "parseable arguments"
 
   context "when extracting a formula" do

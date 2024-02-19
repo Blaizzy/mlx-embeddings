@@ -2,7 +2,7 @@
 
 require "rubocops/components_redundancy"
 
-describe RuboCop::Cop::FormulaAudit::ComponentsRedundancy do
+RSpec.describe RuboCop::Cop::FormulaAudit::ComponentsRedundancy do
   subject(:cop) { described_class.new }
 
   context "when auditing formula components" do

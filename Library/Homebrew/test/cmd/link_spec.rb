@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew link" do
+RSpec.describe "brew link" do
   it_behaves_like "parseable arguments"
 
   it "links a given Formula", :integration_test do

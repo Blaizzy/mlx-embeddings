@@ -2,7 +2,7 @@
 
 require "utils/git"
 
-describe Utils::Git do
+RSpec.describe Utils::Git do
   around do |example|
     described_class.clear_available_cache
     example.run

@@ -2,7 +2,7 @@
 
 require "rubocops/lines"
 
-describe RuboCop::Cop::FormulaAudit::Lines do
+RSpec.describe RuboCop::Cop::FormulaAudit::Lines do
   subject(:cop) { described_class.new }
 
   context "when auditing deprecated special dependencies" do

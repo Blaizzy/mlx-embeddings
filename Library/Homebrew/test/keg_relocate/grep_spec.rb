@@ -2,7 +2,7 @@
 
 require "keg_relocate"
 
-describe Keg do
+RSpec.describe Keg do
   subject(:keg) { described_class.new(HOMEBREW_CELLAR/"foo/1.0.0") }
 
   let(:dir) { HOMEBREW_CELLAR/"foo/1.0.0" }

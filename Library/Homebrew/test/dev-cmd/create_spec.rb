@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew create" do
+RSpec.describe "brew create" do
   let(:url) { "file://#{TEST_FIXTURE_DIR}/tarballs/testball-0.1.tbz" }
   let(:formula_file) { CoreTap.new.new_formula_path("testball") }
 

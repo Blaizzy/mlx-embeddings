@@ -2,7 +2,7 @@
 
 require "patch"
 
-describe Patch do
+RSpec.describe Patch do
   describe "#create" do
     context "with a simple patch" do
       subject { described_class.create(:p2, nil) }

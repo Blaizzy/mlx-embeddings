@@ -2,7 +2,7 @@
 
 require "deprecate_disable"
 
-describe DeprecateDisable do
+RSpec.describe DeprecateDisable do
   let(:deprecated_formula) do
     instance_double(Formula, deprecated?: true, disabled?: false, deprecation_reason: :does_not_build)
   end

@@ -2,7 +2,7 @@
 
 require "rubocops/class"
 
-describe RuboCop::Cop::FormulaAudit::Test do
+RSpec.describe RuboCop::Cop::FormulaAudit::Test do
   subject(:cop) { described_class.new }
 
   it "reports and corrects an offense when /usr/local/bin is found in test calls" do

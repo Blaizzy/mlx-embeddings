@@ -3,7 +3,7 @@
 require "dev-cmd/determine-test-runners"
 require "cmd/shared_examples/args_parse"
 
-describe "brew determine-test-runners" do
+RSpec.describe "brew determine-test-runners" do
   def get_runners(file)
     runner_line = File.open(file).first
     json_text = runner_line[/runners=(.*)/, 1]

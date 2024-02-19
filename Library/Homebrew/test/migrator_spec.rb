@@ -5,7 +5,7 @@ require "test/support/fixtures/testball"
 require "tab"
 require "keg"
 
-describe Migrator do
+RSpec.describe Migrator do
   subject(:migrator) { described_class.new(new_formula, old_formula.name) }
 
   let(:new_formula) { Testball.new("newname") }

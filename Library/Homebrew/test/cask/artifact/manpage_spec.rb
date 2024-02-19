@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Cask::Artifact::Manpage, :cask do
+RSpec.describe Cask::Artifact::Manpage, :cask do
   let(:cask) { Cask::CaskLoader.load(cask_token) }
 
   context "without section" do

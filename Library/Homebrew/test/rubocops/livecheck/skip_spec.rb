@@ -2,7 +2,7 @@
 
 require "rubocops/livecheck"
 
-describe RuboCop::Cop::FormulaAudit::LivecheckSkip do
+RSpec.describe RuboCop::Cop::FormulaAudit::LivecheckSkip do
   subject(:cop) { described_class.new }
 
   it "reports an offense when a skipped formula's livecheck block contains other information" do

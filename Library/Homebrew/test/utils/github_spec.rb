@@ -2,7 +2,7 @@
 
 require "utils/github"
 
-describe GitHub do
+RSpec.describe GitHub do
   describe "::search_query_string" do
     it "builds a query with the given hash parameters formatted as key:value" do
       query = described_class.search_query_string(user: "Homebrew", repo: "brew")

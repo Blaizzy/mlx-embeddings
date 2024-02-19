@@ -2,7 +2,7 @@
 
 # TODO: this test should be named after the corresponding class, once
 #       that class is abstracted from installer.rb
-describe "Satisfy Dependencies and Requirements", :cask do
+RSpec.describe "Satisfy Dependencies and Requirements", :cask do
   subject(:install) do
     Cask::Installer.new(cask).install
   end

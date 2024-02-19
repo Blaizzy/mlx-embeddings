@@ -2,7 +2,7 @@
 
 require "rubocops/files"
 
-describe RuboCop::Cop::FormulaAudit::Files do
+RSpec.describe RuboCop::Cop::FormulaAudit::Files do
   subject(:cop) { described_class.new }
 
   context "when auditing files" do

@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew completions" do
+RSpec.describe "brew completions" do
   it_behaves_like "parseable arguments"
 
   it "runs the status subcommand correctly", :integration_test do

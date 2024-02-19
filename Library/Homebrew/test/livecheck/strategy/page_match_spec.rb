@@ -2,7 +2,7 @@
 
 require "livecheck/strategy"
 
-describe Homebrew::Livecheck::Strategy::PageMatch do
+RSpec.describe Homebrew::Livecheck::Strategy::PageMatch do
   subject(:page_match) { described_class }
 
   let(:http_url) { "https://brew.sh/blog/" }

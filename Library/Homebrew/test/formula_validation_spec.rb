@@ -2,7 +2,7 @@
 
 require "formula"
 
-describe Formula do
+RSpec.describe Formula do
   describe "::new" do
     matcher :fail_with_invalid do |attr|
       match do |actual|

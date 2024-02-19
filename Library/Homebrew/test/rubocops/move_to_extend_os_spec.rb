@@ -2,7 +2,7 @@
 
 require "rubocops/move_to_extend_os"
 
-describe RuboCop::Cop::Homebrew::MoveToExtendOS do
+RSpec.describe RuboCop::Cop::Homebrew::MoveToExtendOS do
   subject(:cop) { described_class.new }
 
   it "registers an offense when using `OS.linux?`" do

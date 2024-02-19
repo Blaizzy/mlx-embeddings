@@ -3,7 +3,7 @@
 require "language/python"
 require "resource"
 
-describe Language::Python::Virtualenv::Virtualenv, :needs_python do
+RSpec.describe Language::Python::Virtualenv::Virtualenv, :needs_python do
   subject(:virtualenv) { described_class.new(formula, dir, "python") }
 
   let(:dir) { mktmpdir }

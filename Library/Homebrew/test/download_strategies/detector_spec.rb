@@ -2,7 +2,7 @@
 
 require "download_strategy"
 
-describe DownloadStrategyDetector do
+RSpec.describe DownloadStrategyDetector do
   describe "::detect" do
     subject(:strategy_detector) { described_class.detect(url, strategy) }
 

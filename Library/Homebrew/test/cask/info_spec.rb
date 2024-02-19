@@ -2,7 +2,7 @@
 
 require "utils"
 
-describe Cask::Info, :cask do
+RSpec.describe Cask::Info, :cask do
   it "displays some nice info about the specified Cask" do
     expect do
       described_class.info(Cask::CaskLoader.load("local-transmission"))

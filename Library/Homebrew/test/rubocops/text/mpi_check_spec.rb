@@ -2,7 +2,7 @@
 
 require "rubocops/lines"
 
-describe RuboCop::Cop::FormulaAudit::MpiCheck do
+RSpec.describe RuboCop::Cop::FormulaAudit::MpiCheck do
   subject(:cop) { described_class.new }
 
   context "when auditing MPI dependencies" do

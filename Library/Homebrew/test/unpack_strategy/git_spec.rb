@@ -2,7 +2,7 @@
 
 require_relative "shared_examples"
 
-describe UnpackStrategy::Git do
+RSpec.describe UnpackStrategy::Git do
   let(:repo) do
     mktmpdir.tap do |repo|
       system "git", "-C", repo, "init"

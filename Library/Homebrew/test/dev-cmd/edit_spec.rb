@@ -2,7 +2,7 @@
 
 require "cmd/shared_examples/args_parse"
 
-describe "brew edit" do
+RSpec.describe "brew edit" do
   it_behaves_like "parseable arguments"
 
   it "opens a given Formula in an editor", :integration_test do

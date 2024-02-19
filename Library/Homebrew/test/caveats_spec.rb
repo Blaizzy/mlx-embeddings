@@ -3,7 +3,7 @@
 require "formula"
 require "caveats"
 
-describe Caveats do
+RSpec.describe Caveats do
   subject(:caveats) { described_class.new(f) }
 
   let(:f) { formula { url "foo-1.0" } }

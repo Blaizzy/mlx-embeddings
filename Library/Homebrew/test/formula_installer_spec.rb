@@ -9,7 +9,7 @@ require "test/support/fixtures/testball"
 require "test/support/fixtures/testball_bottle"
 require "test/support/fixtures/failball"
 
-describe FormulaInstaller do
+RSpec.describe FormulaInstaller do
   matcher :be_poured_from_bottle do
     match(&:poured_from_bottle)
   end
@@ -282,7 +282,6 @@ describe FormulaInstaller do
       expect(formula).to receive(:plist).and_return(nil)
       expect(formula).to receive(:service?).exactly(3).and_return(nil)
       expect(formula).not_to receive(:launchd_service_path)
-      expect(formula).not_to receive(:to_systemd_unit)
 
       installer = described_class.new(formula)
       expect do

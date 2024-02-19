@@ -2,7 +2,7 @@
 
 require "rubocops/conflicts"
 
-describe RuboCop::Cop::FormulaAudit::Conflicts do
+RSpec.describe RuboCop::Cop::FormulaAudit::Conflicts do
   subject(:cop) { described_class.new }
 
   context "when auditing `conflicts_with`" do

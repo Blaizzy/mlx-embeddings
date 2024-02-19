@@ -2,7 +2,7 @@
 
 require "rubocops/checksum"
 
-describe RuboCop::Cop::FormulaAudit::ChecksumCase do
+RSpec.describe RuboCop::Cop::FormulaAudit::ChecksumCase do
   subject(:cop) { described_class.new }
 
   context "when auditing spec checksums" do

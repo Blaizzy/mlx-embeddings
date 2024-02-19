@@ -2,7 +2,7 @@
 
 require "rubocops/caveats"
 
-describe RuboCop::Cop::FormulaAudit::Caveats do
+RSpec.describe RuboCop::Cop::FormulaAudit::Caveats do
   subject(:cop) { described_class.new }
 
   context "when auditing `caveats`" do
