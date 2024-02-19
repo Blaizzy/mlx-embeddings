@@ -39,6 +39,7 @@ require_relative "../global"
 
 require "test/support/quiet_progress_formatter"
 require "test/support/helper/cask"
+require "test/support/helper/files"
 require "test/support/helper/fixtures"
 require "test/support/helper/formula"
 require "test/support/helper/mktmpdir"
@@ -199,16 +200,6 @@ RSpec.configure do |config|
   end
 
   config.around do |example|
-    undef find_files if defined? find_files
-    def find_files
-      return [] unless File.exist?(TEST_TMPDIR)
-
-      Find.find(TEST_TMPDIR)
-          .reject { |f| File.basename(f) == ".DS_Store" }
-          .reject { |f| TEST_DIRECTORIES.include?(Pathname(f)) }
-          .map { |f| f.sub(TEST_TMPDIR, "") }
-    end
-
     Homebrew.raise_deprecation_exceptions = true
 
     Formulary.clear_cache
@@ -229,7 +220,7 @@ RSpec.configure do |config|
 
     @__homebrew_failed = Homebrew.failed?
 
-    @__files_before_test = find_files
+    @__files_before_test = Test::Helper::Files.find_files
 
     @__env = ENV.to_hash # dup doesn't work on ENV
 
@@ -304,7 +295,7 @@ RSpec.configure do |config|
         *Pathname.glob("#{HOMEBREW_CELLAR}/*/"),
       ]
 
-      files_after_test = find_files
+      files_after_test = Test::Helper::Files.find_files
 
       diff = Set.new(@__files_before_test) ^ Set.new(files_after_test)
       expect(diff).to be_empty, <<~EOS
