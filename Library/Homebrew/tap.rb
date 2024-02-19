@@ -1169,7 +1169,8 @@ class CoreTap < AbstractCoreTap
       name, formula_hash = item
       # If there's more than one item with the same path: use the longer one to prioritise more specific results.
       existing_path = hash[name]
-      new_path = File.join(tap_path, formula_hash["ruby_source_path"]) # Pathname equivalent is slow in a tight loop
+      # Pathname equivalent is slow in a tight loop
+      new_path = File.join(tap_path, formula_hash.fetch("ruby_source_path"))
       hash[name] = Pathname(new_path) if existing_path.nil? || existing_path.to_s.length < new_path.length
     end
   end

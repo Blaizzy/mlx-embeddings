@@ -158,8 +158,6 @@ describe Formulary do
 
     context "with installed Formula" do
       before do
-        allow(described_class).to receive(:loader_for).and_call_original
-
         # don't try to load/fetch gcc/glibc
         allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)
       end
@@ -329,6 +327,7 @@ describe Formulary do
               "run_type"    => "immediate",
               "working_dir" => "/$HOME",
             },
+            "ruby_source_path"         => "Formula/#{formula_name}.rb",
           }.merge(extra_items),
         }
       end
@@ -378,7 +377,7 @@ describe Formulary do
       end
 
       before do
-        allow(described_class).to receive(:loader_for).and_return(described_class::FormulaAPILoader.new(formula_name))
+        ENV.delete("HOMEBREW_NO_INSTALL_FROM_API")
 
         # don't try to load/fetch gcc/glibc
         allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)
