@@ -15,6 +15,7 @@ AllCops:
   TargetRubyVersion: 3.1
   NewCops: enable
   Include:
+    # FIXME: https://github.com/rubocop/rubocop/issues/12695
     - "Homebrew/**/*.rbi"
   Exclude:
     - "Homebrew/sorbet/rbi/{dsl,gems}/**/*.rbi"
