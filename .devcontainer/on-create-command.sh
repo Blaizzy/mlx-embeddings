@@ -22,7 +22,7 @@ brew install shellcheck shfmt gh gnu-tar
 brew cleanup
 
 # actually tap homebrew/core, no longer done by default
-brew tap homebrew/core
+brew tap --force homebrew/core
 
 # install some useful development things
 sudo apt-get update
