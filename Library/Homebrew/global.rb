@@ -70,11 +70,12 @@ require "env_config"
 require "macos_version"
 require "os"
 require "messages"
-require "default_prefix"
 
 module Homebrew
   extend FileUtils
 
+  DEFAULT_PREFIX = T.let(ENV.fetch("HOMEBREW_DEFAULT_PREFIX").freeze, String)
+  DEFAULT_REPOSITORY = T.let(ENV.fetch("HOMEBREW_DEFAULT_REPOSITORY").freeze, String)
   DEFAULT_CELLAR = "#{DEFAULT_PREFIX}/Cellar".freeze
   DEFAULT_MACOS_CELLAR = "#{HOMEBREW_DEFAULT_PREFIX}/Cellar".freeze
   DEFAULT_MACOS_ARM_CELLAR = "#{HOMEBREW_MACOS_ARM_DEFAULT_PREFIX}/Cellar".freeze
