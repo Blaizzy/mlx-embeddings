@@ -3,7 +3,7 @@
 require "rubygems"
 require "yaml"
 
-describe "Tapioca Config" do
+RSpec.describe "Tapioca Config" do
   let(:config) { YAML.load_file(File.join(__dir__, "../../../sorbet/tapioca/config.yml")) }
 
   it "only excludes dependencies" do
