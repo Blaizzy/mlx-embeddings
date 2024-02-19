@@ -187,9 +187,7 @@ module Homebrew
 
     sig { returns(T::Boolean) }
     def self.internal_json_v3?
-      return @internal_json_v3 if defined?(@internal_json_v3)
-
-      @internal_json_v3 = ENV["HOMEBREW_INTERNAL_JSON_V3"].present?
+      ENV["HOMEBREW_INTERNAL_JSON_V3"].present?
     end
   end
 
