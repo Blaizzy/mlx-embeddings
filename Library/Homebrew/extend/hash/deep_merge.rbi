@@ -2,19 +2,19 @@
 # frozen_string_literal: true
 
 class Hash
-  sig do
+  sig {
     type_parameters(:k2).params(
       other_hash: T::Hash[T.type_parameter(:k2), T.untyped],
-      block: T.nilable(T.proc.params(k: T.untyped, v1: T.untyped, v2: T.untyped).returns(T.untyped))
+      block:      T.nilable(T.proc.params(k: T.untyped, v1: T.untyped, v2: T.untyped).returns(T.untyped)),
     ).returns(T::Hash[T.any(Hash::K, T.type_parameter(:k2)), T.untyped])
-  end
+  }
   def deep_merge(other_hash, &block); end
 
-  sig do
+  sig {
     type_parameters(:k2).params(
       other_hash: T::Hash[T.type_parameter(:k2), T.untyped],
-      block: T.nilable(T.proc.params(k: T.untyped, v1: T.untyped, v2: T.untyped).returns(T.untyped))
+      block:      T.nilable(T.proc.params(k: T.untyped, v1: T.untyped, v2: T.untyped).returns(T.untyped)),
     ).returns(T::Hash[T.any(Hash::K, T.type_parameter(:k2)), T.untyped])
-  end
+  }
   def deep_merge!(other_hash, &block); end
 end

@@ -15,9 +15,10 @@ AllCops:
   TargetRubyVersion: 3.1
   NewCops: enable
   Include:
-    - "**/*.rbi"
+    # FIXME: https://github.com/rubocop/rubocop/issues/12695
+    - "Homebrew/**/*.rbi"
   Exclude:
-    - "Homebrew/sorbet/rbi/gems/**/*.rbi"
+    - "Homebrew/sorbet/rbi/{dsl,gems}/**/*.rbi"
     - "Homebrew/bin/*"
     - "Homebrew/vendor/**/*"
     - "Taps/*/*/vendor/**/*"
@@ -259,6 +260,10 @@ Sorbet/ConstantsFromStrings:
 Sorbet/FalseSigil:
   Enabled: false
 
+# We generally prefer to colo rbi files with the Ruby files they describe.
+Sorbet/ForbidRBIOutsideOfAllowedPaths:
+  Enabled: false
+
 # T::Sig is monkey-patched into Module
 Sorbet/RedundantExtendTSig:
   Enabled: true
@@ -294,6 +299,10 @@ Style/BarePercentLiterals:
 Style/BlockDelimiters:
   BracesRequiredMethods:
     - "sig"
+
+Style/ClassAndModuleChildren:
+  Exclude:
+    - "**/*.rbi"
 
 # Use consistent style for better readability.
 Style/CollectionMethods:
@@ -382,6 +391,7 @@ Style/OpenStructUse:
     # TODO: This is a pre-existing violation and should be corrected
     #   to define methods so that call sites can be type-checked.
     - "Homebrew/cli/args.rb"
+    - "Homebrew/cli/args.rbi"
 
 # Rescuing `StandardError` is an understood default.
 Style/RescueStandardError:

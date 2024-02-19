@@ -4,14 +4,14 @@
 class Hash
   sig {
     type_parameters(:out).params(
-      block: T.proc.params(o: K).returns(T.type_parameter(:out))
+      block: T.proc.params(o: K).returns(T.type_parameter(:out)),
     ).returns(T::Hash[T.type_parameter(:out), V])
   }
   def deep_transform_keys(&block); end
 
   sig {
     type_parameters(:out).params(
-      block: T.proc.params(o: K).returns(T.type_parameter(:out))
+      block: T.proc.params(o: K).returns(T.type_parameter(:out)),
     ).returns(T::Hash[T.type_parameter(:out), V])
   }
   def deep_transform_keys!(&block); end
