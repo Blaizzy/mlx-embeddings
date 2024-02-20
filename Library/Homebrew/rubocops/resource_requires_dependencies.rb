@@ -35,6 +35,8 @@ module RuboCop
             when "pyyaml"
               kind = "depends_on"
               ["libyaml"]
+            else
+              []
             end
             next if required_deps.all? { |dep| uses_from_macos.include?(dep) || depends_on.include?(dep) }
 
