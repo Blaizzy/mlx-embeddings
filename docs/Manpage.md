@@ -1800,27 +1800,27 @@ process has finished successfully.
 <br>Cancel the autoupdate, delete the plist and logs.
 
 `brew autoupdate status`
-<br>Prints the current status of this tool.
+<br>Print the current status of this tool.
 
 `brew autoupdate version`
 <br>Output this tool's current version, and a short changelog.
 
 * `--upgrade`:
-  Automatically upgrade your installed formulae. If the Caskroom exists locally Casks will be upgraded as well. Must be passed with `start`.
+  Automatically upgrade your installed formulae. If the Caskroom exists locally then casks will be upgraded as well. Must be passed with `start`.
 * `--greedy`:
-  Upgrade casks with --greedy (include auto-updating casks). Must be passed with `start`.
+  Upgrade casks with `--greedy` (include auto-updating casks). Must be passed with `start`.
 * `--cleanup`:
-  Automatically clean brew's cache and logs. Must be passed with `start`.
+  Automatically clean Homebrew's cache and logs. Must be passed with `start`.
 * `--enable-notification`:
   Send a notification when the autoupdate process has finished successfully, if `terminal-notifier` is installed and found. Must be passed with `start`. Note: notifications are enabled by default on macOS Catalina and newer.
 * `--immediate`:
   Starts the autoupdate command immediately and on system boot, instead of waiting for one interval (24 hours by default) to pass first. Must be passed with `start`.
 * `--sudo`:
-  If a Cask requires sudo, autoupdate will open a GUI to ask for the password. Requires https://formulae.brew.sh/formula/pinentry-mac to be installed.
+  If a cask requires `sudo`, autoupdate will open a GUI to ask for the password. Requires https://formulae.brew.sh/formula/pinentry-mac to be installed.
 
 ### `bundle` [*`subcommand`*]
 
-Bundler for non-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store and Whalebrew.
+Bundler for non-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store, Whalebrew and Visual Studio Code.
 
 `brew bundle` [`install`]
 <br>Install and upgrade (by default) all dependencies from the `Brewfile`.
@@ -1829,30 +1829,30 @@ You can specify the `Brewfile` location using `--file` or by setting the `HOMEBR
 
 You can skip the installation of dependencies by adding space-separated values to one or more of the following environment variables: `HOMEBREW_BUNDLE_BREW_SKIP`, `HOMEBREW_BUNDLE_CASK_SKIP`, `HOMEBREW_BUNDLE_MAS_SKIP`, `HOMEBREW_BUNDLE_WHALEBREW_SKIP`, `HOMEBREW_BUNDLE_TAP_SKIP`.
 
-`brew bundle` will output a `Brewfile.lock.json` in the same directory as the `Brewfile` if all dependencies are installed successfully. This contains dependency and system status information which can be useful in debugging `brew bundle` failures and replicating a "last known good build" state. You can opt-out of this behaviour by setting the `HOMEBREW_BUNDLE_NO_LOCK` environment variable or passing the `--no-lock` option. You may wish to check this file into the same version control system as your `Brewfile` (or ensure your version control system ignores it if you'd prefer to rely on debugging information from a local machine).
+`brew bundle` will output a `Brewfile.lock.json` in the same directory as the `Brewfile` if all dependencies are installed successfully. This contains dependency and system status information which can be useful for debugging `brew bundle` failures and replicating a "last known good build" state. You can opt-out of this behaviour by setting the `HOMEBREW_BUNDLE_NO_LOCK` environment variable or passing the `--no-lock` option. You may wish to check this file into the same version control system as your `Brewfile` (or ensure your version control system ignores it if you'd prefer to rely on debugging information from a local machine).
 
 `brew bundle dump`
 <br>Write all installed casks/formulae/images/taps into a `Brewfile` in the current directory.
 
 `brew bundle cleanup`
-<br>Uninstall all dependencies not listed from the `Brewfile`.
+<br>Uninstall all dependencies not present in the `Brewfile`.
 
 This workflow is useful for maintainers or testers who regularly install lots of formulae.
 
 `brew bundle check`
-<br>Check if all dependencies are installed from the `Brewfile`.
+<br>Check if all dependencies present in the `Brewfile` are installed.
 
 This provides a successful exit code if everything is up-to-date, making it useful for scripting.
 
 `brew bundle list`
 <br>List all dependencies present in the `Brewfile`.
 
-By default, only Homebrew dependencies are listed.
+By default, only Homebrew formula dependencies are listed.
 
 `brew bundle exec` *`command`*
 <br>Run an external command in an isolated build environment based on the `Brewfile` dependencies.
 
-This sanitized build environment ignores unrequested dependencies, which makes sure that things you didn't specify in your `Brewfile` won't get picked up by commands like `bundle install`, `npm install`, etc. It will also add compiler flags which will help find keg-only dependencies like `openssl`, `icu4c`, etc.
+This sanitized build environment ignores unrequested dependencies, which makes sure that things you didn't specify in your `Brewfile` won't get picked up by commands like `bundle install`, `npm install`, etc. It will also add compiler flags which will help with finding keg-only dependencies like `openssl`, `icu4c`, etc.
 
 * `--file`:
   Read the `Brewfile` from this location. Use `--file=-` to pipe to stdin/stdout.
@@ -1861,21 +1861,21 @@ This sanitized build environment ignores unrequested dependencies, which makes s
 * `-v`, `--verbose`:
   `install` prints output from commands as they are run. `check` lists all missing dependencies.
 * `--no-upgrade`:
-  `install` won't run `brew upgrade` on outdated dependencies. Note they may still be upgraded by `brew install` if needed.
+  `install` does not run `brew upgrade` on outdated dependencies. Note they may still be upgraded by `brew install` if needed.
 * `-f`, `--force`:
   `install` runs with `--force`/`--overwrite`. `dump` overwrites an existing `Brewfile`. `cleanup` actually performs its cleanup operations.
 * `--cleanup`:
-  `install` performs cleanup operation, same as running `cleanup --force`. This is enabled by default if HOMEBREW_BUNDLE_INSTALL_CLEANUP is set and `--global` is passed.
+  `install` performs cleanup operation, same as running `cleanup --force`. This is enabled by default if `HOMEBREW_BUNDLE_INSTALL_CLEANUP` is set and `--global` is passed.
 * `--no-lock`:
-  `install` won't output a `Brewfile.lock.json`.
+  `install` does not output a `Brewfile.lock.json`.
 * `--all`:
   `list` all dependencies.
 * `--formula`:
-  `list` Homebrew dependencies.
+  `list` Homebrew formula dependencies.
 * `--cask`:
-  `list` Homebrew Cask dependencies.
+  `list` Homebrew cask dependencies.
 * `--tap`:
-  `list` tap dependencies.
+  `list` Homebrew tap dependencies.
 * `--mas`:
   `list` Mac App Store dependencies.
 * `--whalebrew`:
@@ -1883,7 +1883,7 @@ This sanitized build environment ignores unrequested dependencies, which makes s
 * `--vscode`:
   `list` VSCode extensions.
 * `--describe`:
-  `dump` adds a description comment above each line, unless the dependency does not have a description. This is enabled by default if HOMEBREW_BUNDLE_DUMP_DESCRIBE is set.
+  `dump` adds a description comment above each line, unless the dependency does not have a description. This is enabled by default if `HOMEBREW_BUNDLE_DUMP_DESCRIBE` is set.
 * `--no-restart`:
   `dump` does not add `restart_service` to formula lines.
 * `--zap`:
