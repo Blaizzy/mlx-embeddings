@@ -19,7 +19,7 @@ module RuboCop
           return if resource_nodes.empty?
 
           %w[lxml pyyaml].each do |resource_name|
-            found = resource_nodes.find { |node| node.arguments.first.str_content == resource_name }
+            found = resource_nodes.find { |node| node.arguments&.first&.str_content == resource_name }
             next unless found
 
             uses_from_macos_nodes = find_every_method_call_by_name(body_node, :uses_from_macos)
