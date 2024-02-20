@@ -1,4 +1,5 @@
 # typed: strict
+
 class PATH
   sig { params(args: T.untyped, options: T.untyped, block: T.untyped).returns(T.untyped) }
   def each(*args, **options, &block); end
