@@ -22,7 +22,7 @@ module RuboCop
           if actual_mode & 0444 != 0444
             problem format("Incorrect file permissions (%03<actual>o): chmod %<wanted>s %<path>s",
                            actual: actual_mode & 0777,
-                           wanted: "+r",
+                           wanted: "a+r",
                            path:   file_path)
           end
           # Check that the file is user-writeable.
