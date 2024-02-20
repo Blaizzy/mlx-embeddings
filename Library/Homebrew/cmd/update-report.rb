@@ -146,7 +146,7 @@ module Homebrew
     hub = ReporterHub.new
 
     updated_taps = []
-    Tap.each do |tap|
+    Tap.select(&:installed?).each do |tap|
       next if !tap.git? || tap.git_repo.origin_url.nil?
       next if (tap.core_tap? || tap.core_cask_tap?) && !Homebrew::EnvConfig.no_install_from_api?
 
@@ -254,7 +254,7 @@ module Homebrew
 
     Commands.rebuild_commands_completion_list
     link_completions_manpages_and_docs
-    Tap.each(&:link_completions_and_manpages)
+    Tap.select(&:installed?).each(&:link_completions_and_manpages)
 
     failed_fetch_dirs = ENV["HOMEBREW_MISSING_REMOTE_REF_DIRS"]&.split("\n")
     if failed_fetch_dirs.present?

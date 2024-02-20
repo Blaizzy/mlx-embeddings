@@ -1025,7 +1025,7 @@ module Formulary
 
   def self.tap_paths(name)
     name = name.to_s.downcase
-    Tap.map do |tap|
+    Tap.select(&:installed?).map do |tap|
       formula_path = find_formula_in_tap(name, tap)
 
       alias_path = tap.alias_dir/name
