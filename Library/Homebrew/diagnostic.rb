@@ -936,25 +936,17 @@ module Homebrew
       end
 
       def check_cask_taps
-        default_cask_tap = CoreCaskTap.instance
-        taps = Tap.select { |t| t.cask_dir.exist? && t != default_cask_tap }
-        taps.prepend(default_cask_tap) if EnvConfig.no_install_from_api?
-
         error_tap_paths = []
 
-        add_info "Homebrew Cask Taps:", (taps.map do |tap|
-          if tap.path.blank?
-            none_string
-          else
-            cask_count = begin
-              tap.cask_files.count
-            rescue
-              error_tap_paths << tap.path
-              0
-            end
-
-            "#{tap.path} (#{Utils.pluralize("cask", cask_count, include_count: true)})"
+        add_info "Homebrew Cask Taps:", (Tap.map do |tap|
+          cask_count = begin
+            tap.cask_files.count
+          rescue
+            error_tap_paths << tap.path
+            0
           end
+
+          "#{tap.path} (#{Utils.pluralize("cask", cask_count, include_count: true)})"
         end)
 
         taps_string = Utils.pluralize("tap", error_tap_paths.count)

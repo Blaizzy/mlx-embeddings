@@ -1198,9 +1198,9 @@ class CoreCaskTap < AbstractCoreTap
 
   sig { override.returns(T::Array[Pathname]) }
   def cask_files
-    return super if Homebrew::EnvConfig.no_install_from_api? || installed?
+    return super if Homebrew::EnvConfig.no_install_from_api?
 
-    raise TapUnavailableError, name
+    cask_files_by_name.values
   end
 
   sig { override.returns(T::Array[String]) }
