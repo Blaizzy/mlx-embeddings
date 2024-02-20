@@ -24,7 +24,7 @@ module RuboCop
           return if dependencies.include?("libxml2") && dependencies.include?("libxslt")
 
           offending_node(lxml)
-          problem "Add `uses_from_macos` lines above for \"libxml2\"` and \"libxslt\"."
+          problem "Add `uses_from_macos` lines above for `\"libxml2\"` and `\"libxslt\"`."
         end
       end
     end

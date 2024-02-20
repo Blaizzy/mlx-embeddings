@@ -2,7 +2,7 @@
 
 require "rubocops/resource_requires_dependencies"
 
-describe RuboCop::Cop::FormulaAudit::ResourceRequiresDependencies do
+RSpec.describe RuboCop::Cop::FormulaAudit::ResourceRequiresDependencies do
   subject(:cop) { described_class.new }
 
   context "when a formula does not have the lxml resource" do
@@ -51,7 +51,7 @@ describe RuboCop::Cop::FormulaAudit::ResourceRequiresDependencies do
           uses_from_macos "not_libxml2"
 
           resource "lxml" do
-          ^^^^^^^^^^^^^^^ FormulaAudit/ResourceRequiresDependencies: Add `uses_from_macos` lines above for "libxml2"` and "libxslt".
+          ^^^^^^^^^^^^^^^ FormulaAudit/ResourceRequiresDependencies: Add `uses_from_macos` lines above for `"libxml2"` and `"libxslt"`.
             url "blah"
             sha256 "blah"
           end
