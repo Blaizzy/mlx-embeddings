@@ -131,7 +131,17 @@ module Cask
   #
   # @api private
   class TapCaskAmbiguityError < CaskError
-    def initialize(token, taps)
+    sig { returns(String) }
+    attr_reader :token
+
+    sig { returns(T::Array[CaskLoader::FromNameLoader]) }
+    attr_reader :loaders
+
+    sig { params(token: String, loaders: T::Array[CaskLoader::FromNameLoader]).void }
+    def initialize(token, loaders)
+      @loaders = loaders
+
+      taps = loaders.map(&:tap)
       casks = taps.map { |tap| "#{tap}/#{token}" }
       cask_list = casks.sort.map { |f| "\n       * #{f}" }.join
 

@@ -18,7 +18,7 @@ module Cask
       extend T::Helpers
       interface!
 
-      sig { abstract.params(config: Config).returns(Cask) }
+      sig { abstract.params(config: T.nilable(Config)).returns(Cask) }
       def load(config:); end
     end
 
@@ -118,6 +118,7 @@ module Cask
         @tap = Tap.from_path(path) || Homebrew::API.tap_from_source_download(path)
       end
 
+      sig { override.params(config: T.nilable(Config)).returns(Cask) }
       def load(config:)
         raise CaskUnavailableError.new(token, "'#{path}' does not exist.")  unless path.exist?
         raise CaskUnavailableError.new(token, "'#{path}' is not readable.") unless path.readable?
@@ -220,6 +221,7 @@ module Cask
         super cask
       end
 
+      sig { override.params(config: T.nilable(Config)).returns(Cask) }
       def load(config:)
         raise TapCaskUnavailableError.new(tap, token) unless T.must(tap).installed?
 
@@ -475,7 +477,7 @@ module Cask
         when 1
           loaders.first
         when 2..Float::INFINITY
-          raise TapCaskAmbiguityError.new(token, loaders.map(&:tap))
+          raise TapCaskAmbiguityError.new(token, loaders)
         end
       end
     end
@@ -582,12 +584,6 @@ module Cask
 
     def self.default_path(token)
       find_cask_in_tap(token.to_s.downcase, CoreCaskTap.instance)
-    end
-
-    def self.tap_paths(token)
-      token = token.to_s.downcase
-
-      Tap.map { |tap| find_cask_in_tap(token, tap) }.select(&:exist?)
     end
 
     def self.find_cask_in_tap(token, tap)
