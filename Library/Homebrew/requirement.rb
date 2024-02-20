@@ -61,8 +61,15 @@ class Requirement
     s
   end
 
-  # Overriding {#satisfied?} is unsupported.
-  # Pass a block or boolean to the satisfy DSL method instead.
+  # Pass a block or boolean to the satisfy DSL method instead of overriding.
+  sig(:final) {
+    params(
+      env:          T.nilable(String),
+      cc:           T.nilable(String),
+      build_bottle: T::Boolean,
+      bottle_arch:  T.nilable(String),
+    ).returns(T::Boolean)
+  }
   def satisfied?(env: nil, cc: nil, build_bottle: false, bottle_arch: nil)
     satisfy = self.class.satisfy
     return true unless satisfy
@@ -76,8 +83,8 @@ class Requirement
     true
   end
 
-  # Overriding {#fatal?} is unsupported.
-  # Pass a boolean to the fatal DSL method instead.
+  # Pass a boolean to the fatal DSL method instead of overriding.
+  sig(:final) { returns(T::Boolean) }
   def fatal?
     self.class.fatal || false
   end
@@ -92,8 +99,15 @@ class Requirement
     parent
   end
 
-  # Overriding {#modify_build_environment} is unsupported.
-  # Pass a block to the env DSL method instead.
+  # Pass a block to the env DSL method instead of overriding.
+  sig(:final) {
+    params(
+      env:          T.nilable(String),
+      cc:           T.nilable(String),
+      build_bottle: T::Boolean,
+      bottle_arch:  T.nilable(String),
+    ).void
+  }
   def modify_build_environment(env: nil, cc: nil, build_bottle: false, bottle_arch: nil)
     satisfied?(env: env, cc: cc, build_bottle: build_bottle, bottle_arch: bottle_arch)
     instance_eval(&env_proc) if env_proc
