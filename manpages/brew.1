@@ -2544,7 +2544,7 @@ This script will run \fBbrew update\fR in the background once every 24 hours (by
 .
 .P
 \fBbrew autoupdate status\fR
-    Prints the current status of this tool\.
+    Print the current status of this tool\.
 .
 .P
 \fBbrew autoupdate version\fR
@@ -2552,15 +2552,15 @@ This script will run \fBbrew update\fR in the background once every 24 hours (by
 .
 .TP
 \fB\-\-upgrade\fR
-Automatically upgrade your installed formulae\. If the Caskroom exists locally Casks will be upgraded as well\. Must be passed with \fBstart\fR\.
+Automatically upgrade your installed formulae\. If the Caskroom exists locally then casks will be upgraded as well\. Must be passed with \fBstart\fR\.
 .
 .TP
 \fB\-\-greedy\fR
-Upgrade casks with \-\-greedy (include auto\-updating casks)\. Must be passed with \fBstart\fR\.
+Upgrade casks with \fB\-\-greedy\fR (include auto\-updating casks)\. Must be passed with \fBstart\fR\.
 .
 .TP
 \fB\-\-cleanup\fR
-Automatically clean brew\'s cache and logs\. Must be passed with \fBstart\fR\.
+Automatically clean Homebrew\'s cache and logs\. Must be passed with \fBstart\fR\.
 .
 .TP
 \fB\-\-enable\-notification\fR
@@ -2572,10 +2572,10 @@ Starts the autoupdate command immediately and on system boot, instead of waiting
 .
 .TP
 \fB\-\-sudo\fR
-If a Cask requires sudo, autoupdate will open a GUI to ask for the password\. Requires https://formulae\.brew\.sh/formula/pinentry\-mac to be installed\.
+If a cask requires \fBsudo\fR, autoupdate will open a GUI to ask for the password\. Requires https://formulae\.brew\.sh/formula/pinentry\-mac to be installed\.
 .
 .SS "\fBbundle\fR [\fIsubcommand\fR]"
-Bundler for non\-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store and Whalebrew\.
+Bundler for non\-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store, Whalebrew and Visual Studio Code\.
 .
 .P
 \fBbrew bundle\fR [\fBinstall\fR]
@@ -2588,7 +2588,7 @@ You can specify the \fBBrewfile\fR location using \fB\-\-file\fR or by setting t
 You can skip the installation of dependencies by adding space\-separated values to one or more of the following environment variables: \fBHOMEBREW_BUNDLE_BREW_SKIP\fR, \fBHOMEBREW_BUNDLE_CASK_SKIP\fR, \fBHOMEBREW_BUNDLE_MAS_SKIP\fR, \fBHOMEBREW_BUNDLE_WHALEBREW_SKIP\fR, \fBHOMEBREW_BUNDLE_TAP_SKIP\fR\.
 .
 .P
-\fBbrew bundle\fR will output a \fBBrewfile\.lock\.json\fR in the same directory as the \fBBrewfile\fR if all dependencies are installed successfully\. This contains dependency and system status information which can be useful in debugging \fBbrew bundle\fR failures and replicating a "last known good build" state\. You can opt\-out of this behaviour by setting the \fBHOMEBREW_BUNDLE_NO_LOCK\fR environment variable or passing the \fB\-\-no\-lock\fR option\. You may wish to check this file into the same version control system as your \fBBrewfile\fR (or ensure your version control system ignores it if you\'d prefer to rely on debugging information from a local machine)\.
+\fBbrew bundle\fR will output a \fBBrewfile\.lock\.json\fR in the same directory as the \fBBrewfile\fR if all dependencies are installed successfully\. This contains dependency and system status information which can be useful for debugging \fBbrew bundle\fR failures and replicating a "last known good build" state\. You can opt\-out of this behaviour by setting the \fBHOMEBREW_BUNDLE_NO_LOCK\fR environment variable or passing the \fB\-\-no\-lock\fR option\. You may wish to check this file into the same version control system as your \fBBrewfile\fR (or ensure your version control system ignores it if you\'d prefer to rely on debugging information from a local machine)\.
 .
 .P
 \fBbrew bundle dump\fR
@@ -2596,14 +2596,14 @@ You can skip the installation of dependencies by adding space\-separated values 
 .
 .P
 \fBbrew bundle cleanup\fR
-    Uninstall all dependencies not listed from the \fBBrewfile\fR\.
+    Uninstall all dependencies not present in the \fBBrewfile\fR\.
 .
 .P
 This workflow is useful for maintainers or testers who regularly install lots of formulae\.
 .
 .P
 \fBbrew bundle check\fR
-    Check if all dependencies are installed from the \fBBrewfile\fR\.
+    Check if all dependencies present in the \fBBrewfile\fR are installed\.
 .
 .P
 This provides a successful exit code if everything is up\-to\-date, making it useful for scripting\.
@@ -2613,14 +2613,14 @@ This provides a successful exit code if everything is up\-to\-date, making it us
     List all dependencies present in the \fBBrewfile\fR\.
 .
 .P
-By default, only Homebrew dependencies are listed\.
+By default, only Homebrew formula dependencies are listed\.
 .
 .P
 \fBbrew bundle exec\fR \fIcommand\fR
     Run an external command in an isolated build environment based on the \fBBrewfile\fR dependencies\.
 .
 .P
-This sanitized build environment ignores unrequested dependencies, which makes sure that things you didn\'t specify in your \fBBrewfile\fR won\'t get picked up by commands like \fBbundle install\fR, \fBnpm install\fR, etc\. It will also add compiler flags which will help find keg\-only dependencies like \fBopenssl\fR, \fBicu4c\fR, etc\.
+This sanitized build environment ignores unrequested dependencies, which makes sure that things you didn\'t specify in your \fBBrewfile\fR won\'t get picked up by commands like \fBbundle install\fR, \fBnpm install\fR, etc\. It will also add compiler flags which will help with finding keg\-only dependencies like \fBopenssl\fR, \fBicu4c\fR, etc\.
 .
 .TP
 \fB\-\-file\fR
@@ -2636,7 +2636,7 @@ Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR or the \fBHOMEBREW_BUNDLE_FILE_G
 .
 .TP
 \fB\-\-no\-upgrade\fR
-\fBinstall\fR won\'t run \fBbrew upgrade\fR on outdated dependencies\. Note they may still be upgraded by \fBbrew install\fR if needed\.
+\fBinstall\fR does not run \fBbrew upgrade\fR on outdated dependencies\. Note they may still be upgraded by \fBbrew install\fR if needed\.
 .
 .TP
 \fB\-f\fR, \fB\-\-force\fR
@@ -2644,11 +2644,11 @@ Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR or the \fBHOMEBREW_BUNDLE_FILE_G
 .
 .TP
 \fB\-\-cleanup\fR
-\fBinstall\fR performs cleanup operation, same as running \fBcleanup \-\-force\fR\. This is enabled by default if HOMEBREW_BUNDLE_INSTALL_CLEANUP is set and \fB\-\-global\fR is passed\.
+\fBinstall\fR performs cleanup operation, same as running \fBcleanup \-\-force\fR\. This is enabled by default if \fBHOMEBREW_BUNDLE_INSTALL_CLEANUP\fR is set and \fB\-\-global\fR is passed\.
 .
 .TP
 \fB\-\-no\-lock\fR
-\fBinstall\fR won\'t output a \fBBrewfile\.lock\.json\fR\.
+\fBinstall\fR does not output a \fBBrewfile\.lock\.json\fR\.
 .
 .TP
 \fB\-\-all\fR
@@ -2656,15 +2656,15 @@ Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR or the \fBHOMEBREW_BUNDLE_FILE_G
 .
 .TP
 \fB\-\-formula\fR
-\fBlist\fR Homebrew dependencies\.
+\fBlist\fR Homebrew formula dependencies\.
 .
 .TP
 \fB\-\-cask\fR
-\fBlist\fR Homebrew Cask dependencies\.
+\fBlist\fR Homebrew cask dependencies\.
 .
 .TP
 \fB\-\-tap\fR
-\fBlist\fR tap dependencies\.
+\fBlist\fR Homebrew tap dependencies\.
 .
 .TP
 \fB\-\-mas\fR
@@ -2680,7 +2680,7 @@ Read the \fBBrewfile\fR from \fB~/\.Brewfile\fR or the \fBHOMEBREW_BUNDLE_FILE_G
 .
 .TP
 \fB\-\-describe\fR
-\fBdump\fR adds a description comment above each line, unless the dependency does not have a description\. This is enabled by default if HOMEBREW_BUNDLE_DUMP_DESCRIBE is set\.
+\fBdump\fR adds a description comment above each line, unless the dependency does not have a description\. This is enabled by default if \fBHOMEBREW_BUNDLE_DUMP_DESCRIBE\fR is set\.
 .
 .TP
 \fB\-\-no\-restart\fR
