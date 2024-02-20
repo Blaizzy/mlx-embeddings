@@ -938,7 +938,9 @@ module Homebrew
       def check_cask_taps
         error_tap_paths = []
 
-        add_info "Homebrew Cask Taps:", (Tap.map do |tap|
+        taps = (Tap.to_a + [CoreCaskTap.instance]).uniq
+
+        add_info "Homebrew Cask Taps:", (taps.map do |tap|
           cask_count = begin
             tap.cask_files.count
           rescue
