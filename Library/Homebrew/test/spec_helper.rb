@@ -203,6 +203,7 @@ RSpec.configure do |config|
     Homebrew.raise_deprecation_exceptions = true
 
     Formulary.clear_cache
+    Tap.each(&:clear_cache)
     Tap.clear_cache
     DependencyCollector.clear_cache
     Formula.clear_cache
@@ -249,6 +250,9 @@ RSpec.configure do |config|
     rescue SystemExit => e
       example.example.set_exception(e)
     ensure
+      # This depends on `HOMEBREW_NO_INSTALL_FROM_API`.
+      Tap.each(&:clear_cache)
+
       ENV.replace(@__env)
       Context.current = Context::ContextStruct.new
 

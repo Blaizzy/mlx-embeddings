@@ -84,8 +84,6 @@ RSpec.describe Cask::CaskLoader, :cask do
 
         before do
           (old_tap.path/"tap_migrations.json").write tap_migrations.to_json
-          old_tap.clear_cache
-          default_tap.clear_cache
         end
 
         it "does not warn when loading the short token" do
@@ -112,7 +110,6 @@ RSpec.describe Cask::CaskLoader, :cask do
         #     (default_tap.path/"tap_migrations.json").write({
         #       token => old_tap.name,
         #     }.to_json)
-        #     default_tap.clear_cache
         #   end
         #
         #   it "stops recursing" do
