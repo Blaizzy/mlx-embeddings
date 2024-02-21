@@ -2025,14 +2025,14 @@ Remove aliases.
 
 ### `which-formula` [`--explain`] *`command`* [...]
 
-Prints the formula(e) which provides the given command.
+Show which formula(e) provides the given command.
 
 * `--explain`:
-  Output explanation of how to get 'cmd' by installing one of the providing formulae.
+  Output explanation of how to get *`command`* by installing one of the providing formulae.
 
 ### `which-update` [*`options`*] [*`database`*]
 
-Database update for `brew which-formula`
+Database update for `brew which-formula`.
 
 * `--stats`:
   Print statistics about the database contents (number of commands and formulae, list of missing formulae).
