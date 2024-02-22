@@ -13,12 +13,13 @@ module PyPI
   # or it can be a non-PyPI URL.
   # @api private
   class Package
-    sig { params(package_string: String, is_url: T::Boolean).void }
-    def initialize(package_string, is_url: false)
+    sig { params(package_string: String, is_url: T::Boolean, python_name: String).void }
+    def initialize(package_string, is_url: false, python_name: "python")
       @pypi_info = nil
       @package_string = package_string
       @is_url = is_url
       @is_pypi_url = package_string.start_with? PYTHONHOSTED_URL_PREFIX
+      @python_name = python_name
     end
 
     sig { returns(String) }
@@ -131,7 +132,7 @@ module PyPI
         @extras ||= []
         @version ||= match[2]
       elsif @is_url
-        ensure_formula_installed!("python")
+        ensure_formula_installed!(@python_name)
 
         # The URL might be a source distribution hosted somewhere;
         # try and use `pip install -q --no-deps --dry-run --report ...` to get its
@@ -140,7 +141,7 @@ module PyPI
         # do below, in that it uses `--no-deps` because we only care about resolving
         # this specific URL's project metadata.
         command =
-          [Formula["python"].bin/"python3", "-m", "pip", "install", "-q", "--no-deps",
+          [Formula[@python_name].opt_libexec/"bin/python", "-m", "pip", "install", "-q", "--no-deps",
            "--dry-run", "--ignore-installed", "--report", "/dev/stdout", @package_string]
         pip_output = Utils.popen_read({ "PIP_REQUIRE_VIRTUALENV" => "false" }, *command)
         unless $CHILD_STATUS.success?
@@ -226,8 +227,19 @@ module PyPI
       end
     end
 
+    python_deps = formula.deps
+                         .select { |d| d.name.match?(/^python(@.+)?$/) }
+                         .map(&:to_formula)
+                         .sort_by(&:version)
+                         .reverse
+    python_name = if python_deps.empty?
+      "python"
+    else
+      (python_deps.find(&:any_version_installed?) || python_deps.first).name
+    end
+
     main_package = if package_name.present?
-      Package.new(package_name)
+      Package.new(package_name, python_name: python_name)
     else
       stable = T.must(formula.stable)
       url = if stable.specs[:tag].present?
@@ -235,7 +247,7 @@ module PyPI
       else
         stable.url
       end
-      Package.new(url, is_url: true)
+      Package.new(url, is_url: true, python_name: python_name)
     end
 
     if version.present?
@@ -248,12 +260,6 @@ module PyPI
           performed. Please update its URL manually."
       end
     end
-
-    python_deps = formula.deps
-                         .select { |d| d.name.match?(/^python(@.+)?$/) }
-                         .map(&:to_formula)
-                         .sort_by(&:version)
-                         .reverse
 
     extra_packages = (extra_packages || []).map { |p| Package.new p }
     exclude_packages = (exclude_packages || []).map { |p| Package.new p }
@@ -286,11 +292,6 @@ module PyPI
       end
     end
 
-    python_name = if python_deps.empty?
-      "python"
-    else
-      (python_deps.find(&:any_version_installed?) || python_deps.first).name
-    end
     ensure_formula_installed!(python_name)
 
     # Resolve the dependency tree of all input packages
@@ -372,7 +373,7 @@ module PyPI
     return [] if packages.blank?
 
     command = [
-      Formula[python_name].libexec/"bin/python", "-m", "pip", "install", "-q", "--disable-pip-version-check",
+      Formula[python_name].opt_libexec/"bin/python", "-m", "pip", "install", "-q", "--disable-pip-version-check",
       "--dry-run", "--ignore-installed", "--report=/dev/stdout", *packages.map(&:to_s)
     ]
     options = {}
