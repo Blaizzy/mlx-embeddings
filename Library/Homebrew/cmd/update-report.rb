@@ -304,9 +304,11 @@ module Homebrew
 
     if Homebrew::EnvConfig.no_install_from_api?
       return if Homebrew::EnvConfig.automatically_set_no_install_from_api?
-      return if CoreTap.instance.installed?
 
-      CoreTap.ensure_installed!
+      core_tap = CoreTap.instance
+      return if core_tap.installed?
+
+      core_tap.ensure_installed!
       revision = CoreTap.instance.git_head
       ENV["HOMEBREW_UPDATE_BEFORE_HOMEBREW_HOMEBREW_CORE"] = revision
       ENV["HOMEBREW_UPDATE_AFTER_HOMEBREW_HOMEBREW_CORE"] = revision

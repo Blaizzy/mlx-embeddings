@@ -67,14 +67,14 @@ class Tap
 
   sig { returns(CoreCaskTap) }
   def self.default_cask_tap
-    odisabled "Tap.default_cask_tap", "CoreCaskTap.instance"
+    odisabled "`Tap.default_cask_tap`", "`CoreCaskTap.instance`"
 
     CoreCaskTap.instance
   end
 
   sig { params(force: T::Boolean).returns(T::Boolean) }
   def self.install_default_cask_tap_if_necessary(force: false)
-    odisabled "Tap.install_default_cask_tap_if_necessary", "CoreCaskTap.ensure_installed!"
+    odisabled "`Tap.install_default_cask_tap_if_necessary`", "`CoreCaskTap.instance.ensure_installed!`"
 
     false
   end
@@ -968,6 +968,8 @@ class AbstractCoreTap < Tap
 
   sig { void }
   def self.ensure_installed!
+    # odeprecated "`#{self}.ensure_installed!`", "`#{self}.instance.ensure_installed!`"
+
     instance.ensure_installed!
   end
 
@@ -1043,7 +1045,7 @@ class CoreTap < AbstractCoreTap
   sig { returns(Pathname) }
   def formula_dir
     @formula_dir ||= begin
-      self.class.ensure_installed!
+      ensure_installed!
       super
     end
   end
@@ -1065,7 +1067,7 @@ class CoreTap < AbstractCoreTap
   sig { returns(Pathname) }
   def alias_dir
     @alias_dir ||= begin
-      self.class.ensure_installed!
+      ensure_installed!
       super
     end
   end
@@ -1074,7 +1076,7 @@ class CoreTap < AbstractCoreTap
   sig { returns(T::Hash[String, String]) }
   def formula_renames
     @formula_renames ||= if Homebrew::EnvConfig.no_install_from_api?
-      self.class.ensure_installed!
+      ensure_installed!
       super
     else
       Homebrew::API::Formula.all_renames
@@ -1085,7 +1087,7 @@ class CoreTap < AbstractCoreTap
   sig { returns(Hash) }
   def tap_migrations
     @tap_migrations ||= if Homebrew::EnvConfig.no_install_from_api?
-      self.class.ensure_installed!
+      ensure_installed!
       super
     else
       migrations, = Homebrew::API.fetch_json_api_file "formula_tap_migrations.jws.json",
@@ -1098,7 +1100,7 @@ class CoreTap < AbstractCoreTap
   sig { returns(Hash) }
   def audit_exceptions
     @audit_exceptions ||= begin
-      self.class.ensure_installed!
+      ensure_installed!
       super
     end
   end
@@ -1107,7 +1109,7 @@ class CoreTap < AbstractCoreTap
   sig { returns(Hash) }
   def style_exceptions
     @style_exceptions ||= begin
-      self.class.ensure_installed!
+      ensure_installed!
       super
     end
   end
@@ -1116,7 +1118,7 @@ class CoreTap < AbstractCoreTap
   sig { returns(Hash) }
   def pypi_formula_mappings
     @pypi_formula_mappings ||= begin
-      self.class.ensure_installed!
+      ensure_installed!
       super
     end
   end

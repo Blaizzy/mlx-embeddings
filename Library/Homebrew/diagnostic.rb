@@ -523,21 +523,21 @@ module Homebrew
       end
 
       def check_coretap_integrity
-        coretap = CoreTap.instance
-        unless coretap.installed?
+        core_tap = CoreTap.instance
+        unless core_tap.installed?
           return unless EnvConfig.no_install_from_api?
 
-          CoreTap.ensure_installed!
+          core_tap.ensure_installed!
         end
 
-        broken_tap(coretap) || examine_git_origin(coretap.git_repo, Homebrew::EnvConfig.core_git_remote)
+        broken_tap(core_tap) || examine_git_origin(core_tap.git_repo, Homebrew::EnvConfig.core_git_remote)
       end
 
       def check_casktap_integrity
-        default_cask_tap = CoreCaskTap.instance
-        return unless default_cask_tap.installed?
+        core_cask_tap = CoreCaskTap.instance
+        return unless core_cask_tap.installed?
 
-        broken_tap(default_cask_tap) || examine_git_origin(default_cask_tap.git_repo, default_cask_tap.remote)
+        broken_tap(core_cask_tap) || examine_git_origin(core_cask_tap.git_repo, core_cask_tap.remote)
       end
 
       sig { returns(T.nilable(String)) }
