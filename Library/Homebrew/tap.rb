@@ -1146,9 +1146,9 @@ class CoreTap < AbstractCoreTap
   # @private
   sig { returns(T::Array[Pathname]) }
   def formula_files
-    return super if Homebrew::EnvConfig.no_install_from_api? || installed?
+    return super if Homebrew::EnvConfig.no_install_from_api?
 
-    raise TapUnavailableError, name
+    formula_files_by_name.values
   end
 
   # @private

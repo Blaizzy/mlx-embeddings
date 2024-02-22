@@ -38,31 +38,33 @@ module Homebrew
   def readall
     args = readall_args.parse
 
-    if args.syntax? && args.no_named?
-      scan_files = "#{HOMEBREW_LIBRARY_PATH}/**/*.rb"
-      ruby_files = Dir.glob(scan_files).grep_v(%r{/(vendor)/})
+    Homebrew.with_no_api_env do
+      if args.syntax? && args.no_named?
+        scan_files = "#{HOMEBREW_LIBRARY_PATH}/**/*.rb"
+        ruby_files = Dir.glob(scan_files).grep_v(%r{/(vendor)/})
 
-      Homebrew.failed = true unless Readall.valid_ruby_syntax?(ruby_files)
-    end
-
-    options = {
-      aliases:     args.aliases?,
-      no_simulate: args.no_simulate?,
-    }
-    options[:os_arch_combinations] = args.os_arch_combinations if args.os || args.arch
-
-    taps = if args.no_named?
-      if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
-        raise UsageError, "`brew readall` needs a tap or `--eval-all` passed or `HOMEBREW_EVAL_ALL` set!"
+        Homebrew.failed = true unless Readall.valid_ruby_syntax?(ruby_files)
       end
 
-      Tap
-    else
-      args.named.to_installed_taps
-    end
+      options = {
+        aliases:     args.aliases?,
+        no_simulate: args.no_simulate?,
+      }
+      options[:os_arch_combinations] = args.os_arch_combinations if args.os || args.arch
 
-    taps.each do |tap|
-      Homebrew.failed = true unless Readall.valid_tap?(tap, **options)
+      taps = if args.no_named?
+        if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
+          raise UsageError, "`brew readall` needs a tap or `--eval-all` passed or `HOMEBREW_EVAL_ALL` set!"
+        end
+
+        Tap.select(&:installed?)
+      else
+        args.named.to_installed_taps
+      end
+
+      taps.each do |tap|
+        Homebrew.failed = true unless Readall.valid_tap?(tap, **options)
+      end
     end
   end
 end
