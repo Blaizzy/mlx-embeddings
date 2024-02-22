@@ -842,15 +842,25 @@ class Tap
   end
 
   def self.each(&block)
-    return unless TAP_DIRECTORY.directory?
-
     return to_enum unless block
 
-    TAP_DIRECTORY.subdirs.each do |user|
-      user.subdirs.each do |repo|
-        yield fetch(user.basename.to_s, repo.basename.to_s)
-      end
+    installed_taps = if TAP_DIRECTORY.directory?
+      TAP_DIRECTORY.subdirs
+                   .flat_map(&:subdirs)
+                   .map(&method(:from_path))
+    else
+      []
     end
+
+    available_taps = if Homebrew::EnvConfig.no_install_from_api?
+      installed_taps
+    else
+      default_taps = T.let([CoreTap.instance], T::Array[Tap])
+      default_taps << CoreCaskTap.instance if OS.mac? # rubocop:disable Homebrew/MoveToExtendOS
+      installed_taps + default_taps
+    end.sort_by(&:name).uniq
+
+    available_taps.each(&block)
   end
 
   # An array of all installed {Tap} names.

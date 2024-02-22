@@ -545,7 +545,7 @@ module Homebrew
         return if ENV["CI"]
         return unless Utils::Git.available?
 
-        commands = Tap.map do |tap|
+        commands = Tap.select(&:installed?).map do |tap|
           next if tap.git_repo.default_origin_branch?
 
           "git -C $(brew --repo #{tap.name}) checkout #{tap.git_repo.origin_branch_name}"
@@ -795,7 +795,7 @@ module Homebrew
 
       def check_for_tap_ruby_files_locations
         bad_tap_files = {}
-        Tap.each do |tap|
+        Tap.select(&:installed?).each do |tap|
           unused_formula_dirs = tap.potential_formula_dirs - [tap.formula_dir]
           unused_formula_dirs.each do |dir|
             next unless dir.exist?
