@@ -462,8 +462,6 @@ Style/WordArray:
   MinSize: 4
 
 # TODO: Enable these cops once https://github.com/Homebrew/brew/pull/16337#issuecomment-1855668516 is done.
-Lint/RedundantDirGlobSort:
-  Enabled: false
 Naming/BlockForwarding:
   Enabled: false
 Performance/BindCall:
