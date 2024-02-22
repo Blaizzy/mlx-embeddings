@@ -464,8 +464,6 @@ Style/WordArray:
 # TODO: Enable these cops once https://github.com/Homebrew/brew/pull/16337#issuecomment-1855668516 is done.
 Naming/BlockForwarding:
   Enabled: false
-Performance/BindCall:
-  Enabled: false
 Style/ArgumentsForwarding:
   Enabled: false
 Style/HashSyntax:
