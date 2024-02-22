@@ -33,7 +33,7 @@ module Homebrew
       @problems = []
       @new_formula_problems = []
       @text = FormulaTextAuditor.new(formula.path)
-      @specs = %w[stable head].map { |s| formula.send(s) }.compact
+      @specs = %w[stable head].filter_map { |s| formula.send(s) }
       @spdx_license_data = options[:spdx_license_data]
       @spdx_exception_data = options[:spdx_exception_data]
       @tap_audit = options[:tap_audit]

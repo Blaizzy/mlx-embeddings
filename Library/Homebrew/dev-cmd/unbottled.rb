@@ -133,7 +133,7 @@ module Homebrew
               "`HOMEBREW_NO_GITHUB_API` and `HOMEBREW_NO_ANALYTICS` to be unset"
       end
 
-      formulae = analytics["items"].map do |i|
+      formulae = analytics["items"].filter_map do |i|
         f = i["formula"].split.first
         next if f.include?("/")
         next if formula_installs[f].present?
@@ -144,7 +144,7 @@ module Homebrew
         rescue FormulaUnavailableError
           nil
         end
-      end.compact
+      end
       @sort = " (sorted by installs in the last 90 days; top 10,000 only)"
 
       all_formulae = Formula.all(eval_all: args.eval_all?)

@@ -105,7 +105,7 @@ module Homebrew
           end
 
           content = [content] unless content.is_a?(Array)
-          content.compact_blank.map do |release|
+          content.compact_blank.filter_map do |release|
             next if release["draft"] || release["prerelease"]
 
             value = T.let(nil, T.untyped)
@@ -116,7 +116,7 @@ module Homebrew
               value = match[1]
             end
             value
-          end.compact.uniq
+          end.uniq
         end
 
         # Generates the GitHub API URL for the repository's recent releases

@@ -169,10 +169,10 @@ module Cask
         regex = Regexp.escape(search).gsub("\\*", ".*")
         system_command!("/bin/launchctl", args: ["list"])
           .stdout.lines.drop(1) # skip stdout column headers
-          .map do |line|
+          .filter_map do |line|
             pid, _state, id = line.chomp.split(/\s+/)
             id if pid.to_i.nonzero? && id.match?(regex)
-          end.compact
+          end
       end
 
       sig { returns(String) }

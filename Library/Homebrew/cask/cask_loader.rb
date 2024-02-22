@@ -469,8 +469,7 @@ module Cask
 
         token = ref
 
-        loaders = Tap.map { |tap| super("#{tap}/#{token}", warn: warn) }
-                     .compact
+        loaders = Tap.filter_map { |tap| super("#{tap}/#{token}", warn: warn) }
                      .select { _1.path.exist? }
 
         case loaders.count

@@ -102,11 +102,11 @@ class Caveats
   private
 
   def keg
-    @keg ||= [formula.prefix, formula.opt_prefix, formula.linked_keg].map do |d|
+    @keg ||= [formula.prefix, formula.opt_prefix, formula.linked_keg].filter_map do |d|
       Keg.new(d.resolved_path)
     rescue
       nil
-    end.compact.first
+    end.first
   end
 
   def function_completion_caveats(shell)

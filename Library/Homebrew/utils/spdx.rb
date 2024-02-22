@@ -44,14 +44,14 @@ module SPDX
       licenses.push license_expression
     when Hash, Array
       if license_expression.is_a? Hash
-        license_expression = license_expression.map do |key, value|
+        license_expression = license_expression.filter_map do |key, value|
           if key.is_a? String
             licenses.push key
             exceptions.push value[:with]
             next
           end
           value
-        end.compact
+        end
       end
 
       license_expression.each do |license|

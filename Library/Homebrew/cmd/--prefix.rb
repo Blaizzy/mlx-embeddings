@@ -39,12 +39,12 @@ module Homebrew
       puts HOMEBREW_PREFIX
     else
       formulae = args.named.to_resolved_formulae
-      prefixes = formulae.map do |f|
+      prefixes = formulae.filter_map do |f|
         next nil if args.installed? && !f.opt_prefix.exist?
 
         # this case will be short-circuited by brew.sh logic for a single formula
         f.opt_prefix
-      end.compact
+      end
       puts prefixes
       if args.installed?
         missing_formulae = formulae.reject(&:optlinked?)

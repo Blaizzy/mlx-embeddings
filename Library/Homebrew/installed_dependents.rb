@@ -52,12 +52,12 @@ module InstalledDependents
         CaskDependent.new(dependent).runtime_dependencies.map(&:to_formula)
       end
 
-      required_kegs = required.map do |f|
+      required_kegs = required.filter_map do |f|
         f_kegs = kegs_by_source[[f.name, f.tap]]
         next unless f_kegs
 
         f_kegs.max_by(&:version)
-      end.compact
+      end
 
       next if required_kegs.empty?
 

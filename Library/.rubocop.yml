@@ -466,8 +466,6 @@ Naming/BlockForwarding:
   Enabled: false
 Performance/BindCall:
   Enabled: false
-Performance/MapCompact:
-  Enabled: false
 Style/ArgumentsForwarding:
   Enabled: false
 Style/HashSyntax:

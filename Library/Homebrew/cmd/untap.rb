@@ -28,7 +28,7 @@ module Homebrew
 
       if Homebrew::EnvConfig.no_install_from_api? || (!tap.core_tap? && !tap.core_cask_tap?)
         installed_formula_names = T.let(nil, T.nilable(T::Set[String]))
-        installed_tap_formulae = tap.formula_names.map do |formula_name|
+        installed_tap_formulae = tap.formula_names.filter_map do |formula_name|
           # initialise lazily in case there's no formulae in this tap
           installed_formula_names ||= Set.new(Formula.installed_formula_names)
           next unless installed_formula_names.include?(formula_name)
@@ -43,10 +43,10 @@ module Homebrew
           # Can't use Formula#any_version_installed? because it doesn't consider
           # taps correctly.
           formula if formula.installed_kegs.any? { |keg| keg.tab.tap == tap }
-        end.compact
+        end
 
         installed_cask_tokens = T.let(nil, T.nilable(T::Set[String]))
-        installed_tap_casks = tap.cask_tokens.map do |cask_token|
+        installed_tap_casks = tap.cask_tokens.filter_map do |cask_token|
           # initialise lazily in case there's no casks in this tap
           installed_cask_tokens ||= Set.new(Cask::Caskroom.tokens)
           next unless installed_cask_tokens.include?(cask_token)
@@ -59,7 +59,7 @@ module Homebrew
           end
 
           cask if cask.installed?
-        end.compact
+        end
 
         if installed_tap_formulae.present? || installed_tap_casks.present?
           installed_names = (installed_tap_formulae + installed_tap_casks.map(&:token)).join("\n")

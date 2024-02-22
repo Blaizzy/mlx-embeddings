@@ -158,7 +158,7 @@ module Language
 
         # Find any Python bindings provided by recursive dependencies
         formula_deps = formula.recursive_dependencies
-        pth_contents = formula_deps.map do |d|
+        pth_contents = formula_deps.filter_map do |d|
           next if d.build? || d.test?
           # Do not add the main site-package provided by the brewed
           # Python formula, to keep the virtual-env's site-package pristine
@@ -168,7 +168,7 @@ module Language
           next unless dep_site_packages.exist?
 
           "import site; site.addsitedir('#{dep_site_packages}')\n"
-        end.compact
+        end
         unless pth_contents.empty?
           (venv_root/Language::Python.site_packages(python)/"homebrew_deps.pth").write pth_contents.join
         end

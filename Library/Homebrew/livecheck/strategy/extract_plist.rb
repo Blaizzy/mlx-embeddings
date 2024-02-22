@@ -69,9 +69,9 @@ module Homebrew
             return Strategy.handle_block_return(block_return_value)
           end
 
-          items.map do |_key, item|
+          items.filter_map do |_key, item|
             item.bundle_version.nice_version
-          end.compact.uniq
+          end.uniq
         end
 
         # Uses {UnversionedCaskChecker} on the provided cask to identify

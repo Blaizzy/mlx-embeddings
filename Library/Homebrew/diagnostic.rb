@@ -545,11 +545,11 @@ module Homebrew
         return if ENV["CI"]
         return unless Utils::Git.available?
 
-        commands = Tap.select(&:installed?).map do |tap|
+        commands = Tap.select(&:installed?).filter_map do |tap|
           next if tap.git_repo.default_origin_branch?
 
           "git -C $(brew --repo #{tap.name}) checkout #{tap.git_repo.origin_branch_name}"
-        end.compact
+        end
 
         return if commands.blank?
 
@@ -833,7 +833,7 @@ module Homebrew
       def check_deleted_formula
         kegs = Keg.all
 
-        deleted_formulae = kegs.map do |keg|
+        deleted_formulae = kegs.filter_map do |keg|
           tap = Tab.for_keg(keg).tap
 
           loadable = [
@@ -858,7 +858,7 @@ module Homebrew
           end
 
           keg.name unless loadable
-        end.compact.uniq
+        end.uniq
 
         return if deleted_formulae.blank?
 

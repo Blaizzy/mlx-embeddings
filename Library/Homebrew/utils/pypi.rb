@@ -392,11 +392,11 @@ module PyPI
   def self.pip_report_to_packages(report)
     return [] if report.blank?
 
-    report["install"].map do |package|
+    report["install"].filter_map do |package|
       name = normalize_python_package(package["metadata"]["name"])
       version = package["metadata"]["version"]
 
       Package.new "#{name}==#{version}"
-    end.compact
+    end
   end
 end

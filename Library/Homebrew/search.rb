@@ -53,7 +53,7 @@ module Homebrew
       results = search(Formula.full_names + aliases, string_or_regex).sort
       results |= Formula.fuzzy_search(string_or_regex).map { |n| Formulary.factory(n).full_name }
 
-      results.map do |name|
+      results.filter_map do |name|
         formula, canonical_full_name = begin
           f = Formulary.factory(name)
           [f, f.full_name]
@@ -69,7 +69,7 @@ module Homebrew
         elsif formula.nil? || formula.valid_platform?
           name
         end
-      end.compact
+      end
     end
 
     def self.search_casks(string_or_regex)
@@ -81,11 +81,11 @@ module Homebrew
         end
       end
 
-      cask_tokens = Tap.flat_map(&:cask_tokens).map do |c|
+      cask_tokens = Tap.flat_map(&:cask_tokens).filter_map do |c|
         next if c.start_with?("homebrew/cask/") && !Homebrew::EnvConfig.no_install_from_api?
 
         c.sub(%r{^homebrew/cask.*/}, "")
-      end.compact
+      end
       cask_tokens |= Homebrew::API::Cask.all_casks.keys unless Homebrew::EnvConfig.no_install_from_api?
 
       results = search(cask_tokens, string_or_regex)

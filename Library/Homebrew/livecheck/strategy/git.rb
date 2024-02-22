@@ -101,7 +101,7 @@ module Homebrew
             return Strategy.handle_block_return(block_return_value)
           end
 
-          tags.map do |tag|
+          tags.filter_map do |tag|
             if regex
               # Use the first capture group (the version)
               # This code is not typesafe unless the regex includes a capture group
@@ -111,7 +111,7 @@ module Homebrew
               # version text
               tag[DEFAULT_REGEX, 1]
             end
-          end.compact.uniq
+          end.uniq
         end
 
         # Checks the Git tags for new versions. When a regex isn't provided,

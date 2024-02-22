@@ -447,11 +447,11 @@ module Homebrew
       def generate_usage_banner
         command_names = ["`#{@command_name}`"]
         aliases_to_skip = %w[instal uninstal]
-        command_names += Commands::HOMEBREW_INTERNAL_COMMAND_ALIASES.map do |command_alias, command|
+        command_names += Commands::HOMEBREW_INTERNAL_COMMAND_ALIASES.filter_map do |command_alias, command|
           next if aliases_to_skip.include? command_alias
 
           "`#{command_alias}`" if command == @command_name
-        end.compact.sort
+        end.sort
 
         options = if @non_global_processed_options.empty?
           ""
@@ -469,12 +469,12 @@ module Homebrew
         named_args = ""
         if @named_args_type.present? && @named_args_type != :none
           arg_type = if @named_args_type.is_a? Array
-            types = @named_args_type.map do |type|
+            types = @named_args_type.filter_map do |type|
               next unless type.is_a? Symbol
               next SYMBOL_TO_USAGE_MAPPING[type] if SYMBOL_TO_USAGE_MAPPING.key?(type)
 
               "<#{type}>"
-            end.compact
+            end
             types << "<subcommand>" if @named_args_type.any?(String)
             types.join("|")
           elsif SYMBOL_TO_USAGE_MAPPING.key? @named_args_type
@@ -593,11 +593,11 @@ module Homebrew
       end
 
       def check_named_args(args)
-        types = Array(@named_args_type).map do |type|
+        types = Array(@named_args_type).filter_map do |type|
           next type if type.is_a? Symbol
 
           :subcommand
-        end.compact.uniq
+        end.uniq
 
         exception = if @min_named_args && @max_named_args && @min_named_args == @max_named_args &&
                        args.size != @max_named_args
@@ -650,7 +650,7 @@ module Homebrew
         end
 
         # Only lowercase names, not paths, bottle filenames or URLs
-        named_args.map do |arg|
+        named_args.filter_map do |arg|
           next if arg.match?(HOMEBREW_CASK_TAP_CASK_REGEX)
 
           begin
@@ -658,7 +658,7 @@ module Homebrew
           rescue FormulaUnavailableError, FormulaSpecificationError
             nil
           end
-        end.compact.uniq(&:name)
+        end.uniq(&:name)
       end
 
       def only_casks?(argv)

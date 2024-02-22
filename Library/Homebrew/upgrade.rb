@@ -52,7 +52,7 @@ module Homebrew
         raise CyclicDependencyError, dependency_graph.strongly_connected_components if Homebrew::EnvConfig.developer?
       end
 
-      formula_installers = formulae_to_install.map do |formula|
+      formula_installers = formulae_to_install.filter_map do |formula|
         Migrator.migrate_if_needed(formula, force: force, dry_run: dry_run)
         begin
           fi = create_formula_installer(
@@ -114,7 +114,7 @@ module Homebrew
           ofail "#{formula}: #{e}"
           nil
         end
-      end.compact
+      end
 
       formula_installers.each do |fi|
         upgrade_formula(fi, dry_run: dry_run, verbose: verbose)

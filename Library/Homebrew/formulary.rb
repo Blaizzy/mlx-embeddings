@@ -779,9 +779,7 @@ module Formulary
 
       name = ref
 
-      loaders = Tap.map { |tap| super("#{tap}/#{name}", warn: warn) }
-                   .compact
-                   .select { _1.path.exist? }
+      loaders = Tap.filter_map { |tap| super("#{tap}/#{name}", warn: warn) }.select { _1.path.exist? }
 
       case loaders.count
       when 1

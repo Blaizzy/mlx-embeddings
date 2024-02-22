@@ -98,8 +98,7 @@ module UnpackStrategy
             # For APFS, find the <physical-store> corresponding to <mount-path>
             eject_paths = disk_info.plist
                                    .fetch("APFSPhysicalStores", [])
-                                   .map { |store| store["APFSPhysicalStore"] }
-                                   .compact
+                                   .filter_map { |store| store["APFSPhysicalStore"] }
                                    .presence || [path]
 
             eject_paths.each do |eject_path|
@@ -230,8 +229,7 @@ module UnpackStrategy
 
         mounts = if plist.respond_to?(:fetch)
           plist.fetch("system-entities", [])
-               .map { |entity| entity["mount-point"] }
-               .compact
+               .filter_map { |entity| entity["mount-point"] }
                .map { |path| Mount.new(path) }
         else
           []

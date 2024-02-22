@@ -74,12 +74,12 @@ module Homebrew
       results[username] = scan_repositories(repos, username, args, from: from)
       grand_totals[username] = total(results[username])
 
-      contributions = contribution_types.map do |type|
+      contributions = contribution_types.filter_map do |type|
         type_count = grand_totals[username][type]
         next if type_count.to_i.zero?
 
         "#{Utils.pluralize("time", type_count, include_count: true)} (#{type})"
-      end.compact
+      end
       contributions << "#{Utils.pluralize("time", grand_totals[username].values.sum, include_count: true)} (total)"
 
       puts [
