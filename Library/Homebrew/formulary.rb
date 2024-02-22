@@ -16,6 +16,7 @@ require "extend/hash/keys"
 #
 # @api private
 module Formulary
+  extend Context
   extend Cachable
 
   URL_START_REGEX = %r{(https?|ftp|file)://}
@@ -480,17 +481,26 @@ module Formulary
     include Context
 
     # The formula's name
+    sig { returns(String) }
     attr_reader :name
+
     # The formula's ruby file's path or filename
+    sig { returns(Pathname) }
     attr_reader :path
+
     # The name used to install the formula
+    sig { returns(T.nilable(Pathname)) }
     attr_reader :alias_path
+
     # The formula's tap (nil if it should be implicitly determined)
+    sig { returns(T.nilable(Tap)) }
     attr_reader :tap
 
-    def initialize(name, path, tap: nil)
+    sig { params(name: String, path: Pathname, alias_path: Pathname, tap: Tap).void }
+    def initialize(name, path, alias_path: T.unsafe(nil), tap: T.unsafe(nil))
       @name = name
       @path = path
+      @alias_path = alias_path
       @tap = tap
     end
 
@@ -511,7 +521,6 @@ module Formulary
     private
 
     def load_file(flags:, ignore_errors:)
-      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{path}" if debug?
       raise FormulaUnavailableError, name unless path.file?
 
       Formulary.load_formula_from_path(name, path, flags: flags, ignore_errors: ignore_errors)
@@ -519,7 +528,17 @@ module Formulary
   end
 
   # Loads a formula from a bottle.
-  class BottleLoader < FormulaLoader
+  class FromBottleLoader < FormulaLoader
+    sig {
+      params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
+        .returns(T.nilable(T.attached_class))
+    }
+    def self.try_new(ref, from: T.unsafe(nil), warn: false)
+      ref = ref.to_s
+
+      new(ref) if HOMEBREW_BOTTLES_EXTNAME_REGEX.match?(ref)
+    end
+
     def initialize(bottle_name)
       case bottle_name
       when URL_START_REGEX
@@ -562,27 +581,81 @@ module Formulary
     end
   end
 
-  # Loads a formula from a path to an alias.
-  class AliasLoader < FormulaLoader
-    def initialize(alias_path)
-      path = alias_path.resolved_path
-      name = path.basename(".rb").to_s
-      super name, path
-      @alias_path = alias_path.to_s
-    end
-  end
-
   # Loads formulae from disk using a path.
   class FromPathLoader < FormulaLoader
-    def initialize(path)
-      path = Pathname.new(path).expand_path
+    sig {
+      params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
+        .returns(T.nilable(T.attached_class))
+    }
+    def self.try_new(ref, from: T.unsafe(nil), warn: false)
+      path = case ref
+      when String
+        Pathname(ref)
+      when Pathname
+        ref
+      else
+        return
+      end
+
+      return unless path.expand_path.exist?
+
+      options = if (tap = Tap.from_path(path))
+        # Only treat symlinks in taps as aliases.
+        if path.symlink?
+          alias_path = path
+          path = alias_path.resolved_path
+
+          {
+            alias_path: alias_path,
+            tap:        tap,
+          }
+        else
+          {
+            tap: tap,
+          }
+        end
+      elsif (tap = Homebrew::API.tap_from_source_download(path))
+        # Don't treat cache symlinks as aliases.
+        {
+          tap: tap,
+        }
+      else
+        {}
+      end
+
+      return if path.extname != ".rb"
+
+      new(path, **options)
+    end
+
+    sig { params(path: T.any(Pathname, String), alias_path: Pathname, tap: Tap).void }
+    def initialize(path, alias_path: T.unsafe(nil), tap: T.unsafe(nil))
+      path = Pathname(path).expand_path
       name = path.basename(".rb").to_s
-      super name, path, tap: Homebrew::API.tap_from_source_download(path)
+      alias_path = alias_path&.expand_path
+      alias_dir = alias_path&.dirname
+
+      options = {
+        alias_path: (alias_path if alias_dir == tap&.alias_dir),
+        tap:        tap,
+      }.compact
+
+      super(name, path, **options)
     end
   end
 
-  # Loads formulae from URLs.
-  class FromUrlLoader < FormulaLoader
+  # Loads formula from a URI.
+  class FromURILoader < FormulaLoader
+    sig {
+      params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
+        .returns(T.nilable(T.attached_class))
+    }
+    def self.try_new(ref, from: T.unsafe(nil), warn: false)
+      ref = ref.to_s
+
+      new(ref, from: from) if URL_START_REGEX.match?(ref)
+    end
+
     attr_reader :url
 
     sig { params(url: T.any(URI::Generic, String), from: T.nilable(Symbol)).void }
@@ -621,7 +694,45 @@ module Formulary
   end
 
   # Loads tapped formulae.
-  class TapLoader < FormulaLoader
+  class FromTapLoader < FormulaLoader
+    sig { returns(Tap) }
+    attr_reader :tap
+
+    sig { returns(Pathname) }
+    attr_reader :path
+
+    sig {
+      params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
+        .returns(T.nilable(T.attached_class))
+    }
+    def self.try_new(ref, from: T.unsafe(nil), warn: false)
+      ref = ref.to_s
+      return unless (name = ref[HOMEBREW_TAP_FORMULA_REGEX, :name])
+
+      alias_name = name
+
+      name, tap, type = Formulary.tap_formula_name_type(ref, warn: warn)
+      path = Formulary.find_formula_in_tap(name, tap)
+
+      options = if type == :alias
+        { alias_name: alias_name.downcase }
+      else
+        {}
+      end
+
+      new(name, path, tap: tap, **options)
+    end
+
+    sig { params(name: String, path: Pathname, tap: Tap, alias_name: String).void }
+    def initialize(name, path, tap:, alias_name: T.unsafe(nil))
+      options = {
+        alias_path: (tap.alias_dir/alias_name if alias_name),
+        tap:        tap,
+      }.compact
+
+      super(name, path, **options)
+    end
+
     def get_formula(spec, alias_path: nil, force_bottle: false, flags: [], ignore_errors: false)
       super
     rescue FormulaUnreadableError => e
@@ -638,17 +749,94 @@ module Formulary
       e.issues_url = tap.issues_url || tap.to_s
       raise
     end
+  end
 
-    private
+  class FromDefaultNameLoader < FromTapLoader
+    sig {
+      params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
+        .returns(T.nilable(T.attached_class))
+    }
+    def self.try_new(ref, from: T.unsafe(nil), warn: false)
+      return unless ref.is_a?(String)
+      return unless (name = ref[HOMEBREW_DEFAULT_TAP_FORMULA_REGEX, :name])
+      return unless (tap = CoreTap.instance).installed?
 
-    def find_formula_from_name(name, tap)
-      Formulary.find_formula_in_tap(name, tap)
+      return unless (loader = super("#{tap}/#{name}", warn: warn))
+
+      loader if loader.path.exist?
+    end
+  end
+
+  # Loads a formula from a name, as long as it exists only in a single tap.
+  class FromNameLoader < FromTapLoader
+    sig {
+      params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
+        .returns(T.nilable(T.attached_class))
+    }
+    def self.try_new(ref, from: T.unsafe(nil), warn: false)
+      return unless ref.is_a?(String)
+      return if ref.include?("/")
+
+      name = ref
+
+      loaders = Tap.map { |tap| super("#{tap}/#{name}") }
+                   .compact
+                   .select { _1.path.exist? }
+
+      case loaders.count
+      when 1
+        loaders.first
+      when 2..Float::INFINITY
+        raise TapFormulaAmbiguityError.new(name, loaders)
+      end
+    end
+  end
+
+  # Loads a formula from a formula file in a keg.
+  class FromKegLoader < FormulaLoader
+    sig {
+      params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
+        .returns(T.nilable(T.attached_class))
+    }
+    def self.try_new(ref, from: T.unsafe(nil), warn: false)
+      ref = ref.to_s
+
+      return unless (keg_formula = HOMEBREW_PREFIX/"opt/#{ref}/.brew/#{ref}.rb").file?
+
+      new(ref, keg_formula)
+    end
+  end
+
+  # Loads a formula from a cached formula file.
+  class FromCacheLoader < FormulaLoader
+    sig {
+      params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
+        .returns(T.nilable(T.attached_class))
+    }
+    def self.try_new(ref, from: T.unsafe(nil), warn: false)
+      ref = ref.to_s
+
+      return unless (cached_formula = HOMEBREW_CACHE_FORMULA/"#{ref}.rb").file?
+
+      new(ref, cached_formula)
     end
   end
 
   # Pseudo-loader which will raise a {FormulaUnavailableError} when trying to load the corresponding formula.
   class NullLoader < FormulaLoader
-    def initialize(name)
+    sig {
+      params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
+        .returns(T.nilable(T.attached_class))
+    }
+    def self.try_new(ref, from: T.unsafe(nil), warn: false)
+      return if ref.is_a?(URI::Generic)
+
+      new(ref)
+    end
+
+    sig { params(ref: T.any(String, Pathname)).void }
+    def initialize(ref)
+      name = File.basename(ref, ".rb")
       super name, Formulary.core_path(name)
     end
 
@@ -668,16 +856,50 @@ module Formulary
     end
 
     def klass(flags:, ignore_errors:)
-      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{path}" if debug?
       namespace = "FormulaNamespace#{Digest::MD5.hexdigest(contents.to_s)}"
       Formulary.load_formula(name, path, contents, namespace, flags: flags, ignore_errors: ignore_errors)
     end
   end
 
-  # Load formulae from the API.
-  class FormulaAPILoader < FormulaLoader
-    def initialize(name)
-      super name, Formulary.core_path(name)
+  # Load a formula from the API.
+  class FromAPILoader < FormulaLoader
+    sig {
+      params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
+        .returns(T.nilable(T.attached_class))
+    }
+    def self.try_new(ref, from: T.unsafe(nil), warn: false)
+      return if Homebrew::EnvConfig.no_install_from_api?
+      return unless ref.is_a?(String)
+      return unless (name = ref[HOMEBREW_DEFAULT_TAP_FORMULA_REGEX, :name])
+      if !Homebrew::API::Formula.all_formulae.key?(name) &&
+         !Homebrew::API::Formula.all_aliases.key?(name) &&
+         !Homebrew::API::Formula.all_renames.key?(name)
+        return
+      end
+
+      alias_name = name
+
+      ref = "#{CoreTap.instance}/#{name}"
+
+      name, tap, type = Formulary.tap_formula_name_type(ref, warn: warn)
+
+      options =  if type == :alias
+        { alias_name: alias_name.downcase }
+      else
+        {}
+      end
+
+      new(name, tap: tap, **options)
+    end
+
+    sig { params(name: String, tap: Tap, alias_name: String).void }
+    def initialize(name, tap: T.unsafe(nil), alias_name: T.unsafe(nil))
+      options = {
+        alias_path: (CoreTap.instance.alias_dir/alias_name if alias_name),
+        tap:        tap,
+      }.compact
+
+      super(name, Formulary.core_path(name), **options)
     end
 
     def klass(flags:, ignore_errors:)
@@ -688,17 +910,7 @@ module Formulary
     private
 
     def load_from_api(flags:)
-      $stderr.puts "#{$PROGRAM_NAME} (#{self.class.name}): loading #{name} from API" if debug?
-
       Formulary.load_formula_from_api(name, flags: flags)
-    end
-  end
-
-  # Load aliases from the API.
-  class AliasAPILoader < FormulaAPILoader
-    def initialize(alias_name)
-      super Homebrew::API::Formula.all_aliases[alias_name]
-      @alias_path = Formulary.core_alias_path(alias_name).to_s
     end
   end
 
@@ -741,6 +953,7 @@ module Formulary
                         force_bottle:  force_bottle,
                         flags:         flags,
                         ignore_errors: ignore_errors }.compact
+
     formula = loader_for(ref, **loader_options)
               .get_formula(spec, **formula_options)
 
@@ -793,7 +1006,7 @@ module Formulary
   # Return whether given rack is keg-only.
   def self.keg_only?(rack)
     Formulary.from_rack(rack).keg_only?
-  rescue FormulaUnavailableError, TapFormulaAmbiguityError, TapFormulaWithOldnameAmbiguityError
+  rescue FormulaUnavailableError, TapFormulaAmbiguityError
     false
   end
 
@@ -906,9 +1119,13 @@ module Formulary
     user, repo, name = tapped_name.split("/", 3).map(&:downcase)
     tap = Tap.fetch(user, repo)
     type = nil
-    alias_name = tap.core_tap? ? name : "#{tap}/#{name}"
 
-    if (possible_alias = tap.alias_table[alias_name].presence)
+    # FIXME: Remove the need to do this here.
+    alias_table_key = tap.core_tap? ? name : "#{tap}/#{name}"
+
+    if (possible_alias = tap.alias_table[alias_table_key].presence)
+      # FIXME: Remove the need to split the name and instead make
+      #        the alias table only contain short names.
       name = possible_alias.split("/").last
       type = :alias
     elsif (new_name = tap.formula_renames[name].presence)
@@ -938,101 +1155,30 @@ module Formulary
     [name, tap, type]
   end
 
-  def self.tap_loader_for(tapped_name, warn:)
-    name, tap, type = Formulary.tap_formula_name_type(tapped_name, warn: warn)
+  def self.loader_for(ref, from: T.unsafe(nil), warn: true)
+    options = { from: from, warn: warn }.compact
 
-    if tap.core_tap? && !Homebrew::EnvConfig.no_install_from_api?
-      if type == :alias
-        return AliasAPILoader.new(name)
-      elsif Homebrew::API::Formula.all_formulae.key?(name)
-        return FormulaAPILoader.new(name)
+    [
+      FromBottleLoader,
+      FromURILoader,
+      FromAPILoader,
+      FromTapLoader,
+      FromPathLoader,
+      FromDefaultNameLoader,
+      FromNameLoader,
+      FromKegLoader,
+      FromCacheLoader,
+      NullLoader,
+    ].each do |loader_class|
+      if (loader = loader_class.try_new(ref, **options))
+        $stderr.puts "#{$PROGRAM_NAME} (#{loader_class}): loading #{ref}" if debug?
+        return loader
       end
     end
-
-    path = find_formula_in_tap(name, tap)
-    TapLoader.new(name, path, tap: tap)
-  end
-
-  def self.loader_for(ref, from: nil, warn: true)
-    case ref
-    when HOMEBREW_BOTTLES_EXTNAME_REGEX
-      return BottleLoader.new(ref)
-    when URL_START_REGEX
-      return FromUrlLoader.new(ref, from: from)
-    when HOMEBREW_TAP_FORMULA_REGEX
-      return Formulary.tap_loader_for(ref, warn: warn)
-    end
-
-    pathname_ref = Pathname.new(ref)
-    return FromPathLoader.new(ref) if File.extname(ref) == ".rb" && pathname_ref.expand_path.exist?
-
-    unless Homebrew::EnvConfig.no_install_from_api?
-      return FormulaAPILoader.new(ref) if Homebrew::API::Formula.all_formulae.key?(ref)
-      return AliasAPILoader.new(ref) if Homebrew::API::Formula.all_aliases.key?(ref)
-    end
-
-    formula_with_that_name = core_path(ref)
-    return FormulaLoader.new(ref, formula_with_that_name) if formula_with_that_name.file?
-
-    possible_alias = if pathname_ref.absolute?
-      pathname_ref
-    else
-      core_alias_path(ref)
-    end
-    return AliasLoader.new(possible_alias) if possible_alias.symlink?
-
-    case (possible_tap_formulae = tap_paths(ref)).count
-    when 1
-      path = possible_tap_formulae.first.resolved_path
-      name = path.basename(".rb").to_s
-      return FormulaLoader.new(name, path)
-    when 2..Float::INFINITY
-      raise TapFormulaAmbiguityError.new(ref, possible_tap_formulae)
-    end
-
-    if CoreTap.instance.formula_renames.key?(ref)
-      return Formulary.tap_loader_for("#{CoreTap.instance}/#{ref}", warn: warn)
-    end
-
-    possible_taps = Tap.select { |tap| tap.formula_renames.key?(ref) }
-
-    case possible_taps.count
-    when 1
-      return Formulary.tap_loader_for("#{possible_taps.first}/#{ref}", warn: warn)
-    when 2..Float::INFINITY
-      possible_tap_newname_formulae = possible_taps.map { |tap| "#{tap}/#{tap.formula_renames[ref]}" }
-      raise TapFormulaWithOldnameAmbiguityError.new(ref, possible_tap_newname_formulae)
-    end
-
-    if (keg_formula = HOMEBREW_PREFIX/"opt/#{ref}/.brew/#{ref}.rb").file?
-      return FormulaLoader.new(ref, keg_formula)
-    end
-
-    if (cached_formula = HOMEBREW_CACHE_FORMULA/"#{ref}.rb").file?
-      return FormulaLoader.new(ref, cached_formula)
-    end
-
-    NullLoader.new(ref)
   end
 
   def self.core_path(name)
     find_formula_in_tap(name.to_s.downcase, CoreTap.instance)
-  end
-
-  def self.core_alias_path(name)
-    CoreTap.instance.alias_dir/name.to_s.downcase
-  end
-
-  def self.tap_paths(name)
-    name = name.to_s.downcase
-    Tap.select(&:installed?).map do |tap|
-      formula_path = find_formula_in_tap(name, tap)
-
-      alias_path = tap.alias_dir/name
-      next alias_path if !formula_path.exist? && alias_path.exist?
-
-      formula_path
-    end.select(&:file?)
   end
 
   sig { params(name: String, tap: Tap).returns(Pathname) }
