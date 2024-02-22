@@ -126,6 +126,18 @@ RSpec.describe Tap do
     it "returns the Tap when given its exact path" do
       expect(described_class.from_path(path)).to eq tap
     end
+
+    context "when path contains a dot" do
+      let(:tap) { described_class.fetch("str4d.xyz", "rage") }
+
+      after do
+        tap.uninstall
+      end
+
+      it "returns the Tap when given its exact path" do
+        expect(described_class.from_path(path)).to eq tap
+      end
+    end
   end
 
   specify "::names" do
