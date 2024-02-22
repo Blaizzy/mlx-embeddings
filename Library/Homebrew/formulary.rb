@@ -779,7 +779,7 @@ module Formulary
 
       name = ref
 
-      loaders = Tap.map { |tap| super("#{tap}/#{name}") }
+      loaders = Tap.map { |tap| super("#{tap}/#{name}", warn: warn) }
                    .compact
                    .select { _1.path.exist? }
 

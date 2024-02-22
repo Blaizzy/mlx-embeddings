@@ -550,6 +550,7 @@ RSpec.describe Formulary do
         before do
           old_tap.path.mkpath
           (old_tap.path/"tap_migrations.json").write tap_migrations.to_json
+          FileUtils.touch default_tap.formula_dir/"foo.rb"
         end
 
         it "does not warn when loading the short token" do
