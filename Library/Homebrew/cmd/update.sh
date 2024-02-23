@@ -94,6 +94,7 @@ git_init_if_necessary() {
 
 repo_var_suffix() {
   local repo_dir="${1}"
+  local repo_var_suffix
 
   if [[ "${repo_dir}" == "${HOMEBREW_REPOSITORY}" ]]
   then
