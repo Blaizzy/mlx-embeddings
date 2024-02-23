@@ -861,8 +861,9 @@ class Tap
   end
 
   # Hash with pypi formula mappings
+  sig { returns(Hash) }
   def pypi_formula_mappings
-    @pypi_formula_mappings = read_formula_list path/HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS_FILE
+    @pypi_formula_mappings ||= read_formula_list(path/HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS_FILE)
   end
 
   # Array with synced versions formulae
