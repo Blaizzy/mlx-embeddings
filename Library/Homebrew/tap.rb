@@ -150,7 +150,6 @@ class Tap
     @full_name = "#{@user}/homebrew-#{@repo}"
     @path = TAP_DIRECTORY/@full_name.downcase
     @git_repo = GitRepository.new(@path)
-    @alias_reverse_table = nil
   end
 
   # Clear internal cache.
@@ -724,17 +723,15 @@ class Tap
     end
   end
 
-  # a table mapping formula name to aliases
+  # Mapping from formula names to aliases.
+  #
   # @private
+  sig { returns(T::Hash[String, T::Array[String]]) }
   def alias_reverse_table
-    return @alias_reverse_table if @alias_reverse_table
-
-    @alias_reverse_table = {}
-    alias_table.each do |alias_name, formula_name|
-      @alias_reverse_table[formula_name] ||= []
-      @alias_reverse_table[formula_name] << alias_name
+    @alias_reverse_table ||= alias_table.each_with_object({}) do |(alias_name, formula_name), alias_reverse_table|
+      alias_reverse_table[formula_name] ||= []
+      alias_reverse_table[formula_name] << alias_name
     end
-    @alias_reverse_table
   end
 
   sig { returns(Pathname) }
