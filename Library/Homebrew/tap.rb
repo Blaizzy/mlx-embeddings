@@ -857,7 +857,7 @@ class Tap
   # Hash with style exceptions
   sig { returns(Hash) }
   def style_exceptions
-    @style_exceptions = read_formula_list_directory "#{HOMEBREW_TAP_STYLE_EXCEPTIONS_DIR}/*"
+    @style_exceptions ||= read_formula_list_directory("#{HOMEBREW_TAP_STYLE_EXCEPTIONS_DIR}/*")
   end
 
   # Hash with pypi formula mappings
