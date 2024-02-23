@@ -1201,7 +1201,6 @@ module Formulary
       "#{name}.rb"
     end
 
-    Tap.formula_files_by_name(tap)
-       .fetch(name, tap.formula_dir/filename)
+    tap.formula_files_by_name.fetch(name, tap.formula_dir/filename)
   end
 end
