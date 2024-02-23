@@ -1151,9 +1151,7 @@ module Formulary
       new_name = tap.core_tap? ? name : "#{tap}/#{name}"
       type = :rename
     elsif (new_tap_name = tap.tap_migrations[name].presence)
-      new_tap_user, new_tap_repo, new_name = new_tap_name.split("/", 3)
-      new_name ||= name
-      new_tap = Tap.fetch(new_tap_user, new_tap_repo)
+      new_tap, new_name = Tap.with_formula_name(new_tap_name) || [Tap.fetch(new_tap_name), name]
       new_tap.ensure_installed!
       new_tapped_name = "#{new_tap}/#{new_name}"
 

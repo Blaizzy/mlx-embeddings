@@ -103,15 +103,15 @@ RSpec.describe Tap do
 
     expect do
       described_class.fetch("foo")
-    end.to raise_error(/Invalid tap name/)
+    end.to raise_error(ArgumentError, /Invalid tap name/)
 
     expect do
       described_class.fetch("homebrew/homebrew/bar")
-    end.to raise_error(/Invalid tap name/)
+    end.to raise_error(ArgumentError, /Invalid tap name/)
 
     expect do
       described_class.fetch("homebrew", "homebrew/baz")
-    end.to raise_error(/Invalid tap name/)
+    end.to raise_error(ArgumentError, /Invalid tap name/)
   end
 
   describe "::from_path" do

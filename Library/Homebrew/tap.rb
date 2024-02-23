@@ -39,19 +39,19 @@ class Tap
     #{HOMEBREW_TAP_STYLE_EXCEPTIONS_DIR}/*.json
   ].freeze
 
-  def self.fetch(*args)
-    case args.length
-    when 1
-      user, repo = args.first.split("/", 2)
-    when 2
-      user = args.first
-      repo = args.second
+  sig { params(user: String, repo: String).returns(Tap) }
+  def self.fetch(user, repo = T.unsafe(nil))
+    user, repo = user.split("/", 2) if repo.nil?
+
+    if [user, repo].any? { |part| part.nil? || part.include?("/") }
+      raise ArgumentError, "Invalid tap name: '#{[*user, *repo].join("/")}'"
     end
 
-    raise "Invalid tap name '#{args.join("/")}'" if [user, repo].any? { |part| part.nil? || part.include?("/") }
+    user = T.must(user)
+    repo = T.must(repo)
 
     # We special case homebrew and linuxbrew so that users don't have to shift in a terminal.
-    user = user.capitalize if ["homebrew", "linuxbrew"].include? user
+    user = user.capitalize if ["homebrew", "linuxbrew"].include?(user)
     repo = repo.sub(HOMEBREW_OFFICIAL_REPO_PREFIXES_REGEX, "")
 
     return CoreTap.instance if ["Homebrew", "Linuxbrew"].include?(user) && ["core", "homebrew"].include?(repo)
@@ -63,13 +63,16 @@ class Tap
 
   def self.from_path(path)
     match = File.expand_path(path).match(HOMEBREW_TAP_PATH_REGEX)
-    return if match.blank? || match[:user].blank? || match[:repo].blank?
 
-    fetch(match[:user], match[:repo])
+    return unless match
+    return unless (user = match[:user])
+    return unless (repo = match[:repo])
+
+    fetch(user, repo)
   end
 
   # @private
-  sig { params(name: String).returns(T.nilable([T.attached_class, String])) }
+  sig { params(name: String).returns(T.nilable([Tap, String])) }
   def self.with_formula_name(name)
     return unless (match = name.match(HOMEBREW_TAP_FORMULA_REGEX))
 
@@ -85,7 +88,7 @@ class Tap
   end
 
   # @private
-  sig { params(token: String).returns(T.nilable([T.attached_class, String])) }
+  sig { params(token: String).returns(T.nilable([Tap, String])) }
   def self.with_cask_token(token)
     return unless (match = token.match(HOMEBREW_TAP_CASK_REGEX))
 
@@ -823,7 +826,7 @@ class Tap
         new_tap_user, new_tap_repo, new_name = new_name.split("/", 3)
         next unless new_name
 
-        new_tap = Tap.fetch(new_tap_user, new_tap_repo)
+        new_tap = Tap.fetch(T.must(new_tap_user), T.must(new_tap_repo))
 
         hash["#{new_tap}/#{new_name}"] ||= []
         hash["#{new_tap}/#{new_name}"] << old_name
@@ -878,7 +881,7 @@ class Tap
   sig { params(other: T.nilable(T.any(String, Tap))).returns(T::Boolean) }
   def ==(other)
     other = Tap.fetch(other) if other.is_a?(String)
-    self.class == other.class && name == other.name
+    other.is_a?(self.class) && name == other.name
   end
 
   def self.each(&block)
