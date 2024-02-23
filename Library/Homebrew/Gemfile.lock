@@ -83,7 +83,7 @@ GEM
       rspec-core (> 3.3)
     rspec-sorbet (1.9.2)
       sorbet-runtime
-    rspec-support (3.13.0)
+    rspec-support (3.13.1)
     rspec_junit_formatter (0.6.0)
       rspec-core (>= 2, < 4, != 2.12.0)
     rubocop (1.60.2)
@@ -165,8 +165,6 @@ GEM
       yard (>= 0.9)
 
 PLATFORMS
-  aarch64-linux
-  arm-linux
   arm64-darwin
   x86_64-darwin
   x86_64-linux
