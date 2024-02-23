@@ -392,7 +392,7 @@ jobs:
           HOMEBREW_BUILDPULSE_ACCOUNT_ID: 1503512
           HOMEBREW_BUILDPULSE_REPOSITORY_ID: 53238813
 
-      - uses: codecov/codecov-action@e0b68c6749509c5f83f984dd99a76a1c1a231044
+      - uses: codecov/codecov-action@0cfda1dd0a4ad9efc75517f399d859cd1ea4ced1
         with:
           root_dir: ${{ steps.set-up-homebrew.outputs.repository-path }}
           files: Library/Homebrew/test/coverage/coverage.xml
