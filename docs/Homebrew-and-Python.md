@@ -27,7 +27,9 @@ $(brew --prefix python)/libexec/bin
 
 ## Setuptools, pip, etc.
 
-The Python formulae install [pip](https://pip.pypa.io/) (as `pip3`) and [Setuptools](https://pypi.org/project/setuptools/).
+The Python formulae install [pip](https://pip.pypa.io/) (as `pip3`). Python@3.11 and older Python formulae also install [Setuptools](https://pypi.org/project/setuptools/).
+
+Starting with Python@3.12, the bundled Python packages should be updated by reinstalling brewed Python. For older Python formulae, they can be updated as described below.
 
 Setuptools can be updated via `pip`, without having to reinstall brewed Python:
 
@@ -49,7 +51,7 @@ The `site-packages` is a directory that contains Python modules, including bindi
 $(brew --prefix)/lib/pythonX.Y/site-packages
 ```
 
-So, for Python 3.y.z, you'll find it at `/usr/local/lib/python3.y/site-packages`.
+So, for Python 3.y.z, you'll find it at `/usr/local/lib/python3.y/site-packages` on macOS Intel.
 
 Python 3.y also searches for modules in:
 
