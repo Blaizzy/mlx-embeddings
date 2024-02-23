@@ -129,6 +129,7 @@ class Tap
     @formula_names = nil
     @formula_files = nil
     @cask_files = nil
+    @cask_files_by_name = nil
     @alias_dir = nil
     @alias_files = nil
     @aliases = nil
@@ -590,19 +591,12 @@ class Tap
     end
   end
 
-  # A cached hash of {Cask} basenames to {Cask} file pathnames for a {Tap}
-  sig { params(tap: Tap).returns(T::Hash[String, Pathname]) }
-  def self.cask_files_by_name(tap)
-    cache_key = "cask_files_by_name_#{tap}"
-    cache.fetch(cache_key) do |key|
-      cache[key] = tap.cask_files_by_name
-    end
-  end
-
+  # A mapping of {Cask} tokens to {Cask} file paths.
+  #
   # @private
   sig { returns(T::Hash[String, Pathname]) }
   def cask_files_by_name
-    cask_files.each_with_object({}) do |file, hash|
+    @cask_files_by_name ||= cask_files.each_with_object({}) do |file, hash|
       # If there's more than one file with the same basename: use the longer one to prioritise more specific results.
       basename = file.basename(".rb").to_s
       existing_file = hash[basename]

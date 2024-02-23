@@ -588,8 +588,7 @@ module Cask
     def self.find_cask_in_tap(token, tap)
       filename = "#{token}.rb"
 
-      Tap.cask_files_by_name(tap)
-         .fetch(token, tap.cask_dir/filename)
+      tap.cask_files_by_name.fetch(token, tap.cask_dir/filename)
     end
   end
 end
