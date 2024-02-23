@@ -851,7 +851,7 @@ class Tap
   # Hash with audit exceptions
   sig { returns(Hash) }
   def audit_exceptions
-    @audit_exceptions = read_formula_list_directory "#{HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR}/*"
+    @audit_exceptions ||= read_formula_list_directory("#{HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR}/*")
   end
 
   # Hash with style exceptions
