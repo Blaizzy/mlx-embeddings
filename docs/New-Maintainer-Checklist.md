@@ -44,10 +44,8 @@ A few requests:
     - Homebrew/brew: https://docs.brew.sh/Homebrew-brew-Maintainer-Guide
     - Homebrew/homebrew-core: https://docs.brew.sh/Homebrew-homebrew-core-Maintainer-Guide
     - Homebrew/homebrew-cask: https://docs.brew.sh/Homebrew-homebrew-cask-Maintainer-Guide
-- Continue to create branches on your fork rather than in the main repository.
-  Note GitHub's UI will create edits and reverts on the main repository if you
-  make edits or click "Revert" on the Homebrew/brew repository rather than your
-  own fork.
+- Create branches in the main repository rather than on your fork to ease collaboration
+  with other maintainers and allow security assumptions to be made based on GitHub access.
 - If still in doubt please ask for help and we'll help you out.
 - Please read:
     - https://docs.brew.sh/Maintainer-Guidelines
