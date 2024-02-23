@@ -33,8 +33,8 @@ module OS
     sig { returns(MacOSVersion) }
     def self.full_version
       odeprecated "`MacOS.full_version` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
-      @full_version ||= if ENV["HOMEBREW_FAKE_EL_CAPITAN"] # for Portable Ruby building
-        MacOSVersion.new("10.11.6")
+      @full_version ||= if (fake_macos = ENV.fetch("HOMEBREW_FAKE_MACOS", nil)) # for Portable Ruby building
+        MacOSVersion.new(fake_macos)
       else
         MacOSVersion.new(VERSION)
       end

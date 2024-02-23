@@ -575,7 +575,14 @@ then
     HOMEBREW_FORCE_BREWED_CA_CERTIFICATES="1"
   fi
 
+  # TEMP: backwards compatiblity with existing 10.11-cross image
+  # Can (probably) be removed in March 2024.
   if [[ -n "${HOMEBREW_FAKE_EL_CAPITAN}" ]]
+  then
+    export HOMEBREW_FAKE_MACOS="10.11.6"
+  fi
+
+  if [[ "${HOMEBREW_FAKE_MACOS}" =~ ^10\.11(\.|$) ]]
   then
     # We only need this to work enough to update brew and build the set portable formulae, so relax the requirement.
     HOMEBREW_MINIMUM_GIT_VERSION="2.7.4"

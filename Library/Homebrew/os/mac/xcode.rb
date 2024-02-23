@@ -73,7 +73,7 @@ module OS
         # With fake El Capitan for Portable Ruby, we want the full 10.11 SDK so that we can link
         # against the correct set of libraries in the SDK sysroot rather than the system's copies.
         # We therefore do not use the CLT under this setup, which installs to /usr/include.
-        return false if ENV["HOMEBREW_FAKE_EL_CAPITAN"]
+        return false if ENV["HOMEBREW_FAKE_MACOS"]
 
         without_clt?
       end
