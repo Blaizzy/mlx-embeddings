@@ -1031,6 +1031,8 @@ formulae, also displays whether a pull request has been opened with the URL.
   Check only casks.
 * `--installed`:
   Check formulae and casks that are currently installed.
+* `--no-fork`:
+  Don't try to fork the repository.
 * `--open-pr`:
   Open a pull request for the new version if none have been opened yet.
 * `--limit`:

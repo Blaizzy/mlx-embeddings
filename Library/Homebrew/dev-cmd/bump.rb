@@ -37,6 +37,8 @@ module Homebrew
              description: "Check only casks."
       switch "--installed",
              description: "Check formulae and casks that are currently installed."
+      switch "--no-fork",
+             description: "Don't try to fork the repository."
       switch "--open-pr",
              description: "Open a pull request for the new version if none have been opened yet."
       flag   "--limit=",
@@ -508,6 +510,8 @@ module Homebrew
       "--no-browse",
       "--message=Created by `brew bump`",
     ]
+
+    bump_cask_pr_args << "--no-fork" if args.no_fork?
 
     system HOMEBREW_BREW_FILE, *bump_cask_pr_args
   end

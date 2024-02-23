@@ -498,6 +498,7 @@ _brew_bump() {
     '--help[Show this message]' \
     '--installed[Check formulae and casks that are currently installed]' \
     '--limit[Limit number of package results returned]' \
+    '--no-fork[Don'\''t try to fork the repository]' \
     '(--open-pr)--no-pull-requests[Do not retrieve pull requests from GitHub]' \
     '(--no-pull-requests)--open-pr[Open a pull request for the new version if none have been opened yet]' \
     '--quiet[Make some output more quiet]' \

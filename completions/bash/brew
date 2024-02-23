@@ -443,6 +443,7 @@ _brew_bump() {
       --help
       --installed
       --limit
+      --no-fork
       --no-pull-requests
       --open-pr
       --quiet
