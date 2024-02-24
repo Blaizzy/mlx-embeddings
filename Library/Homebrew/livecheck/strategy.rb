@@ -58,6 +58,9 @@ module Homebrew
       # `curl` arguments used in `Strategy#page_content` method.
       PAGE_CONTENT_CURL_ARGS = ([
         "--compressed",
+        # Return an error when the HTTP response code is 400 or greater but
+        # continue to return body content
+        "--fail-with-body",
         # Include HTTP response headers in output, so we can identify the
         # final URL after any redirections
         "--include",
