@@ -171,6 +171,10 @@ Lint/UnusedMethodArgument:
 Metrics:
   Enabled: false
 
+# Disabled because it breaks Sorbet: "The declaration for `with` is missing parameter(s): & (RuntimeError)"
+Naming/BlockForwarding:
+  Enabled: false
+
 # Allow dashes in filenames.
 Naming/FileName:
   Regex: !ruby/regexp /^[\w\@\-\+\.]+(\.rb)?$/
@@ -288,6 +292,10 @@ Sorbet/TrueSigil:
 # Require &&/|| instead of and/or
 Style/AndOr:
   EnforcedStyle: always
+
+# Disabled because it breaks Sorbet: "The declaration for `with` is missing parameter(s): & (RuntimeError)"
+Style/ArgumentsForwarding:
+  Enabled: false
 
 # Avoid leaking resources.
 Style/AutoResourceCleanup:
@@ -463,9 +471,3 @@ Style/UnlessLogicalOperators:
 # a bit confusing to non-Rubyists but useful for longer arrays
 Style/WordArray:
   MinSize: 4
-
-# TODO: Enable these cops once https://github.com/Homebrew/brew/pull/16337#issuecomment-1855668516 is done.
-Naming/BlockForwarding:
-  Enabled: false
-Style/ArgumentsForwarding:
-  Enabled: false
