@@ -126,6 +126,7 @@ class Tap
     @formula_dir = nil
     @cask_dir = nil
     @command_dir = nil
+    @formula_names = nil
     @formula_files = nil
     @cask_files = nil
     @alias_dir = nil
