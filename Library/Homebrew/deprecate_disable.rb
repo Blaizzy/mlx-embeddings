@@ -23,9 +23,9 @@ module DeprecateDisable
   }.freeze
 
   CASK_DEPRECATE_DISABLE_REASONS = {
-    discontinued: "is discontinued upstream",
+    discontinued:        "is discontinued upstream",
     no_longer_available: "is no longer available upstream",
-    unmaintained: "is not maintained upstream",
+    unmaintained:        "is not maintained upstream",
   }.freeze
 
   def type(formula_or_cask)
