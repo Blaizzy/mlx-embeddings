@@ -75,6 +75,8 @@ When a cask is deprecated or disabled, a reason explaining the action must be pr
 There are two ways to indicate the reason. The preferred way is to use a pre-existing symbol to indicate the reason. The available symbols are listed below and can be found in the [`DeprecateDisable` module](https://github.com/Homebrew/brew/blob/master/Library/Homebrew/deprecate_disable.rb):
 
 - `:discontinued`: the cask is discontinued upstream
+- `:no_longer_available`: the cask is no longer available upstream
+- `:unmaintained`: the cask is not maintained upstream
 
 These reasons can be specified by their symbols (the comments show the message that will be displayed to users):
 
