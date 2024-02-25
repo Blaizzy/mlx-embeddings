@@ -10,9 +10,9 @@ module Homebrew
     #
     # @api private
     module Cask
-      class << self
-        include Cachable
+      extend Cachable
 
+      class << self
         private :cache
 
         sig { params(token: String).returns(Hash) }

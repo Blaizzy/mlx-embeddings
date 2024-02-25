@@ -9,8 +9,9 @@ require "system_command"
 #
 # @api private
 module Readall
+  extend Cachable
+
   class << self
-    include Cachable
     include SystemCommand::Mixin
 
     # TODO: remove this once the `MacOS` module is undefined on Linux

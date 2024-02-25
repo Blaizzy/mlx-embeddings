@@ -10,9 +10,9 @@ module Homebrew
     #
     # @api private
     module Formula
-      class << self
-        include Cachable
+      extend Cachable
 
+      class << self
         private :cache
 
         sig { params(name: String).returns(Hash) }
