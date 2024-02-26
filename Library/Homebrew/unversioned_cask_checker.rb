@@ -222,8 +222,8 @@ module Homebrew
             top_level_info_plist_paths = top_level_info_plists(Pathname.glob(extract_dir/"**/Contents/Info.plist"))
 
             unique_info_plist_versions =
-              top_level_info_plist_paths.map { |i| BundleVersion.from_info_plist(i)&.nice_version }
-                                        .compact.uniq
+              top_level_info_plist_paths.filter_map { |i| BundleVersion.from_info_plist(i)&.nice_version }
+                                        .uniq
             return unique_info_plist_versions.first if unique_info_plist_versions.count == 1
 
             package_info_path = extract_dir/"PackageInfo"

@@ -37,7 +37,7 @@ module Homebrew
 
     CacheStoreDatabase.use(:linkage) do |db|
       kegs = if args.named.to_default_kegs.empty?
-        Formula.installed.map(&:any_installed_keg).compact
+        Formula.installed.filter_map(&:any_installed_keg)
       else
         args.named.to_default_kegs
       end

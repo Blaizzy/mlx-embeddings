@@ -199,7 +199,7 @@ module Homebrew
   end
 
   def self.bottle_output(bottle, root_url_using)
-    cellars = bottle.checksums.map do |checksum|
+    cellars = bottle.checksums.filter_map do |checksum|
       cellar = checksum["cellar"]
       next unless cellar_parameter_needed? cellar
 
@@ -209,7 +209,7 @@ module Homebrew
       when Symbol
         ":#{cellar}"
       end
-    end.compact
+    end
     tag_column = cellars.empty? ? 0 : "cellar: #{cellars.max_by(&:length)}, ".length
 
     tags = bottle.checksums.map { |checksum| checksum["tag"] }

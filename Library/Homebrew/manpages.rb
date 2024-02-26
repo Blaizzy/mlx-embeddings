@@ -140,7 +140,7 @@ module Homebrew
 
     def self.cmd_parser_manpage_lines(cmd_parser)
       lines = [format_usage_banner(cmd_parser.usage_banner_text)]
-      lines += cmd_parser.processed_options.map do |short, long, _, desc, hidden|
+      lines += cmd_parser.processed_options.filter_map do |short, long, _, desc, hidden|
         next if hidden
 
         if long.present?
@@ -151,7 +151,7 @@ module Homebrew
         end
 
         generate_option_doc(short, long, desc)
-      end.compact
+      end
       lines
     end
 

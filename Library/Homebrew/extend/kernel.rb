@@ -267,7 +267,7 @@ module Kernel
   end
 
   def which_all(cmd, path = ENV.fetch("PATH"))
-    PATH.new(path).map do |p|
+    PATH.new(path).filter_map do |p|
       begin
         pcmd = File.expand_path(cmd, p)
       rescue ArgumentError
@@ -276,7 +276,7 @@ module Kernel
         next
       end
       Pathname.new(pcmd) if File.file?(pcmd) && File.executable?(pcmd)
-    end.compact.uniq
+    end.uniq
   end
 
   def which_editor(silent: false)

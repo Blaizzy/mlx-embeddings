@@ -518,11 +518,11 @@ class Formula
   # Returns any `@`-versioned Formula objects for any Formula (including versioned formulae).
   sig { returns(T::Array[Formula]) }
   def versioned_formulae
-    versioned_formulae_names.map do |name|
+    versioned_formulae_names.filter_map do |name|
       Formula[name]
     rescue FormulaUnavailableError
       nil
-    end.compact.sort_by(&:version).reverse
+    end.sort_by(&:version).reverse
   end
 
   # A named {Resource} for the currently active {SoftwareSpec}.
@@ -631,10 +631,10 @@ class Formula
   end
 
   def latest_head_version
-    head_versions = installed_prefixes.map do |pn|
+    head_versions = installed_prefixes.filter_map do |pn|
       pn_pkgversion = PkgVersion.parse(pn.basename.to_s)
       pn_pkgversion if pn_pkgversion.head?
-    end.compact
+    end
 
     head_versions.max_by do |pn_pkgversion|
       [Tab.for_keg(prefix(pn_pkgversion)).source_modified_time, pn_pkgversion.revision]
@@ -1934,7 +1934,7 @@ class Formula
       raise ArgumentError, "Formula#all without `--eval-all` or HOMEBREW_EVAL_ALL"
     end
 
-    (core_names + tap_files).map do |name_or_file|
+    (core_names + tap_files).filter_map do |name_or_file|
       Formulary.factory(name_or_file)
     rescue FormulaUnavailableError, FormulaUnreadableError => e
       # Don't let one broken formula break commands. But do complain.
@@ -1942,7 +1942,7 @@ class Formula
       $stderr.puts e
 
       nil
-    end.compact
+    end
   end
 
   # An array of all racks currently installed.
@@ -2108,12 +2108,12 @@ class Formula
   def runtime_dependencies(read_from_tab: true, undeclared: true)
     deps = if read_from_tab && undeclared &&
               (tab_deps = any_installed_keg&.runtime_dependencies)
-      tab_deps.map do |d|
+      tab_deps.filter_map do |d|
         full_name = d["full_name"]
         next unless full_name
 
         Dependency.new full_name
-      end.compact
+      end
     end
     begin
       deps ||= declared_runtime_dependencies unless undeclared
@@ -2134,11 +2134,11 @@ class Formula
     Formula.cache[:runtime_formula_dependencies][cache_key] ||= runtime_dependencies(
       read_from_tab: read_from_tab,
       undeclared:    undeclared,
-    ).map do |d|
+    ).filter_map do |d|
       d.to_formula
     rescue FormulaUnavailableError
       nil
-    end.compact
+    end
   end
 
   def runtime_installed_formula_dependents
@@ -2192,7 +2192,7 @@ class Formula
       {
         dependable: dependable,
         # Now find the list of specs each dependency was a part of.
-        specs:      dependables.map { |spec, spec_deps| spec if spec_deps&.include?(dependable) }.compact,
+        specs:      dependables.filter_map { |spec, spec_deps| spec if spec_deps&.include?(dependable) },
       }
     end
   end

@@ -329,7 +329,7 @@ module Homebrew
                                 "-r", "--name-only", "--diff-filter=AM",
                                 original_commit, "HEAD", "--", tap.formula_dir)
                     .lines
-                    .map do |line|
+                    .filter_map do |line|
       next unless line.end_with? ".rb\n"
 
       name = "#{tap.name}/#{File.basename(line.chomp, ".rb")}"
@@ -342,12 +342,12 @@ module Homebrew
       rescue FormulaUnavailableError
         nil
       end
-    end.compact
+    end
     casks = Utils.popen_read("git", "-C", tap.path, "diff-tree",
                              "-r", "--name-only", "--diff-filter=AM",
                              original_commit, "HEAD", "--", tap.cask_dir)
                  .lines
-                 .map do |line|
+                 .filter_map do |line|
       next unless line.end_with? ".rb\n"
 
       name = "#{tap.name}/#{File.basename(line.chomp, ".rb")}"
@@ -356,7 +356,7 @@ module Homebrew
       rescue Cask::CaskUnavailableError
         nil
       end
-    end.compact
+    end
     formulae + casks
   end
 

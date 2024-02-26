@@ -36,8 +36,7 @@ module UnpackStrategy
 
           volumes = result.stderr.chomp
                           .split("\n")
-                          .map { |l| l[/\A   skipping: (.+)  volume label\Z/, 1] }
-                          .compact
+                          .filter_map { |l| l[/\A   skipping: (.+)  volume label\Z/, 1] }
 
           return if volumes.empty?
 

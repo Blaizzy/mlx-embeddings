@@ -89,13 +89,13 @@ module RuboCop
               method_name = on_system_block.method_name
               child_nodes = on_system_body.begin_type? ? on_system_body.child_nodes : [on_system_body]
               if child_nodes.all? { |n| n.send_type? || n.block_type? || n.lvasgn_type? }
-                method_names = child_nodes.map do |node|
+                method_names = child_nodes.filter_map do |node|
                   next if node.lvasgn_type?
                   next if node.method_name == :patch
                   next if on_system_methods.include? node.method_name
 
                   node.method_name
-                end.compact
+                end
                 next if method_names.empty? || allowed_methods.include?(method_names)
               end
               offending_node(on_system_block)

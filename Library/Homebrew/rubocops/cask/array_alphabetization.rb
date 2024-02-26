@@ -36,11 +36,11 @@ module RuboCop
 
         def sort_array(source)
           # Combine each comment with the line(s) below so that they remain in the same relative location
-          combined_source = source.each_with_index.map do |line, index|
+          combined_source = source.each_with_index.filter_map do |line, index|
             next if line.strip.start_with?("#")
 
             next recursively_find_comments(source, index, line)
-          end.compact
+          end
 
           # Separate the lines into those that should be sorted and those that should not
           # ie. skip the opening and closing brackets of the array

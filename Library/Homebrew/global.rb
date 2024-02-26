@@ -132,11 +132,11 @@ require "cli/args"
 require "PATH"
 
 ENV["HOMEBREW_PATH"] ||= ENV.fetch("PATH")
-ORIGINAL_PATHS = PATH.new(ENV.fetch("HOMEBREW_PATH")).map do |p|
+ORIGINAL_PATHS = PATH.new(ENV.fetch("HOMEBREW_PATH")).filter_map do |p|
   Pathname.new(p).expand_path
 rescue
   nil
-end.compact.freeze
+end.freeze
 
 require "exceptions"
 require "utils"

@@ -51,7 +51,7 @@ module Homebrew
             return Strategy.handle_block_return(block_return_value)
           end
 
-          DEFAULT_HEADERS_TO_CHECK.map do |header_name|
+          DEFAULT_HEADERS_TO_CHECK.filter_map do |header_name|
             header_value = headers[header_name]
             next if header_value.blank?
 
@@ -61,7 +61,7 @@ module Homebrew
               v = Version.parse(header_value, detected_from_url: true)
               v.null? ? nil : v.to_s
             end
-          end.compact.uniq
+          end.uniq
         end
 
         # Checks the final URL for new versions after following all redirections,

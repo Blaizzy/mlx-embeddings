@@ -40,7 +40,7 @@ module Homebrew
     }
 
     kegs = if args.HEAD?
-      args.named.to_kegs.group_by(&:name).map do |name, resolved_kegs|
+      args.named.to_kegs.group_by(&:name).filter_map do |name, resolved_kegs|
         head_keg = resolved_kegs.find { |keg| keg.version.head? }
         next head_keg if head_keg.present?
 
@@ -49,7 +49,7 @@ module Homebrew
           To install, run:
             brew install --HEAD #{name}
         EOS
-      end.compact
+      end
     else
       args.named.to_latest_kegs
     end

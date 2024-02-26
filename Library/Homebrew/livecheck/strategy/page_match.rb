@@ -60,14 +60,14 @@ module Homebrew
 
           return [] if regex.blank?
 
-          content.scan(regex).map do |match|
+          content.scan(regex).filter_map do |match|
             case match
             when String
               match
             when Array
               match.first
             end
-          end.compact.uniq
+          end.uniq
         end
 
         # Checks the content at the URL for new versions, using the provided

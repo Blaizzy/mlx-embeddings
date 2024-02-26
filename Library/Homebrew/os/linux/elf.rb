@@ -134,12 +134,12 @@ module ELFShim
       ldd_output = Utils.popen_read(ldd, path.expand_path.to_s).split("\n")
       return unless $CHILD_STATUS.success?
 
-      ldd_paths = ldd_output.map do |line|
+      ldd_paths = ldd_output.filter_map do |line|
         match = line.match(/\t.+ => (.+) \(.+\)|\t(.+) => not found/)
         next unless match
 
         match.captures.compact.first
-      end.compact
+      end
       @dylibs = ldd_paths.select do |ldd_path|
         needed.include? File.basename(ldd_path)
       end

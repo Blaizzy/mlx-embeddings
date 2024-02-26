@@ -70,11 +70,11 @@ module Homebrew
       # release notes without usernames, new contributors, or extra lines
       blog_post_notes = GitHub.generate_release_notes("Homebrew", "brew", new_version,
                                                       previous_tag: latest_major_minor_version)["body"]
-      blog_post_notes = blog_post_notes.lines.map do |line|
+      blog_post_notes = blog_post_notes.lines.filter_map do |line|
         next unless (match = line.match(/^\* (.*) by @[\w-]+ in (.*)$/))
 
         "- [#{match[1]}](#{match[2]})"
-      end.compact.sort
+      end.sort
       puts blog_post_notes
     end
 

@@ -180,12 +180,11 @@ module Cask
       raise CaskInvalidError.new(cask, "No default language specified.") if @language_blocks.default.nil?
 
       locales = cask.config.languages
-                    .map do |language|
+                    .filter_map do |language|
                       Locale.parse(language)
                     rescue Locale::ParserError
                       nil
                     end
-                    .compact
 
       locales.each do |locale|
         key = locale.detect(@language_blocks.keys)

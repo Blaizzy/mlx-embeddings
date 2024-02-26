@@ -85,7 +85,7 @@ module Homebrew
             end
           end
 
-          xml.get_elements("//rss//channel//item").map do |item|
+          xml.get_elements("//rss//channel//item").filter_map do |item|
             enclosure = item.elements["enclosure"]
 
             if enclosure
@@ -144,7 +144,7 @@ module Homebrew
             data[:pub_date] ||= Time.new(0)
 
             Item.new(**data)
-          end.compact
+          end
         end
 
         # Filters out items that aren't suitable for Homebrew.

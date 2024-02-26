@@ -211,7 +211,7 @@ module GitHub
     reviews = result["repository"]["pullRequest"]["reviews"]["nodes"]
 
     valid_associations = %w[MEMBER OWNER]
-    reviews.map do |r|
+    reviews.filter_map do |r|
       next if commit.present? && commit != r["commit"]["oid"]
       next unless valid_associations.include? r["authorAssociation"]
 
@@ -226,7 +226,7 @@ module GitHub
         "name"  => name,
         "login" => r["author"]["login"],
       }
-    end.compact
+    end
   end
 
   def self.dispatch_event(user, repo, event, **payload)

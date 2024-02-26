@@ -228,13 +228,13 @@ class SoftwareSpec
 
   def recursive_dependencies
     deps_f = []
-    recursive_dependencies = deps.map do |dep|
+    recursive_dependencies = deps.filter_map do |dep|
       deps_f << dep.to_formula
       dep
     rescue TapFormulaUnavailableError
       # Don't complain about missing cross-tap dependencies
       next
-    end.compact.uniq
+    end.uniq
     deps_f.compact.each do |f|
       f.recursive_dependencies.each do |dep|
         recursive_dependencies << dep unless recursive_dependencies.include?(dep)
@@ -437,7 +437,7 @@ class Bottle
     manifests = json["manifests"]
     raise ArgumentError, "Missing 'manifests' section." if manifests.blank?
 
-    manifests_annotations = manifests.map { |m| m["annotations"] }.compact
+    manifests_annotations = manifests.filter_map { |m| m["annotations"] }
     raise ArgumentError, "Missing 'annotations' section." if manifests_annotations.blank?
 
     bottle_digest = @resource.checksum.hexdigest

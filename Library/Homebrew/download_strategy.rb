@@ -354,9 +354,9 @@ class AbstractFileDownloadStrategy < AbstractDownloadStrategy
       end
 
       if (uri_path = uri.path.presence)
-        components[:path] = uri_path.split("/").map do |part|
+        components[:path] = uri_path.split("/").filter_map do |part|
           URI::DEFAULT_PARSER.unescape(part).presence
-        end.compact
+        end
       end
 
       if search_query && (uri_query = uri.query.presence)

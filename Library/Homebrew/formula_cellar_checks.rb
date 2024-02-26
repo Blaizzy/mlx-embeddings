@@ -188,20 +188,19 @@ module FormulaCellarChecks
                      .select(&:directory?)
                      .map(&:basename)
 
-    pythons = lib_subdirs.map do |p|
+    pythons = lib_subdirs.filter_map do |p|
       match = p.to_s.match(/^python(\d+\.\d+)$/)
       next if match.blank?
       next if match.captures.blank?
 
       match.captures.first
-    end.compact
+    end
 
     return if pythons.blank?
 
     python_deps = deps.map(&:name)
                       .grep(/^python(@.*)?$/)
-                      .map { |d| Formula[d].version.to_s[/^\d+\.\d+/] }
-                      .compact
+                      .filter_map { |d| Formula[d].version.to_s[/^\d+\.\d+/] }
 
     return if python_deps.blank?
     return if pythons.any? { |v| python_deps.include? v }

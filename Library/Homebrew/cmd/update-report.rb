@@ -711,7 +711,7 @@ class Reporter
       header_regex = /^(---|\+\+\+) /
       add_delete_characters = ["+", "-"].freeze
 
-      diff_output.lines.map do |line|
+      diff_output.lines.filter_map do |line|
         next if line.match?(header_regex)
         next unless add_delete_characters.include?(line[0])
 
@@ -719,7 +719,7 @@ class Reporter
             .sub(/^-/,  "D #{api_dir_prefix.basename}/")
             .sub(/$/,   ".rb")
             .chomp
-      end.compact.join("\n")
+      end.join("\n")
     else
       Utils.popen_read(
         "git", "-C", tap.path, "diff-tree", "-r", "--name-status", "--diff-filter=AMDR",
@@ -845,9 +845,9 @@ class ReporterHub
   end
 
   def dump_new_cask_report
-    casks = select_formula_or_cask(:AC).sort.map do |name|
+    casks = select_formula_or_cask(:AC).sort.filter_map do |name|
       name.split("/").last unless cask_installed?(name)
-    end.compact
+    end
 
     output_dump_formula_or_cask_report "New Casks", casks
   end
@@ -873,13 +873,13 @@ class ReporterHub
   end
 
   def dump_deleted_formula_report(report_all)
-    formulae = select_formula_or_cask(:D).sort.map do |name|
+    formulae = select_formula_or_cask(:D).sort.filter_map do |name|
       if installed?(name)
         pretty_uninstalled(name)
       elsif report_all
         name
       end
-    end.compact
+    end
 
     title = if report_all
       "Deleted Formulae"
@@ -890,14 +890,14 @@ class ReporterHub
   end
 
   def dump_deleted_cask_report(report_all)
-    casks = select_formula_or_cask(:DC).sort.map do |name|
+    casks = select_formula_or_cask(:DC).sort.filter_map do |name|
       name = name.split("/").last
       if cask_installed?(name)
         pretty_uninstalled(name)
       elsif report_all
         name
       end
-    end.compact
+    end
 
     title = if report_all
       "Deleted Casks"

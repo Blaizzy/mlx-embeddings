@@ -65,7 +65,7 @@ module Homebrew
           time = Time.now
 
           begin
-            method.bind(self).call(*args, &block)
+            method.bind_call(self, *args, &block)
           ensure
             $times[name] ||= 0
             $times[name] += Time.now - time

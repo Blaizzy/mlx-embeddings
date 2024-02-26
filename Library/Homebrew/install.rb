@@ -244,7 +244,7 @@ module Homebrew
         dry_run: false,
         skip_post_install: false
       )
-        formula_installers = formulae_to_install.map do |formula|
+        formula_installers = formulae_to_install.filter_map do |formula|
           Migrator.migrate_if_needed(formula, force: force, dry_run: dry_run)
           build_options = formula.build
 
@@ -284,7 +284,7 @@ module Homebrew
             ofail "#{formula}: #{e}"
             nil
           end
-        end.compact
+        end
 
         if dry_run
           if (formulae_name_to_install = formulae_to_install.map(&:name))
