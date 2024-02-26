@@ -114,7 +114,7 @@ module Homebrew
         versions[id] = version if id && version
       end
 
-      Dir.mktmpdir do |dir|
+      Dir.mktmpdir("cask-checker", HOMEBREW_TEMP) do |dir|
         dir = Pathname(dir)
 
         installer.extract_primary_container(to: dir)
@@ -150,7 +150,7 @@ module Homebrew
         pkg_paths = Pathname.glob(dir/"**"/"*.pkg").sort if pkg_paths.empty?
 
         pkg_paths.each do |pkg_path|
-          Dir.mktmpdir do |extract_dir|
+          Dir.mktmpdir("cask-checker", HOMEBREW_TEMP) do |extract_dir|
             extract_dir = Pathname(extract_dir)
             FileUtils.rmdir extract_dir
 
@@ -178,7 +178,7 @@ module Homebrew
         return
       end
 
-      Dir.mktmpdir do |dir|
+      Dir.mktmpdir("cask-checker", HOMEBREW_TEMP) do |dir|
         dir = Pathname(dir)
 
         installer.then do |i|
@@ -208,7 +208,7 @@ module Homebrew
             .plist
             .map { |package| package.fetch("Package") }
 
-          Dir.mktmpdir do |extract_dir|
+          Dir.mktmpdir("cask-checker", HOMEBREW_TEMP) do |extract_dir|
             extract_dir = Pathname(extract_dir)
             FileUtils.rmdir extract_dir
 

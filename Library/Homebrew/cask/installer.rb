@@ -207,7 +207,7 @@ on_request: true)
       basename = downloader.basename
 
       if (nested_container = @cask.container&.nested)
-        Dir.mktmpdir do |tmpdir|
+        Dir.mktmpdir("cask-installer", HOMEBREW_TEMP) do |tmpdir|
           tmpdir = Pathname(tmpdir)
           primary_container.extract(to: tmpdir, basename: basename, verbose: verbose?)
 
