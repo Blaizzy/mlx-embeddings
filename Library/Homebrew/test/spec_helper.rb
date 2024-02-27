@@ -35,6 +35,8 @@ require "timeout"
 
 $LOAD_PATH.unshift(File.expand_path("#{ENV.fetch("HOMEBREW_LIBRARY")}/Homebrew/test/support/lib"))
 
+require_relative "support/extend/cachable"
+
 require_relative "../global"
 
 require "test/support/quiet_progress_formatter"
@@ -202,16 +204,7 @@ RSpec.configure do |config|
   config.around do |example|
     Homebrew.raise_deprecation_exceptions = true
 
-    Formulary.clear_cache
-    Tap.each(&:clear_cache)
-    Tap.clear_cache
-    DependencyCollector.clear_cache
-    Formula.clear_cache
-    Keg.clear_cache
-    Tab.clear_cache
-    Dependency.clear_cache
-    Requirement.clear_cache
-    Readall.clear_cache if defined?(Readall)
+    Cachable::Registry.clear_all_caches
     FormulaInstaller.clear_attempted
     FormulaInstaller.clear_installed
     FormulaInstaller.clear_fetched
@@ -263,15 +256,7 @@ RSpec.configure do |config|
       @__stderr.close
       @__stdin.close
 
-      Formulary.clear_cache
-      Tap.clear_cache
-      DependencyCollector.clear_cache
-      Formula.clear_cache
-      Keg.clear_cache
-      Tab.clear_cache
-      Dependency.clear_cache
-      Requirement.clear_cache
-      Readall.clear_cache if defined?(Readall)
+      Cachable::Registry.clear_all_caches
 
       FileUtils.rm_rf [
         *TEST_DIRECTORIES,
