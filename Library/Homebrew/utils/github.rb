@@ -593,6 +593,13 @@ module GitHub
     API.open_rest(url_to("repos", tap_remote_repo, "pulls", pull_request, "files"))
   end
 
+  private_class_method def self.add_auth_token_to_url!(url)
+    if API.credentials_type == :env_token
+      url.sub!(%r{^https://github\.com/}, "https://#{API.credentials}@github.com/")
+    end
+    url
+  end
+
   def self.forked_repo_info!(tap_remote_repo, org: nil)
     response = create_fork(tap_remote_repo, org: org)
     # GitHub API responds immediately but fork takes a few seconds to be ready.
@@ -600,11 +607,7 @@ module GitHub
     remote_url = if system("git", "config", "--local", "--get-regexp", "remote..*.url", "git@github.com:.*")
       response.fetch("ssh_url")
     else
-      url = response.fetch("clone_url")
-      if (api_token = Homebrew::EnvConfig.github_api_token)
-        url.gsub!(%r{^https://github\.com/}, "https://#{api_token}@github.com/")
-      end
-      url
+      add_auth_token_to_url!(response.fetch("clone_url"))
     end
     username = response.fetch("owner").fetch("login")
     [remote_url, username]
@@ -651,6 +654,7 @@ module GitHub
         unless args.commit?
           if args.no_fork?
             remote_url = Utils.popen_read("git", "remote", "get-url", "--push", "origin").chomp
+            add_auth_token_to_url!(remote_url)
             username = tap.user
           else
             begin
