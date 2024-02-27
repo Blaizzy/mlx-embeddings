@@ -497,8 +497,10 @@ module GitHub
     end
   end
 
-  def self.get_repo_license(user, repo)
-    response = API.open_rest("#{API_URL}/repos/#{user}/#{repo}/license")
+  def self.get_repo_license(user, repo, ref: nil)
+    url = "#{API_URL}/repos/#{user}/#{repo}/license"
+    url += "?ref=#{ref}" if ref.present?
+    response = API.open_rest(url)
     return unless response.key?("license")
 
     response["license"]["spdx_id"]
