@@ -240,6 +240,8 @@ module PyPI
 
     main_package = if package_name.present?
       Package.new(package_name, python_name: python_name)
+    elsif package_name == ""
+      nil
     else
       stable = T.must(formula.stable)
       url = if stable.specs[:tag].present?
@@ -250,7 +252,9 @@ module PyPI
       Package.new(url, is_url: true, python_name: python_name)
     end
 
-    if version.present?
+    if main_package.nil?
+      odie "The main package was skipped but no PyPI `extra_packages` were provided." if extra_packages.blank?
+    elsif version.present?
       if main_package.valid_pypi_package?
         main_package.version = version
       else
@@ -270,7 +274,7 @@ module PyPI
     # remove packages from the exclude list if we've explicitly requested them as an extra package
     exclude_packages.delete_if { |package| extra_packages.include?(package) }
 
-    input_packages = [main_package]
+    input_packages = main_package.nil? ? [] : [main_package]
     extra_packages.each do |extra_package|
       if !extra_package.valid_pypi_package? && !ignore_non_pypi_packages
         odie "\"#{extra_package}\" is not available on PyPI."
@@ -302,7 +306,7 @@ module PyPI
     exclude_packages.delete_if { |package| found_packages.exclude? package }
     ohai "Retrieving PyPI dependencies for excluded \"#{exclude_packages.join(" ")}\"..." if show_info
     exclude_packages = pip_report(exclude_packages, python_name: python_name, print_stderr: verbose && show_info)
-    exclude_packages += [Package.new(main_package.name)]
+    exclude_packages += [Package.new(main_package.name)] unless main_package.nil?
 
     new_resource_blocks = ""
     found_packages.sort.each do |package|
