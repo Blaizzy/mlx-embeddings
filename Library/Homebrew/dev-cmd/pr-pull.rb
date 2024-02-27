@@ -446,7 +446,7 @@ module Homebrew
       pr_check_conflicts("#{user}/#{repo}", pr)
 
       ohai "Fetching #{tap} pull request ##{pr}"
-      dir = Dir.mktmpdir pr
+      dir = Dir.mktmpdir("pr-pull-#{pr}-", HOMEBREW_TEMP)
       begin
         cd dir do
           current_branch_head = ENV["GITHUB_SHA"] || tap.git_head

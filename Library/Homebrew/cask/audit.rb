@@ -514,7 +514,7 @@ module Cask
 
       return if artifacts.empty?
 
-      @tmpdir ||= Pathname(Dir.mktmpdir)
+      @tmpdir ||= Pathname(Dir.mktmpdir("cask-audit", HOMEBREW_TEMP))
 
       ohai "Downloading and extracting artifacts"
 

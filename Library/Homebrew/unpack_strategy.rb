@@ -125,7 +125,7 @@ module UnpackStrategy
     ).returns(T.untyped)
   }
   def extract_nestedly(to: nil, basename: nil, verbose: false, prioritize_extension: false)
-    Dir.mktmpdir do |tmp_unpack_dir|
+    Dir.mktmpdir("homebrew-unpack", HOMEBREW_TEMP) do |tmp_unpack_dir|
       tmp_unpack_dir = Pathname(tmp_unpack_dir)
 
       extract(to: tmp_unpack_dir, basename: basename, verbose: verbose)
