@@ -274,7 +274,7 @@ module PyPI
     # remove packages from the exclude list if we've explicitly requested them as an extra package
     exclude_packages.delete_if { |package| extra_packages.include?(package) }
 
-    input_packages = main_package.nil? ? [] : [main_package]
+    input_packages = Array(main_package)
     extra_packages.each do |extra_package|
       if !extra_package.valid_pypi_package? && !ignore_non_pypi_packages
         odie "\"#{extra_package}\" is not available on PyPI."
