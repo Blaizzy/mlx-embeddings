@@ -35,6 +35,8 @@ require "timeout"
 
 $LOAD_PATH.unshift(File.expand_path("#{ENV.fetch("HOMEBREW_LIBRARY")}/Homebrew/test/support/lib"))
 
+require_relative "support/extend/cachable"
+
 require_relative "../global"
 
 require "test/support/quiet_progress_formatter"
