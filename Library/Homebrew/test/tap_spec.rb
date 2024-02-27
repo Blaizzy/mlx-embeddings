@@ -588,4 +588,15 @@ RSpec.describe Tap do
       expect(core_tap.pypi_formula_mappings).to eq formula_list_file_contents
     end
   end
+
+  describe "#repo_var_suffix" do
+    it "converts the repo directory to an environment variable suffix" do
+      expect(CoreTap.instance.repo_var_suffix).to eq "_HOMEBREW_HOMEBREW_CORE"
+    end
+
+    it "converts non-alphanumeric characters to underscores" do
+      expect(described_class.fetch("my", "tap-with-dashes").repo_var_suffix).to eq "_MY_HOMEBREW_TAP_WITH_DASHES"
+      expect(described_class.fetch("my", "tap-with-@-symbol").repo_var_suffix).to eq "_MY_HOMEBREW_TAP_WITH___SYMBOL"
+    end
+  end
 end

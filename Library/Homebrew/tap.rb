@@ -122,7 +122,7 @@ class Tap
   # Clear internal cache.
   def clear_cache
     @remote = nil
-    @repo_var = nil
+    @repo_var_suffix = nil
     @formula_dir = nil
     @cask_dir = nil
     @command_dir = nil
@@ -175,11 +175,13 @@ class Tap
     "https://github.com/#{full_name}"
   end
 
-  def repo_var
-    @repo_var ||= path.to_s
-                      .delete_prefix(TAP_DIRECTORY.to_s)
-                      .tr("^A-Za-z0-9", "_")
-                      .upcase
+  # @private
+  sig { returns(String) }
+  def repo_var_suffix
+    @repo_var_suffix ||= path.to_s
+                             .delete_prefix(TAP_DIRECTORY.to_s)
+                             .tr("^A-Za-z0-9", "_")
+                             .upcase
   end
 
   # True if this {Tap} is a Git repository.
