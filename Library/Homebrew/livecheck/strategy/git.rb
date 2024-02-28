@@ -125,7 +125,7 @@ module Homebrew
           params(
             url:     String,
             regex:   T.nilable(Regexp),
-            _unused: T.nilable(T::Hash[Symbol, T.untyped]),
+            _unused: T.untyped,
             block:   T.nilable(Proc),
           ).returns(T::Hash[Symbol, T.untyped])
         }

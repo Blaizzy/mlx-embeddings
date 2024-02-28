@@ -78,7 +78,7 @@ module Homebrew
             regex:            T.nilable(Regexp),
             provided_content: T.nilable(String),
             homebrew_curl:    T::Boolean,
-            _unused:          T.nilable(T::Hash[Symbol, T.untyped]),
+            _unused:          T.untyped,
             block:            T.nilable(Proc),
           ).returns(T::Hash[Symbol, T.untyped])
         }
