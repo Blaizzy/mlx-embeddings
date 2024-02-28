@@ -60,7 +60,7 @@ module Homebrew
         tap.fix_remote_configuration
       end
     elsif args.no_named?
-      puts Tap.names
+      puts Tap.select(&:installed?)
     else
       tap = Tap.fetch(args.named.first)
       begin
