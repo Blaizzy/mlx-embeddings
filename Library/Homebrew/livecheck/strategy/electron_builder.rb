@@ -42,7 +42,7 @@ module Homebrew
             url:              String,
             regex:            T.nilable(Regexp),
             provided_content: T.nilable(String),
-            unused:           T.nilable(T::Hash[Symbol, T.untyped]),
+            unused:           T.untyped,
             block:            T.nilable(Proc),
           ).returns(T::Hash[Symbol, T.untyped])
         }

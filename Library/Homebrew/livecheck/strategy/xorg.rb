@@ -111,7 +111,7 @@ module Homebrew
           params(
             url:    String,
             regex:  T.nilable(Regexp),
-            unused: T.nilable(T::Hash[Symbol, T.untyped]),
+            unused: T.untyped,
             block:  T.nilable(Proc),
           ).returns(T::Hash[Symbol, T.untyped])
         }
