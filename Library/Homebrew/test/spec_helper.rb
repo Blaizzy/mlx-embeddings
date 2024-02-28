@@ -204,6 +204,7 @@ RSpec.configure do |config|
   config.around do |example|
     Homebrew.raise_deprecation_exceptions = true
 
+    Tap.each(&:clear_cache)
     Cachable::Registry.clear_all_caches
     FormulaInstaller.clear_attempted
     FormulaInstaller.clear_installed
