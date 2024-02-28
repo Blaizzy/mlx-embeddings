@@ -108,6 +108,7 @@ RSpec.describe "Internal Tap JSON -- Formula" do
           "ruby_source_path"       => "Formula/p/ponyc.rb",
           "tap"                    => "homebrew/core",
           "tap_git_head"           => tap_git_head,
+          # TODO: improve this API before we ship internal API v3 to users
           "uses_from_macos"        => [{ "llvm"=>[:build, :test] }, "zlib"],
           "uses_from_macos_bounds" => [{}, {}],
           "versions"               => { "bottle"=>true, "head"=>nil, "stable"=>"0.58.1" },
