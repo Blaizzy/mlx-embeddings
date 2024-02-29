@@ -239,7 +239,9 @@ module PyPI
     end
 
     main_package = if package_name.present?
-      Package.new(package_name, python_name: python_name)
+      package_string = package_name
+      package_string += "==#{formula.version}" if version.blank? && formula.version.present?
+      Package.new(package_string, python_name: python_name)
     elsif package_name == ""
       nil
     else
