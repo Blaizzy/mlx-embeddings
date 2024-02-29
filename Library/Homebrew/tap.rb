@@ -869,6 +869,8 @@ class Tap
   # An array of all installed {Tap} names.
   sig { returns(T::Array[String]) }
   def self.names
+    # odeprecated "`#{self}.names`"
+
     map(&:name).sort
   end
 
