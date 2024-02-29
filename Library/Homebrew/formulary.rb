@@ -411,10 +411,11 @@ module Formulary
         self.class.instance_variable_get(:@ruby_source_path_string)
       end
 
-      @ruby_source_checksum_hash = json_formula["ruby_source_checksum"]
+      @ruby_source_checksum_string = json_formula.dig("ruby_source_checksum", "sha256")
+      @ruby_source_checksum_string ||= json_formula["ruby_source_sha256"]
       def ruby_source_checksum
-        checksum_hash = self.class.instance_variable_get(:@ruby_source_checksum_hash)
-        Checksum.new(checksum_hash["sha256"]) if checksum_hash&.key?("sha256")
+        checksum = self.class.instance_variable_get(:@ruby_source_checksum_string)
+        Checksum.new(checksum) if checksum
       end
     end
 

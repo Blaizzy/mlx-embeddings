@@ -85,16 +85,19 @@ RSpec.describe "Internal Tap JSON -- Formula" do
     context "when loading formulae" do
       let(:fennel_metadata) do
         {
-          "dependencies"     => ["lua"],
-          "desc"             => "Lua Lisp Language",
-          "full_name"        => "fennel",
-          "homepage"         => "https://fennel-lang.org",
-          "license"          => "MIT",
-          "name"             => "fennel",
-          "ruby_source_path" => "Formula/f/fennel.rb",
-          "tap"              => "homebrew/core",
-          "tap_git_head"     => tap_git_head,
-          "versions"         => { "bottle"=>true, "head"=>nil, "stable"=>"1.4.0" },
+          "dependencies"         => ["lua"],
+          "desc"                 => "Lua Lisp Language",
+          "full_name"            => "fennel",
+          "homepage"             => "https://fennel-lang.org",
+          "license"              => "MIT",
+          "name"                 => "fennel",
+          "ruby_source_path"     => "Formula/f/fennel.rb",
+          "tap"                  => "homebrew/core",
+          "tap_git_head"         => tap_git_head,
+          "versions"             => { "bottle"=>true, "head"=>nil, "stable"=>"1.4.0" },
+          "ruby_source_checksum" => {
+            "sha256" => "5856e655fd1cea11496d67bc27fb14fee5cfbdea63c697c3773c7f247581197d",
+          },
         }
       end
 
@@ -112,6 +115,9 @@ RSpec.describe "Internal Tap JSON -- Formula" do
           "uses_from_macos"        => [{ "llvm"=>[:build, :test] }, "zlib"],
           "uses_from_macos_bounds" => [{}, {}],
           "versions"               => { "bottle"=>true, "head"=>nil, "stable"=>"0.58.1" },
+          "ruby_source_checksum"   => {
+            "sha256" => "81d51c25d18710191beb62f9f380bae3d878aad815a65ec1ee2a3b132c1fadb3",
+          },
         }
       end
 
