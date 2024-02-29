@@ -198,6 +198,8 @@ module PyPI
       package_name:             T.nilable(String),
       extra_packages:           T.nilable(T::Array[String]),
       exclude_packages:         T.nilable(T::Array[String]),
+      dependencies:             T.nilable(T::Array[String]),
+      install_dependencies:     T.nilable(T::Boolean),
       print_only:               T.nilable(T::Boolean),
       silent:                   T.nilable(T::Boolean),
       verbose:                  T.nilable(T::Boolean),
@@ -205,7 +207,8 @@ module PyPI
     ).returns(T.nilable(T::Boolean))
   }
   def self.update_python_resources!(formula, version: nil, package_name: nil, extra_packages: nil,
-                                    exclude_packages: nil, print_only: false, silent: false, verbose: false,
+                                    exclude_packages: nil, dependencies: nil, install_dependencies: false,
+                                    print_only: false, silent: false, verbose: false,
                                     ignore_non_pypi_packages: false)
 
     auto_update_list = formula.tap&.pypi_formula_mappings
@@ -224,7 +227,20 @@ module PyPI
         package_name = list_entry["package_name"]
         extra_packages = list_entry["extra_packages"]
         exclude_packages = list_entry["exclude_packages"]
+        dependencies = list_entry["dependencies"]
       end
+    end
+
+    missing_dependencies = Array(dependencies).reject do |dependency|
+      Formula[dependency].any_version_installed?
+    rescue FormulaUnavailableError
+      odie "Formula \"#{dependency}\" not found but it is a dependency to update \"#{formula.name}\" resources."
+    end
+    if missing_dependencies.present?
+      missing_msg = "formulae required to update \"#{formula.name}\" resources: #{missing_dependencies.join(", ")}"
+      odie "Missing #{missing_msg}" unless install_dependencies
+      ohai "Installing #{missing_msg}"
+      missing_dependencies.each(&method(:ensure_formula_installed!))
     end
 
     python_deps = formula.deps
