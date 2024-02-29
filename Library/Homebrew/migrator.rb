@@ -404,8 +404,8 @@ class Migrator
 
   # Remove `Cellar/oldname` link if it belongs to newname.
   def unlink_oldname_cellar
-    if (old_cellar.symlink? && !old_cellar.exist?) || (old_cellar.symlink? \
-          && formula.rack.exist? && formula.rack.realpath == old_cellar.realpath)
+    if (old_cellar.symlink? && !old_cellar.exist?) ||
+       (old_cellar.symlink? && formula.rack.exist? && formula.rack.realpath == old_cellar.realpath)
       old_cellar.unlink
     end
   end
