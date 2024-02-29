@@ -331,6 +331,7 @@ RSpec.describe Formulary do
               "working_dir" => "/$HOME",
             },
             "ruby_source_path"         => "Formula/#{formula_name}.rb",
+            "ruby_source_checksum"     => { "sha256" => "ABCDEFGHIJKLMNOPQRSTUVWXYZ" },
           }.merge(extra_items),
         }
       end
@@ -418,6 +419,8 @@ RSpec.describe Formulary do
         expect(formula.service.working_dir).to eq(Dir.home)
         expect(formula.plist_name).to eq("custom.launchd.name")
         expect(formula.service_name).to eq("custom.systemd.name")
+
+        expect(formula.ruby_source_checksum.hexdigest).to eq("abcdefghijklmnopqrstuvwxyz")
 
         expect do
           formula.install
