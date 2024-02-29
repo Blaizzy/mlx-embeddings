@@ -472,10 +472,13 @@ module Homebrew
     if formula_or_cask.is_a?(Formula)
       require "formula_auditor"
       auditor = FormulaAuditor.new(formula_or_cask)
-      puts <<~EOS if auditor.synced_with_other_formulae?
-        Version syncing:          #{title_name} version should be kept in sync with
-                                  #{synced_with(auditor, formula_or_cask, new_version.general).join(", ")}.
-      EOS
+      if auditor.synced_with_other_formulae?
+        outdated_synced_formulae = synced_with(auditor, formula_or_cask, new_version.general)
+        puts <<~EOS if outdated_synced_formulae.present?
+          Version syncing:          #{title_name} version should be kept in sync with
+                                    #{outdated_synced_formulae.join(", ")}.
+        EOS
+      end
     end
     puts <<~EOS unless args.no_pull_requests?
       Open pull requests:       #{open_pull_requests || "none"}
