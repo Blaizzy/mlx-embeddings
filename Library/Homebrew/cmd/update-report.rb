@@ -275,8 +275,7 @@ module Homebrew
 
     new_major_version, new_minor_version, new_patch_version = new_tag.split(".").map(&:to_i)
     old_major_version, old_minor_version = (old_tag.split(".")[0, 2]).map(&:to_i) if old_tag.present?
-    if old_tag.blank? || new_major_version > old_major_version \
-        || new_minor_version > old_minor_version
+    if old_tag.blank? || new_major_version > old_major_version || new_minor_version > old_minor_version
       puts <<~EOS
         The #{new_major_version}.#{new_minor_version}.0 release notes are available on the Homebrew Blog:
           #{Formatter.url("https://brew.sh/blog/#{new_major_version}.#{new_minor_version}.0")}
