@@ -546,6 +546,7 @@ _brew_bump_formula_pr() {
     '--force[Remove all mirrors if `--mirror` was not specified]' \
     '--fork-org[Use the specified GitHub organization for forking]' \
     '--help[Show this message]' \
+    '--install-dependencies[Install missing dependencies required to update resources]' \
     '--message[Prepend message to the default pull request message]' \
     '--mirror[Use the specified URL as a mirror URL. If URL is a comma-separated list of URLs, multiple mirrors will be added]' \
     '(--strict --online)--no-audit[Don'\''t run `brew audit` before opening the PR]' \
@@ -1995,6 +1996,7 @@ _brew_update_python_resources() {
     '--extra-packages[Include these additional packages when finding resources]' \
     '--help[Show this message]' \
     '--ignore-non-pypi-packages[Don'\''t fail if formula is not a PyPI package]' \
+    '--install-dependencies[Install missing dependencies required to update resources]' \
     '--package-name[Use the specified package-name when finding resources for formula. If no package name is specified, it will be inferred from the formula'\''s stable URL]' \
     '--print-only[Print the updated resource blocks instead of changing formula]' \
     '--quiet[Make some output more quiet]' \

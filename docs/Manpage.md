@@ -1129,6 +1129,8 @@ nor vice versa. It must use whichever style specification the formula already us
   Specify the new commit *`revision`* corresponding to the specified git *`tag`* or specified *`version`*.
 * `-f`, `--force`:
   Remove all mirrors if `--mirror` was not specified.
+* `--install-dependencies`:
+  Install missing dependencies required to update resources.
 * `--python-package-name`:
   Use the specified *`package-name`* when finding Python resources for *`formula`*. If no package name is specified, it will be inferred from the formula's stable URL.
 * `--python-extra-packages`:
@@ -1666,6 +1668,8 @@ Update versions for PyPI resource blocks in *`formula`*.
   Suppress any output.
 * `--ignore-non-pypi-packages`:
   Don't fail if *`formula`* is not a PyPI package.
+* `--install-dependencies`:
+  Install missing dependencies required to update resources.
 * `--version`:
   Use the specified *`version`* when finding resources for *`formula`*. If no version is specified, the current version for *`formula`* will be used.
 * `--package-name`:

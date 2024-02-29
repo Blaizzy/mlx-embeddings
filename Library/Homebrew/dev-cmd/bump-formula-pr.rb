@@ -72,6 +72,8 @@ module Homebrew
                           "or specified <version>."
       switch "-f", "--force",
              description: "Remove all mirrors if `--mirror` was not specified."
+      switch "--install-dependencies",
+             description: "Install missing dependencies required to update resources."
       flag   "--python-package-name=",
              description: "Use the specified <package-name> when finding Python resources for <formula>. " \
                           "If no package name is specified, it will be inferred from the formula's stable URL."
@@ -329,6 +331,7 @@ module Homebrew
                                                         package_name:             args.python_package_name,
                                                         extra_packages:           args.python_extra_packages,
                                                         exclude_packages:         args.python_exclude_packages,
+                                                        install_dependencies:     args.install_dependencies?,
                                                         silent:                   args.quiet?,
                                                         ignore_non_pypi_packages: true
     end
