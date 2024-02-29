@@ -251,8 +251,8 @@ module Formulary
       desc json_formula["desc"]
       homepage json_formula["homepage"]
       license SPDX.string_to_license_expression(json_formula["license"])
-      revision json_formula["revision"]
-      version_scheme json_formula["version_scheme"]
+      revision json_formula.fetch("revision", 0)
+      version_scheme json_formula.fetch("version_scheme", 0)
 
       if (urls_stable = json_formula["urls"]["stable"].presence)
         stable do
@@ -262,7 +262,7 @@ module Formulary
             using:    urls_stable["using"]&.to_sym,
           }.compact
           url urls_stable["url"], **url_spec
-          version json_formula["versions"]["stable"]
+          version Homebrew::API.internal_json_v3? ? json_formula["version"] : json_formula["versions"]["stable"]
           sha256 urls_stable["checksum"] if urls_stable["checksum"].present?
 
           instance_exec(:stable, &add_deps)
@@ -289,7 +289,13 @@ module Formulary
         end
       end
 
-      if (bottles_stable = json_formula["bottle"]["stable"].presence)
+      bottles_stable = if Homebrew::API.internal_json_v3?
+        json_formula["bottle"]
+      else
+        json_formula["bottle"]["stable"]
+      end.presence
+
+      if bottles_stable
         bottle do
           if Homebrew::EnvConfig.bottle_domain == HOMEBREW_BOTTLE_DEFAULT_DOMAIN
             root_url HOMEBREW_BOTTLE_DEFAULT_DOMAIN
@@ -373,19 +379,26 @@ module Formulary
             &.gsub(HOMEBREW_HOME_PLACEHOLDER, Dir.home)
       end
 
-      @tap_git_head_string = json_formula["tap_git_head"]
+      @tap_git_head_string = if Homebrew::API.internal_json_v3?
+        Homebrew::API::Formula.tap_git_head
+      else
+        json_formula["tap_git_head"]
+      end
+
       def tap_git_head
         self.class.instance_variable_get(:@tap_git_head_string)
       end
 
-      @oldnames_array = json_formula["oldnames"] || [json_formula["oldname"]].compact
-      def oldnames
-        self.class.instance_variable_get(:@oldnames_array)
-      end
+      unless Homebrew::API.internal_json_v3?
+        @oldnames_array = json_formula["oldnames"] || [json_formula["oldname"]].compact
+        def oldnames
+          self.class.instance_variable_get(:@oldnames_array)
+        end
 
-      @aliases_array = json_formula.fetch("aliases", [])
-      def aliases
-        self.class.instance_variable_get(:@aliases_array)
+        @aliases_array = json_formula.fetch("aliases", [])
+        def aliases
+          self.class.instance_variable_get(:@aliases_array)
+        end
       end
 
       @versioned_formulae_array = json_formula.fetch("versioned_formulae", [])

@@ -39,19 +39,24 @@ module Homebrew
 
       sig { returns(T::Boolean) }
       def self.download_and_cache_data!
-        json_formulae, updated = Homebrew::API.fetch_json_api_file "formula.jws.json"
+        if Homebrew::API.internal_json_v3?
+          json_formulae, updated = Homebrew::API.fetch_json_api_file "internal/v3/homebrew-core.jws.json"
+          overwrite_cache! T.cast(json_formulae, T::Hash[String, T.untyped])
+        else
+          json_formulae, updated = Homebrew::API.fetch_json_api_file "formula.jws.json"
 
-        cache["aliases"] = {}
-        cache["renames"] = {}
-        cache["formulae"] = json_formulae.to_h do |json_formula|
-          json_formula["aliases"].each do |alias_name|
-            cache["aliases"][alias_name] = json_formula["name"]
-          end
-          (json_formula["oldnames"] || [json_formula["oldname"]].compact).each do |oldname|
-            cache["renames"][oldname] = json_formula["name"]
-          end
+          cache["aliases"] = {}
+          cache["renames"] = {}
+          cache["formulae"] = json_formulae.to_h do |json_formula|
+            json_formula["aliases"].each do |alias_name|
+              cache["aliases"][alias_name] = json_formula["name"]
+            end
+            (json_formula["oldnames"] || [json_formula["oldname"]].compact).each do |oldname|
+              cache["renames"][oldname] = json_formula["name"]
+            end
 
-          [json_formula["name"], json_formula.except("name")]
+            [json_formula["name"], json_formula.except("name")]
+          end
         end
 
         updated
@@ -86,6 +91,28 @@ module Homebrew
         end
 
         cache["renames"]
+      end
+
+      sig { returns(Hash) }
+      def self.tap_migrations
+        # Not sure that we need to reload here.
+        unless cache.key?("tap_migrations")
+          json_updated = download_and_cache_data!
+          write_names_and_aliases(regenerate: json_updated)
+        end
+
+        cache["tap_migrations"]
+      end
+
+      sig { returns(String) }
+      def self.tap_git_head
+        # Note sure we need to reload here.
+        unless cache.key?("tap_git_head")
+          json_updated = download_and_cache_data!
+          write_names_and_aliases(regenerate: json_updated)
+        end
+
+        cache["tap_git_head"]
       end
 
       sig { params(regenerate: T::Boolean).void }

@@ -126,6 +126,7 @@ class Tap
     @formula_dir = nil
     @cask_dir = nil
     @command_dir = nil
+    @formula_names = nil
     @formula_files = nil
     @cask_files = nil
     @alias_dir = nil
@@ -1101,6 +1102,8 @@ class CoreTap < AbstractCoreTap
     @tap_migrations ||= if Homebrew::EnvConfig.no_install_from_api?
       ensure_installed!
       super
+    elsif Homebrew::API.internal_json_v3?
+      Homebrew::API::Formula.tap_migrations
     else
       migrations, = Homebrew::API.fetch_json_api_file "formula_tap_migrations.jws.json",
                                                       stale_seconds: TAP_MIGRATIONS_STALE_SECONDS
@@ -1187,6 +1190,23 @@ class CoreTap < AbstractCoreTap
       new_path = File.join(tap_path, formula_hash.fetch("ruby_source_path"))
       hash[name] = Pathname(new_path) if existing_path.nil? || existing_path.to_s.length < new_path.length
     end
+  end
+
+  sig { returns(T::Hash[String, T.untyped]) }
+  def to_api_hash
+    formulae_api_hash = formula_names.to_h do |name|
+      formula = Formulary.factory(name)
+      formula_hash = formula.to_hash_with_variations(hash_method: :to_api_hash)
+      [name, formula_hash]
+    end
+
+    {
+      "tap_git_head"   => git_head,
+      "aliases"        => alias_table,
+      "renames"        => formula_renames,
+      "tap_migrations" => tap_migrations,
+      "formulae"       => formulae_api_hash,
+    }
   end
 end
 
