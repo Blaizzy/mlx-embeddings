@@ -34,9 +34,8 @@ module Homebrew
   def self.extract
     args = extract_args.parse
 
-    if (match = args.named.first.match(HOMEBREW_TAP_FORMULA_REGEX))
-      name = match[3].downcase
-      source_tap = Tap.fetch(match[1], match[2])
+    if (tap_with_name = args.named.first&.then { Tap.with_formula_name(_1) })
+      source_tap, name = tap_with_name
     else
       name = args.named.first.downcase
       source_tap = CoreTap.instance

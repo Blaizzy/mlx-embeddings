@@ -175,11 +175,13 @@ module Homebrew
     end
 
     args.named.each do |name|
-      next if File.exist?(name)
-      next unless name =~ HOMEBREW_TAP_FORMULA_REGEX
+      if (tap_with_name = Tap.with_formula_name(name))
+        tap, = tap_with_name
+      elsif (tap_with_token = Tap.with_cask_token(name))
+        tap, = tap_with_token
+      end
 
-      tap = Tap.fetch(Regexp.last_match(1), Regexp.last_match(2))
-      tap.ensure_installed!
+      tap&.ensure_installed!
     end
 
     if args.ignore_dependencies?

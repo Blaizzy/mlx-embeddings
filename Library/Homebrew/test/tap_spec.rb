@@ -599,4 +599,24 @@ RSpec.describe Tap do
       expect(described_class.fetch("my", "tap-with-@-symbol").repo_var_suffix).to eq "_MY_HOMEBREW_TAP_WITH___SYMBOL"
     end
   end
+
+  describe "::with_formula_name" do
+    it "returns the tap and formula name when given a full name" do
+      expect(described_class.with_formula_name("homebrew/core/gcc")).to eq [CoreTap.instance, "gcc"]
+    end
+
+    it "returns nil when given a relative path" do
+      expect(described_class.with_formula_name("./Formula/gcc.rb")).to be_nil
+    end
+  end
+
+  describe "::with_cask_token" do
+    it "returns the tap and cask token when given a full token" do
+      expect(described_class.with_cask_token("homebrew/cask/alfred")).to eq [CoreCaskTap.instance, "alfred"]
+    end
+
+    it "returns nil when given a relative path" do
+      expect(described_class.with_cask_token("./Casks/alfred.rb")).to be_nil
+    end
+  end
 end
