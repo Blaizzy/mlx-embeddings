@@ -19,7 +19,9 @@ class Dependency
     @name = name
     @tags = tags
 
-    @tap = Tap.fetch(Regexp.last_match(1), Regexp.last_match(2)) if name =~ HOMEBREW_TAP_FORMULA_REGEX
+    return unless (tap_with_name = Tap.with_formula_name(name))
+
+    @tap, = tap_with_name
   end
 
   def to_s

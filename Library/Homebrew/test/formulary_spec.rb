@@ -535,6 +535,22 @@ RSpec.describe Formulary do
   end
 
   describe "::loader_for" do
+    context "when given a relative path with two slashes" do
+      it "returns a `FromPathLoader`" do
+        mktmpdir.cd do
+          FileUtils.mkdir "Formula"
+          FileUtils.touch "Formula/gcc.rb"
+          expect(described_class.loader_for("./Formula/gcc.rb")).to be_a Formulary::FromPathLoader
+        end
+      end
+    end
+
+    context "when given a tapped name" do
+      it "returns a `FromTapLoader`" do
+        expect(described_class.loader_for("homebrew/core/gcc")).to be_a Formulary::FromTapLoader
+      end
+    end
+
     context "when not using the API" do
       before do
         ENV["HOMEBREW_NO_INSTALL_FROM_API"] = "1"

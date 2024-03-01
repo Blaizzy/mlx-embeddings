@@ -65,6 +65,38 @@ class Tap
     fetch(match[:user], match[:repo])
   end
 
+  # @private
+  sig { params(name: String).returns(T.nilable([T.attached_class, String])) }
+  def self.with_formula_name(name)
+    return unless (match = name.match(HOMEBREW_TAP_FORMULA_REGEX))
+
+    user = T.must(match[:user])
+    repo = T.must(match[:repo])
+    name = T.must(match[:name])
+
+    # Relative paths are not taps.
+    return if [user, repo].intersect?([".", ".."])
+
+    tap = fetch(user, repo)
+    [tap, name.downcase]
+  end
+
+  # @private
+  sig { params(token: String).returns(T.nilable([T.attached_class, String])) }
+  def self.with_cask_token(token)
+    return unless (match = token.match(HOMEBREW_TAP_CASK_REGEX))
+
+    user = T.must(match[:user])
+    repo = T.must(match[:repo])
+    token = T.must(match[:token])
+
+    # Relative paths are not taps.
+    return if [user, repo].intersect?([".", ".."])
+
+    tap = fetch(user, repo)
+    [tap, token.downcase]
+  end
+
   sig { returns(CoreCaskTap) }
   def self.default_cask_tap
     odisabled "`Tap.default_cask_tap`", "`CoreCaskTap.instance`"

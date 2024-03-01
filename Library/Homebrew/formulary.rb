@@ -721,15 +721,15 @@ module Formulary
     }
     def self.try_new(ref, from: T.unsafe(nil), warn: false)
       ref = ref.to_s
-      return unless (name = ref[HOMEBREW_TAP_FORMULA_REGEX, :name])
 
-      alias_name = name
+      return unless (name_tap_type = Formulary.tap_formula_name_type(ref, warn: warn))
 
-      name, tap, type = Formulary.tap_formula_name_type(ref, warn: warn)
+      name, tap, type = name_tap_type
       path = Formulary.find_formula_in_tap(name, tap)
 
       options = if type == :alias
-        { alias_name: alias_name.downcase }
+        # TODO: Simplify this by making `tap_formula_name_type` return the alias name.
+        { alias_name: T.must(ref[HOMEBREW_TAP_FORMULA_REGEX, :name]).downcase }
       else
         {}
       end
@@ -893,7 +893,9 @@ module Formulary
 
       ref = "#{CoreTap.instance}/#{name}"
 
-      name, tap, type = Formulary.tap_formula_name_type(ref, warn: warn)
+      return unless (name_tap_type = Formulary.tap_formula_name_type(ref, warn: warn))
+
+      name, tap, type = name_tap_type
 
       options =  if type == :alias
         { alias_name: alias_name.downcase }
@@ -1127,9 +1129,12 @@ module Formulary
     loader_for(ref).path
   end
 
+  sig { params(tapped_name: String, warn: T::Boolean).returns(T.nilable([String, Tap, T.nilable(Symbol)])) }
   def self.tap_formula_name_type(tapped_name, warn:)
-    user, repo, name = tapped_name.split("/", 3).map(&:downcase)
-    tap = Tap.fetch(user, repo)
+    return unless (tap_with_name = Tap.with_formula_name(tapped_name))
+
+    tap, name = tap_with_name
+
     type = nil
 
     # FIXME: Remove the need to do this here.
@@ -1138,7 +1143,7 @@ module Formulary
     if (possible_alias = tap.alias_table[alias_table_key].presence)
       # FIXME: Remove the need to split the name and instead make
       #        the alias table only contain short names.
-      name = possible_alias.split("/").last
+      name = T.must(possible_alias.split("/").last)
       type = :alias
     elsif (new_name = tap.formula_renames[name].presence)
       old_name = tap.core_tap? ? name : tapped_name
@@ -1156,7 +1161,10 @@ module Formulary
         opoo "Tap migration for #{tapped_name} points to itself, stopping recursion."
       else
         old_name = tap.core_tap? ? name : tapped_name
-        name, tap, = tap_formula_name_type(new_tapped_name, warn: false)
+        return unless (name_tap_type = tap_formula_name_type(new_tapped_name, warn: false))
+
+        name, tap, = name_tap_type
+
         new_name = new_tap.core_tap? ? name : "#{tap}/#{name}"
         type = :migration
       end

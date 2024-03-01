@@ -207,9 +207,9 @@ module Cask
       def self.try_new(ref, warn: false)
         ref = ref.to_s
 
-        return unless ref.match?(HOMEBREW_TAP_CASK_REGEX)
+        return unless (token_tap_type = CaskLoader.tap_cask_token_type(ref, warn: warn))
 
-        token, tap, = CaskLoader.tap_cask_token_type(ref, warn: warn)
+        token, tap, = token_tap_type
         new("#{tap}/#{token}")
       end
 
@@ -529,9 +529,12 @@ module Cask
       self.for(ref, warn: warn).load(config: config)
     end
 
+    sig { params(tapped_token: String, warn: T::Boolean).returns(T.nilable([String, Tap, T.nilable(Symbol)])) }
     def self.tap_cask_token_type(tapped_token, warn:)
-      user, repo, token = tapped_token.split("/", 3).map(&:downcase)
-      tap = Tap.fetch(user, repo)
+      return unless (tap_with_token = Tap.with_cask_token(tapped_token))
+
+      tap, token = tap_with_token
+
       type = nil
 
       if (new_token = tap.cask_renames[token].presence)
@@ -550,7 +553,9 @@ module Cask
           opoo "Tap migration for #{tapped_token} points to itself, stopping recursion."
         else
           old_token = tap.core_cask_tap? ? token : tapped_token
-          token, tap, = tap_cask_token_type(new_tapped_token, warn: false)
+          return unless (token_tap_type = tap_cask_token_type(new_tapped_token, warn: false))
+
+          token, tap, = token_tap_type
           new_token = new_tap.core_cask_tap? ? token : "#{tap}/#{token}"
           type = :migration
         end
