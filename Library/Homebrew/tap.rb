@@ -272,6 +272,7 @@ class Tap
   end
 
   # {TapConfig} of this {Tap}.
+  sig { returns(TapConfig) }
   def config
     @config ||= begin
       raise TapUnavailableError, name unless installed?
