@@ -164,6 +164,7 @@ class Tap
     @formula_reverse_renames = nil
     @cask_files = nil
     @cask_files_by_name = nil
+    @cask_reverse_renames = nil
     @alias_dir = nil
     @alias_files = nil
     @aliases = nil
@@ -784,10 +785,12 @@ class Tap
     end
   end
 
-  # Hash with tap formula old names. Reverse of {#formula_renames}.
+  # Mapping from new to old cask tokens. Reverse of {#cask_renames}.
+  #
+  # @private
   sig { returns(T::Hash[String, T::Array[String]]) }
-  def reverse_cask_renames
-    @reverse_cask_renames ||= cask_renames.each_with_object({}) do |(old_name, new_name), hash|
+  def cask_reverse_renames
+    @cask_reverse_renames ||= cask_renames.each_with_object({}) do |(old_name, new_name), hash|
       hash[new_name] ||= []
       hash[new_name] << old_name
     end
