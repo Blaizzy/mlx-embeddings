@@ -112,6 +112,20 @@ module Homebrew
     odie "This formula is not in a tap!" if formula.tap.blank?
     odie "This formula's tap is not a Git repository!" unless formula.tap.git?
 
+    if ENV.fetch("HOMEBREW_TEST_BOT_AUTOBUMP", nil).blank? &&
+       (formula.tap.core_tap? &&
+       (autobump_file_path = formula.tap.path/Tap::HOMEBREW_TAP_AUTOBUMP_FILE) &&
+       autobump_file_path.exist? &&
+       autobump_file_path.readlines(chomp: true).include?(formula.name))
+      odie <<~EOS
+        Whoops, the #{formula.name} formula has its version update
+        pull requests automatically opened by BrewTestBot!
+        We'd still love your contributions, though, so try another one
+        that's not in the autobump list:
+          #{Formatter.url("#{formula.tap.remote}/blob/master/.github/autobump.txt")}
+      EOS
+    end
+
     formula_spec = formula.stable
     odie "#{formula}: no stable specification found!" if formula_spec.blank?
 

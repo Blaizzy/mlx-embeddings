@@ -21,6 +21,7 @@ class Tap
   HOMEBREW_TAP_CASK_RENAMES_FILE = "cask_renames.json"
   HOMEBREW_TAP_FORMULA_RENAMES_FILE = "formula_renames.json"
   HOMEBREW_TAP_MIGRATIONS_FILE = "tap_migrations.json"
+  HOMEBREW_TAP_AUTOBUMP_FILE = ".github/autobump.txt"
   HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR = "audit_exceptions"
   HOMEBREW_TAP_STYLE_EXCEPTIONS_DIR = "style_exceptions"
   HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS = "pypi_formula_mappings.json"
