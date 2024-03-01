@@ -570,7 +570,6 @@ module GitHub
     end
     return if pull_requests.blank?
 
-    force = ENV.fetch("HOMEBREW_TEST_BOT_AUTOBUMP", nil).present?
     duplicates_message = <<~EOS
       These #{state} pull requests may be duplicates:
       #{pull_requests.map { |pr| "#{pr["title"]} #{pr["html_url"]}" }.join("\n")}
@@ -579,11 +578,10 @@ module GitHub
       Duplicate PRs should not be opened.
       Manually open these PRs if you are sure that they are not duplicates.
     EOS
-    if force && !quiet
-      opoo duplicates_message
-    elsif !force && quiet
+
+    if quiet
       odie error_message
-    elsif !force
+    else
       odie <<~EOS
         #{duplicates_message.chomp}
         #{error_message}
