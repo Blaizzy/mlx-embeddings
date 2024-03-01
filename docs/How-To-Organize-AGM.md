@@ -1,4 +1,4 @@
-# How to Organize AGM
+# How To Organize AGM
 
 AGM is our combination of business meeting, yearly work planning session, and opportunity to meet others in our international team in person.
 

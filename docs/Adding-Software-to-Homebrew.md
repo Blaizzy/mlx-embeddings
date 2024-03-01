@@ -1,4 +1,4 @@
-# Adding Software To Homebrew
+# Adding Software to Homebrew
 
 Is your favourite software missing from Homebrew? Then you're the perfect person to resolve this problem.
 
