@@ -56,7 +56,7 @@ The software in question must:
 
 * be maintained (i.e. the last release wasn't ages ago, it works without patching on all Homebrew-supported OS versions and has no outstanding, unpatched security vulnerabilities)
 * be stable (e.g. not declared "unstable" or "beta" by upstream)
-* be known
+* be known (e.g. GitHub repositories should have >30 forks, >30 watchers and >75 stars)
 * be used
 * have a homepage
 
