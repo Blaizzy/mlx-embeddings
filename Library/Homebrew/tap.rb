@@ -1036,9 +1036,9 @@ class CoreTap < AbstractCoreTap
     super
   end
 
-  sig { returns(String) }
+  sig { returns(T.nilable(String)) }
   def remote
-    super if Homebrew::EnvConfig.no_install_from_api?
+    return super if Homebrew::EnvConfig.no_install_from_api?
 
     Homebrew::EnvConfig.core_git_remote
   end
