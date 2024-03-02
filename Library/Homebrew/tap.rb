@@ -820,7 +820,7 @@ class Tap
 
   sig { returns(T::Hash[String, T::Array[String]]) }
   def self.reverse_tap_migrations_renames
-    Tap.each_with_object({}) do |tap, hash|
+    cache[:reverse_tap_migrations_renames] ||= Tap.each_with_object({}) do |tap, hash|
       tap.tap_migrations.each do |old_name, new_name|
         new_tap_user, new_tap_repo, new_name = new_name.split("/", 3)
         next unless new_name
@@ -1211,14 +1211,16 @@ class CoreTap < AbstractCoreTap
   def formula_files_by_name
     return super if Homebrew::EnvConfig.no_install_from_api?
 
-    tap_path = path.to_s
-    Homebrew::API::Formula.all_formulae.each_with_object({}) do |item, hash|
-      name, formula_hash = item
-      # If there's more than one item with the same path: use the longer one to prioritise more specific results.
-      existing_path = hash[name]
-      # Pathname equivalent is slow in a tight loop
-      new_path = File.join(tap_path, formula_hash.fetch("ruby_source_path"))
-      hash[name] = Pathname(new_path) if existing_path.nil? || existing_path.to_s.length < new_path.length
+    @formula_files_by_name ||= begin
+      tap_path = path.to_s
+      Homebrew::API::Formula.all_formulae.each_with_object({}) do |item, hash|
+        name, formula_hash = item
+        # If there's more than one item with the same path: use the longer one to prioritise more specific results.
+        existing_path = hash[name]
+        # Pathname equivalent is slow in a tight loop
+        new_path = File.join(tap_path, formula_hash.fetch("ruby_source_path"))
+        hash[name] = Pathname(new_path) if existing_path.nil? || existing_path.to_s.length < new_path.length
+      end
     end
   end
 
@@ -1279,7 +1281,7 @@ class CoreCaskTap < AbstractCoreTap
   def cask_files_by_name
     return super if Homebrew::EnvConfig.no_install_from_api?
 
-    Homebrew::API::Cask.all_casks.each_with_object({}) do |item, hash|
+    @cask_files_by_name ||= Homebrew::API::Cask.all_casks.each_with_object({}) do |item, hash|
       name, cask_hash = item
       # If there's more than one item with the same path: use the longer one to prioritise more specific results.
       existing_path = hash[name]
