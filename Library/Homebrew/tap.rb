@@ -820,7 +820,7 @@ class Tap
 
   sig { returns(T::Hash[String, T::Array[String]]) }
   def self.reverse_tap_migrations_renames
-    Tap.each_with_object({}) do |tap, hash|
+    cache[:reverse_tap_migrations_renames] ||= Tap.each_with_object({}) do |tap, hash|
       tap.tap_migrations.each do |old_name, new_name|
         new_tap_user, new_tap_repo, new_name = new_name.split("/", 3)
         next unless new_name
