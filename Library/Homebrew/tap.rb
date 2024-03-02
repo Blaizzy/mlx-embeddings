@@ -1370,6 +1370,22 @@ class CoreCaskTap < AbstractCoreTap
       migrations
     end
   end
+
+  sig { returns(T::Hash[String, T.untyped]) }
+  def to_api_hash
+    casks_api_hash = cask_tokens.to_h do |token|
+      cask = Cask::CaskLoader.load(token)
+      cask_hash = cask.to_hash_with_variations(hash_method: :to_api_hash)
+      [token, cask_hash]
+    end
+
+    {
+      "tap_git_head"   => git_head,
+      "renames"        => cask_renames,
+      "tap_migrations" => tap_migrations,
+      "casks"          => casks_api_hash,
+    }
+  end
 end
 
 # Permanent configuration per {Tap} using `git-config(1)`.
