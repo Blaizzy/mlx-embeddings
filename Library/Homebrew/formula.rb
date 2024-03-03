@@ -525,6 +525,14 @@ class Formula
     end.sort_by(&:version).reverse
   end
 
+  # Whether this {Formula} is version-synced with other formulae.
+  sig { returns(T::Boolean) }
+  def synced_with_other_formulae?
+    return false if @tap.nil?
+
+    @tap.synced_versions_formulae.any? { |synced_formulae| synced_formulae.include?(name) }
+  end
+
   # A named {Resource} for the currently active {SoftwareSpec}.
   # Additional downloads can be defined as {#resource}s.
   # {Resource#stage} will create a temporary directory and yield to a block.
