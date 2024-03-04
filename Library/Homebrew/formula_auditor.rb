@@ -242,6 +242,7 @@ module Homebrew
         return if user.blank?
 
         tag = SharedAudits.github_tag_from_url(formula.stable.url)
+        tag ||= formula.stable.specs[:tag]
         github_license = GitHub.get_repo_license(user, repo, ref: tag)
         return unless github_license
         return if (licenses + ["NOASSERTION"]).include?(github_license)
