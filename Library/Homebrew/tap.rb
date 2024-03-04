@@ -22,9 +22,10 @@ class Tap
   HOMEBREW_TAP_FORMULA_RENAMES_FILE = "formula_renames.json"
   HOMEBREW_TAP_MIGRATIONS_FILE = "tap_migrations.json"
   HOMEBREW_TAP_AUTOBUMP_FILE = ".github/autobump.txt"
+  HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS_FILE = "pypi_formula_mappings.json"
+  HOMEBREW_TAP_SYNCED_VERSIONS_FORMULAE_FILE = "synced_versions_formulae.json"
   HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR = "audit_exceptions"
   HOMEBREW_TAP_STYLE_EXCEPTIONS_DIR = "style_exceptions"
-  HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS = "pypi_formula_mappings.json"
 
   TAP_MIGRATIONS_STALE_SECONDS = 86400 # 1 day
 
@@ -32,9 +33,10 @@ class Tap
     #{HOMEBREW_TAP_FORMULA_RENAMES_FILE}
     #{HOMEBREW_TAP_CASK_RENAMES_FILE}
     #{HOMEBREW_TAP_MIGRATIONS_FILE}
+    #{HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS_FILE}
+    #{HOMEBREW_TAP_SYNCED_VERSIONS_FORMULAE_FILE}
     #{HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR}/*.json
     #{HOMEBREW_TAP_STYLE_EXCEPTIONS_DIR}/*.json
-    #{HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS}
   ].freeze
 
   def self.fetch(*args)
@@ -177,6 +179,7 @@ class Tap
     @audit_exceptions = nil
     @style_exceptions = nil
     @pypi_formula_mappings = nil
+    @synced_versions_formulae = nil
     @config = nil
     @spell_checker = nil
     remove_instance_variable(:@private) if instance_variable_defined?(:@private)
@@ -857,7 +860,17 @@ class Tap
 
   # Hash with pypi formula mappings
   def pypi_formula_mappings
-    @pypi_formula_mappings = read_formula_list path/HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS
+    @pypi_formula_mappings = read_formula_list path/HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS_FILE
+  end
+
+  # Array with synced versions formulae
+  sig { returns(T::Array[T::Array[String]]) }
+  def synced_versions_formulae
+    @synced_versions_formulae ||= if (synced_file = path/HOMEBREW_TAP_SYNCED_VERSIONS_FORMULAE_FILE).file?
+      JSON.parse(synced_file.read)
+    else
+      []
+    end
   end
 
   # @private
@@ -1163,6 +1176,15 @@ class CoreTap < AbstractCoreTap
   sig { returns(Hash) }
   def pypi_formula_mappings
     @pypi_formula_mappings ||= begin
+      ensure_installed!
+      super
+    end
+  end
+
+  # @private
+  sig { returns(T::Array[T::Array[String]]) }
+  def synced_versions_formulae
+    @synced_versions_formulae ||= begin
       ensure_installed!
       super
     end

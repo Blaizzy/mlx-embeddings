@@ -469,16 +469,12 @@ module Homebrew
       Latest livecheck version: #{new_versions}
       Latest Repology version:  #{repology_latest}
     EOS
-    if formula_or_cask.is_a?(Formula)
-      require "formula_auditor"
-      auditor = FormulaAuditor.new(formula_or_cask)
-      if auditor.synced_with_other_formulae?
-        outdated_synced_formulae = synced_with(auditor, formula_or_cask, new_version.general)
-        puts <<~EOS if outdated_synced_formulae.present?
-          Version syncing:          #{title_name} version should be kept in sync with
-                                    #{outdated_synced_formulae.join(", ")}.
-        EOS
-      end
+    if formula_or_cask.is_a?(Formula) && formula_or_cask.synced_with_other_formulae?
+      outdated_synced_formulae = synced_with(formula_or_cask, new_version.general)
+      puts <<~EOS if outdated_synced_formulae.present?
+        Version syncing:          #{title_name} version should be kept in sync with
+                                  #{outdated_synced_formulae.join(", ")}.
+      EOS
     end
     puts <<~EOS unless args.no_pull_requests?
       Open pull requests:       #{open_pull_requests || "none"}
@@ -521,15 +517,14 @@ module Homebrew
 
   sig {
     params(
-      auditor:     FormulaAuditor,
       formula:     Formula,
       new_version: T.nilable(T.any(Version, Cask::DSL::Version)),
     ).returns(T::Array[String])
   }
-  def synced_with(auditor, formula, new_version)
+  def synced_with(formula, new_version)
     synced_with = []
 
-    auditor.synced_versions_formulae_json.each do |synced_formulae|
+    formula.tap&.synced_versions_formulae&.each do |synced_formulae|
       next unless synced_formulae.include?(formula.name)
 
       synced_formulae.each do |synced_formula|
