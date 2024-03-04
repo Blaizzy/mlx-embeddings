@@ -1338,6 +1338,7 @@ end
 
 # Permanent configuration per {Tap} using `git-config(1)`.
 class TapConfig
+  sig { returns(Tap) }
   attr_reader :tap
 
   sig { params(tap: Tap).void }
@@ -1345,6 +1346,7 @@ class TapConfig
     @tap = tap
   end
 
+  sig { params(key: T.any(Symbol, String)).returns(T.nilable(String)) }
   def [](key)
     return unless tap.git?
     return unless Utils::Git.available?
@@ -1352,6 +1354,7 @@ class TapConfig
     Homebrew::Settings.read key, repo: tap.path
   end
 
+  sig { params(key: T.any(Symbol, String), value: T.any(T::Boolean, String)).void }
   def []=(key, value)
     return unless tap.git?
     return unless Utils::Git.available?
@@ -1359,6 +1362,7 @@ class TapConfig
     Homebrew::Settings.write key, value.to_s, repo: tap.path
   end
 
+  sig { params(key: T.any(Symbol, String)).void }
   def delete(key)
     return unless tap.git?
     return unless Utils::Git.available?
