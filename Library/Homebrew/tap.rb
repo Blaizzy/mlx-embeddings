@@ -851,18 +851,19 @@ class Tap
   # Hash with audit exceptions
   sig { returns(Hash) }
   def audit_exceptions
-    @audit_exceptions = read_formula_list_directory "#{HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR}/*"
+    @audit_exceptions ||= read_formula_list_directory("#{HOMEBREW_TAP_AUDIT_EXCEPTIONS_DIR}/*")
   end
 
   # Hash with style exceptions
   sig { returns(Hash) }
   def style_exceptions
-    @style_exceptions = read_formula_list_directory "#{HOMEBREW_TAP_STYLE_EXCEPTIONS_DIR}/*"
+    @style_exceptions ||= read_formula_list_directory("#{HOMEBREW_TAP_STYLE_EXCEPTIONS_DIR}/*")
   end
 
   # Hash with pypi formula mappings
+  sig { returns(Hash) }
   def pypi_formula_mappings
-    @pypi_formula_mappings = read_formula_list path/HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS_FILE
+    @pypi_formula_mappings ||= read_formula_list(path/HOMEBREW_TAP_PYPI_FORMULA_MAPPINGS_FILE)
   end
 
   # Array with synced versions formulae
