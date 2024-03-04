@@ -679,7 +679,7 @@ module Homebrew
 
     class OptionConflictError < UsageError
       def initialize(args)
-        args_list = args.map(&Formatter.public_method(:option))
+        args_list = args.map { Formatter.option(_1) }
                         .join(" and ")
         super "Options #{args_list} are mutually exclusive."
       end
