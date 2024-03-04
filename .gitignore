@@ -5,7 +5,7 @@
 .DS_Store
 
 # Unignore the contents of `Library` as that's where our code lives.
-!/Library/
+!/Library
 
 # Ignore files within `Library` (again).
 /Library/Homebrew/.npmignore
