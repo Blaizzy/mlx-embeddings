@@ -224,10 +224,13 @@ module Language
           system_site_packages: T::Boolean,
           without_pip:          T::Boolean,
           link_manpages:        T::Boolean,
+          without:              T.nilable(T.any(String, T::Array[String])),
+          start_with:           T.nilable(T.any(String, T::Array[String])),
+          end_with:             T.nilable(T.any(String, T::Array[String])),
         ).returns(Virtualenv)
       }
       def virtualenv_install_with_resources(using: nil, system_site_packages: true, without_pip: true,
-                                            link_manpages: false)
+                                            link_manpages: false, without: nil, start_with: nil, end_with: nil)
         python = using
         if python.nil?
           wanted = python_names.select { |py| needs_python?(py) }
@@ -237,9 +240,22 @@ module Language
           python = T.must(wanted.first)
           python = "python3" if python == "python"
         end
+
+        venv_resources = if without.nil? && start_with.nil? && end_with.nil?
+          resources
+        else
+          remaining_resources = resources.to_h { |resource| [resource.name, resource] }
+
+          slice_resources!(remaining_resources, Array(without))
+          start_with_resources = slice_resources!(remaining_resources, Array(start_with))
+          end_with_resources = slice_resources!(remaining_resources, Array(end_with))
+
+          start_with_resources + remaining_resources.values + end_with_resources
+        end
+
         venv = virtualenv_create(libexec, python.delete("@"), system_site_packages:,
                                                               without_pip:)
-        venv.pip_install resources
+        venv.pip_install venv_resources
         venv.pip_install_and_link(T.must(buildpath), link_manpages:)
         venv
       end
@@ -247,6 +263,22 @@ module Language
       sig { returns(T::Array[String]) }
       def python_names
         %w[python python3 pypy pypy3] + Formula.names.select { |name| name.start_with? "python@" }
+      end
+
+      private
+
+      sig {
+        params(
+          resources_hash: T::Hash[String, Resource],
+          resource_names: T::Array[String],
+        ).returns(T::Array[Resource])
+      }
+      def slice_resources!(resources_hash, resource_names)
+        resource_names.map do |resource_name|
+          resources_hash.delete(resource_name) do
+            raise ArgumentError, "Resource \"#{resource_name}\" is not defined in formula or is already used"
+          end
+        end
       end
 
       # Convenience wrapper for creating and installing packages into Python
