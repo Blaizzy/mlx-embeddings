@@ -258,6 +258,37 @@ RSpec.describe Tap do
     end
   end
 
+  describe "#custom_remote?" do
+    subject(:tap) { described_class.new("Homebrew", "services") }
+
+    let(:remote) { nil }
+
+    before do
+      tap.path.mkpath
+      system "git", "-C", tap.path, "init"
+      system "git", "-C", tap.path, "remote", "add", "origin", remote if remote
+    end
+
+    context "if no remote is available" do
+      it "returns true" do
+        expect(tap.remote).to be_nil
+        expect(tap.custom_remote?).to be true
+      end
+    end
+
+    context "when using the default remote" do
+      let(:remote) { "https://github.com/Homebrew/homebrew-services" }
+
+      its(:custom_remote?) { is_expected.to be false }
+    end
+
+    context "when using a non-default remote" do
+      let(:remote) { "git@github.com:Homebrew/homebrew-services" }
+
+      its(:custom_remote?) { is_expected.to be true }
+    end
+  end
+
   specify "Git variant" do
     touch path/"README"
     setup_git_repo

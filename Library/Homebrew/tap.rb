@@ -524,10 +524,11 @@ class Tap
   end
 
   # True if the {#remote} of {Tap} is customized.
+  sig { returns(T::Boolean) }
   def custom_remote?
-    return true unless remote
+    return true unless (remote = self.remote)
 
-    remote.casecmp(default_remote).nonzero?
+    !remote.casecmp(default_remote).zero?
   end
 
   # Path to the directory of all {Formula} files for this {Tap}.
