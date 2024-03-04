@@ -202,8 +202,9 @@ class Tap
 
   # The remote repository name of this {Tap}.
   # e.g. `user/homebrew-repo`
+  sig { returns(T.nilable(String)) }
   def remote_repo
-    return unless remote
+    return unless (remote = self.remote)
 
     @remote_repo ||= remote.delete_prefix("https://github.com/")
                            .delete_prefix("git@github.com:")
