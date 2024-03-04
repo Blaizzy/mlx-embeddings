@@ -664,7 +664,7 @@ on_request: installed_on_request?, options: options)
       puts "All dependencies for #{formula.full_name} are satisfied."
     elsif !deps.empty?
       oh1 "Installing dependencies for #{formula.full_name}: " \
-          "#{deps.map(&:first).map(&Formatter.method(:identifier)).to_sentence}",
+          "#{deps.map(&:first).map { Formatter.identifier(_1) }.to_sentence}",
           truncate: false
       deps.each { |dep, options| install_dependency(dep, options) }
     end
@@ -1184,7 +1184,7 @@ on_request: installed_on_request?, options: options)
     return if deps.empty?
 
     oh1 "Fetching dependencies for #{formula.full_name}: " \
-        "#{deps.map(&:first).map(&Formatter.method(:identifier)).to_sentence}",
+        "#{deps.map(&:first).map { Formatter.identifier(_1) }.to_sentence}",
         truncate: false
 
     deps.each { |(dep, _options)| fetch_dependency(dep) }
