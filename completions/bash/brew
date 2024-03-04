@@ -500,6 +500,7 @@ _brew_bump_formula_pr() {
       --force
       --fork-org
       --help
+      --install-dependencies
       --message
       --mirror
       --no-audit
@@ -2471,6 +2472,7 @@ _brew_update_python_resources() {
       --extra-packages
       --help
       --ignore-non-pypi-packages
+      --install-dependencies
       --package-name
       --print-only
       --quiet
