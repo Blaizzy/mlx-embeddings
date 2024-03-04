@@ -363,19 +363,19 @@ RSpec.describe Tap do
 
       it "defaults to nil" do
         expect(already_tapped_tap).to be_installed
-        expect(already_tapped_tap.config["forceautoupdate"]).to be_nil
+        expect(already_tapped_tap.config[:forceautoupdate]).to be_nil
       end
 
       it "enables forced auto-updates when true" do
         expect(already_tapped_tap).to be_installed
         already_tapped_tap.install force_auto_update: true
-        expect(already_tapped_tap.config["forceautoupdate"]).to eq("true")
+        expect(already_tapped_tap.config[:forceautoupdate]).to be true
       end
 
       it "disables forced auto-updates when false" do
         expect(already_tapped_tap).to be_installed
         already_tapped_tap.install force_auto_update: false
-        expect(already_tapped_tap.config["forceautoupdate"]).to be_nil
+        expect(already_tapped_tap.config[:forceautoupdate]).to be_nil
       end
     end
 
@@ -488,11 +488,11 @@ RSpec.describe Tap do
   specify "#config" do
     setup_git_repo
 
-    expect(homebrew_foo_tap.config["foo"]).to be_nil
-    homebrew_foo_tap.config["foo"] = "bar"
-    expect(homebrew_foo_tap.config["foo"]).to eq("bar")
-    homebrew_foo_tap.config.delete("foo")
-    expect(homebrew_foo_tap.config["foo"]).to be_nil
+    expect(homebrew_foo_tap.config[:foo]).to be_nil
+    homebrew_foo_tap.config[:foo] = true
+    expect(homebrew_foo_tap.config[:foo]).to be true
+    homebrew_foo_tap.config.delete(:foo)
+    expect(homebrew_foo_tap.config[:foo]).to be_nil
   end
 
   describe "#each" do
