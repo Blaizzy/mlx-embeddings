@@ -1,6 +1,8 @@
 # typed: strong
 # frozen_string_literal: true
 
+require "command_registry"
+
 module Homebrew
   class AbstractCommand
     extend T::Helpers
@@ -12,12 +14,8 @@ module Homebrew
       sig { params(subclass: T.class_of(AbstractCommand)).void }
       def inherited(subclass)
         super
-        @cmds ||= T.let({}, T.nilable(T::Hash[String, T.class_of(AbstractCommand)]))
-        @cmds[subclass.command_name] = subclass
+        CommandRegistry.register(subclass)
       end
-
-      sig { params(name: String).returns(T.nilable(T.class_of(AbstractCommand))) }
-      def command(name) = @cmds&.[](name)
 
       sig { returns(String) }
       def command_name = T.must(name).split("::").fetch(-1).downcase

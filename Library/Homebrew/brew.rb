@@ -84,7 +84,7 @@ begin
   end
 
   if internal_cmd || Commands.external_ruby_v2_cmd_path(cmd)
-    cmd_class = Homebrew::AbstractCommand.command(T.must(cmd))
+    cmd_class = Homebrew::CommandRegistry.command(T.must(cmd))
     if cmd_class
       cmd_class.new.run
     else
