@@ -1690,7 +1690,7 @@ Summarise contributions to Homebrew repositories\.
 .
 .TP
 \fB\-\-repositories\fR
-Specify a comma\-separated list of repositories to search\. Supported repositories: \fBbrew\fR, \fBcore\fR, \fBcask\fR, \fBaliases\fR, \fBautoupdate\fR, \fBbundle\fR, \fBcommand\-not\-found\fR, \fBtest\-bot\fR, \fBservices\fR, \fBcask\-fonts\fR and \fBcask\-versions\fR\. Omitting this flag, or specifying \fB\-\-repositories=primary\fR, searches only the main repositories: brew,core,cask\. Specifying \fB\-\-repositories=all\fR, searches all repositories\.
+Specify a comma\-separated list of repositories to search\. Supported repositories: \fBbrew\fR, \fBcore\fR, \fBcask\fR, \fBaliases\fR, \fBbundle\fR, \fBcommand\-not\-found\fR, \fBtest\-bot\fR, \fBservices\fR, \fBcask\-fonts\fR and \fBcask\-versions\fR\. Omitting this flag, or specifying \fB\-\-repositories=primary\fR, searches only the main repositories: brew,core,cask\. Specifying \fB\-\-repositories=all\fR, searches all repositories\.
 .
 .TP
 \fB\-\-from\fR
@@ -2535,56 +2535,6 @@ Show existing aliases\. If no aliases are given, print the whole list\.
 .TP
 \fB\-\-edit\fR
 Edit aliases in a text editor\. Either one or all aliases may be opened at once\. If the given alias doesn\'t exist it\'ll be pre\-populated with a template\.
-.
-.SS "\fBautoupdate\fR \fIsubcommand\fR [\fIinterval\fR] [\fIoptions\fR]"
-An easy, convenient way to automatically update Homebrew\.
-.
-.P
-This script will run \fBbrew update\fR in the background once every 24 hours (by default) until explicitly told to stop, utilising \fBlaunchd\fR\.
-.
-.P
-\fBbrew autoupdate start\fR [\fI\fBinterval\fR\fR] [\fI\fBoptions\fR\fR]
-    Start autoupdating either once every \fBinterval\fR hours or once every 24 hours\. Please note the interval has to be passed in seconds, so 12 hours would be \fBbrew autoupdate start 43200\fR\. If you want to start the autoupdate immediately and on system boot, pass \fB\-\-immediate\fR\. Pass \fB\-\-upgrade\fR or \fB\-\-cleanup\fR to automatically run \fBbrew upgrade\fR and/or \fBbrew cleanup\fR respectively\. Pass \fB\-\-enable\-notification\fR to send a notification when the autoupdate process has finished successfully\.
-.
-.P
-\fBbrew autoupdate stop\fR
-    Stop autoupdating, but retain plist and logs\.
-.
-.P
-\fBbrew autoupdate delete\fR
-    Cancel the autoupdate, delete the plist and logs\.
-.
-.P
-\fBbrew autoupdate status\fR
-    Print the current status of this tool\.
-.
-.P
-\fBbrew autoupdate version\fR
-    Output this tool\'s current version, and a short changelog\.
-.
-.TP
-\fB\-\-upgrade\fR
-Automatically upgrade your installed formulae\. If the Caskroom exists locally then casks will be upgraded as well\. Must be passed with \fBstart\fR\.
-.
-.TP
-\fB\-\-greedy\fR
-Upgrade casks with \fB\-\-greedy\fR (include auto\-updating casks)\. Must be passed with \fBstart\fR\.
-.
-.TP
-\fB\-\-cleanup\fR
-Automatically clean Homebrew\'s cache and logs\. Must be passed with \fBstart\fR\.
-.
-.TP
-\fB\-\-enable\-notification\fR
-Send a notification when the autoupdate process has finished successfully, if \fBterminal\-notifier\fR is installed and found\. Must be passed with \fBstart\fR\. Note: notifications are enabled by default on macOS Catalina and newer\.
-.
-.TP
-\fB\-\-immediate\fR
-Starts the autoupdate command immediately and on system boot, instead of waiting for one interval (24 hours by default) to pass first\. Must be passed with \fBstart\fR\.
-.
-.TP
-\fB\-\-sudo\fR
-If a cask requires \fBsudo\fR, autoupdate will open a GUI to ask for the password\. Requires https://formulae\.brew\.sh/formula/pinentry\-mac to be installed\.
 .
 .SS "\fBbundle\fR [\fIsubcommand\fR]"
 Bundler for non\-Ruby dependencies from Homebrew, Homebrew Cask, Mac App Store, Whalebrew and Visual Studio Code\.
