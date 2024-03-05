@@ -71,7 +71,7 @@ module Homebrew
           unless args.cask?
             formula_names = args.no_named? ? Formula.installed : args.named.to_resolved_formulae
             full_formula_names = formula_names.map(&:full_name).sort(&tap_and_name_comparison)
-            full_formula_names = Formatter.columns(full_formula_names) unless args.public_send(:"1?")
+            full_formula_names = Formatter.columns(full_formula_names) unless args[:"1?"]
             puts full_formula_names if full_formula_names.present?
           end
           if args.cask? || (!args.formula? && args.no_named?)
@@ -83,7 +83,7 @@ module Homebrew
             # The cast is because `Keg`` does not define `full_name`
             full_cask_names = T.cast(cask_names, T::Array[T.any(Formula, Cask::Cask)])
                                .map(&:full_name).sort(&tap_and_name_comparison)
-            full_cask_names = Formatter.columns(full_cask_names) unless args.public_send(:"1?")
+            full_cask_names = Formatter.columns(full_cask_names) unless args[:"1?"]
             puts full_cask_names if full_cask_names.present?
           end
         elsif args[:pinned?]
@@ -167,7 +167,7 @@ module Homebrew
 
         Cask::List.list_casks(
           *casks,
-          one:       args.public_send(:"1?"),
+          one:       args[:"1?"],
           full_name: args.full_name?,
           versions:  args.versions?,
         )
