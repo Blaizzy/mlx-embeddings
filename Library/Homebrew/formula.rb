@@ -2293,7 +2293,7 @@ class Formula
   end
 
   # @private
-  def to_api_hash
+  def to_internal_api_hash
     api_hash = {
       "desc"                 => desc,
       "license"              => SPDX.license_expression_to_string(license),
@@ -2356,14 +2356,14 @@ class Formula
 
   # @private
   def to_hash_with_variations(hash_method: :to_hash)
-    if loaded_from_api? && hash_method == :to_api_hash
+    if loaded_from_api? && hash_method == :to_internal_api_hash
       raise ArgumentError, "API Hash must be generated from Ruby source files"
     end
 
     namespace_prefix = case hash_method
     when :to_hash
       "Variations"
-    when :to_api_hash
+    when :to_internal_api_hash
       "APIVariations"
     else
       raise ArgumentError, "Unknown hash method #{hash_method.inspect}"
@@ -2404,7 +2404,7 @@ class Formula
       end
     end
 
-    hash["variations"] = variations if hash_method != :to_api_hash || variations.present?
+    hash["variations"] = variations if hash_method != :to_internal_api_hash || variations.present?
     hash
   end
 

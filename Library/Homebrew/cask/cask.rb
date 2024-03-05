@@ -359,7 +359,7 @@ module Cask
     end
 
     # @private
-    def to_api_hash
+    def to_internal_api_hash
       api_hash = {
         "token"              => token,
         "name"               => name,
@@ -408,7 +408,7 @@ module Cask
         if loaded_from_api? && !Homebrew::EnvConfig.no_install_from_api?
           return api_to_local_hash(Homebrew::API::Cask.all_casks[token].dup)
         end
-      when :to_api_hash
+      when :to_internal_api_hash
         raise ArgumentError, "API Hash must be generated from Ruby source files" if loaded_from_api?
       else
         raise ArgumentError, "Unknown hash method #{hash_method.inspect}"
@@ -440,7 +440,7 @@ module Cask
         end
       end
 
-      hash["variations"] = variations if hash_method != :to_api_hash || variations.present?
+      hash["variations"] = variations if hash_method != :to_internal_api_hash || variations.present?
       hash
     end
 

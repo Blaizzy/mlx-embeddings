@@ -75,7 +75,7 @@ module Homebrew
         raise
       end
 
-      homebrew_cask_tap_json = JSON.generate(tap.to_api_hash)
+      homebrew_cask_tap_json = JSON.generate(tap.to_internal_api_hash)
       File.write("api/internal/v3/homebrew-cask.json", homebrew_cask_tap_json) unless args.dry_run?
     end
   end
