@@ -7,17 +7,14 @@ require "cli/parser"
 module Homebrew
   module DevCmd
     class Prof < AbstractCommand
-      sig { override.returns(CLI::Parser) }
-      def raw_args
-        Homebrew::CLI::Parser.new do
-          description <<~EOS
-            Run Homebrew with a Ruby profiler. For example, `brew prof readall`.
-          EOS
-          switch "--stackprof",
-                 description: "Use `stackprof` instead of `ruby-prof` (the default)."
+      cmd_args do
+        description <<~EOS
+          Run Homebrew with a Ruby profiler. For example, `brew prof readall`.
+        EOS
+        switch "--stackprof",
+               description: "Use `stackprof` instead of `ruby-prof` (the default)."
 
-          named_args :command, min: 1
-        end
+        named_args :command, min: 1
       end
 
       sig { override.void }

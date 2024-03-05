@@ -13,59 +13,56 @@ module Homebrew
     class List < AbstractCommand
       include SystemCommand::Mixin
 
-      sig { override.returns(CLI::Parser) }
-      def raw_args
-        Homebrew::CLI::Parser.new do
-          description <<~EOS
-            List all installed formulae and casks.
-            If <formula> is provided, summarise the paths within its current keg.
-            If <cask> is provided, list its artifacts.
-          EOS
-          switch "--formula", "--formulae",
-                 description: "List only formulae, or treat all named arguments as formulae."
-          switch "--cask", "--casks",
-                 description: "List only casks, or treat all named arguments as casks."
-          switch "--full-name",
-                 description: "Print formulae with fully-qualified names. Unless `--full-name`, `--versions` " \
-                              "or `--pinned` are passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are " \
-                              "passed to `ls`(1) which produces the actual output."
-          switch "--versions",
-                 description: "Show the version number for installed formulae, or only the specified " \
-                              "formulae if <formula> are provided."
-          switch "--multiple",
-                 depends_on:  "--versions",
-                 description: "Only show formulae with multiple versions installed."
-          switch "--pinned",
-                 description: "List only pinned formulae, or only the specified (pinned) " \
-                              "formulae if <formula> are provided. See also `pin`, `unpin`."
-          # passed through to ls
-          switch "-1",
-                 description: "Force output to be one entry per line. " \
-                              "This is the default when output is not to a terminal."
-          switch "-l",
-                 description: "List formulae and/or casks in long format. " \
-                              "Has no effect when a formula or cask name is passed as an argument."
-          switch "-r",
-                 description: "Reverse the order of the formulae and/or casks sort to list the oldest entries " \
-                              "first. Has no effect when a formula or cask name is passed as an argument."
-          switch "-t",
-                 description: "Sort formulae and/or casks by time modified, listing most recently modified first. " \
-                              "Has no effect when a formula or cask name is passed as an argument."
+      cmd_args do
+        description <<~EOS
+          List all installed formulae and casks.
+          If <formula> is provided, summarise the paths within its current keg.
+          If <cask> is provided, list its artifacts.
+        EOS
+        switch "--formula", "--formulae",
+               description: "List only formulae, or treat all named arguments as formulae."
+        switch "--cask", "--casks",
+               description: "List only casks, or treat all named arguments as casks."
+        switch "--full-name",
+               description: "Print formulae with fully-qualified names. Unless `--full-name`, `--versions` " \
+                            "or `--pinned` are passed, other options (i.e. `-1`, `-l`, `-r` and `-t`) are " \
+                            "passed to `ls`(1) which produces the actual output."
+        switch "--versions",
+               description: "Show the version number for installed formulae, or only the specified " \
+                            "formulae if <formula> are provided."
+        switch "--multiple",
+               depends_on:  "--versions",
+               description: "Only show formulae with multiple versions installed."
+        switch "--pinned",
+               description: "List only pinned formulae, or only the specified (pinned) " \
+                            "formulae if <formula> are provided. See also `pin`, `unpin`."
+        # passed through to ls
+        switch "-1",
+               description: "Force output to be one entry per line. " \
+                            "This is the default when output is not to a terminal."
+        switch "-l",
+               description: "List formulae and/or casks in long format. " \
+                            "Has no effect when a formula or cask name is passed as an argument."
+        switch "-r",
+               description: "Reverse the order of the formulae and/or casks sort to list the oldest entries first. " \
+                            "Has no effect when a formula or cask name is passed as an argument."
+        switch "-t",
+               description: "Sort formulae and/or casks by time modified, listing most recently modified first. " \
+                            "Has no effect when a formula or cask name is passed as an argument."
 
-          conflicts "--formula", "--cask"
-          conflicts "--pinned", "--cask"
-          conflicts "--multiple", "--cask"
-          conflicts "--pinned", "--multiple"
-          ["-1", "-l", "-r", "-t"].each do |flag|
-            conflicts "--versions", flag
-            conflicts "--pinned", flag
-          end
-          ["--versions", "--pinned", "-l", "-r", "-t"].each do |flag|
-            conflicts "--full-name", flag
-          end
-
-          named_args [:installed_formula, :installed_cask]
+        conflicts "--formula", "--cask"
+        conflicts "--pinned", "--cask"
+        conflicts "--multiple", "--cask"
+        conflicts "--pinned", "--multiple"
+        ["-1", "-l", "-r", "-t"].each do |flag|
+          conflicts "--versions", flag
+          conflicts "--pinned", flag
         end
+        ["--versions", "--pinned", "-l", "-r", "-t"].each do |flag|
+          conflicts "--full-name", flag
+        end
+
+        named_args [:installed_formula, :installed_cask]
       end
 
       sig { override.void }
