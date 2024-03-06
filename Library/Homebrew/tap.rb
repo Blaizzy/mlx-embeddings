@@ -969,7 +969,10 @@ class Tap
         if custom_remote?
           true
         else
-          GitHub.private_repo?(full_name)
+          # Don't store config if we don't know for sure.
+          return false if (value = GitHub.private_repo?(full_name)).nil?
+
+          value
         end
       rescue GitHub::API::HTTPNotFoundError
         true
