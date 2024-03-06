@@ -1,8 +1,6 @@
 # typed: strong
 # frozen_string_literal: true
 
-require "command_registry"
-
 module Homebrew
   # Subclass this to implement a `brew` command. This is preferred to declaring a named function in the `Homebrew`
   # module, because:
@@ -22,18 +20,15 @@ module Homebrew
       sig { returns(String) }
       def command_name = T.must(name).split("::").fetch(-1).downcase
 
+      # @return the AbstractCommand subclass associated with the brew CLI command name.
+      sig { params(name: String).returns(T.nilable(T.class_of(AbstractCommand))) }
+      def command(name) = subclasses.find { _1.command_name == name }
+
       private
 
       sig { params(block: T.nilable(T.proc.bind(CLI::Parser).void)).void }
       def cmd_args(&block)
         @parser_block = T.let(block, T.nilable(T.proc.void))
-      end
-
-      # registers subclasses for lookup by command name
-      sig { params(subclass: T.class_of(AbstractCommand)).void }
-      def inherited(subclass)
-        super
-        CommandRegistry.register(subclass)
       end
     end
 
