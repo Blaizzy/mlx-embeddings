@@ -388,6 +388,7 @@ __fish_brew_complete_arg 'bump' -l no-pull-requests -d 'Do not retrieve pull req
 __fish_brew_complete_arg 'bump' -l open-pr -d 'Open a pull request for the new version if none have been opened yet'
 __fish_brew_complete_arg 'bump' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'bump' -l start-with -d 'Letter or word that the list of package results should alphabetically follow'
+__fish_brew_complete_arg 'bump' -l tap -d 'Check formulae and casks within the given tap, specified as user`/`repo'
 __fish_brew_complete_arg 'bump' -l verbose -d 'Make some output more verbose'
 __fish_brew_complete_arg 'bump; and not __fish_seen_argument -l cask -l casks' -a '(__fish_brew_suggest_formulae_all)'
 __fish_brew_complete_arg 'bump; and not __fish_seen_argument -l formula -l formulae' -a '(__fish_brew_suggest_casks_all)'

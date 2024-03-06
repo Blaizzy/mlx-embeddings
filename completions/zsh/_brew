@@ -496,13 +496,14 @@ _brew_bump() {
     '--debug[Display any debugging information]' \
     '--full-name[Print formulae/casks with fully-qualified names]' \
     '--help[Show this message]' \
-    '--installed[Check formulae and casks that are currently installed]' \
+    '(--tap)--installed[Check formulae and casks that are currently installed]' \
     '--limit[Limit number of package results returned]' \
     '--no-fork[Don'\''t try to fork the repository]' \
     '(--open-pr)--no-pull-requests[Do not retrieve pull requests from GitHub]' \
     '(--no-pull-requests)--open-pr[Open a pull request for the new version if none have been opened yet]' \
     '--quiet[Make some output more quiet]' \
     '--start-with[Letter or word that the list of package results should alphabetically follow]' \
+    '(--installed)--tap[Check formulae and casks within the given tap, specified as user`/`repo]' \
     '--verbose[Make some output more verbose]' \
     - formula \
     '(--cask)--formula[Check only formulae]' \
