@@ -207,6 +207,15 @@ module Homebrew
       sig { returns(T::Boolean) }
       def fail_if_not_changed?; end
 
+      sig { returns(T::Boolean) }
+      def no_pull_requests?; end
+
+      sig { returns(T::Boolean) }
+      def no_fork?; end
+
+      sig { returns(T::Boolean) }
+      def open_pr?; end
+
       sig { returns(T.nilable(String)) }
       def limit; end
 
