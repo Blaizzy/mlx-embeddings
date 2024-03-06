@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "attrable"
+require "bundle_version"
 require "cask/cask_loader"
 require "cask/config"
 require "cask/dsl"
@@ -176,8 +177,20 @@ module Cask
 
     sig { returns(T.nilable(String)) }
     def installed_version
+      return unless (installed_caskfile = self.installed_caskfile)
+
       # <caskroom_path>/.metadata/<version>/<timestamp>/Casks/<token>.{rb,json} -> <version>
-      installed_caskfile&.dirname&.dirname&.dirname&.basename&.to_s
+      installed_caskfile.dirname.dirname.dirname.basename.to_s
+    end
+
+    sig { returns(T.nilable(String)) }
+    def bundle_short_version
+      bundle_version&.short_version
+    end
+
+    sig { returns(T.nilable(String)) }
+    def bundle_long_version
+      bundle_version&.version
     end
 
     def config_path
@@ -326,6 +339,8 @@ module Cask
         "version"              => version,
         "installed"            => installed_version,
         "installed_time"       => install_time&.to_i,
+        "bundle_version"       => bundle_long_version,
+        "bundle_short_version" => bundle_short_version,
         "outdated"             => outdated?,
         "sha256"               => sha256,
         "artifacts"            => artifacts_list,
@@ -385,6 +400,14 @@ module Cask
     end
 
     private
+
+    sig { returns(T.nilable(Homebrew::BundleVersion)) }
+    def bundle_version
+      @bundle_version ||= if (bundle = artifacts.find { |a| a.is_a?(Artifact::App) }&.target) &&
+                             (plist = Pathname("#{bundle}/Contents/Info.plist")) && plist.exist?
+        Homebrew::BundleVersion.from_info_plist(plist)
+      end
+    end
 
     def api_to_local_hash(hash)
       hash["token"] = token

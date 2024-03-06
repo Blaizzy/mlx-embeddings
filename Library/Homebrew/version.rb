@@ -94,6 +94,9 @@ class Version
     def null?
       false
     end
+
+    sig { returns(T::Boolean) }
+    def blank? = null?
   end
 
   # A pseudo-token representing the absence of a token.
@@ -126,6 +129,9 @@ class Version
     def null?
       true
     end
+
+    sig { returns(T::Boolean) }
+    def blank? = true
 
     sig { override.returns(String) }
     def inspect
