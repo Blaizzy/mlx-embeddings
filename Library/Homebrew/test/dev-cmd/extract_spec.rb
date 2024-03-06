@@ -10,7 +10,7 @@ RSpec.describe "brew extract" do
       path = Tap::TAP_DIRECTORY/"homebrew/homebrew-foo"
       (path/"Formula").mkpath
       target = Tap.from_path(path)
-      core_tap = CoreTap.new
+      core_tap = CoreTap.instance
       core_tap.path.cd do
         system "git", "init"
         # Start with deprecated bottle syntax

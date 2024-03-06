@@ -4,7 +4,7 @@ RSpec.describe Tap do
   alias_matcher :have_formula_file, :be_formula_file
   alias_matcher :have_custom_remote, :be_custom_remote
 
-  subject(:homebrew_foo_tap) { described_class.new("Homebrew", "foo") }
+  subject(:homebrew_foo_tap) { described_class.fetch("Homebrew", "foo") }
 
   let(:path) { Tap::TAP_DIRECTORY/"homebrew/homebrew-foo" }
   let(:formula_file) { path/"Formula/foo.rb" }
@@ -155,7 +155,7 @@ RSpec.describe Tap do
   end
 
   specify "#issues_url" do
-    t = described_class.new("someone", "foo")
+    t = described_class.fetch("someone", "foo")
     path = Tap::TAP_DIRECTORY/"someone/homebrew-foo"
     path.mkpath
     cd path do
@@ -167,7 +167,7 @@ RSpec.describe Tap do
     expect(homebrew_foo_tap.issues_url).to eq("https://github.com/Homebrew/homebrew-foo/issues")
 
     (Tap::TAP_DIRECTORY/"someone/homebrew-no-git").mkpath
-    expect(described_class.new("someone", "no-git").issues_url).to be_nil
+    expect(described_class.fetch("someone", "no-git").issues_url).to be_nil
   ensure
     path.parent.rmtree
   end
@@ -198,7 +198,7 @@ RSpec.describe Tap do
       expect(homebrew_foo_tap.remote).to eq("https://github.com/Homebrew/homebrew-foo")
       expect(homebrew_foo_tap).not_to have_custom_remote
 
-      services_tap = described_class.new("Homebrew", "services")
+      services_tap = described_class.fetch("Homebrew", "services")
       services_tap.path.mkpath
       services_tap.path.cd do
         system "git", "init"
@@ -224,7 +224,7 @@ RSpec.describe Tap do
 
       expect(homebrew_foo_tap.remote_repo).to eq("Homebrew/homebrew-foo")
 
-      services_tap = described_class.new("Homebrew", "services")
+      services_tap = described_class.fetch("Homebrew", "services")
       services_tap.path.mkpath
       services_tap.path.cd do
         system "git", "init"
@@ -238,7 +238,7 @@ RSpec.describe Tap do
 
       expect(homebrew_foo_tap.remote_repo).to eq("Homebrew/homebrew-foo")
 
-      services_tap = described_class.new("Homebrew", "services")
+      services_tap = described_class.fetch("Homebrew", "services")
       services_tap.path.mkpath
       services_tap.path.cd do
         system "git", "init"
@@ -259,7 +259,7 @@ RSpec.describe Tap do
   end
 
   describe "#custom_remote?" do
-    subject(:tap) { described_class.new("Homebrew", "services") }
+    subject(:tap) { described_class.fetch("Homebrew", "services") }
 
     let(:remote) { nil }
 
@@ -304,14 +304,14 @@ RSpec.describe Tap do
   describe "#install" do
     it "raises an error when the Tap is already tapped" do
       setup_git_repo
-      already_tapped_tap = described_class.new("Homebrew", "foo")
+      already_tapped_tap = described_class.fetch("Homebrew", "foo")
       expect(already_tapped_tap).to be_installed
       expect { already_tapped_tap.install }.to raise_error(TapAlreadyTappedError)
     end
 
     it "raises an error when the Tap is already tapped with the right remote" do
       setup_git_repo
-      already_tapped_tap = described_class.new("Homebrew", "foo")
+      already_tapped_tap = described_class.fetch("Homebrew", "foo")
       expect(already_tapped_tap).to be_installed
       right_remote = homebrew_foo_tap.remote
       expect { already_tapped_tap.install clone_target: right_remote }.to raise_error(TapAlreadyTappedError)
@@ -319,7 +319,7 @@ RSpec.describe Tap do
 
     it "raises an error when the remote doesn't match" do
       setup_git_repo
-      already_tapped_tap = described_class.new("Homebrew", "foo")
+      already_tapped_tap = described_class.fetch("Homebrew", "foo")
       expect(already_tapped_tap).to be_installed
       wrong_remote = "#{homebrew_foo_tap.remote}-oops"
       expect do
@@ -337,7 +337,7 @@ RSpec.describe Tap do
 
     it "raises an error when run `brew tap --custom-remote` without a custom remote (already installed)" do
       setup_git_repo
-      already_tapped_tap = described_class.new("Homebrew", "foo")
+      already_tapped_tap = described_class.fetch("Homebrew", "foo")
       expect(already_tapped_tap).to be_installed
 
       expect do
@@ -346,7 +346,7 @@ RSpec.describe Tap do
     end
 
     it "raises an error when run `brew tap --custom-remote` without a custom remote (not installed)" do
-      not_tapped_tap = described_class.new("Homebrew", "bar")
+      not_tapped_tap = described_class.fetch("Homebrew", "bar")
       expect(not_tapped_tap).not_to be_installed
 
       expect do
@@ -359,7 +359,7 @@ RSpec.describe Tap do
         setup_git_repo
       end
 
-      let(:already_tapped_tap) { described_class.new("Homebrew", "foo") }
+      let(:already_tapped_tap) { described_class.fetch("Homebrew", "foo") }
 
       it "defaults to nil" do
         expect(already_tapped_tap).to be_installed
@@ -380,7 +380,7 @@ RSpec.describe Tap do
     end
 
     specify "Git error" do
-      tap = described_class.new("user", "repo")
+      tap = described_class.fetch("user", "repo")
 
       expect do
         tap.install clone_target: "file:///not/existed/remote/url"
@@ -393,7 +393,7 @@ RSpec.describe Tap do
 
   describe "#uninstall" do
     it "raises an error if the Tap is not available" do
-      tap = described_class.new("Homebrew", "bar")
+      tap = described_class.fetch("Homebrew", "bar")
       expect { tap.uninstall }.to raise_error(TapUnavailableError)
     end
   end
@@ -403,7 +403,7 @@ RSpec.describe Tap do
     setup_git_repo
     setup_completion link: true
 
-    tap = described_class.new("Homebrew", "bar")
+    tap = described_class.fetch("Homebrew", "bar")
 
     tap.install clone_target: homebrew_foo_tap.path/".git"
 
@@ -429,7 +429,7 @@ RSpec.describe Tap do
     setup_tap_files
     setup_git_repo
     setup_completion link: true
-    tap = described_class.new("NotHomebrew", "baz")
+    tap = described_class.fetch("NotHomebrew", "baz")
     tap.install clone_target: homebrew_foo_tap.path/".git"
     (HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").delete
     (HOMEBREW_PREFIX/"etc/bash_completion.d/brew-tap-cmd").delete
@@ -450,7 +450,7 @@ RSpec.describe Tap do
     setup_tap_files
     setup_git_repo
     setup_completion link: false
-    tap = described_class.new("NotHomebrew", "baz")
+    tap = described_class.fetch("NotHomebrew", "baz")
     tap.install clone_target: homebrew_foo_tap.path/".git"
     (HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").delete
     tap.link_completions_and_manpages
@@ -468,7 +468,7 @@ RSpec.describe Tap do
     setup_tap_files
     setup_git_repo
     setup_completion link: false
-    tap = described_class.new("Homebrew", "baz")
+    tap = described_class.fetch("Homebrew", "baz")
     tap.install clone_target: homebrew_foo_tap.path/".git"
     (HOMEBREW_PREFIX/"share/man/man1/brew-tap-cmd.1").delete
     (HOMEBREW_PREFIX/"etc/bash_completion.d/brew-tap-cmd").delete
@@ -562,7 +562,7 @@ RSpec.describe Tap do
   end
 
   describe CoreTap do
-    subject(:core_tap) { described_class.new }
+    subject(:core_tap) { described_class.instance }
 
     specify "attributes" do
       expect(core_tap.user).to eq("Homebrew")

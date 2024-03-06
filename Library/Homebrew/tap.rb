@@ -58,7 +58,7 @@ class Tap
     return CoreCaskTap.instance if user == "Homebrew" && repo == "cask"
 
     cache_key = "#{user}/#{repo}".downcase
-    cache.fetch(cache_key) { |key| cache[key] = Tap.new(user, repo) }
+    cache.fetch(cache_key) { |key| cache[key] = new(user, repo) }
   end
 
   def self.from_path(path)
@@ -144,6 +144,9 @@ class Tap
   # The git repository of this {Tap}.
   sig { returns(GitRepository) }
   attr_reader :git_repo
+
+  # Always use `Tap.fetch` instead of `Tap.new`.
+  private_class_method :new
 
   # @private
   def initialize(user, repo)
@@ -1007,6 +1010,8 @@ class AbstractCoreTap < Tap
   extend T::Helpers
 
   abstract!
+
+  private_class_method :fetch
 
   sig { returns(T.attached_class) }
   def self.instance

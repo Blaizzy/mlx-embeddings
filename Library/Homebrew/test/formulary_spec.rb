@@ -6,7 +6,7 @@ require "utils/bottles"
 
 RSpec.describe Formulary do
   let(:formula_name) { "testball_bottle" }
-  let(:formula_path) { CoreTap.new.new_formula_path(formula_name) }
+  let(:formula_path) { CoreTap.instance.new_formula_path(formula_name) }
   let(:formula_content) do
     <<~RUBY
       class #{described_class.class_s(formula_name)} < Formula
@@ -85,7 +85,7 @@ RSpec.describe Formulary do
 
       let(:formula_name) { "testball_sharded" }
       let(:formula_path) do
-        core_tap = CoreTap.new
+        core_tap = CoreTap.instance
         (core_tap.formula_dir/formula_name[0]).mkpath
         core_tap.new_formula_path(formula_name)
       end
@@ -184,8 +184,8 @@ RSpec.describe Formulary do
     end
 
     context "when migrating from a Tap" do
-      let(:tap) { Tap.new("homebrew", "foo") }
-      let(:another_tap) { Tap.new("homebrew", "bar") }
+      let(:tap) { Tap.fetch("homebrew", "foo") }
+      let(:another_tap) { Tap.fetch("homebrew", "bar") }
       let(:tap_migrations_path) { tap.path/"tap_migrations.json" }
       let(:another_tap_formula_path) { another_tap.path/"Formula/#{formula_name}.rb" }
 
@@ -226,8 +226,8 @@ RSpec.describe Formulary do
     end
 
     context "when loading from Tap" do
-      let(:tap) { Tap.new("homebrew", "foo") }
-      let(:another_tap) { Tap.new("homebrew", "bar") }
+      let(:tap) { Tap.fetch("homebrew", "foo") }
+      let(:another_tap) { Tap.fetch("homebrew", "bar") }
       let(:formula_path) { tap.path/"Formula/#{formula_name}.rb" }
       let(:alias_name) { "bar" }
       let(:alias_dir) { tap.alias_dir }

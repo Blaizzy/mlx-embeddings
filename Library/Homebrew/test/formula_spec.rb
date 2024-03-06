@@ -59,7 +59,7 @@ RSpec.describe Formula do
     end
 
     context "when in a Tap" do
-      let(:tap) { Tap.new("foo", "bar") }
+      let(:tap) { Tap.fetch("foo", "bar") }
       let(:path) { (tap.path/"Formula/#{name}.rb") }
       let(:full_name) { "#{tap.user}/#{tap.repo}/#{name}" }
       let(:full_alias_name) { "#{tap.user}/#{tap.repo}/#{alias_name}" }
@@ -204,7 +204,7 @@ RSpec.describe Formula do
   end
 
   example "installed alias with tap" do
-    tap = Tap.new("user", "repo")
+    tap = Tap.fetch("user", "repo")
     name = "foo"
     path = tap.path/"Formula/#{name}.rb"
     f = formula name, path: path do
@@ -847,7 +847,7 @@ RSpec.describe Formula do
       allow(tap_loader).to receive(:get_formula).and_raise(RuntimeError, "tried resolving tap formula")
       allow(Formulary).to receive(:loader_for).with("foo/bar/f1", from: nil).and_return(tap_loader)
 
-      f2_path = Tap.new("baz", "qux").path/"Formula/f2.rb"
+      f2_path = Tap.fetch("baz", "qux").path/"Formula/f2.rb"
       stub_formula_loader(formula("f2", path: f2_path) { url("f2-1.0") }, "baz/qux/f2")
 
       f3 = formula "f3" do
@@ -859,7 +859,7 @@ RSpec.describe Formula do
 
       expect(f3.runtime_dependencies.map(&:name)).to eq(["baz/qux/f2"])
 
-      f1_path = Tap.new("foo", "bar").path/"Formula/f1.rb"
+      f1_path = Tap.fetch("foo", "bar").path/"Formula/f1.rb"
       stub_formula_loader(formula("f1", path: f1_path) { url("f1-1.0") }, "foo/bar/f1")
 
       f3.build = BuildOptions.new(Options.create(["--with-f1"]), f3.options)
@@ -956,7 +956,7 @@ RSpec.describe Formula do
   end
 
   describe "#to_hash_with_variations", :needs_macos do
-    let(:formula_path) { CoreTap.new.new_formula_path("foo-variations") }
+    let(:formula_path) { CoreTap.instance.new_formula_path("foo-variations") }
     let(:formula_content) do
       <<~RUBY
         class FooVariations < Formula
