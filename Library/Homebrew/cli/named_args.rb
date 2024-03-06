@@ -417,8 +417,10 @@ module Homebrew
       def warn_if_cask_conflicts(ref, loaded_type)
         message = "Treating #{ref} as a #{loaded_type}."
         begin
-          cask = Cask::CaskLoader.load ref
-          message += " For the cask, use #{cask.tap.name}/#{cask.token}" if cask.tap.present?
+          cask = Cask::CaskLoader.load(ref, warn: false)
+          message += " For the cask, "
+          message += "use #{cask.tap.name}/#{cask.token} or " if cask.tap
+          message += "specify the `--cask` flag."
         rescue Cask::CaskUnreadableError => e
           # Need to rescue before `CaskUnavailableError` (superclass of this)
           # The cask was found, but there's a problem with its implementation
