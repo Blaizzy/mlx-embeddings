@@ -35,6 +35,8 @@ module Homebrew
              description: "Check only formulae."
       switch "--cask", "--casks",
              description: "Check only casks."
+      flag   "--tap=",
+             description: "Check formulae and casks within the given tap, specified as <user>`/`<repo>."
       switch "--installed",
              description: "Check formulae and casks that are currently installed."
       switch "--no-fork",
@@ -49,6 +51,7 @@ module Homebrew
              hidden:      true
 
       conflicts "--cask", "--formula"
+      conflicts "--tap=", "--installed"
       conflicts "--no-pull-requests", "--open-pr"
 
       named_args [:formula, :cask], without_api: true
@@ -68,7 +71,14 @@ module Homebrew
     odisabled "brew bump --force" if args.force?
 
     Homebrew.with_no_api_env do
-      formulae_and_casks = if args.installed?
+      formulae_and_casks = if args.tap
+        tap = Tap.fetch(args.tap)
+        raise UsageError, "`--tap` cannot be used with official taps." if tap.official?
+
+        formulae = args.cask? ? [] : tap.formula_files.map { |path| Formulary.factory(path) }
+        casks = args.formula? ? [] : tap.cask_files.map { |path| Cask::CaskLoader.load(path) }
+        formulae + casks
+      elsif args.installed?
         formulae = args.cask? ? [] : Formula.installed
         casks = args.formula? ? [] : Cask::Caskroom.casks
         formulae + casks
