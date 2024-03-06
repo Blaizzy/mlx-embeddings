@@ -8,8 +8,6 @@ module RuboCop
     module FormulaAudit
       # This cop ensures that no other livecheck information is provided for
       # skipped formulae.
-      #
-      # @api private
       class LivecheckSkip < FormulaCop
         extend AutoCorrector
 
@@ -40,8 +38,6 @@ module RuboCop
       end
 
       # This cop ensures that a `url` is specified in the `livecheck` block.
-      #
-      # @api private
       class LivecheckUrlProvided < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           livecheck_node = find_block(body_node, :livecheck)
@@ -63,8 +59,6 @@ module RuboCop
 
       # This cop ensures that a supported symbol (`head`, `stable, `homepage`)
       # is used when the livecheck `url` is identical to one of these formula URLs.
-      #
-      # @api private
       class LivecheckUrlSymbol < FormulaCop
         extend AutoCorrector
 
@@ -120,8 +114,6 @@ module RuboCop
       end
 
       # This cop ensures that the `regex` call in the `livecheck` block uses parentheses.
-      #
-      # @api private
       class LivecheckRegexParentheses < FormulaCop
         extend AutoCorrector
 
@@ -147,8 +139,6 @@ module RuboCop
 
       # This cop ensures that the pattern provided to livecheck's `regex` uses `\.t` instead of
       # `\.tgz`, `\.tar.gz` and variants.
-      #
-      # @api private
       class LivecheckRegexExtension < FormulaCop
         extend AutoCorrector
 
@@ -180,8 +170,6 @@ module RuboCop
 
       # This cop ensures that a `regex` is provided when `strategy :page_match` is specified
       # in the `livecheck` block.
-      #
-      # @api private
       class LivecheckRegexIfPageMatch < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           livecheck_node = find_block(body_node, :livecheck)
@@ -206,8 +194,6 @@ module RuboCop
 
       # This cop ensures that the `regex` provided to livecheck is case-insensitive,
       # unless sensitivity is explicitly required for proper matching.
-      #
-      # @api private
       class LivecheckRegexCaseInsensitive < FormulaCop
         extend AutoCorrector
 

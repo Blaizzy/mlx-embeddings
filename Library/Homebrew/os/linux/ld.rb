@@ -4,8 +4,6 @@
 module OS
   module Linux
     # Helper functions for querying `ld` information.
-    #
-    # @api private
     module Ld
       sig { returns(String) }
       def self.brewed_ld_so_diagnostics

@@ -5,7 +5,7 @@ require "formula"
 
 # Helper class for traversing a formula's previous versions.
 #
-# @api private
+# @api internal
 class FormulaVersions
   include Context
 

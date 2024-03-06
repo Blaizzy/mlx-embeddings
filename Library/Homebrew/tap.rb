@@ -88,7 +88,6 @@ class Tap
     fetch(user, repo)
   end
 
-  # @private
   sig { params(name: String).returns(T.nilable([Tap, String])) }
   def self.with_formula_name(name)
     return unless (match = name.match(HOMEBREW_TAP_FORMULA_REGEX))
@@ -104,7 +103,6 @@ class Tap
     [tap, name.downcase]
   end
 
-  # @private
   sig { params(token: String).returns(T.nilable([Tap, String])) }
   def self.with_cask_token(token)
     return unless (match = token.match(HOMEBREW_TAP_CASK_REGEX))
@@ -181,7 +179,6 @@ class Tap
   # Always use `Tap.fetch` instead of `Tap.new`.
   private_class_method :new
 
-  # @private
   def initialize(user, repo)
     @user = user
     @repo = repo
@@ -269,7 +266,6 @@ class Tap
     "https://github.com/#{full_name}"
   end
 
-  # @private
   sig { returns(String) }
   def repo_var_suffix
     @repo_var_suffix ||= path.to_s
@@ -380,13 +376,11 @@ class Tap
     (path/".git/shallow").exist?
   end
 
-  # @private
   sig { returns(T::Boolean) }
   def core_tap?
     false
   end
 
-  # @private
   sig { returns(T::Boolean) }
   def core_cask_tap?
     false
@@ -688,8 +682,6 @@ class Tap
   end
 
   # A mapping of {Formula} names to {Formula} file paths.
-  #
-  # @private
   sig { returns(T::Hash[String, Pathname]) }
   def formula_files_by_name
     @formula_files_by_name ||= formula_files.each_with_object({}) do |file, hash|
@@ -711,8 +703,6 @@ class Tap
   end
 
   # A mapping of {Cask} tokens to {Cask} file paths.
-  #
-  # @private
   sig { returns(T::Hash[String, Pathname]) }
   def cask_files_by_name
     @cask_files_by_name ||= cask_files.each_with_object({}) do |file, hash|
@@ -724,15 +714,14 @@ class Tap
   end
 
   # Check whether the file has a Ruby extension.
-  # @private
   sig { params(file: Pathname).returns(T::Boolean) }
   def ruby_file?(file)
     file.extname == ".rb"
   end
+  private :ruby_file?
 
   # Check whether the given path would present a {Formula} file in this {Tap}.
   # Accepts either an absolute path or a path relative to this {Tap}'s path.
-  # @private
   sig { params(file: T.any(String, Pathname)).returns(T::Boolean) }
   def formula_file?(file)
     file = Pathname.new(file) unless file.is_a? Pathname
@@ -745,7 +734,6 @@ class Tap
 
   # Check whether the given path would present a {Cask} file in this {Tap}.
   # Accepts either an absolute path or a path relative to this {Tap}'s path.
-  # @private
   sig { params(file: T.any(String, Pathname)).returns(T::Boolean) }
   def cask_file?(file)
     file = Pathname.new(file) unless file.is_a? Pathname
@@ -762,7 +750,6 @@ class Tap
   end
 
   # A hash of all {Formula} name prefixes to versioned {Formula} in this {Tap}.
-  # @private
   sig { returns(T::Hash[String, T::Array[String]]) }
   def prefix_to_versioned_formulae_names
     @prefix_to_versioned_formulae_names ||= formula_names
@@ -773,35 +760,30 @@ class Tap
   end
 
   # An array of all {Cask} tokens of this {Tap}.
-  # @private
   sig { returns(T::Array[String]) }
   def cask_tokens
     @cask_tokens ||= cask_files.map { formula_file_to_name(_1) }
   end
 
   # Path to the directory of all alias files for this {Tap}.
-  # @private
   sig { returns(Pathname) }
   def alias_dir
     @alias_dir ||= path/"Aliases"
   end
 
   # An array of all alias files of this {Tap}.
-  # @private
   sig { returns(T::Array[Pathname]) }
   def alias_files
     @alias_files ||= Pathname.glob("#{alias_dir}/*").select(&:file?)
   end
 
   # An array of all aliases of this {Tap}.
-  # @private
   sig { returns(T::Array[String]) }
   def aliases
     @aliases ||= alias_table.keys
   end
 
   # Mapping from aliases to formula names.
-  # @private
   sig { returns(T::Hash[String, String]) }
   def alias_table
     @alias_table ||= alias_files.each_with_object({}) do |alias_file, alias_table|
@@ -810,8 +792,6 @@ class Tap
   end
 
   # Mapping from formula names to aliases.
-  #
-  # @private
   sig { returns(T::Hash[String, T::Array[String]]) }
   def alias_reverse_table
     @alias_reverse_table ||= alias_table.each_with_object({}) do |(alias_name, formula_name), alias_reverse_table|
@@ -871,8 +851,6 @@ class Tap
   end
 
   # Mapping from new to old cask tokens. Reverse of {#cask_renames}.
-  #
-  # @private
   sig { returns(T::Hash[String, T::Array[String]]) }
   def cask_reverse_renames
     @cask_reverse_renames ||= cask_renames.each_with_object({}) do |(old_name, new_name), hash|
@@ -892,8 +870,6 @@ class Tap
   end
 
   # Mapping from new to old formula names. Reverse of {#formula_renames}.
-  #
-  # @private
   sig { returns(T::Hash[String, T::Array[String]]) }
   def formula_reverse_renames
     @formula_reverse_renames ||= formula_renames.each_with_object({}) do |(old_name, new_name), hash|
@@ -981,7 +957,6 @@ class Tap
     end
   end
 
-  # @private
   sig { returns(T::Boolean) }
   def should_report_analytics?
     installed? && !private?
@@ -1055,13 +1030,11 @@ class Tap
     Homebrew::Settings.read(:untapped)&.split(";") || []
   end
 
-  # @private
   sig { params(file: Pathname).returns(String) }
   def formula_file_to_name(file)
     "#{name}/#{file.basename(".rb")}"
   end
 
-  # @private
   sig { params(file: Pathname).returns(String) }
   def alias_file_to_name(file)
     "#{name}/#{file.basename}"
@@ -1143,13 +1116,11 @@ class AbstractCoreTap < Tap
     instance.ensure_installed!
   end
 
-  # @private
   sig { params(file: Pathname).returns(String) }
   def formula_file_to_name(file)
     file.basename(".rb").to_s
   end
 
-  # @private
   sig { override.returns(T::Boolean) }
   def should_report_analytics?
     return super if Homebrew::EnvConfig.no_install_from_api?
@@ -1160,7 +1131,6 @@ end
 
 # A specialized {Tap} class for the core formulae.
 class CoreTap < AbstractCoreTap
-  # @private
   sig { void }
   def initialize
     super "Homebrew", "core"
@@ -1196,7 +1166,6 @@ class CoreTap < AbstractCoreTap
     super(quiet:, clone_target: remote, custom_remote:, force:)
   end
 
-  # @private
   sig { params(manual: T::Boolean).void }
   def uninstall(manual: false)
     raise "Tap#uninstall is not available for CoreTap" if Homebrew::EnvConfig.no_install_from_api?
@@ -1204,19 +1173,16 @@ class CoreTap < AbstractCoreTap
     super
   end
 
-  # @private
   sig { returns(T::Boolean) }
   def core_tap?
     true
   end
 
-  # @private
   sig { returns(T::Boolean) }
   def linuxbrew_core?
     remote_repo.to_s.end_with?("/linuxbrew-core") || remote_repo == "Linuxbrew/homebrew-core"
   end
 
-  # @private
   sig { returns(Pathname) }
   def formula_dir
     @formula_dir ||= begin
@@ -1238,7 +1204,6 @@ class CoreTap < AbstractCoreTap
     formula_dir/formula_subdir/"#{name.downcase}.rb"
   end
 
-  # @private
   sig { returns(Pathname) }
   def alias_dir
     @alias_dir ||= begin
@@ -1247,7 +1212,6 @@ class CoreTap < AbstractCoreTap
     end
   end
 
-  # @private
   sig { returns(T::Hash[String, String]) }
   def formula_renames
     @formula_renames ||= if Homebrew::EnvConfig.no_install_from_api?
@@ -1258,7 +1222,6 @@ class CoreTap < AbstractCoreTap
     end
   end
 
-  # @private
   sig { returns(Hash) }
   def tap_migrations
     @tap_migrations ||= if Homebrew::EnvConfig.no_install_from_api?
@@ -1273,7 +1236,6 @@ class CoreTap < AbstractCoreTap
     end
   end
 
-  # @private
   sig { returns(T::Array[String]) }
   def autobump
     @autobump ||= begin
@@ -1282,7 +1244,6 @@ class CoreTap < AbstractCoreTap
     end
   end
 
-  # @private
   sig { returns(Hash) }
   def audit_exceptions
     @audit_exceptions ||= begin
@@ -1291,7 +1252,6 @@ class CoreTap < AbstractCoreTap
     end
   end
 
-  # @private
   sig { returns(Hash) }
   def style_exceptions
     @style_exceptions ||= begin
@@ -1300,7 +1260,6 @@ class CoreTap < AbstractCoreTap
     end
   end
 
-  # @private
   sig { returns(Hash) }
   def pypi_formula_mappings
     @pypi_formula_mappings ||= begin
@@ -1309,7 +1268,6 @@ class CoreTap < AbstractCoreTap
     end
   end
 
-  # @private
   sig { returns(T::Array[T::Array[String]]) }
   def synced_versions_formulae
     @synced_versions_formulae ||= begin
@@ -1318,13 +1276,11 @@ class CoreTap < AbstractCoreTap
     end
   end
 
-  # @private
   sig { params(file: Pathname).returns(String) }
   def alias_file_to_name(file)
     file.basename.to_s
   end
 
-  # @private
   sig { returns(T::Hash[String, String]) }
   def alias_table
     @alias_table ||= if Homebrew::EnvConfig.no_install_from_api?
@@ -1334,7 +1290,6 @@ class CoreTap < AbstractCoreTap
     end
   end
 
-  # @private
   sig { returns(T::Array[Pathname]) }
   def formula_files
     return super if Homebrew::EnvConfig.no_install_from_api?
@@ -1342,7 +1297,6 @@ class CoreTap < AbstractCoreTap
     formula_files_by_name.values
   end
 
-  # @private
   sig { returns(T::Array[String]) }
   def formula_names
     return super if Homebrew::EnvConfig.no_install_from_api?
@@ -1350,7 +1304,6 @@ class CoreTap < AbstractCoreTap
     Homebrew::API::Formula.all_formulae.keys
   end
 
-  # @private
   sig { returns(T::Hash[String, Pathname]) }
   def formula_files_by_name
     return super if Homebrew::EnvConfig.no_install_from_api?
@@ -1388,13 +1341,11 @@ end
 
 # A specialized {Tap} class for homebrew-cask.
 class CoreCaskTap < AbstractCoreTap
-  # @private
   sig { void }
   def initialize
     super "Homebrew", "cask"
   end
 
-  # @private
   sig { override.returns(T::Boolean) }
   def core_cask_tap?
     true
@@ -1420,7 +1371,6 @@ class CoreCaskTap < AbstractCoreTap
     Homebrew::API::Cask.all_casks.keys
   end
 
-  # @private
   sig { override.returns(T::Hash[String, Pathname]) }
   def cask_files_by_name
     return super if Homebrew::EnvConfig.no_install_from_api?

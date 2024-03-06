@@ -28,8 +28,11 @@ Style/Documentation:
     - cask/dsl.rb
     - cask/dsl/version.rb
     - cask/url.rb
+    - development_tools.rb
     - download_strategy.rb
+    - extend/ENV/super.rb
     - extend/kernel.rb
+    - extend/pathname.rb
     - formula.rb
     - formula_assertions.rb
     - formula_free_port.rb

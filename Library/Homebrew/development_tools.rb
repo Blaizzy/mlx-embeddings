@@ -3,9 +3,14 @@
 
 require "version"
 
-# @private
+# Helper class for gathering information about development tools.
+#
+# @api public
 class DevelopmentTools
   class << self
+    # Locate a development tool.
+    #
+    # @api public
     sig { params(tool: T.any(String, Symbol)).returns(T.nilable(Pathname)) }
     def locate(tool)
       # Don't call tools (cc, make, strip, etc.) directly!
@@ -44,11 +49,17 @@ class DevelopmentTools
         "Checksums will still be verified."
     end
 
+    # Get the default C compiler.
+    #
+    # @api public
     sig { returns(Symbol) }
     def default_compiler
       :clang
     end
 
+    # Get the Clang version.
+    #
+    # @api public
     sig { returns(Version) }
     def clang_version
       @clang_version ||= if (path = locate("clang")) &&
@@ -59,6 +70,9 @@ class DevelopmentTools
       end
     end
 
+    # Get the Clang build version.
+    #
+    # @api public
     sig { returns(Version) }
     def clang_build_version
       @clang_build_version ||= if (path = locate("clang")) &&
@@ -70,6 +84,9 @@ class DevelopmentTools
       end
     end
 
+    # Get the LLVM Clang build version.
+    #
+    # @api public
     sig { returns(Version) }
     def llvm_clang_build_version
       @llvm_clang_build_version ||= begin

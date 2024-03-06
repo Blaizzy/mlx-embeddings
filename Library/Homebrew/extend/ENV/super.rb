@@ -17,7 +17,6 @@ require "development_tools"
 module Superenv
   include SharedEnvExtension
 
-  # @private
   attr_accessor :keg_only_deps, :deps, :run_time_deps
 
   sig { params(base: Superenv).void }
@@ -27,13 +26,14 @@ module Superenv
     base.run_time_deps = []
   end
 
-  # The location of Homebrew's shims on this OS.
+  # The location of Homebrew's shims.
+  #
+  # @api public
   sig { returns(Pathname) }
   def self.shims_path
     HOMEBREW_SHIMS_PATH/"super"
   end
 
-  # @private
   sig { returns(T.nilable(Pathname)) }
   def self.bin; end
 
@@ -45,7 +45,6 @@ module Superenv
     delete("as_nl")
   end
 
-  # @private
   sig {
     params(
       formula:         T.nilable(Formula),
@@ -353,7 +352,6 @@ module Superenv
     append_to_cccfg "D"
   end
 
-  # @private
   sig { void }
   def refurbish_args
     append_to_cccfg "O"

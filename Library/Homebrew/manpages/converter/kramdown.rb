@@ -7,8 +7,6 @@ module Homebrew
   module Manpages
     module Converter
       # Converts our Kramdown-like input to pure Kramdown.
-      #
-      # @api private
       class Kramdown < ::Kramdown::Converter::Kramdown
         def initialize(root, options)
           super(root, options.merge(line_width: 80))

@@ -9,8 +9,6 @@ require "utils/shared_audits"
 
 module Homebrew
   # Auditor for checking common violations in {Formula}e.
-  #
-  # @api private
   class FormulaAuditor
     include FormulaCellarChecks
     include Utils::Curl

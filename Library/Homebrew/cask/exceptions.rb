@@ -3,13 +3,9 @@
 
 module Cask
   # General cask error.
-  #
-  # @api private
   class CaskError < RuntimeError; end
 
   # Cask error containing multiple other errors.
-  #
-  # @api private
   class MultipleCaskErrors < CaskError
     def initialize(errors)
       super()
@@ -28,8 +24,6 @@ module Cask
   end
 
   # Abstract cask error containing a cask token.
-  #
-  # @api private
   class AbstractCaskErrorWithToken < CaskError
     sig { returns(String) }
     attr_reader :token
@@ -46,8 +40,6 @@ module Cask
   end
 
   # Error when a cask is not installed.
-  #
-  # @api private
   class CaskNotInstalledError < AbstractCaskErrorWithToken
     # @!visibility private
     sig { returns(String) }
@@ -57,8 +49,6 @@ module Cask
   end
 
   # Error when a cask cannot be installed.
-  #
-  # @api private
   class CaskCannotBeInstalledError < AbstractCaskErrorWithToken
     attr_reader :message
 
@@ -75,8 +65,6 @@ module Cask
   end
 
   # Error when a cask conflicts with another cask.
-  #
-  # @api private
   class CaskConflictError < AbstractCaskErrorWithToken
     attr_reader :conflicting_cask
 
@@ -93,8 +81,6 @@ module Cask
   end
 
   # Error when a cask is not available.
-  #
-  # @api private
   class CaskUnavailableError < AbstractCaskErrorWithToken
     # @!visibility private
     sig { returns(String) }
@@ -104,8 +90,6 @@ module Cask
   end
 
   # Error when a cask is unreadable.
-  #
-  # @api private
   class CaskUnreadableError < CaskUnavailableError
     # @!visibility private
     sig { returns(String) }
@@ -115,8 +99,6 @@ module Cask
   end
 
   # Error when a cask in a specific tap is not available.
-  #
-  # @api private
   class TapCaskUnavailableError < CaskUnavailableError
     attr_reader :tap
 
@@ -135,8 +117,6 @@ module Cask
   end
 
   # Error when a cask with the same name is found in multiple taps.
-  #
-  # @api private
   class TapCaskAmbiguityError < CaskError
     sig { returns(String) }
     attr_reader :token
@@ -161,8 +141,6 @@ module Cask
   end
 
   # Error when a cask already exists.
-  #
-  # @api private
   class CaskAlreadyCreatedError < AbstractCaskErrorWithToken
     # @!visibility private
     sig { returns(String) }
@@ -172,8 +150,6 @@ module Cask
   end
 
   # Error when there is a cyclic cask dependency.
-  #
-  # @api private
   class CaskCyclicDependencyError < AbstractCaskErrorWithToken
     # @!visibility private
     sig { returns(String) }
@@ -183,8 +159,6 @@ module Cask
   end
 
   # Error when a cask depends on itself.
-  #
-  # @api private
   class CaskSelfReferencingDependencyError < CaskCyclicDependencyError
     # @!visibility private
     sig { returns(String) }
@@ -194,8 +168,6 @@ module Cask
   end
 
   # Error when no cask is specified.
-  #
-  # @api private
   class CaskUnspecifiedError < CaskError
     # @!visibility private
     sig { returns(String) }
@@ -205,8 +177,6 @@ module Cask
   end
 
   # Error when a cask is invalid.
-  #
-  # @api private
   class CaskInvalidError < AbstractCaskErrorWithToken
     # @!visibility private
     sig { returns(String) }
@@ -216,8 +186,6 @@ module Cask
   end
 
   # Error when a cask token does not match the file name.
-  #
-  # @api private
   class CaskTokenMismatchError < CaskInvalidError
     def initialize(token, header_token)
       super(token, "Token '#{header_token}' in header line does not match the file name.")
@@ -225,8 +193,6 @@ module Cask
   end
 
   # Error during quarantining of a file.
-  #
-  # @api private
   class CaskQuarantineError < CaskError
     attr_reader :path, :reason
 
@@ -253,8 +219,6 @@ module Cask
   end
 
   # Error while propagating quarantine information to subdirectories.
-  #
-  # @api private
   class CaskQuarantinePropagationError < CaskQuarantineError
     # @!visibility private
     sig { returns(String) }
@@ -272,8 +236,6 @@ module Cask
   end
 
   # Error while removing quarantine information.
-  #
-  # @api private
   class CaskQuarantineReleaseError < CaskQuarantineError
     # @!visibility private
     sig { returns(String) }

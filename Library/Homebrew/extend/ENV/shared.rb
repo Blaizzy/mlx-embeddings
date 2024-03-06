@@ -280,7 +280,6 @@ module SharedEnvExtension
     end
   end
 
-  # @private
   sig { params(name: String).returns(Formula) }
   def gcc_version_formula(name)
     version = name[GNU_GCC_REGEXP, 1]
@@ -293,8 +292,8 @@ module SharedEnvExtension
       Formulary.factory(gcc_version_name)
     end
   end
+  private :gcc_version_formula
 
-  # @private
   sig { params(name: String).void }
   def warn_about_non_apple_gcc(name)
     begin
@@ -312,6 +311,7 @@ module SharedEnvExtension
         brew install #{gcc_formula.full_name}
     EOS
   end
+  private :warn_about_non_apple_gcc
 
   sig { void }
   def permit_arch_flags; end
