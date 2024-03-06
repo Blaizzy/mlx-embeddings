@@ -402,6 +402,7 @@ class Tap
     end
 
     clear_cache
+    Tap.clear_cache
 
     $stderr.ohai "Tapping #{name}" unless quiet
     args =  %W[clone #{requested_remote} #{path}]
@@ -546,6 +547,7 @@ class Tap
 
     Commands.rebuild_commands_completion_list
     clear_cache
+    Tap.clear_cache
 
     return if !manual || !official?
 
@@ -931,27 +933,42 @@ class Tap
     other = Tap.fetch(other) if other.is_a?(String)
     other.is_a?(self.class) && name == other.name
   end
+  alias eql? ==
 
-  def self.each(&block)
-    return to_enum unless block
+  sig { returns(Integer) }
+  def hash
+    [self.class, name].hash
+  end
 
-    installed_taps = if TAP_DIRECTORY.directory?
-      TAP_DIRECTORY.subdirs
-                   .flat_map(&:subdirs)
-                   .map(&method(:from_path))
+  # All locally installed taps.
+  sig { returns(T::Array[Tap]) }
+  def self.installed
+    cache[:installed] ||= if TAP_DIRECTORY.directory?
+      TAP_DIRECTORY.subdirs.flat_map(&:subdirs).map(&method(:from_path))
     else
       []
     end
+  end
 
-    available_taps = if Homebrew::EnvConfig.no_install_from_api?
-      installed_taps
+  # All locally installed and core taps. Core taps might not be installed locally when using the API.
+  sig { returns(T::Array[Tap]) }
+  def self.all
+    cache[:all] ||= begin
+      core_taps = [
+        CoreTap.instance,
+        (CoreCaskTap.instance if OS.mac?), # rubocop:disable Homebrew/MoveToExtendOS
+      ].compact
+
+      installed | core_taps
+    end
+  end
+
+  def self.each(&block)
+    if Homebrew::EnvConfig.no_install_from_api?
+      installed.each(&block)
     else
-      default_taps = T.let([CoreTap.instance], T::Array[Tap])
-      default_taps << CoreCaskTap.instance if OS.mac? # rubocop:disable Homebrew/MoveToExtendOS
-      installed_taps + default_taps
-    end.sort_by(&:name).uniq
-
-    available_taps.each(&block)
+      all.each(&block)
+    end
   end
 
   # An array of all installed {Tap} names.
