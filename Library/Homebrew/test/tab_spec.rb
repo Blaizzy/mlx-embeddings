@@ -252,7 +252,7 @@ RSpec.describe Tab do
         depends_on "baz" => :build
       end
 
-      tap = Tap.new("user", "repo")
+      tap = Tap.fetch("user", "repo")
       from_tap = formula("from_tap", path: tap.path/"Formula/from_tap.rb") do
         url "from_tap-1.0"
         revision 1
