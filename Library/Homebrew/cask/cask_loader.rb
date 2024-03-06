@@ -215,8 +215,7 @@ module Cask
 
       sig { params(tapped_token: String).void }
       def initialize(tapped_token)
-        user, repo, token = tapped_token.split("/", 3)
-        tap = Tap.fetch(user, repo)
+        tap, token = Tap.with_cask_token(tapped_token)
         cask = CaskLoader.find_cask_in_tap(token, tap)
         super cask
       end
@@ -543,9 +542,7 @@ module Cask
         new_token = tap.core_cask_tap? ? token : "#{tap}/#{token}"
         type = :rename
       elsif (new_tap_name = tap.tap_migrations[token].presence)
-        new_tap_user, new_tap_repo, new_token = new_tap_name.split("/", 3)
-        new_token ||= token
-        new_tap = Tap.fetch(new_tap_user, new_tap_repo)
+        new_tap, new_token = Tap.with_cask_token(new_tap_name) || [Tap.fetch(new_tap_name), token]
         new_tap.ensure_installed!
         new_tapped_token = "#{new_tap}/#{new_token}"
 
