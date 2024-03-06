@@ -464,12 +464,19 @@ module Cask
       }
       def self.try_new(ref, warn: false)
         return unless ref.is_a?(String)
-        return if ref.include?("/")
+        return unless ref.match?(/\A#{HOMEBREW_TAP_CASK_TOKEN_REGEX}\Z/o)
 
         token = ref
 
-        loaders = Tap.filter_map { |tap| super("#{tap}/#{token}", warn: warn) }
-                     .select { _1.path.exist? }
+        # If it exists in the default tap, never treat it as ambiguous with another tap.
+        if (core_cask_tap = CoreCaskTap.instance).installed? &&
+           (loader= super("#{core_cask_tap}/#{token}", warn: warn))&.path&.exist?
+          return loader
+        end
+
+        loaders = Tap.select { |tap| tap.installed? && !tap.core_cask_tap? }
+                     .filter_map { |tap| super("#{tap}/#{token}", warn: warn) }
+                     .select { |tap| tap.path.exist? }
 
         case loaders.count
         when 1
@@ -570,7 +577,6 @@ module Cask
         FromURILoader,
         FromAPILoader,
         FromTapLoader,
-        FromDefaultNameLoader,
         FromNameLoader,
         FromPathLoader,
         FromInstalledPathLoader,

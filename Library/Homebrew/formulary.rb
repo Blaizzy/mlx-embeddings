@@ -765,22 +765,6 @@ module Formulary
     end
   end
 
-  class FromDefaultNameLoader < FromTapLoader
-    sig {
-      params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
-        .returns(T.nilable(T.attached_class))
-    }
-    def self.try_new(ref, from: T.unsafe(nil), warn: false)
-      return unless ref.is_a?(String)
-      return unless (name = ref[HOMEBREW_DEFAULT_TAP_FORMULA_REGEX, :name])
-      return unless (tap = CoreTap.instance).installed?
-
-      return unless (loader = super("#{tap}/#{name}", warn: warn))
-
-      loader if loader.path.exist?
-    end
-  end
-
   # Loads a formula from a name, as long as it exists only in a single tap.
   class FromNameLoader < FromTapLoader
     sig {
@@ -789,11 +773,19 @@ module Formulary
     }
     def self.try_new(ref, from: T.unsafe(nil), warn: false)
       return unless ref.is_a?(String)
-      return if ref.include?("/")
+      return unless ref.match?(/\A#{HOMEBREW_TAP_FORMULA_NAME_REGEX}\Z/o)
 
       name = ref
 
-      loaders = Tap.filter_map { |tap| super("#{tap}/#{name}", warn: warn) }.select { _1.path.exist? }
+      # If it exists in the default tap, never treat it as ambiguous with another tap.
+      if (core_tap = CoreTap.instance).installed? &&
+         (loader = super("#{core_tap}/#{name}", warn: warn))&.path&.exist?
+        return loader
+      end
+
+      loaders = Tap.select { |tap| tap.installed? && !tap.core_tap? }
+                   .filter_map { |tap| super("#{tap}/#{name}", warn: warn) }
+                   .select { |tap| tap.path.exist? }
 
       case loaders.count
       when 1
@@ -1182,7 +1174,6 @@ module Formulary
       FromAPILoader,
       FromTapLoader,
       FromPathLoader,
-      FromDefaultNameLoader,
       FromNameLoader,
       FromKegLoader,
       FromCacheLoader,
