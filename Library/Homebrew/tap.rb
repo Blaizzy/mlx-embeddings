@@ -189,6 +189,7 @@ class Tap
     @command_files = nil
 
     @tap_migrations = nil
+    @reverse_tap_migrations_renames = nil
 
     @audit_exceptions = nil
     @style_exceptions = nil
@@ -853,21 +854,6 @@ class Tap
     end
   end
 
-  sig { returns(T::Hash[String, T::Array[String]]) }
-  def self.reverse_tap_migrations_renames
-    Tap.each_with_object({}) do |tap, hash|
-      tap.tap_migrations.each do |old_name, new_name|
-        new_tap_user, new_tap_repo, new_name = new_name.split("/", 3)
-        next unless new_name
-
-        new_tap = Tap.fetch(T.must(new_tap_user), T.must(new_tap_repo))
-
-        hash["#{new_tap}/#{new_name}"] ||= []
-        hash["#{new_tap}/#{new_name}"] << old_name
-      end
-    end
-  end
-
   # Hash with tap migrations.
   sig { returns(T::Hash[String, String]) }
   def tap_migrations
@@ -875,6 +861,27 @@ class Tap
       JSON.parse(migration_file.read)
     else
       {}
+    end
+  end
+
+  sig { returns(T::Hash[String, T::Array[String]]) }
+  def reverse_tap_migrations_renames
+    @reverse_tap_migrations_renames ||= tap_migrations.each_with_object({}) do |(old_name, new_name), hash|
+      next if new_name.count("/") != 2
+
+      hash[new_name] ||= []
+      hash[new_name] << old_name
+    end
+  end
+
+  sig { params(new_tap: Tap, name_or_token: String).returns(T::Array[String]) }
+  def self.reverse_tap_migrations_renames(new_tap, name_or_token)
+    key = "#{new_tap}/#{name_or_token}"
+
+    Tap.each_with_object([]) do |tap, array|
+      next unless (renames = tap.reverse_tap_migrations_renames[key])
+
+      array.concat(renames)
     end
   end
 
