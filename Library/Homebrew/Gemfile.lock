@@ -112,7 +112,7 @@ GEM
       rubocop (~> 1.40)
       rubocop-capybara (~> 2.17)
       rubocop-factory_bot (~> 2.22)
-    rubocop-sorbet (0.7.7)
+    rubocop-sorbet (0.7.8)
       rubocop (>= 0.90.0)
     ruby-macho (4.0.1)
     ruby-prof (1.7.0)
@@ -167,7 +167,6 @@ GEM
 
 PLATFORMS
   aarch64-linux
-  arm-linux
   arm64-darwin
   x86_64-darwin
   x86_64-linux
