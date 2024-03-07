@@ -52,13 +52,13 @@ RSpec.describe Cask::Audit, :cask do
   let(:token_conflicts) { nil }
   let(:signing) { nil }
   let(:audit) do
-    described_class.new(cask, online:          online,
-                              strict:          strict,
-                              new_cask:        new_cask,
-                              token_conflicts: token_conflicts,
-                              signing:         signing,
-                              only:            only,
-                              except:          except)
+    described_class.new(cask, online:,
+                              strict:,
+                              new_cask:,
+                              token_conflicts:,
+                              signing:,
+                              only:,
+                              except:)
   end
 
   describe "#new" do

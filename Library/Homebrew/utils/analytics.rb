@@ -77,10 +77,10 @@ module Utils
         options = nil if options.blank?
 
         # Tags must have low cardinality.
-        tags = default_package_tags.merge(on_request: on_request)
+        tags = default_package_tags.merge(on_request:)
 
         # Fields can have high cardinality.
-        fields = default_package_fields.merge(package: package_name, tap_name: tap_name, options: options)
+        fields = default_package_fields.merge(package: package_name, tap_name:, options:)
                                        .compact
 
         report_influx(measurement, tags, fields)
@@ -98,7 +98,7 @@ module Utils
         return unless tap.should_report_analytics?
 
         options = exception.options.to_a.map(&:to_s).join(" ")
-        report_package_event(:build_error, package_name: formula.name, tap_name: tap.name, options: options)
+        report_package_event(:build_error, package_name: formula.name, tap_name: tap.name, options:)
       end
 
       def influx_message_displayed?
@@ -179,7 +179,7 @@ module Utils
           return
         end
 
-        table_output(category, days, results, os_version: os_version, cask_install: cask_install)
+        table_output(category, days, results, os_version:, cask_install:)
       end
 
       def output_analytics(json, args:)
@@ -258,8 +258,8 @@ module Utils
         json = Homebrew::API::Formula.fetch formula.name
         return if json.blank? || json["analytics"].blank?
 
-        output_analytics(json, args: args)
-        output_github_packages_downloads(formula, args: args)
+        output_analytics(json, args:)
+        output_github_packages_downloads(formula, args:)
       rescue ArgumentError
         # Ignore failed API requests
         nil
@@ -271,7 +271,7 @@ module Utils
         json = Homebrew::API::Cask.fetch cask.token
         return if json.blank? || json["analytics"].blank?
 
-        output_analytics(json, args: args)
+        output_analytics(json, args:)
       rescue ArgumentError
         # Ignore failed API requests
         nil
@@ -291,7 +291,7 @@ module Utils
           # Tags are always strings and must have low cardinality.
           {
             ci:             ENV["CI"].present?,
-            prefix:         prefix,
+            prefix:,
             default_prefix: Homebrew.default_prefix?,
             developer:      Homebrew::EnvConfig.developer?,
             devcmdrun:      config_true?(:devcmdrun),
@@ -319,8 +319,8 @@ module Utils
           end
 
           {
-            version:             version,
-            os_name_and_version: os_name_and_version,
+            version:,
+            os_name_and_version:,
           }
         end
       end
@@ -421,7 +421,7 @@ module Utils
       end
 
       def format_percent(percent)
-        format("%<percent>.2f", percent: percent)
+        format("%<percent>.2f", percent:)
       end
     end
   end

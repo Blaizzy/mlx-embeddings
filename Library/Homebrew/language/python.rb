@@ -167,7 +167,7 @@ module Language
 
         ENV.refurbish_args
         venv = Virtualenv.new formula, venv_root, python
-        venv.create(system_site_packages: system_site_packages, without_pip: without_pip)
+        venv.create(system_site_packages:, without_pip:)
 
         # Find any Python bindings provided by recursive dependencies
         formula_deps = formula.recursive_dependencies
@@ -228,10 +228,10 @@ module Language
           python = T.must(wanted.first)
           python = "python3" if python == "python"
         end
-        venv = virtualenv_create(libexec, python.delete("@"), system_site_packages: system_site_packages,
-                                                              without_pip:          without_pip)
+        venv = virtualenv_create(libexec, python.delete("@"), system_site_packages:,
+                                                              without_pip:)
         venv.pip_install resources
-        venv.pip_install_and_link(T.must(buildpath), link_manpages: link_manpages)
+        venv.pip_install_and_link(T.must(buildpath), link_manpages:)
         venv
       end
 
@@ -327,10 +327,10 @@ module Language
           targets = Array(targets)
           targets.each do |t|
             if t.is_a?(Resource)
-              t.stage { do_install(Pathname.pwd, build_isolation: build_isolation) }
+              t.stage { do_install(Pathname.pwd, build_isolation:) }
             else
               t = t.lines.map(&:strip) if t.is_a?(String) && t.include?("\n")
-              do_install(t, build_isolation: build_isolation)
+              do_install(t, build_isolation:)
             end
           end
         end
@@ -351,7 +351,7 @@ module Language
           bin_before = Dir[@venv_root/"bin/*"].to_set
           man_before = Dir[@venv_root/"share/man/man*/*"].to_set if link_manpages
 
-          pip_install(targets, build_isolation: build_isolation)
+          pip_install(targets, build_isolation:)
 
           bin_after = Dir[@venv_root/"bin/*"].to_set
           bin_to_link = (bin_after - bin_before).to_a
@@ -375,7 +375,7 @@ module Language
         }
         def do_install(targets, build_isolation: true)
           targets = Array(targets)
-          args = @formula.std_pip_args(prefix: false, build_isolation: build_isolation)
+          args = @formula.std_pip_args(prefix: false, build_isolation:)
           @formula.system @python, "-m", "pip", "--python=#{@venv_root}/bin/python", "install", *args, *targets
         end
       end

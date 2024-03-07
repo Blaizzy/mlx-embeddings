@@ -150,14 +150,14 @@ module Homebrew
       package_data = if formula_or_cask.is_a?(Formula) && formula_or_cask.versioned_formula?
         nil
       else
-        Repology.single_package_query(name, repository: repository)
+        Repology.single_package_query(name, repository:)
       end
 
       retrieve_and_display_info_and_open_pr(
         formula_or_cask,
         name,
         package_data&.values&.first,
-        args:           args,
+        args:,
         ambiguous_cask: ambiguous_casks.include?(formula_or_cask),
       )
     end
@@ -218,8 +218,8 @@ module Homebrew
           formula_or_cask,
           name,
           repositories,
-          args:           args,
-          ambiguous_cask: ambiguous_cask,
+          args:,
+          ambiguous_cask:,
         )
       end
     end
@@ -283,7 +283,7 @@ module Homebrew
 
     version_info = Livecheck.latest_version(
       formula_or_cask,
-      referenced_formula_or_cask: referenced_formula_or_cask,
+      referenced_formula_or_cask:,
       json: true, full_name: false, verbose: true, debug: false
     )
     return "unable to get versions" if version_info.blank?
@@ -306,7 +306,7 @@ module Homebrew
   def retrieve_pull_requests(formula_or_cask, name, state:, version: nil)
     tap_remote_repo = formula_or_cask.tap&.remote_repo || formula_or_cask.tap&.full_name
     pull_requests = begin
-      GitHub.fetch_pull_requests(name, tap_remote_repo, state: state, version: version)
+      GitHub.fetch_pull_requests(name, tap_remote_repo, state:, version:)
     rescue GitHub::API::ValidationFailedError => e
       odebug "Error fetching pull requests for #{formula_or_cask} #{name}: #{e}"
       nil
@@ -340,7 +340,7 @@ module Homebrew
     arch_options = is_cask_with_blocks ? OnSystem::ARCH_OPTIONS : [:arm]
 
     arch_options.each do |arch|
-      SimulateSystem.with arch: arch do
+      SimulateSystem.with(arch:) do
         version_key = is_cask_with_blocks ? arch : :general
 
         # We reload the formula/cask here to ensure we're getting the correct version for the current arch
@@ -415,14 +415,14 @@ module Homebrew
     end.presence
 
     VersionBumpInfo.new(
-      type:                 type,
-      multiple_versions:    multiple_versions,
-      version_name:         version_name,
-      current_version:      current_version,
-      repology_latest:      repology_latest,
-      new_version:          new_version,
-      open_pull_requests:   open_pull_requests,
-      closed_pull_requests: closed_pull_requests,
+      type:,
+      multiple_versions:,
+      version_name:,
+      current_version:,
+      repology_latest:,
+      new_version:,
+      open_pull_requests:,
+      closed_pull_requests:,
     )
   end
 
@@ -436,10 +436,10 @@ module Homebrew
     ).void
   }
   def retrieve_and_display_info_and_open_pr(formula_or_cask, name, repositories, args:, ambiguous_cask: false)
-    version_info = retrieve_versions_by_arch(formula_or_cask: formula_or_cask,
-                                             repositories:    repositories,
-                                             args:            args,
-                                             name:            name)
+    version_info = retrieve_versions_by_arch(formula_or_cask:,
+                                             repositories:,
+                                             args:,
+                                             name:)
 
     current_version = version_info.current_version
     new_version = version_info.new_version

@@ -116,7 +116,7 @@ module Cask
     def timestamped_versions(caskroom_path: self.caskroom_path)
       relative_paths = Pathname.glob(metadata_timestamped_path(
                                        version: "*", timestamp: "*",
-                                       caskroom_path: caskroom_path
+                                       caskroom_path:
                                      ))
                                .map { |p| p.relative_path_from(p.parent.parent) }
       # Sorbet is unaware that Pathname is sortable: https://github.com/sorbet/sorbet/issues/6844
@@ -227,8 +227,8 @@ module Cask
     end
 
     def outdated?(greedy: false, greedy_latest: false, greedy_auto_updates: false)
-      !outdated_version(greedy: greedy, greedy_latest: greedy_latest,
-                        greedy_auto_updates: greedy_auto_updates).nil?
+      !outdated_version(greedy:, greedy_latest:,
+                        greedy_auto_updates:).nil?
     end
 
     def outdated_version(greedy: false, greedy_latest: false, greedy_auto_updates: false)
@@ -252,8 +252,8 @@ module Cask
     def outdated_info(greedy, verbose, json, greedy_latest, greedy_auto_updates)
       return token if !verbose && !json
 
-      installed_version = outdated_version(greedy: greedy, greedy_latest: greedy_latest,
-                                           greedy_auto_updates: greedy_auto_updates).to_s
+      installed_version = outdated_version(greedy:, greedy_latest:,
+                                           greedy_auto_updates:).to_s
 
       if json
         {
@@ -375,10 +375,10 @@ module Cask
       if @dsl.on_system_blocks_exist?
         begin
           MacOSVersion::SYMBOLS.keys.product(OnSystem::ARCH_OPTIONS).each do |os, arch|
-            bottle_tag = ::Utils::Bottles::Tag.new(system: os, arch: arch)
+            bottle_tag = ::Utils::Bottles::Tag.new(system: os, arch:)
             next unless bottle_tag.valid_combination?
 
-            Homebrew::SimulateSystem.with os: os, arch: arch do
+            Homebrew::SimulateSystem.with(os:, arch:) do
               refresh
 
               to_h.each do |key, value|

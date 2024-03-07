@@ -138,7 +138,7 @@ module GitHub
       env = { "PATH" => PATH.new(HOMEBREW_PREFIX/"opt/gh/bin", ENV.fetch("PATH")) }
       gh_out, _, result = system_command "gh",
                                          args:         ["auth", "token", "--hostname", "github.com"],
-                                         env:          env,
+                                         env:,
                                          print_stderr: false
       return unless result.success?
 
@@ -304,8 +304,8 @@ module GitHub
     end
 
     def self.open_graphql(query, variables: nil, scopes: [].freeze, raise_errors: true)
-      data = { query: query, variables: variables }
-      result = open_rest("#{API_URL}/graphql", scopes: scopes, data: data, request_method: "POST")
+      data = { query:, variables: }
+      result = open_rest("#{API_URL}/graphql", scopes:, data:, request_method: "POST")
 
       if raise_errors
         if result["errors"].present?
