@@ -89,19 +89,13 @@ module Homebrew
     odie "This cask is not in a tap!" if cask.tap.blank?
     odie "This cask's tap is not a Git repository!" unless cask.tap.git?
 
-    if ENV.fetch("HOMEBREW_TEST_BOT_AUTOBUMP", false).blank? &&
-       (cask.tap.core_cask_tap? &&
-       (autobump_file_path = cask.tap.path/Tap::HOMEBREW_TAP_AUTOBUMP_FILE) &&
-       autobump_file_path.exist? &&
-       autobump_file_path.readlines(chomp: true).include?(cask.token))
-      odie <<~EOS
-        Whoops, the #{cask.token} cask has its version update
-        pull requests automatically opened by BrewTestBot!
-        We'd still love your contributions, though, so try another one
-        that's not in the autobump list:
-          #{Formatter.url("#{cask.tap.remote}/blob/master/.github/autobump.txt")}
-      EOS
-    end
+    odie <<~EOS unless cask.tap.allow_bump?(cask.token)
+      Whoops, the #{cask.token} cask has its version update
+      pull requests automatically opened by BrewTestBot!
+      We'd still love your contributions, though, so try another one
+      that's not in the autobump list:
+        #{Formatter.url("#{cask.tap.remote}/blob/master/.github/autobump.txt")}
+    EOS
 
     new_version = BumpVersionParser.new(
       general: args.version,

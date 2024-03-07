@@ -847,6 +847,22 @@ class Tap
     end
   end
 
+  # Array with autobump names
+  sig { returns(T::Array[String]) }
+  def autobump
+    @autobump ||= if (autobump_file = path/HOMEBREW_TAP_AUTOBUMP_FILE).file?
+      autobump_file.readlines(chomp: true)
+    else
+      []
+    end
+  end
+
+  # Whether this {Tap} allows running bump commands on the given {Formula} or {Cask}.
+  sig { params(formula_or_cask_name: String).returns(T::Boolean) }
+  def allow_bump?(formula_or_cask_name)
+    ENV["HOMEBREW_TEST_BOT_AUTOBUMP"].present? || !official? || autobump.exclude?(formula_or_cask_name)
+  end
+
   # Hash with audit exceptions
   sig { returns(Hash) }
   def audit_exceptions
@@ -1158,6 +1174,15 @@ class CoreTap < AbstractCoreTap
       migrations, = Homebrew::API.fetch_json_api_file "formula_tap_migrations.jws.json",
                                                       stale_seconds: TAP_MIGRATIONS_STALE_SECONDS
       migrations
+    end
+  end
+
+  # @private
+  sig { returns(T::Array[String]) }
+  def autobump
+    @autobump ||= begin
+      ensure_installed!
+      super
     end
   end
 
