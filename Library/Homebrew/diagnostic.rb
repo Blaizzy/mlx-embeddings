@@ -838,7 +838,6 @@ module Homebrew
 
           loadable = [
             Formulary::FromAPILoader,
-            Formulary::FromDefaultNameLoader,
             Formulary::FromNameLoader,
           ].any? do |loader_class|
             loader = begin
