@@ -55,12 +55,12 @@ module Homebrew
     args = tap_args.parse
 
     if args.repair?
-      Tap.select(&:installed?).each do |tap|
+      Tap.installed.each do |tap|
         tap.link_completions_and_manpages
         tap.fix_remote_configuration
       end
     elsif args.no_named?
-      puts Tap.select(&:installed?)
+      puts Tap.installed.sort_by(&:name)
     else
       tap = Tap.fetch(args.named.first)
       begin
