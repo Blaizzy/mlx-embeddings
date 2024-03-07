@@ -20,33 +20,28 @@ module Utils
       include Context
 
       sig {
-        params(measurement: Symbol, package_name: String, tap_name: String, on_request: T::Boolean,
-               options: String).void
+        params(measurement: Symbol,
+               tags:        T::Hash[Symbol, T.any(T::Boolean, String)],
+               fields:      T::Hash[Symbol, T.any(T::Boolean, String)]).void
       }
-      def report_influx(measurement, package_name:, tap_name:, on_request:, options:)
-        # ensure on_request is a boolean
-        on_request = on_request ? true : false
-
-        # ensure options are removed (by `.compact` below) if empty
-        options = nil if options.blank?
+      def report_influx(measurement, tags, fields)
+        return if not_this_run? || disabled?
 
         # Tags are always implicitly strings and must have low cardinality.
-        tags = default_tags_influx.merge(on_request: on_request)
-                                  .map { |k, v| "#{k}=#{v}" }
-                                  .join(",")
+        tags_string = tags.map { |k, v| "#{k}=#{v}" }
+                          .join(",")
 
         # Fields need explicitly wrapped with quotes and can have high cardinality.
-        fields = default_fields_influx.merge(package: package_name, tap_name: tap_name, options: options)
-                                      .compact
-                                      .map { |k, v| %Q(#{k}="#{v}") }
-                                      .join(",")
+        fields_string = fields.compact
+                              .map { |k, v| %Q(#{k}="#{v}") }
+                              .join(",")
 
         args = [
           "--max-time", "3",
           "--header", "Authorization: Token #{INFLUX_TOKEN}",
           "--header", "Content-Type: text/plain; charset=utf-8",
           "--header", "Accept: application/json",
-          "--data-binary", "#{measurement},#{tags} #{fields} #{Time.now.to_i}"
+          "--data-binary", "#{measurement},#{tags_string} #{fields_string} #{Time.now.to_i}"
         ]
 
         # Second precision is highest we can do and has the lowest performance cost.
@@ -72,29 +67,27 @@ module Utils
         params(measurement: Symbol, package_name: String, tap_name: String,
                on_request: T::Boolean, options: String).void
       }
-      def report_event(measurement, package_name:, tap_name:, on_request:, options: "")
-        report_influx_event(measurement, package_name: package_name, tap_name: tap_name, on_request: on_request,
-options: options)
-      end
-
-      sig {
-        params(measurement: Symbol, package_name: String, tap_name: String, on_request: T::Boolean,
-               options: String).void
-      }
-      def report_influx_event(measurement, package_name:, tap_name:, on_request: false, options: "")
+      def report_package_event(measurement, package_name:, tap_name:, on_request: false, options: "")
         return if not_this_run? || disabled?
 
-        report_influx(measurement, package_name: package_name, tap_name: tap_name, on_request: on_request,
-options: options)
+        # ensure on_request is a boolean
+        on_request = on_request ? true : false
+
+        # ensure options are removed (by `.compact` below) if empty
+        options = nil if options.blank?
+
+        # Tags must have low cardinality.
+        tags = default_package_tags.merge(on_request: on_request)
+
+        # Fields can have high cardinality.
+        fields = default_package_fields.merge(package: package_name, tap_name: tap_name, options: options)
+                                       .compact
+
+        report_influx(measurement, tags, fields)
       end
 
       sig { params(exception: BuildError).void }
       def report_build_error(exception)
-        report_influx_error(exception)
-      end
-
-      sig { params(exception: BuildError).void }
-      def report_influx_error(exception)
         return if not_this_run? || disabled?
 
         formula = exception.formula
@@ -105,7 +98,7 @@ options: options)
         return unless tap.should_report_analytics?
 
         options = exception.options.to_a.map(&:to_s).join(" ")
-        report_influx_event(:build_error, package_name: formula.name, tap_name: tap.name, options: options)
+        report_package_event(:build_error, package_name: formula.name, tap_name: tap.name, options: options)
       end
 
       def influx_message_displayed?
@@ -285,13 +278,13 @@ options: options)
       end
 
       def clear_cache
-        remove_instance_variable(:@default_tags_influx) if instance_variable_defined?(:@default_tags_influx)
-        remove_instance_variable(:@default_fields_influx) if instance_variable_defined?(:@default_fields_influx)
+        remove_instance_variable(:@default_package_tags) if instance_variable_defined?(:@default_package_tags)
+        remove_instance_variable(:@default_package_fields) if instance_variable_defined?(:@default_package_fields)
       end
 
       sig { returns(T::Hash[Symbol, String]) }
-      def default_tags_influx
-        @default_tags_influx ||= begin
+      def default_package_tags
+        @default_package_tags ||= begin
           # Only display default prefixes to reduce cardinality and improve privacy
           prefix = Homebrew.default_prefix? ? HOMEBREW_PREFIX.to_s : "custom-prefix"
 
@@ -311,8 +304,8 @@ options: options)
       # remove os_version starting with " or number
       # remove macOS patch release
       sig { returns(T::Hash[Symbol, String]) }
-      def default_fields_influx
-        @default_fields_influx ||= begin
+      def default_package_fields
+        @default_package_fields ||= begin
           version = if (match_data = HOMEBREW_VERSION.match(/^[\d.]+/))
             suffix = "-dev" if HOMEBREW_VERSION.include?("-")
             match_data[0] + suffix.to_s

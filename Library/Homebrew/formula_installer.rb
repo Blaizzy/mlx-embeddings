@@ -419,7 +419,7 @@ class FormulaInstaller
     oh1 "Installing #{Formatter.identifier(formula.full_name)} #{options}".strip if show_header?
 
     if (tap = formula.tap) && tap.should_report_analytics?
-      Utils::Analytics.report_event(:formula_install, package_name: formula.name, tap_name: tap.name,
+      Utils::Analytics.report_package_event(:formula_install, package_name: formula.name, tap_name: tap.name,
 on_request: installed_on_request?, options: options)
     end
 

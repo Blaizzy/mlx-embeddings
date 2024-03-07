@@ -112,7 +112,7 @@ module Cask
       install_artifacts(predecessor: predecessor)
 
       if (tap = @cask.tap) && tap.should_report_analytics?
-        ::Utils::Analytics.report_event(:cask_install, package_name: @cask.token, tap_name: tap.name,
+        ::Utils::Analytics.report_package_event(:cask_install, package_name: @cask.token, tap_name: tap.name,
 on_request: true)
       end
 
