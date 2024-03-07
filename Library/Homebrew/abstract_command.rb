@@ -37,9 +37,9 @@ module Homebrew
     sig { returns(CLI::Args) }
     attr_reader :args
 
-    sig { void }
-    def initialize
-      @args = T.let(CLI::Parser.new(&self.class.parser_block).parse, CLI::Args)
+    sig { params(argv: T::Array[String]).void }
+    def initialize(argv = ARGV.freeze)
+      @args = T.let(CLI::Parser.new(&self.class.parser_block).parse(argv), CLI::Args)
     end
 
     sig { abstract.void }
