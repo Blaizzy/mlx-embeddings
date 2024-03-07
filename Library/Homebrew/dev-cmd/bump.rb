@@ -323,7 +323,7 @@ module Homebrew
     params(
       formula_or_cask: T.any(Formula, Cask::Cask),
       repositories:    T::Array[T.untyped],
-      args:            T.untyped,
+      args:            CLI::Args,
       name:            String,
     ).returns(VersionBumpInfo)
   }
@@ -431,7 +431,7 @@ module Homebrew
       formula_or_cask: T.any(Formula, Cask::Cask),
       name:            String,
       repositories:    T::Array[T.untyped],
-      args:            T.untyped,
+      args:            CLI::Args,
       ambiguous_cask:  T::Boolean,
     ).void
   }
