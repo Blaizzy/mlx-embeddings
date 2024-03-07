@@ -3257,13 +3257,7 @@ class Formula
     #   sha256                         high_sierra: "91dd0caca9bd3f38c439d5a7b6f68440c4274945615fae035ff0a369264b8a2f"
     # end</pre>
     #
-    # Homebrew maintainers aim to bottle all formulae that require compilation.
-    #
-    # Formulae that can be installed without compilation should be tagged with:
-    # <pre>bottle :unneeded</pre>
-    #
-    # Formulae which should not be bottled should be tagged with:
-    # <pre>bottle :disable, "reasons"</pre>
+    # Homebrew maintainers aim to bottle all formulae.
     sig { params(block: T.proc.bind(BottleSpecification).void).void }
     def bottle(&block)
       stable.bottle(&block)
