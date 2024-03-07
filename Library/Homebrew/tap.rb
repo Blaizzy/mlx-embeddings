@@ -162,31 +162,41 @@ class Tap
   def clear_cache
     @remote = nil
     @repo_var_suffix = nil
+    remove_instance_variable(:@private) if instance_variable_defined?(:@private)
+
     @formula_dir = nil
-    @cask_dir = nil
-    @command_dir = nil
-    @formula_names = nil
     @formula_files = nil
     @formula_files_by_name = nil
+    @formula_names = nil
+    @prefix_to_versioned_formulae_names = nil
+    @formula_renames = nil
     @formula_reverse_renames = nil
+
+    @cask_dir = nil
     @cask_files = nil
     @cask_files_by_name = nil
+    @cask_tokens = nil
+    @cask_renames = nil
     @cask_reverse_renames = nil
+
     @alias_dir = nil
     @alias_files = nil
     @aliases = nil
     @alias_table = nil
     @alias_reverse_table = nil
+
+    @command_dir = nil
     @command_files = nil
-    @formula_renames = nil
+
     @tap_migrations = nil
+
     @audit_exceptions = nil
     @style_exceptions = nil
     @pypi_formula_mappings = nil
     @synced_versions_formulae = nil
+
     @config = nil
     @spell_checker = nil
-    remove_instance_variable(:@private) if instance_variable_defined?(:@private)
   end
 
   sig { void }
