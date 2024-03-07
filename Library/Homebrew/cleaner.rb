@@ -58,6 +58,7 @@ class Cleaner
     end
 
     rewrite_shebangs
+    remove_pip_direct_url
 
     prune
   end
@@ -161,6 +162,28 @@ class Cleaner
       rescue ShebangDetectionError
         break
       end
+    end
+  end
+
+  # Remove non-reproducible pip direct_url.json which records the /tmp build directory
+  sig { void }
+  def remove_pip_direct_url
+    basepath = @formula.prefix.realpath
+    basepath.find do |path|
+      Find.prune if @formula.skip_clean?(path)
+
+      next if path.directory? || path.symlink?
+      next if path.basename.to_s != "direct_url.json"
+      next if path.parent.extname != ".dist-info"
+
+      odebug "Removing #{path}"
+      path.unlink
+
+      record = path.parent/"RECORD"
+      next unless record.file?
+
+      odebug "Modifying #{record}"
+      @formula.inreplace record, %r{^.*/direct_url\.json,.*$\n?}, "", false
     end
   end
 end
