@@ -75,6 +75,9 @@ module Homebrew
           env:         :display_install_times,
           description: "Print install times for each package at the end of the run.",
         }],
+        [:switch, "--overwrite", {
+          description: "Delete files that already exist in the prefix while linking.",
+        }],
       ].each do |args|
         options = args.pop
         send(*args, **options)
@@ -229,6 +232,7 @@ module Homebrew
       keep_tmp:                   args.keep_tmp?,
       debug_symbols:              args.debug_symbols?,
       force:                      args.force?,
+      overwrite:                  args.overwrite?,
       debug:                      args.debug?,
       quiet:                      args.quiet?,
       verbose:                    args.verbose?,
