@@ -128,7 +128,7 @@ class Keg
   def replace_placeholders_with_locations(files, skip_linkage: false)
     relocation = prepare_relocation_to_locations.freeze
     relocate_dynamic_linkage(relocation) unless skip_linkage
-    replace_text_in_files(relocation, files: files)
+    replace_text_in_files(relocation, files:)
   end
 
   def openjdk_dep_name_if_applicable

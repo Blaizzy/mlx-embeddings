@@ -30,7 +30,7 @@ RSpec.describe "brew extract" do
         system "git", "add", "--all"
         system "git", "commit", "-m", "testball 0.2"
       end
-      { name: target.name, path: path }
+      { name: target.name, path: }
     end
 
     it "retrieves the most recent version of formula", :integration_test do

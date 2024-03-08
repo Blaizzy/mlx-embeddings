@@ -46,7 +46,7 @@ module Cask
               if target.parent.writable? && !force
                 target.rmdir
               else
-                Utils.gain_permissions_remove(target, command: command)
+                Utils.gain_permissions_remove(target, command:)
               end
             end
           else
@@ -55,7 +55,7 @@ module Cask
               same = command.run(
                 "/usr/bin/diff",
                 args:         ["--recursive", "--brief", source, target],
-                verbose:      verbose,
+                verbose:,
                 print_stdout: verbose,
               ).success?
 
@@ -76,22 +76,22 @@ module Cask
             raise CaskError, "#{message}." unless force
 
             opoo "#{message}; overwriting."
-            delete(target, force: force, command: command, **options)
+            delete(target, force:, command:, **options)
           end
         end
 
         ohai "Moving #{self.class.english_name} '#{source.basename}' to '#{target}'"
 
-        Utils.gain_permissions_mkpath(target.dirname, command: command) unless target.dirname.exist?
+        Utils.gain_permissions_mkpath(target.dirname, command:) unless target.dirname.exist?
 
-        if target.directory? && Quarantine.app_management_permissions_granted?(app: target, command: command)
+        if target.directory? && Quarantine.app_management_permissions_granted?(app: target, command:)
           if target.writable?
             source.children.each { |child| FileUtils.move(child, target/child.basename) }
           else
             command.run!("/bin/cp", args: ["-pR", *source.children, target],
                                     sudo: true)
           end
-          Quarantine.copy_xattrs(source, target, command: command)
+          Quarantine.copy_xattrs(source, target, command:)
           source.rmtree
         elsif target.dirname.writable?
           FileUtils.move(source, target)
@@ -109,7 +109,7 @@ module Cask
       def post_move(command)
         FileUtils.ln_sf target, source
 
-        add_altname_metadata(target, source.basename, command: command)
+        add_altname_metadata(target, source.basename, command:)
       end
 
       def matching_artifact?(cask)
@@ -129,7 +129,7 @@ module Cask
           raise CaskError, "#{message}." unless force
 
           opoo "#{message}; overwriting."
-          delete(source, force: force, command: command, **options)
+          delete(source, force:, command:, **options)
         end
 
         unless target.exist?
@@ -144,7 +144,7 @@ module Cask
         # We need to preserve extended attributes between copies.
         command.run!("/bin/cp", args: ["-pR", target, source], sudo: !source.parent.writable?)
 
-        delete(target, force: force, command: command, **options)
+        delete(target, force:, command:, **options)
       end
 
       def delete(target, force: false, successor: nil, command: nil, **_)
@@ -154,7 +154,7 @@ module Cask
         return unless Utils.path_occupied?(target)
 
         if target.directory? && matching_artifact?(successor) && Quarantine.app_management_permissions_granted?(
-          app: target, command: command,
+          app: target, command:,
         )
           # If an app folder is deleted, macOS considers the app uninstalled and removes some data.
           # Remove only the contents to handle this case.
@@ -162,13 +162,13 @@ module Cask
             if target.writable? && !force
               child.rmtree
             else
-              Utils.gain_permissions_remove(child, command: command)
+              Utils.gain_permissions_remove(child, command:)
             end
           end
         elsif target.parent.writable? && !force
           target.rmtree
         else
-          Utils.gain_permissions_remove(target, command: command)
+          Utils.gain_permissions_remove(target, command:)
         end
       end
     end

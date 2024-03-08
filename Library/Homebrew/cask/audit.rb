@@ -41,7 +41,7 @@ module Cask
       download = online || signing if download.nil?
 
       @cask = cask
-      @download = Download.new(cask, quarantine: quarantine) if download
+      @download = Download.new(cask, quarantine:) if download
       @online = online
       @strict = strict
       @signing = signing
@@ -95,7 +95,7 @@ module Cask
       # Only raise non-critical audits if the user specified `--strict`.
       return if strict_only && !@strict
 
-      errors << ({ message: message, location: location, corrected: false })
+      errors << ({ message:, location:, corrected: false })
     end
 
     def result
@@ -663,7 +663,7 @@ module Cask
 
       tag = SharedAudits.github_tag_from_url(cask.url)
       tag ||= cask.version
-      error = SharedAudits.github_release(user, repo, tag, cask: cask)
+      error = SharedAudits.github_release(user, repo, tag, cask:)
       add_error error, location: cask.url.location if error
     end
 
@@ -678,7 +678,7 @@ module Cask
 
       tag = SharedAudits.gitlab_tag_from_url(cask.url)
       tag ||= cask.version
-      error = SharedAudits.gitlab_release(user, repo, tag, cask: cask)
+      error = SharedAudits.gitlab_release(user, repo, tag, cask:)
       add_error error, location: cask.url.location if error
     end
 
@@ -783,7 +783,7 @@ module Cask
 
       validate_url_for_https_availability(
         homepage, SharedAudits::URL_TYPE_HOMEPAGE,
-        user_agents:   user_agents,
+        user_agents:,
         check_content: true,
         strict:        strict?
       )
@@ -843,7 +843,7 @@ module Cask
         add_error problem, location: location unless exception
       elsif exception
         add_error "#{url_to_check} is in the secure connection audit skiplist but does not need to be skipped",
-                  location: location
+                  location:
       end
     end
 

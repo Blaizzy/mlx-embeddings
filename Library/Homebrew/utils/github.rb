@@ -23,7 +23,7 @@ module GitHub
   end
 
   def self.create_check_run(repo:, data:)
-    API.open_rest(url_to("repos", repo, "check-runs"), data: data)
+    API.open_rest(url_to("repos", repo, "check-runs"), data:)
   end
 
   def self.issues(repo:, **filters)
@@ -43,13 +43,13 @@ module GitHub
   def self.create_gist(files, description, private:)
     url = "#{API_URL}/gists"
     data = { "public" => !private, "files" => files, "description" => description }
-    API.open_rest(url, data: data, scopes: CREATE_GIST_SCOPES)["html_url"]
+    API.open_rest(url, data:, scopes: CREATE_GIST_SCOPES)["html_url"]
   end
 
   def self.create_issue(repo, title, body)
     url = "#{API_URL}/repos/#{repo}/issues"
     data = { "title" => title, "body" => body }
-    API.open_rest(url, data: data, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)["html_url"]
+    API.open_rest(url, data:, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)["html_url"]
   end
 
   def self.repository(user, repo)
@@ -59,7 +59,7 @@ module GitHub
   def self.issues_for_formula(name, tap: CoreTap.instance, tap_remote_repo: tap&.full_name, state: nil, type: nil)
     return [] unless tap_remote_repo
 
-    search_issues(name, repo: tap_remote_repo, state: state, type: type, in: "title")
+    search_issues(name, repo: tap_remote_repo, state:, type:, in: "title")
   end
 
   def self.user
@@ -89,9 +89,9 @@ module GitHub
 
   def self.merge_pull_request(repo, number:, sha:, merge_method:, commit_message: nil)
     url = "#{API_URL}/repos/#{repo}/pulls/#{number}/merge"
-    data = { sha: sha, merge_method: merge_method }
+    data = { sha:, merge_method: }
     data[:commit_message] = commit_message if commit_message
-    API.open_rest(url, data: data, request_method: :PUT, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
+    API.open_rest(url, data:, request_method: :PUT, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
   def self.print_pull_requests_matching(query, only = nil)
@@ -122,7 +122,7 @@ module GitHub
     data = {}
     data[:organization] = org if org
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
-    API.open_rest(url, data: data, scopes: scopes)
+    API.open_rest(url, data:, scopes:)
   end
 
   def self.fork_exists?(repo, org: nil)
@@ -138,9 +138,9 @@ module GitHub
 
   def self.create_pull_request(repo, title, head, base, body)
     url = "#{API_URL}/repos/#{repo}/pulls"
-    data = { title: title, head: head, base: base, body: body, maintainer_can_modify: true }
+    data = { title:, head:, base:, body:, maintainer_can_modify: true }
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
-    API.open_rest(url, data: data, scopes: scopes)
+    API.open_rest(url, data:, scopes:)
   end
 
   def self.private_repo?(full_name)
@@ -238,7 +238,7 @@ module GitHub
 
   def self.workflow_dispatch_event(user, repo, workflow, ref, **inputs)
     url = "#{API_URL}/repos/#{user}/#{repo}/actions/workflows/#{workflow}/dispatches"
-    API.open_rest(url, data:           { ref: ref, inputs: inputs },
+    API.open_rest(url, data:           { ref:, inputs: },
                        request_method: :POST,
                        scopes:         CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
@@ -257,7 +257,7 @@ module GitHub
     url = "#{API_URL}/repos/#{user}/#{repo}/releases/generate-notes"
     data = { tag_name: tag }
     data[:previous_tag_name] = previous_tag if previous_tag.present?
-    API.open_rest(url, data: data, request_method: :POST, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
+    API.open_rest(url, data:, request_method: :POST, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
   def self.create_or_update_release(user, repo, tag, id: nil, name: nil, body: nil, draft: false)
@@ -271,10 +271,10 @@ module GitHub
     data = {
       tag_name: tag,
       name:     name || tag,
-      draft:    draft,
+      draft:,
     }
     data[:body] = body if body.present?
-    API.open_rest(url, data: data, request_method: method, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
+    API.open_rest(url, data:, request_method: method, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
   def self.upload_release_asset(user, repo, id, local_file: nil, remote_file: nil)
@@ -288,7 +288,7 @@ module GitHub
 
     # GraphQL unfortunately has no way to get the workflow yml name, so we need an extra REST call.
     workflow_api_url = "#{API_URL}/repos/#{user}/#{repo}/actions/workflows/#{workflow_id}"
-    workflow_payload = API.open_rest(workflow_api_url, scopes: scopes)
+    workflow_payload = API.open_rest(workflow_api_url, scopes:)
     workflow_id_num = workflow_payload["id"]
 
     query = <<~EOS
@@ -318,11 +318,11 @@ module GitHub
       }
     EOS
     variables = {
-      user: user,
-      repo: repo,
+      user:,
+      repo:,
       pr:   pull_request.to_i,
     }
-    result = API.open_graphql(query, variables: variables, scopes: scopes)
+    result = API.open_graphql(query, variables:, scopes:)
 
     commit_node = result["repository"]["pullRequest"]["commits"]["nodes"].first
     check_suite = if commit_node.present?
@@ -355,7 +355,7 @@ module GitHub
     end
 
     run_id = check_suite.last["workflowRun"]["databaseId"]
-    artifacts = API.open_rest("#{API_URL}/repos/#{user}/#{repo}/actions/runs/#{run_id}/artifacts", scopes: scopes)
+    artifacts = API.open_rest("#{API_URL}/repos/#{user}/#{repo}/actions/runs/#{run_id}/artifacts", scopes:)
 
     artifact = artifacts["artifacts"].select do |art|
       art["name"] == artifact_name
@@ -375,7 +375,7 @@ module GitHub
     url = "#{API_URL}/orgs/#{org}/public_members"
     members = []
 
-    API.paginate_rest(url, per_page: per_page) do |result|
+    API.paginate_rest(url, per_page:) do |result|
       result = result.map { |member| member["login"] }
       members.concat(result)
 
@@ -491,8 +491,8 @@ module GitHub
       {
         name:                        sponsor["name"].presence || sponsor["login"],
         login:                       sponsor["login"],
-        monthly_amount:              monthly_amount,
-        closest_tier_monthly_amount: closest_tier_monthly_amount,
+        monthly_amount:,
+        closest_tier_monthly_amount:,
       }
     end
   end
@@ -520,7 +520,7 @@ module GitHub
     regex = pull_request_title_regex(name, version)
     query = "is:pr #{name} #{version}".strip
 
-    issues_for_formula(query, tap_remote_repo: tap_remote_repo, state: state).select do |pr|
+    issues_for_formula(query, tap_remote_repo:, state:).select do |pr|
       pr["html_url"].include?("/pull/") && regex.match?(pr["title"])
     end
   rescue API::RateLimitExceededError => e
@@ -558,9 +558,9 @@ module GitHub
   def self.check_for_duplicate_pull_requests(name, tap_remote_repo, state:, file:, quiet:, version: nil)
     # `fetch_open_pull_requests` is more reliable but *really* slow, so let's use it only in CI.
     pull_requests = if state == "open" && ENV["CI"].present?
-      fetch_open_pull_requests(name, tap_remote_repo, version: version)
+      fetch_open_pull_requests(name, tap_remote_repo, version:)
     else
-      fetch_pull_requests(name, tap_remote_repo, state: state, version: version)
+      fetch_pull_requests(name, tap_remote_repo, state:, version:)
     end
 
     pull_requests.select! do |pr|
@@ -601,9 +601,9 @@ module GitHub
   end
 
   def self.forked_repo_info!(tap_remote_repo, org: nil)
-    response = create_fork(tap_remote_repo, org: org)
+    response = create_fork(tap_remote_repo, org:)
     # GitHub API responds immediately but fork takes a few seconds to be ready.
-    sleep 1 until fork_exists?(tap_remote_repo, org: org)
+    sleep 1 until fork_exists?(tap_remote_repo, org:)
     remote_url = if system("git", "config", "--local", "--get-regexp", "remote..*.url", "git@github.com:.*")
       response.fetch("ssh_url")
     else
@@ -717,7 +717,7 @@ module GitHub
       raise API::Error, "Getting #{commit_count} commits would exceed limit of #{API_MAX_ITEMS} API items!"
     end
 
-    API.paginate_rest(commits_api, per_page: per_page) do |result, page|
+    API.paginate_rest(commits_api, per_page:) do |result, page|
       commits.concat(result.map { |c| c["sha"] })
 
       return commits if commits.length == commit_count

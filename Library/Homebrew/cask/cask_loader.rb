@@ -44,7 +44,7 @@ module Cask
         ).returns(Cask)
       }
       def cask(header_token, **options, &block)
-        Cask.new(header_token, source: content, tap: tap, **options, config: @config, &block)
+        Cask.new(header_token, source: content, tap:, **options, config: @config, &block)
       end
     end
 
@@ -127,9 +127,7 @@ module Cask
         @content = path.read(encoding: "UTF-8")
         @config = config
 
-        if path.extname == ".json"
-          return FromAPILoader.new(token, from_json: JSON.parse(@content)).load(config: config)
-        end
+        return FromAPILoader.new(token, from_json: JSON.parse(@content)).load(config:) if path.extname == ".json"
 
         begin
           instance_eval(content, path).tap do |cask|
@@ -207,7 +205,7 @@ module Cask
       def self.try_new(ref, warn: false)
         ref = ref.to_s
 
-        return unless (token_tap_type = CaskLoader.tap_cask_token_type(ref, warn: warn))
+        return unless (token_tap_type = CaskLoader.tap_cask_token_type(ref, warn:))
 
         token, tap, = token_tap_type
         new("#{tap}/#{token}")
@@ -278,7 +276,7 @@ module Cask
 
         ref = "#{CoreCaskTap.instance}/#{token}"
 
-        token, tap, = CaskLoader.tap_cask_token_type(ref, warn: warn)
+        token, tap, = CaskLoader.tap_cask_token_type(ref, warn:)
         new("#{tap}/#{token}")
       end
 
@@ -295,7 +293,7 @@ module Cask
         cask_options = {
           loaded_from_api: true,
           source:          JSON.pretty_generate(json_cask),
-          config:          config,
+          config:,
           loader:          self,
         }
 
@@ -449,7 +447,7 @@ module Cask
         return unless (token = ref[HOMEBREW_DEFAULT_TAP_CASK_REGEX, :token])
         return unless (tap = CoreCaskTap.instance).installed?
 
-        return unless (loader = super("#{tap}/#{token}", warn: warn))
+        return unless (loader = super("#{tap}/#{token}", warn:))
 
         loader if loader.path.exist?
       end
@@ -470,12 +468,12 @@ module Cask
 
         # If it exists in the default tap, never treat it as ambiguous with another tap.
         if (core_cask_tap = CoreCaskTap.instance).installed? &&
-           (loader= super("#{core_cask_tap}/#{token}", warn: warn))&.path&.exist?
+           (loader= super("#{core_cask_tap}/#{token}", warn:))&.path&.exist?
           return loader
         end
 
         loaders = Tap.select { |tap| tap.installed? && !tap.core_cask_tap? }
-                     .filter_map { |tap| super("#{tap}/#{token}", warn: warn) }
+                     .filter_map { |tap| super("#{tap}/#{token}", warn:) }
                      .select { |tap| tap.path.exist? }
 
         case loaders.count
@@ -532,7 +530,7 @@ module Cask
     end
 
     def self.load(ref, config: nil, warn: true)
-      self.for(ref, warn: warn).load(config: config)
+      self.for(ref, warn:).load(config:)
     end
 
     sig { params(tapped_token: String, warn: T::Boolean).returns(T.nilable([String, Tap, T.nilable(Symbol)])) }
@@ -582,7 +580,7 @@ module Cask
         FromInstalledPathLoader,
         NullLoader,
       ].each do |loader_class|
-        if (loader = loader_class.try_new(ref, warn: warn))
+        if (loader = loader_class.try_new(ref, warn:))
           $stderr.puts "#{$PROGRAM_NAME} (#{loader.class}): loading #{ref}" if debug?
           return loader
         end

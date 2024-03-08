@@ -80,7 +80,7 @@ class Build
       ENV.deps = formula_deps
       ENV.run_time_deps = run_time_deps
       ENV.setup_build_environment(
-        formula:       formula,
+        formula:,
         cc:            args.cc,
         build_bottle:  args.build_bottle?,
         bottle_arch:   args.bottle_arch,
@@ -93,7 +93,7 @@ class Build
       end
     else
       ENV.setup_build_environment(
-        formula:       formula,
+        formula:,
         cc:            args.cc,
         build_bottle:  args.build_bottle?,
         bottle_arch:   args.bottle_arch,
@@ -225,7 +225,7 @@ begin
 
   formula = args.named.to_formulae.first
   options = Options.create(args.flags_only)
-  build   = Build.new(formula, options, args: args)
+  build   = Build.new(formula, options, args:)
   build.install
 rescue Exception => e # rubocop:disable Lint/RescueException
   error_hash = JSON.parse e.to_json

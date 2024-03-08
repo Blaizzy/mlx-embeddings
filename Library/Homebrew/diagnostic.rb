@@ -21,7 +21,7 @@ module Homebrew
     def self.missing_deps(formulae, hide = nil)
       missing = {}
       formulae.each do |f|
-        missing_dependencies = f.missing_dependencies(hide: hide)
+        missing_dependencies = f.missing_dependencies(hide:)
         next if missing_dependencies.empty?
 
         yield f.full_name, missing_dependencies if block_given?
