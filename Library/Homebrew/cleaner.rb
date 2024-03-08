@@ -58,7 +58,7 @@ class Cleaner
     end
 
     rewrite_shebangs
-    remove_pip_direct_url
+    clean_python_metadata
 
     prune
   end
@@ -165,25 +165,27 @@ class Cleaner
     end
   end
 
-  # Remove non-reproducible pip direct_url.json which records the /tmp build directory
+  # Remove non-reproducible pip direct_url.json which records the /tmp build directory.
+  # Remove RECORD files to prevent changes to the installed Python package.
+  # Modify INSTALLER to provide information that files are managed by brew.
+  #
+  # @see https://packaging.python.org/en/latest/specifications/recording-installed-packages/
   sig { void }
-  def remove_pip_direct_url
+  def clean_python_metadata
     basepath = @formula.prefix.realpath
     basepath.find do |path|
       Find.prune if @formula.skip_clean?(path)
 
       next if path.directory? || path.symlink?
-      next if path.basename.to_s != "direct_url.json"
       next if path.parent.extname != ".dist-info"
 
-      odebug "Removing #{path}"
-      path.unlink
-
-      record = path.parent/"RECORD"
-      next unless record.file?
-
-      odebug "Modifying #{record}"
-      @formula.inreplace record, %r{^.*/direct_url\.json,.*$\n?}, "", false
+      case path.basename.to_s
+      when "direct_url.json", "RECORD"
+        observe_file_removal path
+      when "INSTALLER"
+        odebug "Modifying #{path} contents from #{path.read.chomp} to brew"
+        path.atomic_write("brew\n")
+      end
     end
   end
 end
