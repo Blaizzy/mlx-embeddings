@@ -377,7 +377,7 @@ class Tap
 
     if installed?
       if requested_remote != remote # we are sure that clone_target is not nil and custom_remote is true here
-        fix_remote_configuration(requested_remote: requested_remote, quiet: quiet)
+        fix_remote_configuration(requested_remote:, quiet:)
       end
 
       case force_auto_update
@@ -1103,8 +1103,8 @@ class CoreTap < AbstractCoreTap
       $stderr.puts "HOMEBREW_CORE_GIT_REMOTE set: using #{remote} as the Homebrew/homebrew-core Git remote."
     end
 
-    super(quiet: quiet, clone_target: remote, force_auto_update: force_auto_update,
-          custom_remote: custom_remote, force: force)
+    super(quiet:, clone_target: remote, force_auto_update:,
+          custom_remote:, force:)
   end
 
   # @private

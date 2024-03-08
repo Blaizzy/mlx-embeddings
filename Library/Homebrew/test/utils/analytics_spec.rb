@@ -59,15 +59,15 @@ RSpec.describe Utils::Analytics do
       it "returns nil when HOMEBREW_NO_ANALYTICS is true" do
         ENV["HOMEBREW_NO_ANALYTICS"] = "true"
         expect(described_class).not_to receive(:report_influx)
-        described_class.report_package_event(:install, package_name: package_name, tap_name: tap_name,
-          on_request: on_request, options: options)
+        described_class.report_package_event(:install, package_name:, tap_name:,
+          on_request:, options:)
       end
 
       it "returns nil when HOMEBREW_NO_ANALYTICS_THIS_RUN is true" do
         ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "true"
         expect(described_class).not_to receive(:report_influx)
-        described_class.report_package_event(:install, package_name: package_name, tap_name: tap_name,
-          on_request: on_request, options: options)
+        described_class.report_package_event(:install, package_name:, tap_name:,
+          on_request:, options:)
       end
 
       it "returns nil when HOMEBREW_ANALYTICS_DEBUG is true" do
@@ -76,8 +76,8 @@ RSpec.describe Utils::Analytics do
         ENV["HOMEBREW_ANALYTICS_DEBUG"] = "true"
         expect(described_class).to receive(:report_influx)
 
-        described_class.report_package_event(:install, package_name: package_name, tap_name: tap_name,
-          on_request: on_request, options: options)
+        described_class.report_package_event(:install, package_name:, tap_name:,
+          on_request:, options:)
       end
     end
 
@@ -87,8 +87,8 @@ RSpec.describe Utils::Analytics do
       ENV["HOMEBREW_ANALYTICS_DEBUG"] = "true"
       expect(described_class).to receive(:report_influx).with(:install, hash_including(on_request:),
                                                               hash_including(package: package_name)).once
-      described_class.report_package_event(:install, package_name: package_name, tap_name: tap_name,
-          on_request: on_request, options: options)
+      described_class.report_package_event(:install, package_name:, tap_name:,
+          on_request:, options:)
     end
   end
 

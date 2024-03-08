@@ -210,20 +210,20 @@ module Homebrew
 
       only = only_cops ? ["style"] : args.only
       options = {
-        new_formula:         new_formula,
-        strict:              strict,
-        online:              online,
+        new_formula:,
+        strict:,
+        online:,
         git:                 args.git?,
-        only:                only,
+        only:,
         except:              args.except,
-        spdx_license_data:   spdx_license_data,
-        spdx_exception_data: spdx_exception_data,
+        spdx_license_data:,
+        spdx_exception_data:,
         style_offenses:      style_offenses&.for_path(f.path),
-        tap_audit:           tap_audit,
+        tap_audit:,
       }.compact
 
       errors = os_arch_combinations.flat_map do |os, arch|
-        SimulateSystem.with os: os, arch: arch do
+        SimulateSystem.with(os:, arch:) do
           odebug "Auditing Formula #{f} on os #{os} and arch #{arch}"
 
           audit_proc = proc { FormulaAuditor.new(Formulary.factory(path), **options).tap(&:audit) }
@@ -251,7 +251,7 @@ module Homebrew
       errors = os_arch_combinations.flat_map do |os, arch|
         next [] if os == :linux
 
-        SimulateSystem.with os: os, arch: arch do
+        SimulateSystem.with(os:, arch:) do
           odebug "Auditing Cask #{cask} on os #{os} and arch #{arch}"
 
           Cask::Auditor.audit(

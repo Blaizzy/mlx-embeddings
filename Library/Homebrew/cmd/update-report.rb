@@ -109,7 +109,7 @@ module Homebrew
     odie "update-report should not be called directly!" if initial_revision.empty? || current_revision.empty?
 
     if initial_revision != current_revision
-      auto_update_header args: args
+      auto_update_header(args:)
 
       updated = true
 
@@ -219,7 +219,7 @@ module Homebrew
     end
 
     unless updated_taps.empty?
-      auto_update_header args: args
+      auto_update_header(args:)
       puts "Updated #{Utils.pluralize("tap", updated_taps.count, include_count: true)} (#{updated_taps.to_sentence})."
       updated = true
     end
@@ -689,7 +689,7 @@ class Reporter
       end
       next if oldnames_to_migrate.empty?
 
-      Migrator.migrate_if_needed(formula, force: force)
+      Migrator.migrate_if_needed(formula, force:)
     end
   end
 
@@ -743,7 +743,7 @@ class ReporterHub
 
   def add(reporter, auto_update: false)
     @reporters << reporter
-    report = reporter.report(auto_update: auto_update).delete_if { |_k, v| v.empty? }
+    report = reporter.report(auto_update:).delete_if { |_k, v| v.empty? }
     @hash.update(report) { |_key, oldval, newval| oldval.concat(newval) }
   end
 

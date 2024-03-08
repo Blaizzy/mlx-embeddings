@@ -30,7 +30,7 @@ module Homebrew
     def self.regenerate_man_pages(quiet:)
       Homebrew.install_bundler_gems!(groups: ["man"])
 
-      markup = build_man_page(quiet: quiet)
+      markup = build_man_page(quiet:)
       convert_man_page(markup, TARGET_DOC_PATH/"Manpage.md")
       convert_man_page(markup, TARGET_MAN_PATH/"brew.1")
     end
@@ -41,7 +41,7 @@ module Homebrew
       variables = Variables.new(
         commands:                   generate_cmd_manpages(Commands.internal_commands_paths),
         developer_commands:         generate_cmd_manpages(Commands.internal_developer_commands_paths),
-        official_external_commands: generate_cmd_manpages(Commands.official_external_commands_paths(quiet: quiet)),
+        official_external_commands: generate_cmd_manpages(Commands.official_external_commands_paths(quiet:)),
         global_cask_options:        global_cask_options_manpage,
         global_options:             global_options_manpage,
         environment_variables:      env_vars_manpage,
