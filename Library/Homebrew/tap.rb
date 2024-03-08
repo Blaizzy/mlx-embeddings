@@ -345,13 +345,11 @@ class Tap
   # Install this {Tap}.
   #
   # @param clone_target [String] If passed, it will be used as the clone remote.
-  # @param force_auto_update [Boolean, nil] If present, whether to override the
-  #   logic that skips non-GitHub repositories during auto-updates.
   # @param quiet [Boolean] If set, suppress all output.
   # @param custom_remote [Boolean] If set, change the tap's remote if already installed.
   # @param verify [Boolean] If set, verify all the formula, casks and aliases in the tap are valid.
   # @param force [Boolean] If set, force core and cask taps to install even under API mode.
-  def install(quiet: false, clone_target: nil, force_auto_update: nil,
+  def install(quiet: false, clone_target: nil,
               custom_remote: false, verify: false, force: false)
     require "descriptions"
     require "readall"
@@ -369,7 +367,7 @@ class Tap
 
     if installed? && !custom_remote
       raise TapRemoteMismatchError.new(name, @remote, requested_remote) if clone_target && requested_remote != remote
-      raise TapAlreadyTappedError, name if force_auto_update.nil? && !shallow?
+      raise TapAlreadyTappedError, name unless shallow?
     end
 
     # ensure git is installed
@@ -380,14 +378,7 @@ class Tap
         fix_remote_configuration(requested_remote:, quiet:)
       end
 
-      case force_auto_update
-      when true
-        config[:forceautoupdate] = true
-        return
-      when false
-        config.delete(:forceautoupdate)
-        return
-      end
+      config.delete(:forceautoupdate)
 
       $stderr.ohai "Unshallowing #{name}" if shallow? && !quiet
       args = %w[fetch]
@@ -431,8 +422,6 @@ class Tap
       end
       raise
     end
-
-    config[:forceautoupdate] = force_auto_update unless force_auto_update.nil?
 
     Commands.rebuild_commands_completion_list
     link_completions_and_manpages
@@ -1091,7 +1080,7 @@ class CoreTap < AbstractCoreTap
   end
 
   # CoreTap never allows shallow clones (on request from GitHub).
-  def install(quiet: false, clone_target: nil, force_auto_update: nil,
+  def install(quiet: false, clone_target: nil,
               custom_remote: false, verify: false, force: false)
     remote = Homebrew::EnvConfig.core_git_remote # set by HOMEBREW_CORE_GIT_REMOTE
     requested_remote = clone_target || remote
@@ -1103,8 +1092,7 @@ class CoreTap < AbstractCoreTap
       $stderr.puts "HOMEBREW_CORE_GIT_REMOTE set: using #{remote} as the Homebrew/homebrew-core Git remote."
     end
 
-    super(quiet:, clone_target: remote, force_auto_update:,
-          custom_remote:, force:)
+    super(quiet:, clone_target: remote, custom_remote:, force:)
   end
 
   # @private
