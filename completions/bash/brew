@@ -2576,6 +2576,7 @@ _brew_upgrade() {
       --mdimporterdir
       --no-binaries
       --no-quarantine
+      --overwrite
       --prefpanedir
       --qlplugindir
       --quarantine
