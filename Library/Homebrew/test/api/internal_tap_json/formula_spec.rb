@@ -17,7 +17,7 @@ RSpec.describe "Internal Tap JSON -- Formula" do
     end
 
     it "creates the expected hash" do
-      api_hash = CoreTap.instance.to_api_hash
+      api_hash = CoreTap.instance.to_internal_api_hash
       api_hash["tap_git_head"] = tap_git_head # tricky to mock
 
       expect(JSON.pretty_generate(api_hash)).to eq(internal_tap_json)
