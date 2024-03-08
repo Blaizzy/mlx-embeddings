@@ -27,6 +27,7 @@ module Homebrew
       keep_tmp: false,
       debug_symbols: false,
       force: false,
+      overwrite: false,
       debug: false,
       quiet: false,
       verbose: false
@@ -65,6 +66,7 @@ module Homebrew
             keep_tmp:,
             debug_symbols:,
             force:,
+            overwrite:,
             debug:,
             quiet:,
             verbose:,
@@ -150,6 +152,7 @@ module Homebrew
       keep_tmp: false,
       debug_symbols: false,
       force: false,
+      overwrite: false,
       debug: false,
       quiet: false,
       verbose: false
@@ -184,6 +187,7 @@ module Homebrew
           keep_tmp:,
           debug_symbols:,
           force:,
+          overwrite:,
           debug:,
           quiet:,
           verbose:,
