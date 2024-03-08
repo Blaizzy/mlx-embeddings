@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
+require "cmd/shared_examples/args_parse"
 require "dev-cmd/prof"
 
 RSpec.describe Homebrew::DevCmd::Prof do
+  it_behaves_like "parseable arguments", argv: ["--", "help"]
+
   describe "integration tests", :integration_test, :needs_network do
     after do
       FileUtils.rm_rf HOMEBREW_LIBRARY_PATH/"prof"
