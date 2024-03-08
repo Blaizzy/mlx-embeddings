@@ -2071,6 +2071,7 @@ _brew_upgrade() {
     '(--formula)--mdimporterdir[Target location for Spotlight Plugins (default: `~/Library/Spotlight`)]' \
     '--no-binaries[Disable/enable linking of helper executables (default: enabled)]' \
     '--no-quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
+    '(--cask)--overwrite[Delete files that already exist in the prefix while linking]' \
     '(--formula)--prefpanedir[Target location for Preference Panes (default: `~/Library/PreferencePanes`)]' \
     '(--formula)--qlplugindir[Target location for Quick Look Plugins (default: `~/Library/QuickLook`)]' \
     '(--formula)--quarantine[Disable/enable quarantining of downloads (default: enabled)]' \
@@ -2086,7 +2087,7 @@ _brew_upgrade() {
     '(--casks --skip-cask-deps --greedy --greedy-latest --greedy-auto-updates --binaries --require-sha --quarantine --appdir --keyboard-layoutdir --colorpickerdir --prefpanedir --qlplugindir --mdimporterdir --dictionarydir --fontdir --servicedir --input-methoddir --internet-plugindir --audio-unit-plugindir --vst-plugindir --vst3-plugindir --screen-saverdir --language)--formula[Treat all named arguments as formulae. If no named arguments are specified, upgrade only outdated formulae]' \
     '*::installed_formula:__brew_installed_formulae' \
     - installed_cask \
-    '(--formulae --build-from-source --interactive --force-bottle --fetch-HEAD --ignore-pinned --keep-tmp --debug-symbols --display-times)--cask[Treat all named arguments as casks. If no named arguments are specified, upgrade only outdated casks]' \
+    '(--formulae --build-from-source --interactive --force-bottle --fetch-HEAD --ignore-pinned --keep-tmp --debug-symbols --display-times --overwrite)--cask[Treat all named arguments as casks. If no named arguments are specified, upgrade only outdated casks]' \
     '*::installed_cask:__brew_installed_casks'
 }
 

@@ -806,6 +806,8 @@ upgraded formulae or, every 30 days, for all formulae.
   Generate debug symbols on build. Source will be retained in a cache directory.
 * `--display-times`:
   Print install times for each package at the end of the run.
+* `--overwrite`:
+  Delete files that already exist in the prefix while linking.
 * `--cask`:
   Treat all named arguments as casks. If no named arguments are specified, upgrade only outdated casks.
 * `--skip-cask-deps`:
