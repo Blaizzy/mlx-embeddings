@@ -552,7 +552,7 @@ class Formula
   sig { returns(T::Array[String]) }
   def oldnames
     @oldnames ||= if (tap = self.tap)
-      Tap.reverse_tap_migrations_renames(tap, name) +
+      Tap.tap_migration_oldnames(tap, name) +
         tap.formula_reverse_renames.fetch(name, [])
     else
       []

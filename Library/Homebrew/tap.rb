@@ -867,6 +867,9 @@ class Tap
   sig { returns(T::Hash[String, T::Array[String]]) }
   def reverse_tap_migrations_renames
     @reverse_tap_migrations_renames ||= tap_migrations.each_with_object({}) do |(old_name, new_name), hash|
+      # Only include renames:
+      # + `homebrew/cask/water-buffalo`
+      # - `homebrew/cask`
       next if new_name.count("/") != 2
 
       hash[new_name] ||= []
@@ -874,9 +877,10 @@ class Tap
     end
   end
 
-  sig { params(new_tap: Tap, name_or_token: String).returns(T::Array[String]) }
-  def self.reverse_tap_migrations_renames(new_tap, name_or_token)
-    key = "#{new_tap}/#{name_or_token}"
+  # The old names a formula or cask had before getting migrated to the current tap.
+  sig { params(current_tap: Tap, name_or_token: String).returns(T::Array[String]) }
+  def self.tap_migration_oldnames(current_tap, name_or_token)
+    key = "#{current_tap}/#{name_or_token}"
 
     Tap.each_with_object([]) do |tap, array|
       next unless (renames = tap.reverse_tap_migrations_renames[key])

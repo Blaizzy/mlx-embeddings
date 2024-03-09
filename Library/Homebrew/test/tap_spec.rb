@@ -586,7 +586,7 @@ RSpec.describe Tap do
         end
       end
 
-      describe ".reverse_tap_migration_renames" do
+      describe ".tap_migration_oldnames" do
         let(:cask_tap) { CoreCaskTap.instance }
         let(:core_tap) { CoreTap.instance }
 
@@ -597,7 +597,7 @@ RSpec.describe Tap do
             [cask_tap, "schism-tracker", %w[schismtracker]],
             [cask_tap, "google-cloud-sdk", %w[app-engine-go-32 app-engine-go-64]],
           ].each do |tap, name, result|
-            expect(described_class.reverse_tap_migrations_renames(tap, name)).to eq(result)
+            expect(described_class.tap_migration_oldnames(tap, name)).to eq(result)
           end
         end
       end

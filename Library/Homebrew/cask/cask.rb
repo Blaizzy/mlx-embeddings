@@ -87,7 +87,7 @@ module Cask
     sig { returns(T::Array[String]) }
     def old_tokens
       @old_tokens ||= if (tap = self.tap)
-        Tap.reverse_tap_migrations_renames(tap, token) +
+        Tap.tap_migration_oldnames(tap, token) +
           tap.cask_reverse_renames.fetch(token, [])
       else
         []
