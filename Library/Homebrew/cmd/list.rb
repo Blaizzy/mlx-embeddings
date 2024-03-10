@@ -87,10 +87,10 @@ module Homebrew
             puts full_cask_names if full_cask_names.present?
           end
         elsif args[:pinned?]
-          filtered_list(args:)
+          filtered_list
         elsif args[:versions?]
-          filtered_list(args:) unless args.cask?
-          list_casks(args:) if args.cask? || (!args.formula? && !args[:multiple?] && args.no_named?)
+          filtered_list unless args.cask?
+          list_casks if args.cask? || (!args.formula? && !args[:multiple?] && args.no_named?)
         elsif args.no_named?
           ENV["CLICOLOR"] = nil
 
@@ -118,14 +118,14 @@ module Homebrew
             system_command! "find", args: casks.map(&:caskroom_path) + find_args, print_stdout: true if casks.present?
           else
             kegs.each { |keg| PrettyListing.new keg } if kegs.present?
-            list_casks(args:) if casks.present?
+            list_casks if casks.present?
           end
         end
       end
 
       private
 
-      def filtered_list(args:)
+      def filtered_list
         names = if args.no_named?
           Formula.racks
         else
@@ -135,33 +135,35 @@ module Homebrew
             rack.exist?
           end
         end
-        if args.pinned?
+        if args[:pinned?]
           pinned_versions = {}
           names.sort.each do |d|
             keg_pin = (HOMEBREW_PINNED_KEGS/d.basename.to_s)
             pinned_versions[d] = keg_pin.readlink.basename.to_s if keg_pin.exist? || keg_pin.symlink?
           end
           pinned_versions.each do |d, version|
-            puts d.basename.to_s.concat(args.versions? ? " #{version}" : "")
+            puts d.basename.to_s.concat(args[:versions?] ? " #{version}" : "")
           end
         else # --versions without --pinned
           names.sort.each do |d|
             versions = d.subdirs.map { |pn| pn.basename.to_s }
-            next if args.multiple? && versions.length < 2
+            next if args[:multiple?] && versions.length < 2
 
             puts "#{d.basename} #{versions * " "}"
           end
         end
       end
 
-      def list_casks(args:)
+      def list_casks
         casks = if args.no_named?
           Cask::Caskroom.casks
         else
-          args.named.dup.delete_if do |n|
+          filtered_args = args.named.dup.delete_if do |n|
             Homebrew.failed = true unless Cask::Caskroom.path.join(n).exist?
             !Cask::Caskroom.path.join(n).exist?
-          end.to_formulae_and_casks(only: :cask)
+          end
+          # NamedAargs subclasses array
+          T.cast(filtered_args, Homebrew::CLI::NamedArgs).to_formulae_and_casks(only: :cask)
         end
         return if casks.blank?
 
@@ -169,7 +171,7 @@ module Homebrew
           *casks,
           one:       args[:"1?"],
           full_name: args.full_name?,
-          versions:  args.versions?,
+          versions:  args[:versions?],
         )
       end
     end
@@ -200,6 +202,8 @@ module Homebrew
           end
         end
       end
+
+      private
 
       def print_dir(root)
         dirs = []
