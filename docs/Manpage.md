@@ -2346,7 +2346,7 @@ the repository.
 
 `--message`
 
-: Message to include when autosquashing revision bumps, deletions, and rebuilds.
+: Message to include when autosquashing revision bumps, deletions and rebuilds.
 
 `--tap`
 
@@ -2417,7 +2417,7 @@ repository.
 
 `--message`
 
-: Message to include when autosquashing revision bumps, deletions, and rebuilds.
+: Message to include when autosquashing revision bumps, deletions and rebuilds.
 
 `--artifact`
 
