@@ -31,10 +31,10 @@ module Homebrew
         installed_tap_formulae = tap.formula_names.filter_map do |formula_name|
           # initialise lazily in case there's no formulae in this tap
           installed_formula_names ||= Set.new(Formula.installed_formula_names)
-          next unless installed_formula_names.include?(formula_name)
+          next unless installed_formula_names.include?(formula_name.split("/").last)
 
           formula = begin
-            Formulary.factory("#{tap.name}/#{formula_name}")
+            Formulary.factory(formula_name)
           rescue
             # Don't blow up because of a single unavailable formula.
             next
@@ -49,10 +49,10 @@ module Homebrew
         installed_tap_casks = tap.cask_tokens.filter_map do |cask_token|
           # initialise lazily in case there's no casks in this tap
           installed_cask_tokens ||= Set.new(Cask::Caskroom.tokens)
-          next unless installed_cask_tokens.include?(cask_token)
+          next unless installed_cask_tokens.include?(cask_token.split("/").last)
 
           cask = begin
-            Cask::CaskLoader.load("#{tap.name}/#{cask_token}")
+            Cask::CaskLoader.load(cask_token)
           rescue
             # Don't blow up because of a single unavailable cask.
             next
