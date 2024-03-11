@@ -407,17 +407,20 @@ module Cask
       add_error "cask token contains non-ascii characters" unless cask.token.ascii_only?
       add_error "cask token + should be replaced by -plus-" if cask.token.include? "+"
       add_error "cask token whitespace should be replaced by hyphens" if cask.token.include? " "
-      add_error "cask token @ should be replaced by -at-" if cask.token.include? "@"
       add_error "cask token underscores should be replaced by hyphens" if cask.token.include? "_"
       add_error "cask token should not contain double hyphens" if cask.token.include? "--"
 
-      if cask.token.match?(/[^a-z0-9-]/)
-        add_error "cask token should only contain lowercase alphanumeric characters and hyphens"
+      if cask.token.match?(/[^@a-z0-9-]/)
+        add_error "cask token should only contain lowercase alphanumeric characters, hyphens and @"
       end
 
-      return if !cask.token.start_with?("-") && !cask.token.end_with?("-")
+      if cask.token.start_with?("-", "@") || cask.token.end_with?("-", "@")
+        add_error "cask token should not have leading or trailing hyphens and/or @"
+      end
 
-      add_error "cask token should not have leading or trailing hyphens"
+      add_error "cask token @ unrelated to versioning should be replaced by -at-" if cask.token.count("@") > 1
+      add_error "cask token should not contain a hyphen followed by @" if cask.token.include? "-@"
+      add_error "cask token should not contain @ followed by a hyphen" if cask.token.include? "@-"
     end
 
     sig { void }
