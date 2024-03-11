@@ -1469,7 +1469,7 @@ _brew_pr_publish() {
     '--debug[Display any debugging information]' \
     '--help[Show this message]' \
     '--large-runner[Run the upload job on a large runner]' \
-    '--message[Message to include when autosquashing revision bumps, deletions, and rebuilds]' \
+    '--message[Message to include when autosquashing revision bumps, deletions and rebuilds]' \
     '--quiet[Make some output more quiet]' \
     '--tap[Target tap repository (default: `homebrew/core`)]' \
     '--verbose[Make some output more verbose]' \
@@ -1489,7 +1489,7 @@ _brew_pr_pull() {
     '--help[Show this message]' \
     '--ignore-missing-artifacts[Comma-separated list of workflows which can be ignored if they have not been run]' \
     '--keep-old[If the formula specifies a rebuild version, attempt to preserve its value in the generated DSL]' \
-    '--message[Message to include when autosquashing revision bumps, deletions, and rebuilds]' \
+    '--message[Message to include when autosquashing revision bumps, deletions and rebuilds]' \
     '--no-cherry-pick[Do not cherry-pick commits from the pull request branch]' \
     '--no-commit[Do not generate a new commit before uploading]' \
     '--no-upload[Download the bottles but don'\''t upload them]' \

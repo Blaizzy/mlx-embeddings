@@ -51,7 +51,7 @@ module Homebrew
              description: "Specify a committer name and email in `git`'s standard author format."
       flag   "--message=",
              depends_on:  "--autosquash",
-             description: "Message to include when autosquashing revision bumps, deletions, and rebuilds."
+             description: "Message to include when autosquashing revision bumps, deletions and rebuilds."
       flag   "--artifact=",
              description: "Download artifacts with the specified name (default: `bottles`)."
       flag   "--tap=",
