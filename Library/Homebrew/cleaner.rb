@@ -15,11 +15,13 @@ class Cleaner
   include Context
 
   # Create a cleaner for the given formula.
+  sig { params(formula: Formula).void }
   def initialize(formula)
     @formula = formula
   end
 
   # Clean the keg of the formula.
+  sig { void }
   def clean
     ObserverPathnameExtension.reset_counts!
 
@@ -48,8 +50,7 @@ class Cleaner
     # [1]: https://github.com/Homebrew/brew/pull/11597
     # [2]: https://github.com/Homebrew/homebrew-core/issues/100190
     # [3]: https://github.com/Homebrew/brew/pull/13215
-    Dir.glob(@formula.info/"**/dir").each do |file|
-      info_dir_file = Pathname(file)
+    @formula.info.glob("**/dir").each do |info_dir_file|
       next unless info_dir_file.file?
       next if info_dir_file == @formula.info/@formula.name/"dir"
       next if @formula.skip_clean?(info_dir_file)
@@ -65,6 +66,7 @@ class Cleaner
 
   private
 
+  sig { params(path: Pathname).void }
   def observe_file_removal(path)
     path.extend(ObserverPathnameExtension).unlink if path.exist?
   end
@@ -72,6 +74,7 @@ class Cleaner
   # Removes any empty directories in the formula's prefix subtree
   # Keeps any empty directories protected by skip_clean
   # Removes any unresolved symlinks
+  sig { void }
   def prune
     dirs = []
     symlinks = []
@@ -100,6 +103,7 @@ class Cleaner
     end
   end
 
+  sig { params(path: Pathname).returns(T::Boolean) }
   def executable_path?(path)
     path.text_executable? || path.executable?
   end
@@ -119,6 +123,7 @@ class Cleaner
   #
   # lib may have a large directory tree (see Erlang for instance), and
   # clean_dir applies cleaning rules to the entire tree
+  sig { params(directory: Pathname).void }
   def clean_dir(directory)
     directory.find do |path|
       path.extend(ObserverPathnameExtension)
@@ -147,6 +152,7 @@ class Cleaner
     end
   end
 
+  sig { void }
   def rewrite_shebangs
     require "language/perl"
     require "utils/shebang"
