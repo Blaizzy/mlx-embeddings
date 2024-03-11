@@ -600,6 +600,7 @@ module Homebrew
       ObserverPathnameExtension.reset_counts!
 
       dirs = []
+      children_count = {}
 
       Keg::MUST_EXIST_SUBDIRECTORIES.each do |dir|
         next unless dir.directory?
@@ -612,21 +613,24 @@ module Homebrew
 
               if dry_run?
                 puts "Would remove (broken link): #{path}"
+                children_count[path.dirname] -= 1 if children_count.key?(path.dirname)
               else
                 path.unlink
               end
             end
           elsif path.directory? && Keg::MUST_EXIST_SUBDIRECTORIES.exclude?(path)
             dirs << path
+            children_count[path] = path.children.length if dry_run?
           end
         end
       end
 
       dirs.reverse_each do |d|
-        if dry_run? && d.children.empty?
-          puts "Would remove (empty directory): #{d}"
-        else
+        if !dry_run?
           d.rmdir_if_possible
+        elsif children_count[d].zero?
+          puts "Would remove (empty directory): #{d}"
+          children_count[d.dirname] -= 1 if children_count.key?(d.dirname)
         end
       end
 
