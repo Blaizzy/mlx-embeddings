@@ -21,11 +21,11 @@ module Tapioca
 
       # FIXME: Enable cop again when https://github.com/sorbet/sorbet/issues/3532 is fixed.
       # rubocop:disable Style/MutableConstant
-      ConstantType = type_member { { fixed: Module } }
+      ConstantType = type_member { { fixed: T.class_of(Homebrew::CLI::Args) } }
       # rubocop:enable Style/MutableConstant
 
-      sig { override.returns(T::Enumerable[Module]) }
-      def self.gather_constants = [Homebrew]
+      sig { override.returns(T::Enumerable[T.class_of(Homebrew::CLI::Args)]) }
+      def self.gather_constants = [Homebrew::CLI::Args]
 
       sig { override.void }
       def decorate
