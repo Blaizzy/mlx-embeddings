@@ -33,7 +33,7 @@ RSpec.describe "Internal Tap JSON -- Formula" do
         .with("internal/v3/homebrew-core.jws.json")
         .and_return([JSON.parse(internal_tap_json), false])
 
-      # `Tap.reverse_tap_migrations_renames` looks for renames in every
+      # `Tap.tap_migration_oldnames` looks for renames in every
       # tap so `CoreCaskTap.tap_migrations` gets called and tries to
       # fetch stuff from the API. This just avoids errors.
       allow(Homebrew::API).to receive(:fetch_json_api_file)
