@@ -1,10 +1,14 @@
 # typed: true
 # frozen_string_literal: true
 
+require "extend/cachable"
+
 module Homebrew
   # Helpers for the `brew untap` command.
   # @api private
   module Untap
+    extend Cachable
+
     # All installed formulae currently available in a tap by formula full name.
     sig { params(tap: Tap).returns(T::Array[Formula]) }
     def self.installed_formulae_for(tap:)
@@ -26,7 +30,7 @@ module Homebrew
 
     sig { returns(T::Set[String]) }
     def self.installed_formulae_names
-      @installed_formulae_names ||= Formula.installed_formula_names.to_set.freeze
+      cache[:installed_formulae_names] ||= Formula.installed_formula_names.to_set.freeze
     end
     private_class_method :installed_formulae_names
 
@@ -49,7 +53,7 @@ module Homebrew
 
     sig { returns(T::Set[String]) }
     def self.installed_cask_tokens
-      @installed_cask_tokens ||= Cask::Caskroom.tokens.to_set.freeze
+      cache[:installed_cask_tokens] ||= Cask::Caskroom.tokens.to_set.freeze
     end
     private_class_method :installed_cask_tokens
   end
