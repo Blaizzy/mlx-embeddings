@@ -35,15 +35,9 @@ module SharedEnvExtension
 
   sig { returns(T::Boolean) }
   def no_fixup_chains_support?
-    return false if MacOS.version <= :catalina
-
-    # NOTE: `-version_details` is supported in Xcode 10.2 at the earliest.
-    ld_version_details = JSON.parse(Utils.safe_popen_read("/usr/bin/ld", "-version_details"))
-    ld_version = Version.parse(ld_version_details["version"])
-
     # This is supported starting Xcode 13, which ships ld64-711.
     # https://developer.apple.com/documentation/xcode-release-notes/xcode-13-release-notes
     # https://en.wikipedia.org/wiki/Xcode#Xcode_11.0_-_14.x_(since_SwiftUI_framework)_2
-    ld_version >= 711
+    DevelopmentTools.ld64_version >= 711
   end
 end

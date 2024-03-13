@@ -140,6 +140,9 @@ module Superenv
     # See: https://github.com/python/cpython/issues/97524
     #      https://github.com/pybind/pybind11/pull/4301
     no_fixup_chains
+
+    # Strip build prefixes from linker where supported, for deterministic builds.
+    append_to_cccfg "o" if DevelopmentTools.ld64_version >= 512
   end
 
   def no_weak_imports
