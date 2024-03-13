@@ -436,23 +436,6 @@ module Cask
       end
     end
 
-    # Loader which tries loading casks from the default tap.
-    class FromDefaultNameLoader < FromTapLoader
-      sig {
-        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
-          .returns(T.nilable(T.attached_class))
-      }
-      def self.try_new(ref, warn: false)
-        return unless ref.is_a?(String)
-        return unless (token = ref[HOMEBREW_DEFAULT_TAP_CASK_REGEX, :token])
-        return unless (tap = CoreCaskTap.instance).installed?
-
-        return unless (loader = super("#{tap}/#{token}", warn:))
-
-        loader if loader.path.exist?
-      end
-    end
-
     # Loader which tries loading casks from tap paths, failing
     # if the same token exists in multiple taps.
     class FromNameLoader < FromTapLoader
