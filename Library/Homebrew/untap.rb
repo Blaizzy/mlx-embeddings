@@ -17,7 +17,7 @@ module Homebrew
 
         formula = begin
           Formulary.factory(formula_name)
-        rescue
+        rescue FormulaUnavailableError
           # Don't blow up because of a single unavailable formula.
           next
         end
@@ -42,7 +42,7 @@ module Homebrew
 
         cask = begin
           Cask::CaskLoader.load(cask_token)
-        rescue
+        rescue Cask::CaskUnavailableError
           # Don't blow up because of a single unavailable cask.
           next
         end
