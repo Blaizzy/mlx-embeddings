@@ -3,21 +3,16 @@
 require "untap"
 
 RSpec.describe Homebrew::Untap do
-  describe ".installed_formulae_for" do
+  describe ".installed_formulae_for", :integration_test do
     shared_examples "finds installed formulae in tap" do
       def load_formula(name:, with_formula_file: false, mock_install: false)
-        formula = formula(name, tap:) do
-          url "https://brew.sh/foo-1.0.tgz"
-        end
-
-        if with_formula_file
-          class_name = name.split("_").map(&:capitalize).join
-          tap.formula_dir.mkpath
-          (tap.formula_dir/"#{name}.rb").write <<~RUBY
-            class #{class_name} < Formula
-              url "https://brew.sh/foo-1.0.tgz"
-            end
-          RUBY
+        formula = if with_formula_file
+          path = setup_test_formula(name, tap:)
+          Formulary.factory(path)
+        else
+          formula(name, tap:) do
+            url "https://brew.sh/#{name}-1.0.tgz"
+          end
         end
 
         if mock_install
@@ -66,11 +61,15 @@ RSpec.describe Homebrew::Untap do
     context "with non-core tap" do
       let(:tap) { Tap.fetch("homebrew", "foo") }
 
+      before do
+        tap.formula_dir.mkpath
+      end
+
       include_examples "finds installed formulae in tap"
     end
   end
 
-  describe ".installed_casks_for" do
+  describe ".installed_casks_for", :cask do
     shared_examples "finds installed casks in tap" do
       def load_cask(token:, with_cask_file: false, mock_install: false)
         cask_loader = Cask::CaskLoader::FromContentLoader.new(<<~RUBY, tap:)
@@ -90,10 +89,7 @@ RSpec.describe Homebrew::Untap do
           cask_path.write cask.source
         end
 
-        if mock_install
-          metadata_subdirectory = cask.metadata_subdir("Casks", timestamp: :now, create: true)
-          (metadata_subdirectory/"#{token}.rb").write cask.source
-        end
+        InstallHelper.install_with_caskfile(cask) if mock_install
 
         cask
       end
