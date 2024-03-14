@@ -3,11 +3,6 @@
 
 require_relative "../../../global"
 
-# require all the commands
-["cmd", "dev-cmd"].each do |dir|
-  Dir[File.join(__dir__, "../../../#{dir}", "*.rb")].each { require(_1) }
-end
-
 module Tapioca
   module Compilers
     class Args < Tapioca::Dsl::Compiler
@@ -25,7 +20,13 @@ module Tapioca
       # rubocop:enable Style/MutableConstant
 
       sig { override.returns(T::Enumerable[T.class_of(Homebrew::CLI::Args)]) }
-      def self.gather_constants = [Homebrew::CLI::Args]
+      def self.gather_constants
+        # require all the commands to ensure the _arg methods are defined
+        ["cmd", "dev-cmd"].each do |dir|
+          Dir[File.join(__dir__, "../../../#{dir}", "*.rb")].each { require(_1) }
+        end
+        [Homebrew::CLI::Args]
+      end
 
       sig { override.void }
       def decorate
@@ -35,16 +36,27 @@ module Tapioca
 
             parser = Homebrew.method(args_method_name).call
             comma_array_methods = comma_arrays(parser)
-            args = parser.instance_variable_get(:@args)
-            args.instance_variable_get(:@table).each do |method_name, value|
+            args_table(parser).each do |method_name, value|
               # some args are used in multiple commands (this is ok as long as they have the same type)
-              next if klass.nodes.any? { T.cast(_1, RBI::Method).name == method_name } || value == []
+              next if klass.nodes.any? { T.cast(_1, RBI::Method).name.to_sym == method_name }
 
               return_type = get_return_type(method_name, value, comma_array_methods)
-              klass.create_method(method_name, return_type:)
+              klass.create_method(method_name.to_s, return_type:)
             end
           end
         end
+      end
+
+      sig { params(parser: Homebrew::CLI::Parser).returns(T::Hash[Symbol, T.untyped]) }
+      def args_table(parser)
+        # we exclude non-args from the table, such as :named and :remaining
+        parser.instance_variable_get(:@args).instance_variable_get(:@table).except(:named, :remaining)
+      end
+
+      sig { params(parser: Homebrew::CLI::Parser).returns(T::Array[Symbol]) }
+      def comma_arrays(parser)
+        parser.instance_variable_get(:@non_global_processed_options)
+              .filter_map { |k, v| parser.option_to_name(k).to_sym if v == :comma_array }
       end
 
       sig { params(method_name: Symbol, value: T.untyped, comma_array_methods: T::Array[Symbol]).returns(String) }
@@ -56,12 +68,6 @@ module Tapioca
         else
           "T.nilable(String)"
         end
-      end
-
-      sig { params(parser: Homebrew::CLI::Parser).returns(T::Array[Symbol]) }
-      def comma_arrays(parser)
-        parser.instance_variable_get(:@non_global_processed_options)
-              .filter_map { |k, v| parser.option_to_name(k).to_sym if v == :comma_array }
       end
     end
   end

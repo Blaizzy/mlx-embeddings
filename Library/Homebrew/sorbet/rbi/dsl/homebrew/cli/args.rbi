@@ -539,7 +539,7 @@ class Homebrew::CLI::Args
   sig { returns(T::Boolean) }
   def online?; end
 
-  sig { returns(T.nilable(String)) }
+  sig { returns(T.nilable(T::Array[String])) }
   def only; end
 
   sig { returns(T.nilable(T::Array[String])) }
