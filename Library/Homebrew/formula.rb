@@ -2669,15 +2669,8 @@ class Formula
 
   protected
 
+  sig { params(home: Pathname).void }
   def setup_home(home)
-    # keep Homebrew's site-packages in sys.path when using system Python
-    user_site_packages = home/"Library/Python/2.7/lib/python/site-packages"
-    user_site_packages.mkpath
-    (user_site_packages/"homebrew.pth").write <<~PYTHON
-      import site; site.addsitedir("#{HOMEBREW_PREFIX}/lib/python2.7/site-packages")
-      import sys, os; sys.path = (os.environ["PYTHONPATH"].split(os.pathsep) if "PYTHONPATH" in os.environ else []) + ["#{HOMEBREW_PREFIX}/lib/python2.7/site-packages"] + sys.path
-    PYTHON
-
     # Don't let bazel write to tmp directories we don't control or clean.
     (home/".bazelrc").write "startup --output_user_root=#{home}/_bazel"
   end
