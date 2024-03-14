@@ -206,8 +206,10 @@ class FormulaInstaller
 
       case deprecate_disable_type
       when :deprecated
+        puts "::warning #{message}" if ENV["GITHUB_ACTIONS"]
         opoo message
       when :disabled
+        puts "::error #{message}" if ENV["GITHUB_ACTIONS"]
         raise CannotInstallFormulaError, message
       end
     end

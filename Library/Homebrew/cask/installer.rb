@@ -130,11 +130,16 @@ on_request: true)
       deprecate_disable_type = DeprecateDisable.type(@cask)
       return if deprecate_disable_type.nil?
 
+      message = DeprecateDisable.message(@cask)
+      message_full = "#{@cask.token} has been #{message}"
+
       case deprecate_disable_type
       when :deprecated
-        opoo "#{@cask.token} has been #{DeprecateDisable.message(@cask)}"
+        puts "::warning #{message_full}" if ENV["GITHUB_ACTIONS"]
+        opoo message_full
       when :disabled
-        raise CaskCannotBeInstalledError.new(@cask, DeprecateDisable.message(@cask))
+        puts "::error #{message_full}" if ENV["GITHUB_ACTIONS"]
+        raise CaskCannotBeInstalledError.new(@cask, message)
       end
     end
 

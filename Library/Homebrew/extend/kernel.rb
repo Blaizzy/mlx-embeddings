@@ -147,10 +147,12 @@ module Kernel
 
     disable = true if disable_for_developers && Homebrew::EnvConfig.developer?
     if disable || Homebrew.raise_deprecation_exceptions?
+      puts "::error #{message}" if ENV["GITHUB_ACTIONS"]
       exception = MethodDeprecatedError.new(message)
       exception.set_backtrace(backtrace)
       raise exception
     elsif !Homebrew.auditing?
+      puts "::warning #{message}" if ENV["GITHUB_ACTIONS"]
       opoo message
     end
   end
