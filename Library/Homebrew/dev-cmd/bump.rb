@@ -112,6 +112,12 @@ module Homebrew
     end
   end
 
+  sig { params(formula_or_cask: T.any(Formula, Cask::Cask), args: CLI::Args).returns(T::Boolean) }
+  def skip_repology?(formula_or_cask, args:)
+    (ENV["CI"].present? && args.open_pr? && formula_or_cask.livecheckable?) ||
+      (formula_or_cask.is_a?(Formula) && formula_or_cask.versioned_formula?)
+  end
+
   sig { params(formulae_and_casks: T::Array[T.any(Formula, Cask::Cask)], args: CLI::Args).void }
   def handle_formula_and_casks(formulae_and_casks, args)
     Livecheck.load_other_tap_strategies(formulae_and_casks)
@@ -147,11 +153,7 @@ module Homebrew
         Repology::HOMEBREW_CASK
       end
 
-      package_data = if formula_or_cask.is_a?(Formula) && formula_or_cask.versioned_formula?
-        nil
-      else
-        Repology.single_package_query(name, repository:)
-      end
+      package_data = Repology.single_package_query(name, repository:) unless skip_repology?(formula_or_cask, args:)
 
       retrieve_and_display_info_and_open_pr(
         formula_or_cask,
@@ -481,6 +483,8 @@ module Homebrew
     puts <<~EOS
       Current #{version_label}  #{current_versions}
       Latest livecheck version: #{new_versions}
+    EOS
+    puts <<~EOS unless skip_repology?(formula_or_cask, args:)
       Latest Repology version:  #{repology_latest}
     EOS
     if formula_or_cask.is_a?(Formula) && formula_or_cask.synced_with_other_formulae?
