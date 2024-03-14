@@ -516,19 +516,67 @@ module GitHub
     /(^|\s)#{Regexp.quote(name)}(:|,|\s)(.*\s)?#{Regexp.quote(version)}(:|,|\s|$)/i
   end
 
+  sig {
+    params(name: String, tap_remote_repo: String, state: T.nilable(String), version: T.nilable(String))
+      .returns(T::Array[T::Hash[String, T.untyped]])
+  }
   def self.fetch_pull_requests(name, tap_remote_repo, state: nil, version: nil)
     regex = pull_request_title_regex(name, version)
     query = "is:pr #{name} #{version}".strip
 
-    issues_for_formula(query, tap_remote_repo:, state:).select do |pr|
-      pr["html_url"].include?("/pull/") && regex.match?(pr["title"])
+    # Unauthenticated users cannot use GraphQL so use search REST API instead.
+    # Limit for this is 30/minute so is usually OK unless you're spamming bump PRs (e.g. CI).
+    if API.credentials_type == :none
+      return issues_for_formula(query, tap_remote_repo:, state:).select do |pr|
+        pr["html_url"].include?("/pull/") && regex.match?(pr["title"])
+      end
+    elsif state == "open" && ENV["GITHUB_REPOSITORY_OWNER"] == "Homebrew"
+      # Try use PR API, which might be cheaper on rate limits in some cases.
+      # The rate limit of the search API under GraphQL is unclear as it's
+      # costs the same as any other query accoding to /rate_limit.
+      # The PR API is also not very scalable so limit to Homebrew CI.
+      return fetch_open_pull_requests(name, tap_remote_repo, version:)
+    end
+
+    query += " repo:#{tap_remote_repo} in:title"
+    query += " state:#{state}" if state.present?
+    graphql_query = <<~EOS
+      query($query: String!, $after: String) {
+        search(query: $query, type: ISSUE, first: 100, after: $after) {
+          nodes {
+            ... on PullRequest {
+              number
+              title
+              url
+              state
+            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+        }
+      }
+    EOS
+    variables = { query: }
+
+    pull_requests = []
+    API.paginate_graphql(graphql_query, variables:) do |result|
+      data = result["search"]
+      pull_requests.concat(data["nodes"].select { |pr| regex.match?(pr["title"]) })
+      data["pageInfo"]
+    end
+    pull_requests.map! do |pr|
+      pr.merge({
+        "html_url" => pr.delete("url"),
+        "state"    => pr.fetch("state").downcase,
+      })
     end
   rescue API::RateLimitExceededError => e
     opoo e.message
-    []
+    pull_requests || []
   end
 
-  # WARNING: The GitHub API returns results in a slightly different form here compared to `fetch_pull_requests`.
   def self.fetch_open_pull_requests(name, tap_remote_repo, version: nil)
     return [] if tap_remote_repo.blank?
 
@@ -539,29 +587,45 @@ module GitHub
 
     @open_pull_requests ||= {}
     @open_pull_requests[cache_key] ||= begin
+      query = <<~EOS
+        query($owner: String!, $repo: String!, $states: [PullRequestState!], $after: String) {
+          repository(owner: $owner, name: $repo) {
+            pullRequests(states: $states, first: 100, after: $after) {
+              nodes {
+                number
+                title
+                url
+              }
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+            }
+          }
+        }
+      EOS
       owner, repo = tap_remote_repo.split("/")
-      endpoint = "repos/#{owner}/#{repo}/pulls"
-      query_parameters = ["state=open", "direction=desc"]
+      variables = { owner:, repo:, states: ["OPEN"] }
+      regex = pull_request_title_regex(name, version)
+
       pull_requests = []
-
-      API.paginate_rest("#{API_URL}/#{endpoint}", additional_query_params: query_parameters.join("&")) do |page|
-        pull_requests.concat(page)
+      API.paginate_graphql(query, variables:) do |result|
+        data = result.dig("repository", "pullRequests")
+        pull_requests.concat(data["nodes"])
+        data["pageInfo"]
       end
-
       pull_requests
     end
 
-    regex = pull_request_title_regex(name, version)
     @open_pull_requests[cache_key].select { |pr| regex.match?(pr["title"]) }
+                                  .map { |pr| pr.merge("html_url" => pr.delete("url")) }
+  rescue API::RateLimitExceededError => e
+    opoo e.message
+    pull_requests || []
   end
 
   def self.check_for_duplicate_pull_requests(name, tap_remote_repo, state:, file:, quiet:, version: nil)
-    # `fetch_open_pull_requests` is more reliable but *really* slow, so let's use it only in CI.
-    pull_requests = if state == "open" && ENV["CI"].present?
-      fetch_open_pull_requests(name, tap_remote_repo, version:)
-    else
-      fetch_pull_requests(name, tap_remote_repo, state:, version:)
-    end
+    pull_requests = fetch_pull_requests(name, tap_remote_repo, state:, version:)
 
     pull_requests.select! do |pr|
       get_pull_request_changed_files(

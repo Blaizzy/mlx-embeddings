@@ -318,6 +318,28 @@ module GitHub
       end
     end
 
+    sig {
+      params(
+        query:     String,
+        variables: T.nilable(T::Hash[Symbol, T.untyped]),
+        _block:    T.proc.params(data: T::Hash[String, T.untyped]).returns(T::Hash[String, T.untyped]),
+      ).void
+    }
+    def self.paginate_graphql(query, variables: nil, &_block)
+      result = API.open_graphql(query, variables:)
+
+      has_next_page = T.let(true, T::Boolean)
+      variables ||= {}
+      while has_next_page
+        page_info = yield result
+        has_next_page = page_info["hasNextPage"]
+        if has_next_page
+          variables[:after] = page_info["endCursor"]
+          result = API.open_graphql(query, variables:)
+        end
+      end
+    end
+
     def self.raise_error(output, errors, http_code, headers, scopes)
       json = begin
         JSON.parse(output)

@@ -312,11 +312,7 @@ module Homebrew
       nil
     end
 
-    if pull_requests&.any?
-      pull_requests = pull_requests.map { |pr| "#{pr["title"]} (#{Formatter.url(pr["html_url"])})" }.join(", ")
-    end
-
-    pull_requests
+    pull_requests&.map { |pr| "#{pr["title"]} (#{Formatter.url(pr["html_url"])})" }&.join(", ")
   end
 
   sig {
