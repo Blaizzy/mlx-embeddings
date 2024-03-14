@@ -835,25 +835,20 @@ module Homebrew
 
         deleted_formulae = kegs.filter_map do |keg|
           tap = Tab.for_keg(keg).tap
+          tap_keg_name = tap ? "#{tap}/#{keg.name}" : keg.name
 
           loadable = [
             Formulary::FromAPILoader,
+            Formulary::FromTapLoader,
             Formulary::FromNameLoader,
           ].any? do |loader_class|
             loader = begin
-              loader_class.try_new(keg.name, warn: false)
+              loader_class.try_new(tap_keg_name, warn: false)
             rescue TapFormulaAmbiguityError => e
               e.loaders.first
             end
 
-            if loader
-              # If we know the tap, ignore all other taps.
-              next false if tap && loader.tap != tap
-
-              next true
-            end
-
-            false
+            loader.instance_of?(Formulary::FromTapLoader) ? loader.path.exist? : loader.present?
           end
 
           keg.name unless loadable
