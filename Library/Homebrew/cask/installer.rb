@@ -135,10 +135,10 @@ on_request: true)
 
       case deprecate_disable_type
       when :deprecated
-        puts "::warning #{message_full}" if ENV["GITHUB_ACTIONS"]
+        puts "::warning::#{message_full}" if ENV["GITHUB_ACTIONS"]
         opoo message_full
       when :disabled
-        puts "::error #{message_full}" if ENV["GITHUB_ACTIONS"]
+        puts "::error::#{message_full}" if ENV["GITHUB_ACTIONS"]
         raise CaskCannotBeInstalledError.new(@cask, message)
       end
     end
