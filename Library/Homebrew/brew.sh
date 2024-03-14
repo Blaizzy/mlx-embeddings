@@ -838,7 +838,8 @@ if check-array-membership "${HOMEBREW_COMMAND}" "${AUTO_UPDATE_CORE_TAP_COMMANDS
 then
   export HOMEBREW_AUTO_UPDATE_COMMAND="1"
   export HOMEBREW_AUTO_UPDATE_CORE_TAP="1"
-else
+elif [[ -z "${HOMEBREW_AUTO_UPDATING}" ]]
+then
   unset HOMEBREW_AUTO_UPDATE_CORE_TAP
 fi
 
@@ -852,8 +853,9 @@ if check-array-membership "${HOMEBREW_COMMAND}" "${AUTO_UPDATE_CASK_TAP_COMMANDS
 then
   export HOMEBREW_AUTO_UPDATE_COMMAND="1"
   export HOMEBREW_AUTO_UPDATE_CASK_TAP="1"
-else
-  unset HOMEBREW_AUTO_UPDATE_CORE_TAP
+elif [[ -z "${HOMEBREW_AUTO_UPDATING}" ]]
+then
+  unset HOMEBREW_AUTO_UPDATE_CASK_TAP
 fi
 
 # Disable Ruby options we don't need.
