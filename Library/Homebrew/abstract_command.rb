@@ -8,6 +8,7 @@ module Homebrew
   # - Each Command implements a defined interface.
   #
   # To subclass, implement a `run` method and provide a `cmd_args` block to document the command and its allowed args.
+  # To generate method signatures for command args, run `brew typecheck --update`.
   class AbstractCommand
     extend T::Helpers
 

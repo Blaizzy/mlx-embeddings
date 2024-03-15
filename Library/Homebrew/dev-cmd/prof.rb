@@ -39,7 +39,7 @@ module Homebrew
 
         Homebrew.setup_gem_environment!
 
-        if args[:stackprof?]
+        if args.stackprof?
           with_env HOMEBREW_STACKPROF: "1" do
             system(*HOMEBREW_RUBY_EXEC_ARGS, brew_rb, *args.named)
           end

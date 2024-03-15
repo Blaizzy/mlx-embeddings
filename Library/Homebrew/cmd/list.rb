@@ -71,7 +71,7 @@ module Homebrew
           unless args.cask?
             formula_names = args.no_named? ? Formula.installed : args.named.to_resolved_formulae
             full_formula_names = formula_names.map(&:full_name).sort(&tap_and_name_comparison)
-            full_formula_names = Formatter.columns(full_formula_names) unless args[:"1?"]
+            full_formula_names = Formatter.columns(full_formula_names) unless args.public_send(:"1?")
             puts full_formula_names if full_formula_names.present?
           end
           if args.cask? || (!args.formula? && args.no_named?)
@@ -83,22 +83,22 @@ module Homebrew
             # The cast is because `Keg`` does not define `full_name`
             full_cask_names = T.cast(cask_names, T::Array[T.any(Formula, Cask::Cask)])
                                .map(&:full_name).sort(&tap_and_name_comparison)
-            full_cask_names = Formatter.columns(full_cask_names) unless args[:"1?"]
+            full_cask_names = Formatter.columns(full_cask_names) unless args.public_send(:"1?")
             puts full_cask_names if full_cask_names.present?
           end
-        elsif args[:pinned?]
+        elsif args.pinned?
           filtered_list
-        elsif args[:versions?]
+        elsif args.versions?
           filtered_list unless args.cask?
-          list_casks if args.cask? || (!args.formula? && !args[:multiple?] && args.no_named?)
+          list_casks if args.cask? || (!args.formula? && !args.multiple? && args.no_named?)
         elsif args.no_named?
           ENV["CLICOLOR"] = nil
 
           ls_args = []
-          ls_args << "-1" if args[:"1?"]
-          ls_args << "-l" if args[:l?]
-          ls_args << "-r" if args[:r?]
-          ls_args << "-t" if args[:t?]
+          ls_args << "-1" if args.public_send(:"1?")
+          ls_args << "-l" if args.l?
+          ls_args << "-r" if args.r?
+          ls_args << "-t" if args.t?
 
           if !args.cask? && HOMEBREW_CELLAR.exist? && HOMEBREW_CELLAR.children.any?
             ohai "Formulae" if $stdout.tty? && !args.formula?
@@ -135,19 +135,19 @@ module Homebrew
             rack.exist?
           end
         end
-        if args[:pinned?]
+        if args.pinned?
           pinned_versions = {}
           names.sort.each do |d|
             keg_pin = (HOMEBREW_PINNED_KEGS/d.basename.to_s)
             pinned_versions[d] = keg_pin.readlink.basename.to_s if keg_pin.exist? || keg_pin.symlink?
           end
           pinned_versions.each do |d, version|
-            puts d.basename.to_s.concat(args[:versions?] ? " #{version}" : "")
+            puts d.basename.to_s.concat(args.versions? ? " #{version}" : "")
           end
         else # --versions without --pinned
           names.sort.each do |d|
             versions = d.subdirs.map { |pn| pn.basename.to_s }
-            next if args[:multiple?] && versions.length < 2
+            next if args.multiple? && versions.length < 2
 
             puts "#{d.basename} #{versions * " "}"
           end
@@ -169,9 +169,9 @@ module Homebrew
 
         Cask::List.list_casks(
           *casks,
-          one:       args[:"1?"],
+          one:       args.public_send(:"1?"),
           full_name: args.full_name?,
-          versions:  args[:versions?],
+          versions:  args.versions?,
         )
       end
     end
