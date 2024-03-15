@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-# require 'tapioca'
 require "tapioca/dsl"
-require_relative "../../../../sorbet/tapioca/compilers/args"
+require "sorbet/tapioca/compilers/args"
 
 RSpec.describe Tapioca::Compilers::Args do
   let(:compiler) { described_class.new(Tapioca::Dsl::Pipeline.new(requested_constants: []), RBI::Tree.new, Homebrew) }
