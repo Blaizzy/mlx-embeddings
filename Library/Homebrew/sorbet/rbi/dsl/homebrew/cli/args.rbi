@@ -401,9 +401,6 @@ class Homebrew::CLI::Args
   sig { returns(T.nilable(String)) }
   def keyboard_layoutdir; end
 
-  sig { returns(T::Boolean) }
-  def l?; end
-
   sig { returns(T.nilable(T::Array[String])) }
   def language; end
 
@@ -460,9 +457,6 @@ class Homebrew::CLI::Args
 
   sig { returns(T::Boolean) }
   def missing?; end
-
-  sig { returns(T::Boolean) }
-  def multiple?; end
 
   sig { returns(T.nilable(String)) }
   def n; end
@@ -577,9 +571,6 @@ class Homebrew::CLI::Args
 
   sig { returns(T::Boolean) }
   def perl?; end
-
-  sig { returns(T::Boolean) }
-  def pinned?; end
 
   sig { returns(T::Boolean) }
   def plain?; end
@@ -752,9 +743,6 @@ class Homebrew::CLI::Args
   sig { returns(T::Boolean) }
   def skip_style?; end
 
-  sig { returns(T::Boolean) }
-  def stackprof?; end
-
   sig { returns(T.nilable(String)) }
   def start_with; end
 
@@ -772,9 +760,6 @@ class Homebrew::CLI::Args
 
   sig { returns(T::Boolean) }
   def syntax?; end
-
-  sig { returns(T::Boolean) }
-  def t?; end
 
   sig { returns(T.nilable(String)) }
   def tag; end
@@ -856,9 +841,6 @@ class Homebrew::CLI::Args
 
   sig { returns(T.nilable(String)) }
   def version_intel; end
-
-  sig { returns(T::Boolean) }
-  def versions?; end
 
   sig { returns(T.nilable(String)) }
   def vst3_plugindir; end

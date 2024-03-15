@@ -16,33 +16,33 @@ module Tapioca
 
       # FIXME: Enable cop again when https://github.com/sorbet/sorbet/issues/3532 is fixed.
       # rubocop:disable Style/MutableConstant
+      Parsable = T.type_alias { T.any(T.class_of(Homebrew::CLI::Args), T.class_of(Homebrew::AbstractCommand)) }
       ConstantType = type_member { { fixed: T.class_of(Homebrew::CLI::Args) } }
       # rubocop:enable Style/MutableConstant
 
-      sig { override.returns(T::Enumerable[T.class_of(Homebrew::CLI::Args)]) }
+      sig { override.returns(T::Enumerable[Parsable]) }
       def self.gather_constants
         # require all the commands to ensure the _arg methods are defined
         ["cmd", "dev-cmd"].each do |dir|
           Dir[File.join(__dir__, "../../../#{dir}", "*.rb")].each { require(_1) }
         end
-        [Homebrew::CLI::Args]
+        [Homebrew::CLI::Args] + Homebrew::AbstractCommand.subclasses
       end
 
       sig { override.void }
       def decorate
-        root.create_path(Homebrew::CLI::Args) do |klass|
-          Homebrew.methods(false).select { _1.end_with?("_args") }.each do |args_method_name|
-            next if NON_PARSER_ARGS_METHODS.include?(args_method_name)
+        if constant == Homebrew::CLI::Args
+          root.create_path(Homebrew::CLI::Args) do |klass|
+            Homebrew.methods(false).select { _1.end_with?("_args") }.each do |args_method_name|
+              next if NON_PARSER_ARGS_METHODS.include?(args_method_name)
 
-            parser = Homebrew.method(args_method_name).call
-            comma_array_methods = comma_arrays(parser)
-            args_table(parser).each do |method_name, value|
-              # some args are used in multiple commands (this is ok as long as they have the same type)
-              next if klass.nodes.any? { T.cast(_1, RBI::Method).name.to_sym == method_name }
-
-              return_type = get_return_type(method_name, value, comma_array_methods)
-              klass.create_method(method_name.to_s, return_type:)
+              parser = Homebrew.method(args_method_name).call
+              create_args_methods(klass, parser)
             end
+          end
+        else
+          root.create_path(Homebrew::CLI::Args) do |klass|
+            create_args_methods(klass, constant.parser)
           end
         end
       end
@@ -67,6 +67,20 @@ module Tapioca
           "T::Boolean"
         else
           "T.nilable(String)"
+        end
+      end
+
+      private
+
+      sig { params(klass: RBI::Scope, parser: Homebrew::CLI::Parser).void }
+      def create_args_methods(klass, parser)
+        comma_array_methods = comma_arrays(parser)
+        args_table(parser).each do |method_name, value|
+          # some args are used in multiple commands (this is ok as long as they have the same type)
+          next if klass.nodes.any? { T.cast(_1, RBI::Method).name == method_name }
+
+          return_type = get_return_type(method_name, value, comma_array_methods)
+          klass.create_method(method_name, return_type:)
         end
       end
     end
