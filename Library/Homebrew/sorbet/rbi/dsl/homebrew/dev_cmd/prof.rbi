@@ -6,29 +6,5 @@
 
 class Homebrew::CLI::Args
   sig { returns(T::Boolean) }
-  def d?; end
-
-  sig { returns(T::Boolean) }
-  def debug?; end
-
-  sig { returns(T::Boolean) }
-  def h?; end
-
-  sig { returns(T::Boolean) }
-  def help?; end
-
-  sig { returns(T::Boolean) }
-  def q?; end
-
-  sig { returns(T::Boolean) }
-  def quiet?; end
-
-  sig { returns(T::Boolean) }
   def stackprof?; end
-
-  sig { returns(T::Boolean) }
-  def v?; end
-
-  sig { returns(T::Boolean) }
-  def verbose?; end
 end

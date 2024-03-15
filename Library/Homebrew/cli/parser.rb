@@ -248,11 +248,13 @@ module Homebrew
         @conflicts << options.map { |option| option_to_name(option) }
       end
 
-      def option_to_name(option)
+      def self.option_to_name(option)
         option.sub(/\A--?(\[no-\])?/, "")
               .tr("-", "_")
               .delete("=")
       end
+
+      def option_to_name(option) = self.class.option_to_name(option)
 
       def name_to_option(name)
         if name.length == 1

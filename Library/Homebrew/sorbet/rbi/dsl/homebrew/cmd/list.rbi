@@ -12,12 +12,6 @@ class Homebrew::CLI::Args
   def casks?; end
 
   sig { returns(T::Boolean) }
-  def d?; end
-
-  sig { returns(T::Boolean) }
-  def debug?; end
-
-  sig { returns(T::Boolean) }
   def formula?; end
 
   sig { returns(T::Boolean) }
@@ -25,12 +19,6 @@ class Homebrew::CLI::Args
 
   sig { returns(T::Boolean) }
   def full_name?; end
-
-  sig { returns(T::Boolean) }
-  def h?; end
-
-  sig { returns(T::Boolean) }
-  def help?; end
 
   sig { returns(T::Boolean) }
   def l?; end
@@ -42,22 +30,10 @@ class Homebrew::CLI::Args
   def pinned?; end
 
   sig { returns(T::Boolean) }
-  def q?; end
-
-  sig { returns(T::Boolean) }
-  def quiet?; end
-
-  sig { returns(T::Boolean) }
   def r?; end
 
   sig { returns(T::Boolean) }
   def t?; end
-
-  sig { returns(T::Boolean) }
-  def v?; end
-
-  sig { returns(T::Boolean) }
-  def verbose?; end
 
   sig { returns(T::Boolean) }
   def versions?; end

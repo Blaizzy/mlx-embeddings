@@ -2,10 +2,17 @@
 # frozen_string_literal: true
 
 require_relative "../../../global"
+require "cli/parser"
 
 module Tapioca
   module Compilers
     class Args < Tapioca::Dsl::Compiler
+      GLOBAL_OPTIONS = T.let(
+        Homebrew::CLI::Parser.global_options.map { _1.slice(0, 2) }.flatten
+             .map { "#{Homebrew::CLI::Parser.option_to_name(_1)}?" }.freeze,
+        T::Array[String],
+      )
+
       # This is ugly, but we're moving to a new interface that will use a consistent DSL
       # These are cmd/dev-cmd methods that end in `_args` but are not parsers
       NON_PARSER_ARGS_METHODS = T.let([
@@ -17,7 +24,7 @@ module Tapioca
       # FIXME: Enable cop again when https://github.com/sorbet/sorbet/issues/3532 is fixed.
       # rubocop:disable Style/MutableConstant
       Parsable = T.type_alias { T.any(T.class_of(Homebrew::CLI::Args), T.class_of(Homebrew::AbstractCommand)) }
-      ConstantType = type_member { { fixed: T.class_of(Homebrew::CLI::Args) } }
+      ConstantType = type_member { { fixed: Parsable } }
       # rubocop:enable Style/MutableConstant
 
       sig { override.returns(T::Enumerable[Parsable]) }
@@ -37,12 +44,12 @@ module Tapioca
               next if NON_PARSER_ARGS_METHODS.include?(args_method_name)
 
               parser = Homebrew.method(args_method_name).call
-              create_args_methods(klass, parser)
+              create_args_methods(klass, parser, include_global: true)
             end
           end
         else
           root.create_path(Homebrew::CLI::Args) do |klass|
-            create_args_methods(klass, constant.parser)
+            create_args_methods(klass, T.must(T.cast(constant, T.class_of(Homebrew::AbstractCommand)).parser))
           end
         end
       end
@@ -72,15 +79,17 @@ module Tapioca
 
       private
 
-      sig { params(klass: RBI::Scope, parser: Homebrew::CLI::Parser).void }
-      def create_args_methods(klass, parser)
+      sig { params(klass: RBI::Scope, parser: Homebrew::CLI::Parser, include_global: T::Boolean).void }
+      def create_args_methods(klass, parser, include_global: false)
         comma_array_methods = comma_arrays(parser)
         args_table(parser).each do |method_name, value|
+          method_name_str = method_name.to_s
+          next if GLOBAL_OPTIONS.include?(method_name_str) && !include_global
           # some args are used in multiple commands (this is ok as long as they have the same type)
-          next if klass.nodes.any? { T.cast(_1, RBI::Method).name == method_name }
+          next if klass.nodes.any? { T.cast(_1, RBI::Method).name == method_name_str }
 
           return_type = get_return_type(method_name, value, comma_array_methods)
-          klass.create_method(method_name, return_type:)
+          klass.create_method(method_name_str, return_type:)
         end
       end
     end
