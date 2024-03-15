@@ -15,8 +15,8 @@ module Homebrew
     abstract!
 
     class << self
-      sig { returns(T.nilable(T.proc.void)) }
-      attr_reader :parser_block
+      sig { returns(T.nilable(CLI::Parser)) }
+      attr_reader :parser
 
       sig { returns(String) }
       def command_name = T.must(name).split("::").fetch(-1).downcase
@@ -29,7 +29,7 @@ module Homebrew
 
       sig { params(block: T.nilable(T.proc.bind(CLI::Parser).void)).void }
       def cmd_args(&block)
-        @parser_block = T.let(block, T.nilable(T.proc.void))
+        @parser = T.let(CLI::Parser.new(&block), T.nilable(CLI::Parser))
       end
     end
 
@@ -40,7 +40,7 @@ module Homebrew
 
     sig { params(argv: T::Array[String]).void }
     def initialize(argv = ARGV.freeze)
-      @args = T.let(CLI::Parser.new(&self.class.parser_block).parse(argv), CLI::Args)
+      @args = T.let(T.must(self.class.parser).parse(argv), CLI::Args)
     end
 
     sig { abstract.void }
