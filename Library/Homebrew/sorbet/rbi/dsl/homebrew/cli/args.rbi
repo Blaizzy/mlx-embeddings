@@ -146,17 +146,11 @@ class Homebrew::CLI::Args
   sig { returns(T::Boolean) }
   def custom_remote?; end
 
-  sig { returns(T::Boolean) }
-  def d?; end
-
   sig { returns(T.nilable(String)) }
   def days; end
 
   sig { returns(T::Boolean) }
   def debian?; end
-
-  sig { returns(T::Boolean) }
-  def debug?; end
 
   sig { returns(T::Boolean) }
   def debug_symbols?; end
@@ -316,12 +310,6 @@ class Homebrew::CLI::Args
 
   sig { returns(T.nilable(T::Array[String])) }
   def groups; end
-
-  sig { returns(T::Boolean) }
-  def h?; end
-
-  sig { returns(T::Boolean) }
-  def help?; end
 
   sig { returns(T.nilable(T::Array[String])) }
   def hide; end
@@ -623,17 +611,11 @@ class Homebrew::CLI::Args
   sig { returns(T.nilable(String)) }
   def python_package_name; end
 
-  sig { returns(T::Boolean) }
-  def q?; end
-
   sig { returns(T.nilable(String)) }
   def qlplugindir; end
 
   sig { returns(T::Boolean) }
   def quarantine?; end
-
-  sig { returns(T::Boolean) }
-  def quiet?; end
 
   sig { returns(T.nilable(String)) }
   def r; end
@@ -825,13 +807,7 @@ class Homebrew::CLI::Args
   def user; end
 
   sig { returns(T::Boolean) }
-  def v?; end
-
-  sig { returns(T::Boolean) }
   def variations?; end
-
-  sig { returns(T::Boolean) }
-  def verbose?; end
 
   sig { returns(T.nilable(String)) }
   def version; end

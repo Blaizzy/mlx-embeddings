@@ -44,7 +44,7 @@ module Tapioca
               next if NON_PARSER_ARGS_METHODS.include?(args_method_name)
 
               parser = Homebrew.method(args_method_name).call
-              create_args_methods(klass, parser, include_global: true)
+              create_args_methods(klass, parser)
             end
           end
         else
@@ -79,12 +79,12 @@ module Tapioca
 
       private
 
-      sig { params(klass: RBI::Scope, parser: Homebrew::CLI::Parser, include_global: T::Boolean).void }
-      def create_args_methods(klass, parser, include_global: false)
+      sig { params(klass: RBI::Scope, parser: Homebrew::CLI::Parser).void }
+      def create_args_methods(klass, parser)
         comma_array_methods = comma_arrays(parser)
         args_table(parser).each do |method_name, value|
           method_name_str = method_name.to_s
-          next if GLOBAL_OPTIONS.include?(method_name_str) && !include_global
+          next if GLOBAL_OPTIONS.include?(method_name_str)
           # some args are used in multiple commands (this is ok as long as they have the same type)
           next if klass.nodes.any? { T.cast(_1, RBI::Method).name == method_name_str }
 
