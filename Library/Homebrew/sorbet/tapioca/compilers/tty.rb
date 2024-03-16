@@ -16,13 +16,13 @@ module Tapioca
 
       sig { override.void }
       def decorate
-        root.create_path(constant) do |klass|
+        root.create_module(constant.name) do |mod|
           dynamic_methods = ::Tty::COLOR_CODES.keys + ::Tty::STYLE_CODES.keys + ::Tty::SPECIAL_CODES.keys
           methods = ::Tty.methods(false).sort.select { |method| dynamic_methods.include?(method) }
 
           methods.each do |method|
             return_type = (method.to_s.end_with?("?") ? "T::Boolean" : "String")
-            klass.create_method(method.to_s, return_type:)
+            mod.create_method(method.to_s, return_type:)
           end
         end
       end
