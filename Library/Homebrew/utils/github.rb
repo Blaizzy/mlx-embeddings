@@ -606,7 +606,6 @@ module GitHub
       EOS
       owner, repo = tap_remote_repo.split("/")
       variables = { owner:, repo:, states: ["OPEN"] }
-      regex = pull_request_title_regex(name, version)
 
       pull_requests = []
       API.paginate_graphql(query, variables:) do |result|
@@ -617,6 +616,7 @@ module GitHub
       pull_requests
     end
 
+    regex = pull_request_title_regex(name, version)
     @open_pull_requests[cache_key].select { |pr| regex.match?(pr["title"]) }
                                   .map { |pr| pr.merge("html_url" => pr.delete("url")) }
   rescue API::RateLimitExceededError => e
