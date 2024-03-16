@@ -192,7 +192,7 @@ RSpec.describe Tap do
   end
 
   describe "#remote" do
-    it "returns the remote URL" do
+    it "returns the remote URL", :needs_network do
       setup_git_repo
 
       expect(homebrew_foo_tap.remote).to eq("https://github.com/Homebrew/homebrew-foo")

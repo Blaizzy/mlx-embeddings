@@ -384,6 +384,10 @@ RSpec.describe Formulary do
       before do
         ENV.delete("HOMEBREW_NO_INSTALL_FROM_API")
 
+        # avoid unnecessary network calls
+        allow(Homebrew::API::Formula).to receive_messages(all_aliases: {}, all_renames: {})
+        allow(CoreTap.instance).to receive(:tap_migrations).and_return({})
+
         # don't try to load/fetch gcc/glibc
         allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)
       end
