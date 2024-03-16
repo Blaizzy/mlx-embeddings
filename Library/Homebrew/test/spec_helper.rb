@@ -165,6 +165,15 @@ RSpec.configure do |config|
     skip "Requires network connection." unless ENV["HOMEBREW_TEST_ONLINE"]
   end
 
+  config.before do |example|
+    next if example.metadata.key?(:needs_network)
+    next if example.metadata.key?(:needs_utils_curl)
+
+    allow(Utils::Curl).to receive(:curl_executable).and_raise(<<~ERROR)
+      Unexpected call to Utils::Curl.curl_executable without setting :needs_network or :needs_utils_curl.
+    ERROR
+  end
+
   config.before(:each, :needs_svn) do
     svn_shim = HOMEBREW_SHIMS_PATH/"shared/svn"
     skip "Subversion is not installed." unless quiet_system svn_shim, "--version"
