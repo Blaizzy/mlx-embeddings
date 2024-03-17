@@ -8,9 +8,9 @@ module Tapioca
   module Compilers
     class Args < Tapioca::Dsl::Compiler
       GLOBAL_OPTIONS = T.let(
-        Homebrew::CLI::Parser.global_options.map { _1.slice(0, 2) }.flatten
-             .map { "#{Homebrew::CLI::Parser.option_to_name(_1)}?" }.freeze,
-        T::Array[String],
+        Homebrew::CLI::Parser.global_options.map do |short_option, long_option, _|
+          [short_option, long_option].map { "#{Homebrew::CLI::Parser.option_to_name(_1)}?" }
+        end.flatten.freeze, T::Array[String]
       )
 
       # This is ugly, but we're moving to a new interface that will use a consistent DSL
