@@ -7,11 +7,16 @@ require_relative "../../../utils/tty"
 module Tapioca
   module Compilers
     class Tty < Tapioca::Dsl::Compiler
+      # FIXME: Enable cop again when https://github.com/sorbet/sorbet/issues/3532 is fixed.
+      # rubocop:disable Style/MutableConstant
+      # This should be a module whose singleton class contains RuboCop::AST::NodePattern::Macros,
+      #   but I don't know how to express that in Sorbet.
       ConstantType = type_member { { fixed: Module } }
+      # rubocop:enable Style/MutableConstant
 
       sig { override.returns(T::Enumerable[Module]) }
       def self.gather_constants
-       [::Tty]
+        [::Tty]
       end
 
       sig { override.void }
