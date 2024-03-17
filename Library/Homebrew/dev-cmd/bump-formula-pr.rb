@@ -192,10 +192,10 @@ module Homebrew
     else
       new_url ||= PyPI.update_pypi_url(old_url, new_version)
       if new_url.blank?
-        new_url = old_url.gsub(old_version, new_version)
+        new_url = update_url(old_url, old_version, new_version)
         if new_mirrors.blank? && old_mirrors.present?
           new_mirrors = old_mirrors.map do |old_mirror|
-            old_mirror.gsub(old_version, new_version)
+            update_url(old_mirror, old_version, new_version)
           end
         end
       end
@@ -417,6 +417,17 @@ module Homebrew
         Use `--force` to remove all mirrors.
       EOS
     end
+  end
+
+  sig { params(old_url: String, old_version: String, new_version: String).returns(String) }
+  def update_url(old_url, old_version, new_version)
+    new_url = old_url.gsub(old_version, new_version)
+    return new_url if (old_version_parts = old_version.split(".")).length < 2
+    return new_url if (new_version_parts = new_version.split(".")).length != old_version_parts.length
+
+    partial_old_version = T.must(old_version_parts[0..-2]).join(".")
+    partial_new_version = T.must(new_version_parts[0..-2]).join(".")
+    new_url.gsub(%r{/(v?)#{Regexp.escape(partial_old_version)}/}, "/\\1#{partial_new_version}/")
   end
 
   def fetch_resource_and_forced_version(formula, new_version, url, **specs)
