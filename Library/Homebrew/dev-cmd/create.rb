@@ -70,6 +70,7 @@ module Homebrew
   end
 
   # Create a formula from a tarball URL.
+  sig { void }
   def create
     args = create_args.parse
 
@@ -82,6 +83,7 @@ module Homebrew
     exec_editor path
   end
 
+  sig { params(args: CLI::Args).returns(Pathname) }
   def create_cask(args:)
     url = args.named.first
     name = if args.set_name.blank?
@@ -91,7 +93,7 @@ module Homebrew
     else
       args.set_name
     end
-    token = Cask::Utils.token_from(name)
+    token = Cask::Utils.token_from(T.must(name))
 
     cask_tap = Tap.fetch(args.tap || "homebrew/cask")
     raise TapUnavailableError, cask_tap.name unless cask_tap.installed?
@@ -101,7 +103,7 @@ module Homebrew
     raise Cask::CaskAlreadyCreatedError, token if cask_path.exist?
 
     version = if args.set_version
-      Version.new(args.set_version)
+      Version.new(T.must(args.set_version))
     else
       Version.detect(url.gsub(token, "").gsub(/x86(_64)?/, ""))
     end
@@ -153,6 +155,7 @@ module Homebrew
     cask_path
   end
 
+  sig { params(args: CLI::Args).returns(Pathname) }
   def create_formula(args:)
     mode = if args.autotools?
       :autotools
@@ -229,6 +232,7 @@ module Homebrew
     path
   end
 
+  sig { returns(T.nilable(String)) }
   def __gets
     gots = $stdin.gets.chomp
     gots.empty? ? nil : gots
