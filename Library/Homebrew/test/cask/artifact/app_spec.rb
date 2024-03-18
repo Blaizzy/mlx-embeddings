@@ -273,7 +273,7 @@ RSpec.describe Cask::Artifact::App, :cask do
 
       FileUtils.chmod 0544, target_path
 
-      expect { uninstall_phase }.to raise_error(Errno::ENOTEMPTY)
+      uninstall_phase
 
       expect(source_path).to be_a_directory
     end

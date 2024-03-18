@@ -181,14 +181,8 @@ module Cask
           # If an app folder is deleted, macOS considers the app uninstalled and removes some data.
           # Remove only the contents to handle this case.
           target.children.each do |child|
-            if target.writable? && !force
-              child.rmtree
-            else
-              Utils.gain_permissions_remove(child, command:)
-            end
+            Utils.gain_permissions_remove(child, command:)
           end
-        elsif target.parent.writable? && !force
-          target.rmtree
         else
           Utils.gain_permissions_remove(target, command:)
         end
