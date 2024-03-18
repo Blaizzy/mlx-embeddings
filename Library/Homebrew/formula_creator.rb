@@ -31,6 +31,7 @@ module Homebrew
       raise TapUnavailableError, @tap.name unless @tap.installed?
     end
 
+    sig { params(url: String).returns(T.nilable(String)) }
     def self.name_from_url(url)
       stem = Pathname.new(url).stem
       # special cases first
@@ -47,6 +48,7 @@ module Homebrew
       end
     end
 
+    sig { void }
     def parse_url
       @name = FormulaCreator.name_from_url(@url) if @name.blank?
       odebug "name_from_url: #{@name}"
@@ -65,6 +67,7 @@ module Homebrew
       end
     end
 
+    sig { returns(Pathname) }
     def write_formula!
       raise ArgumentError, "name is blank!" if @name.blank?
       raise ArgumentError, "tap is blank!" if @tap.blank?
