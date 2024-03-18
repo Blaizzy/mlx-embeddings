@@ -37,13 +37,13 @@ RSpec.describe BuildEnvironment do
     end
 
     context "with a single argument" do
-      subject do
+      subject(:build_env) do
         Class.new(build_environment_dsl) do
           env :std
         end
       end
 
-      its(:env) { is_expected.to be_std }
+      it(:env) { expect(build_env.env).to be_std }
     end
   end
 end

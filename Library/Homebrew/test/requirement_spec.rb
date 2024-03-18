@@ -11,30 +11,30 @@ RSpec.describe Requirement do
   let(:klass) { Class.new(described_class) }
 
   describe "#tags" do
-    subject { klass.new(tags) }
+    subject(:req) { klass.new(tags) }
 
     context "with a single tag" do
       let(:tags) { ["bar"] }
 
-      its(:tags) { are_expected.to eq(tags) }
+      it(:tags) { expect(req.tags).to eq(tags) }
     end
 
     context "with multiple tags" do
       let(:tags) { ["bar", "baz"] }
 
-      its(:tags) { are_expected.to eq(tags) }
+      it(:tags) { expect(req.tags).to eq(tags) }
     end
 
     context "with symbol tags" do
       let(:tags) { [:build] }
 
-      its(:tags) { are_expected.to eq(tags) }
+      it(:tags) { expect(req.tags).to eq(tags) }
     end
 
     context "with symbol and string tags" do
       let(:tags) { [:build, "bar"] }
 
-      its(:tags) { are_expected.to eq(tags) }
+      it(:tags) { expect(req.tags).to eq(tags) }
     end
   end
 
@@ -168,8 +168,8 @@ RSpec.describe Requirement do
       stub_const const.to_s, Class.new(described_class)
     end
 
-    its(:name) { is_expected.to eq("foo") }
-    its(:option_names) { are_expected.to eq(["foo"]) }
+    it(:name) { expect(requirement.name).to eq("foo") }
+    it(:option_names) { expect(requirement.option_names).to eq(["foo"]) }
   end
 
   describe "#modify_build_environment" do

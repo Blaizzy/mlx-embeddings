@@ -24,7 +24,6 @@ Warnings.ignore :parser_syntax do
   require "rubocop"
 end
 
-require "rspec/its"
 require "rspec/github"
 require "rspec/retry"
 require "rspec/sorbet"
