@@ -296,7 +296,6 @@ RSpec.configure do |config|
 end
 
 RSpec::Matchers.define_negated_matcher :not_to_output, :output
-RSpec::Matchers.define_negated_matcher :not_raise_error, :raise_error
 RSpec::Matchers.alias_matcher :have_failed, :be_failed
 RSpec::Matchers.alias_matcher :a_string_containing, :include
 
