@@ -6,6 +6,7 @@ class Hash
   # This includes the values from the root hash and from all
   # nested hashes and arrays.
   #
+  # @example
   #  hash = { person: { name: 'Rob', age: '28' } }
   #
   #  hash.deep_transform_values{ |value| value.to_s.upcase }

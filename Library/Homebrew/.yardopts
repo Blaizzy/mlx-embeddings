@@ -5,10 +5,12 @@
 --plugin sorbet
 --load yard/ignore_directives.rb
 --template-path yard/templates
+--exclude sorbet/rbi/gems/
 --exclude test/
 --exclude vendor/
 --exclude yard/
 extend/os/**/*.rb
 **/*.rb
+**/*.rbi
 -
 *.md
