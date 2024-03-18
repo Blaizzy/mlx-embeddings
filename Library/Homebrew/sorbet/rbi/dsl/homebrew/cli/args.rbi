@@ -146,17 +146,11 @@ class Homebrew::CLI::Args
   sig { returns(T::Boolean) }
   def custom_remote?; end
 
-  sig { returns(T::Boolean) }
-  def d?; end
-
   sig { returns(T.nilable(String)) }
   def days; end
 
   sig { returns(T::Boolean) }
   def debian?; end
-
-  sig { returns(T::Boolean) }
-  def debug?; end
 
   sig { returns(T::Boolean) }
   def debug_symbols?; end
@@ -317,12 +311,6 @@ class Homebrew::CLI::Args
   sig { returns(T.nilable(T::Array[String])) }
   def groups; end
 
-  sig { returns(T::Boolean) }
-  def h?; end
-
-  sig { returns(T::Boolean) }
-  def help?; end
-
   sig { returns(T.nilable(T::Array[String])) }
   def hide; end
 
@@ -401,9 +389,6 @@ class Homebrew::CLI::Args
   sig { returns(T.nilable(String)) }
   def keyboard_layoutdir; end
 
-  sig { returns(T::Boolean) }
-  def l?; end
-
   sig { returns(T.nilable(T::Array[String])) }
   def language; end
 
@@ -460,9 +445,6 @@ class Homebrew::CLI::Args
 
   sig { returns(T::Boolean) }
   def missing?; end
-
-  sig { returns(T::Boolean) }
-  def multiple?; end
 
   sig { returns(T.nilable(String)) }
   def n; end
@@ -579,9 +561,6 @@ class Homebrew::CLI::Args
   def perl?; end
 
   sig { returns(T::Boolean) }
-  def pinned?; end
-
-  sig { returns(T::Boolean) }
   def plain?; end
 
   sig { returns(T.nilable(String)) }
@@ -632,17 +611,11 @@ class Homebrew::CLI::Args
   sig { returns(T.nilable(String)) }
   def python_package_name; end
 
-  sig { returns(T::Boolean) }
-  def q?; end
-
   sig { returns(T.nilable(String)) }
   def qlplugindir; end
 
   sig { returns(T::Boolean) }
   def quarantine?; end
-
-  sig { returns(T::Boolean) }
-  def quiet?; end
 
   sig { returns(T.nilable(String)) }
   def r; end
@@ -752,9 +725,6 @@ class Homebrew::CLI::Args
   sig { returns(T::Boolean) }
   def skip_style?; end
 
-  sig { returns(T::Boolean) }
-  def stackprof?; end
-
   sig { returns(T.nilable(String)) }
   def start_with; end
 
@@ -772,9 +742,6 @@ class Homebrew::CLI::Args
 
   sig { returns(T::Boolean) }
   def syntax?; end
-
-  sig { returns(T::Boolean) }
-  def t?; end
 
   sig { returns(T.nilable(String)) }
   def tag; end
@@ -840,13 +807,7 @@ class Homebrew::CLI::Args
   def user; end
 
   sig { returns(T::Boolean) }
-  def v?; end
-
-  sig { returns(T::Boolean) }
   def variations?; end
-
-  sig { returns(T::Boolean) }
-  def verbose?; end
 
   sig { returns(T.nilable(String)) }
   def version; end
@@ -856,9 +817,6 @@ class Homebrew::CLI::Args
 
   sig { returns(T.nilable(String)) }
   def version_intel; end
-
-  sig { returns(T::Boolean) }
-  def versions?; end
 
   sig { returns(T.nilable(String)) }
   def vst3_plugindir; end

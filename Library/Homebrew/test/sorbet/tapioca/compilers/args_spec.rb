@@ -1,14 +1,13 @@
 # frozen_string_literal: true
 
-# require 'tapioca'
 require "tapioca/dsl"
-require_relative "../../../../sorbet/tapioca/compilers/args"
+require "sorbet/tapioca/compilers/args"
 
 RSpec.describe Tapioca::Compilers::Args do
   let(:compiler) { described_class.new(Tapioca::Dsl::Pipeline.new(requested_constants: []), RBI::Tree.new, Homebrew) }
   let(:list_parser) do
     require "cmd/list"
-    Homebrew.list_args
+    Homebrew::Cmd::List.parser
   end
   # good testing candidate, bc it has multiple for each of switch, flag, and comma_array args:
   let(:update_python_resources_parser) do

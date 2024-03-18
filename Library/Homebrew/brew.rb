@@ -59,6 +59,7 @@ begin
 
   ENV["PATH"] = path.to_s
 
+  require "abstract_command"
   require "commands"
   require "settings"
 
@@ -83,7 +84,12 @@ begin
   end
 
   if internal_cmd || Commands.external_ruby_v2_cmd_path(cmd)
-    Homebrew.send Commands.method_name(cmd)
+    cmd_class = Homebrew::AbstractCommand.command(T.must(cmd))
+    if cmd_class
+      cmd_class.new.run
+    else
+      Homebrew.public_send Commands.method_name(cmd)
+    end
   elsif (path = Commands.external_ruby_cmd_path(cmd))
     require?(path)
     exit Homebrew.failed? ? 1 : 0
