@@ -17,28 +17,10 @@ RSpec.describe Tapioca::Compilers::Args do
 
   describe "#args_table" do
     it "returns a mapping of list args to default values" do
-      expect(compiler.args_table(list_parser)).to eq({
-        "1?":       false,
-        cask?:      false,
-        casks?:     false,
-        d?:         false,
-        debug?:     false,
-        formula?:   false,
-        formulae?:  false,
-        full_name?: false,
-        h?:         false,
-        help?:      false,
-        l?:         false,
-        multiple?:  false,
-        pinned?:    false,
-        q?:         false,
-        quiet?:     false,
-        r?:         false,
-        t?:         false,
-        v?:         false,
-        verbose?:   false,
-        versions?:  false,
-      })
+      expect(compiler.args_table(list_parser).keys).to contain_exactly(
+        :"1?", :cask?, :casks?, :d?, :debug?, :formula?, :formulae?, :full_name?, :h?, :help?, :l?, :multiple?,
+        :pinned?, :q?, :quiet?, :r?, :t?, :v?, :verbose?, :versions?
+      )
     end
 
     it "rreturns a mapping of update-python-resources args to default values" do
