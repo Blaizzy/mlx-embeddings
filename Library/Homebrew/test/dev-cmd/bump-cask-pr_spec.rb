@@ -3,6 +3,6 @@
 require "cmd/shared_examples/args_parse"
 require "dev-cmd/bump-cask-pr"
 
-RSpec.describe "brew bump-cask-pr" do
-  it_behaves_like "parseable arguments"
+RSpec.describe Homebrew::DevCmd::BumpCaskPr do
+  it_behaves_like "parseable arguments", argv: ["foo"]
 end
