@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require "cmd/shared_examples/args_parse"
+require "dev-cmd/bump-revision"
 
-RSpec.describe "brew bump-revision" do
-  it_behaves_like "parseable arguments"
+RSpec.describe Homebrew::DevCmd::BumpRevision do
+  it_behaves_like "parseable arguments", argv: ["foo"]
 end
