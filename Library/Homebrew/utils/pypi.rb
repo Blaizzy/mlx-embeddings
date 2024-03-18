@@ -370,7 +370,18 @@ module PyPI
       new_resource_blocks += "  def install"
     else
       # Replace existing resource blocks with new resource blocks
-      inreplace_regex = /  (resource .* do\s+url .*\s+sha256 .*\s+ end\s*)+/
+      inreplace_regex = /
+        \ \ (
+        resource\ .*\ do\s+
+          url\ .*\s+
+          sha256\ .*\s+
+          ((\#.*\s+)*
+          patch\ (.*\ )?do\s+
+            url\ .*\s+
+            sha256\ .*\s+
+          end\s+)*
+        end\s+)+
+      /x
       new_resource_blocks += "  "
     end
 
