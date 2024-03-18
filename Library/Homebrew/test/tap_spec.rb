@@ -279,13 +279,13 @@ RSpec.describe Tap do
     context "when using the default remote" do
       let(:remote) { "https://github.com/Homebrew/homebrew-services" }
 
-      its(:custom_remote?) { is_expected.to be false }
+      it(:custom_remote?) { expect(tap.custom_remote?).to be false }
     end
 
     context "when using a non-default remote" do
       let(:remote) { "git@github.com:Homebrew/homebrew-services" }
 
-      its(:custom_remote?) { is_expected.to be true }
+      it(:custom_remote?) { expect(tap.custom_remote?).to be true }
     end
   end
 

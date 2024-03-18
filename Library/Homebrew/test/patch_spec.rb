@@ -5,39 +5,39 @@ require "patch"
 RSpec.describe Patch do
   describe "#create" do
     context "with a simple patch" do
-      subject { described_class.create(:p2, nil) }
+      subject(:patch) { described_class.create(:p2, nil) }
 
       it { is_expected.to be_a ExternalPatch }
       it { is_expected.to be_external }
-      its(:strip) { is_expected.to eq(:p2) }
+      it(:strip) { expect(patch.strip).to eq(:p2) }
     end
 
     context "with a string patch" do
-      subject { described_class.create(:p0, "foo") }
+      subject(:patch) { described_class.create(:p0, "foo") }
 
       it { is_expected.to be_a StringPatch }
-      its(:strip) { is_expected.to eq(:p0) }
+      it(:strip) { expect(patch.strip).to eq(:p0) }
     end
 
     context "with a string patch without strip" do
-      subject { described_class.create("foo", nil) }
+      subject(:patch) { described_class.create("foo", nil) }
 
       it { is_expected.to be_a StringPatch }
-      its(:strip) { is_expected.to eq(:p1) }
+      it(:strip) { expect(patch.strip).to eq(:p1) }
     end
 
     context "with a data patch" do
-      subject { described_class.create(:p0, :DATA) }
+      subject(:patch) { described_class.create(:p0, :DATA) }
 
       it { is_expected.to be_a DATAPatch }
-      its(:strip) { is_expected.to eq(:p0) }
+      it(:strip) { expect(patch.strip).to eq(:p0) }
     end
 
     context "with a data patch without strip" do
-      subject { described_class.create(:DATA, nil) }
+      subject(:patch) { described_class.create(:DATA, nil) }
 
       it { is_expected.to be_a DATAPatch }
-      its(:strip) { is_expected.to eq(:p1) }
+      it(:strip) { expect(patch.strip).to eq(:p1) }
     end
 
     it "raises an error for unknown values" do
@@ -55,9 +55,9 @@ RSpec.describe Patch do
     subject(:patch) { described_class.create(:p2, nil) }
 
     context "when the patch is empty" do
-      its(:resource) { is_expected.to be_a Resource::PatchResource }
-      its(:patch_files) { is_expected.to eq(patch.resource.patch_files) }
-      its(:patch_files) { is_expected.to eq([]) }
+      it(:resource) { expect(patch.resource).to be_a Resource::PatchResource }
+      it { expect(patch.patch_files).to eq(patch.resource.patch_files) }
+      it { expect(patch.patch_files).to eq([]) }
     end
 
     it "returns applied patch files" do
@@ -77,9 +77,9 @@ RSpec.describe Patch do
 
   describe EmbeddedPatch do
     describe "#new" do
-      subject { described_class.new(:p1) }
+      subject(:patch) { described_class.new(:p1) }
 
-      its(:inspect) { is_expected.to eq("#<EmbeddedPatch: :p1>") }
+      it(:inspect) { expect(patch.inspect).to eq("#<EmbeddedPatch: :p1>") }
     end
   end
 
@@ -87,11 +87,11 @@ RSpec.describe Patch do
     subject(:patch) { described_class.new(:p1) { url "file:///my.patch" } }
 
     describe "#url" do
-      its(:url) { is_expected.to eq("file:///my.patch") }
+      it(:url) { expect(patch.url).to eq("file:///my.patch") }
     end
 
     describe "#inspect" do
-      its(:inspect) { is_expected.to eq('#<ExternalPatch: :p1 "file:///my.patch">') }
+      it(:inspect) { expect(patch.inspect).to eq('#<ExternalPatch: :p1 "file:///my.patch">') }
     end
 
     describe "#cached_download" do
@@ -99,7 +99,7 @@ RSpec.describe Patch do
         allow(patch.resource).to receive(:cached_download).and_return("/tmp/foo.tar.gz")
       end
 
-      its(:cached_download) { is_expected.to eq("/tmp/foo.tar.gz") }
+      it(:cached_download) { expect(patch.cached_download).to eq("/tmp/foo.tar.gz") }
     end
   end
 end

@@ -835,7 +835,7 @@ module Homebrew
     describe "#audit_deps" do
       describe "a dependency on a macOS-provided keg-only formula" do
         describe "which is allowlisted" do
-          subject { fa }
+          subject(:f_a) { fa }
 
           let(:fa) do
             formula_auditor "foo", <<~RUBY, new_formula: true
@@ -863,11 +863,11 @@ module Homebrew
             fa.audit_deps
           end
 
-          its(:problems) { are_expected.to be_empty }
+          it(:problems) { expect(f_a.problems).to be_empty }
         end
 
         describe "which is not allowlisted", :needs_macos do
-          subject { fa }
+          subject(:f_a) { fa }
 
           let(:fa) do
             formula_auditor "foo", <<~RUBY, new_formula: true, core_tap: true
@@ -895,8 +895,9 @@ module Homebrew
             fa.audit_deps
           end
 
-          its(:new_formula_problems) do
-            are_expected.to include(a_hash_including(message: a_string_matching(/is provided by macOS/)))
+          it(:new_formula_problems) do
+            expect(f_a.new_formula_problems)
+              .to include(a_hash_including(message: a_string_matching(/is provided by macOS/)))
           end
         end
       end

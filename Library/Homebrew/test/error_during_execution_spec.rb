@@ -30,7 +30,7 @@ RSpec.describe ErrorDuringExecution do
 
   describe "#to_s" do
     context "when only given a command and a status" do
-      its(:to_s) { is_expected.to eq "Failure while executing; `false` exited with 1." }
+      it(:to_s) { expect(error.to_s).to eq "Failure while executing; `false` exited with 1." }
     end
 
     context "when additionally given the output" do
@@ -45,7 +45,7 @@ RSpec.describe ErrorDuringExecution do
         allow($stdout).to receive(:tty?).and_return(true)
       end
 
-      its(:to_s) do
+      it(:to_s) do
         expect(error.to_s).to eq <<~EOS
           Failure while executing; `false` exited with 1. Here's the output:
           This still worked.
@@ -57,7 +57,7 @@ RSpec.describe ErrorDuringExecution do
     context "when command arguments contain special characters" do
       let(:command) { ["env", "PATH=/bin", "cat", "with spaces"] }
 
-      its(:to_s) do
+      it(:to_s) do
         expect(error.to_s)
           .to eq 'Failure while executing; `env PATH=/bin cat with\ spaces` exited with 1.'
       end
