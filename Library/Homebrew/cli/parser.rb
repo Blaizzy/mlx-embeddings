@@ -119,7 +119,9 @@ module Homebrew
         ]
       end
 
-      sig { params(cmd: T.nilable(T.class_of(Homebrew::AbstractCommand)), block: T.nilable(T.proc.bind(Parser).void)).void }
+      sig {
+        params(cmd: T.nilable(T.class_of(Homebrew::AbstractCommand)), block: T.nilable(T.proc.bind(Parser).void)).void
+      }
       def initialize(cmd = nil, &block)
         @parser = OptionParser.new
 
