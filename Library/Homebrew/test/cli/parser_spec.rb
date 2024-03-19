@@ -583,7 +583,7 @@ RSpec.describe Homebrew::CLI::Parser do
       # commands for formulae and casks on Linux.
       it "succeeds for developer commands" do
         require "dev-cmd/cat"
-        args = Homebrew.cat_args.parse(["--cask", "cask_name"])
+        args = Homebrew::DevCmd::Cat.new(["--cask", "cask_name"]).args
         expect(args.cask?).to be(true)
       end
     end
