@@ -25,9 +25,10 @@ RSpec.describe GitHub do
       results = described_class.search_issues("brew search",
                                               repo:   "Homebrew/legacy-homebrew",
                                               author: "MikeMcQuaid",
-                                              is:     "closed")
+                                              is:     "issue",
+                                              no:     "milestone")
       expect(results).not_to be_empty
-      expect(results.first["title"]).to eq("Shall we run `brew update` automatically?")
+      expect(results.first["title"]).to eq("Shall we move more things to taps?")
     end
   end
 
