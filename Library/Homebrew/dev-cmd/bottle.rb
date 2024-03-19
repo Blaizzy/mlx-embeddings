@@ -397,8 +397,8 @@ module Homebrew
           tab_json = Utils::Bottles.file_from_bottle(bottle_path, tab_path)
           tab = Tab.from_file_content(tab_json, tab_path)
 
-          tag_spec = Formula[formula.name].bottle_specification.tag_specification_for(bottle_tag,
-                                                                                      no_older_versions: true)
+          tag_spec = Formula[formula.name].bottle_specification
+                                          .tag_specification_for(bottle_tag, no_older_versions: true)
           relocatable = [:any, :any_skip_relocation].include?(tag_spec.cellar)
           skip_relocation = tag_spec.cellar == :any_skip_relocation
 
@@ -818,8 +818,8 @@ module Homebrew
         return if bottle_node.nil?
         return [] unless args.keep_old?
 
-        old_keys = T.cast(Utils::AST.body_children(bottle_node.body),
-                          T::Array[RuboCop::AST::SendNode]).map(&:method_name)
+        old_keys = T.cast(Utils::AST.body_children(bottle_node.body), T::Array[RuboCop::AST::SendNode])
+                    .map(&:method_name)
         old_bottle_spec = formula.bottle_specification
         mismatches, checksums = merge_bottle_spec(old_keys, old_bottle_spec, bottle_hash["bottle"])
         if mismatches.present?

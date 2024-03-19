@@ -75,8 +75,8 @@ module Homebrew
 
             "#{Utils.pluralize("time", type_count, include_count: true)} (#{type})"
           end
-          contributions << "#{Utils.pluralize("time", grand_totals[username].values.sum,
-                                              include_count: true)} (total)"
+          contributions <<
+            "#{Utils.pluralize("time", grand_totals[username].values.sum, include_count: true)} (total)"
 
           puts [
             "#{username} contributed",

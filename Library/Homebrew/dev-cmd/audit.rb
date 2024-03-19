@@ -226,9 +226,8 @@ module Homebrew
 
               audit_proc = proc { FormulaAuditor.new(Formulary.factory(path), **options).tap(&:audit) }
 
-              # Audit requires full Ruby source so disable API.
-              # We shouldn't do this for taps however so that we don't unnecessarily require a full Homebrew/core
-              # clone.
+              # Audit requires full Ruby source so disable API. We shouldn't do this for taps however so that we
+              # don't unnecessarily require a full Homebrew/core clone.
               fa = if f.core_formula?
                 Homebrew.with_no_api_env(&audit_proc)
               else
@@ -308,8 +307,8 @@ module Homebrew
           errors_summary += " detected"
 
           if corrected_problem_count.positive?
-            errors_summary += ", #{Utils.pluralize("problem", corrected_problem_count,
-                                                   include_count: true)} corrected"
+            errors_summary +=
+              ", #{Utils.pluralize("problem", corrected_problem_count, include_count: true)} corrected"
           end
 
           ofail "#{errors_summary}."

@@ -28,7 +28,7 @@ module Homebrew
             if cmd
               cmd.parser
             else
-              # TODO: remove once all commands inherit AbstractCommand
+              # FIXME: remove once commands are all subclasses of `AbstractCommand`:
               Homebrew.send(cmd_args_method_name)
             end
           end
