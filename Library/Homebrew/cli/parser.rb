@@ -20,7 +20,7 @@ module Homebrew
 
       def self.from_cmd_path(cmd_path)
         cmd_args_method_name = Commands.args_method_name(cmd_path)
-        cmd_name = cmd_args_method_name.to_s.delete_suffix("_args")
+        cmd_name = cmd_args_method_name.to_s.delete_suffix("_args").tr("_", "-")
 
         begin
           if require?(cmd_path)
