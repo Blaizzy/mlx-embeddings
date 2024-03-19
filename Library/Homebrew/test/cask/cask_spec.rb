@@ -219,7 +219,11 @@ RSpec.describe Cask::Cask, :cask do
       it "returns expected hash" do
         allow(MacOS).to receive(:version).and_return(MacOSVersion.new("13"))
 
-        hash = Cask::CaskLoader.load("everything").to_h
+        cask = Cask::CaskLoader.load("everything")
+
+        expect(cask.tap).to receive(:git_head).and_return("abcdef1234567890abcdef1234567890abcdef12")
+
+        hash = cask.to_h
 
         expect(hash).to be_a(Hash)
         expect(JSON.pretty_generate(hash)).to eq(expected_json)

@@ -96,7 +96,7 @@
   "disabled": false,
   "disable_date": null,
   "disable_reason": null,
-  "tap_git_head": null,
+  "tap_git_head": "abcdef1234567890abcdef1234567890abcdef12",
   "languages": [
     "en",
     "eo"

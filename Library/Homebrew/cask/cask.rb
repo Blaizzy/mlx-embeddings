@@ -275,6 +275,7 @@ module Cask
       @ruby_source_path = sourcefile_path.relative_path_from(tap.path)
     end
 
+    sig { returns(T::Hash[Symbol, String]) }
     def ruby_source_checksum
       @ruby_source_checksum ||= {
         sha256: Digest::SHA256.file(sourcefile_path).hexdigest,
@@ -300,7 +301,7 @@ module Cask
       # TODO: Clean this up when we deprecate the current JSON API and move to the internal JSON v3.
       ruby_source_sha256 = json_cask.dig(:ruby_source_checksum, :sha256)
       ruby_source_sha256 ||= json_cask[:ruby_source_sha256]
-      @ruby_source_checksum = { "sha256" => ruby_source_sha256 }
+      @ruby_source_checksum = { sha256: ruby_source_sha256 }
     end
 
     def to_s
