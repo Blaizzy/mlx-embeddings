@@ -462,8 +462,8 @@ module Homebrew
     if version.nil?
       specs = {}
       specs[:tag] = tag if tag.present?
-      version = Version.detect(url, **specs)
-      return if version.null?
+      version = Version.detect(url, **specs).to_s
+      return if version.blank?
     end
 
     check_throttle(formula, version)
