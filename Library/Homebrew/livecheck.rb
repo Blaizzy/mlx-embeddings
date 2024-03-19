@@ -25,6 +25,7 @@ class Livecheck
     @referenced_cask_name = nil
     @referenced_formula_name = nil
     @regex = nil
+    @throttle = nil
     @skip = false
     @skip_msg = nil
     @strategy = nil
@@ -84,6 +85,23 @@ class Livecheck
       @regex
     when Regexp
       @regex = pattern
+    end
+  end
+
+  # Sets the `@throttle` instance variable to the provided `Integer` or returns
+  # the `@throttle` instance variable when no argument is provided.
+  sig {
+    params(
+      # Throttle rate of version patch number to use for bumpable versions.
+      rate: T.nilable(Integer),
+    ).returns(T.nilable(Integer))
+  }
+  def throttle(rate = T.unsafe(nil))
+    case rate
+    when nil
+      @throttle
+    when Integer
+      @throttle = rate
     end
   end
 
@@ -168,6 +186,7 @@ class Livecheck
       "cask"     => @referenced_cask_name,
       "formula"  => @referenced_formula_name,
       "regex"    => @regex,
+      "throttle" => @throttle,
       "skip"     => @skip,
       "skip_msg" => @skip_msg,
       "strategy" => @strategy,

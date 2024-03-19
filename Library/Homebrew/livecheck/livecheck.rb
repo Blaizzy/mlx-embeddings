@@ -826,6 +826,28 @@ module Homebrew
           latest: Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(formula_or_cask, v) }),
         }
 
+        if (throttle = livecheck.throttle || referenced_livecheck&.throttle)
+          match_version_map.keep_if { |_match, version| version.patch.to_i.modulo(throttle).zero? }
+          version_info[:latest_throttled] = if match_version_map.blank?
+            nil
+          else
+            Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(formula_or_cask, v) })
+          end
+
+          if debug
+            puts
+            puts "Matched Throttled Versions:"
+
+            if verbose
+              match_version_map.each do |match, version|
+                puts "#{match} => #{version.inspect}"
+              end
+            else
+              puts match_version_map.values.join(", ")
+            end
+          end
+        end
+
         if json && verbose
           version_info[:meta] = {}
 
