@@ -18,16 +18,14 @@ Merging is done using the standard "Merge" button in the `Homebrew/brew` reposit
 
 PRs must meet the following conditions to be merged:
 
-- Have at least one maintainer (or [@BrewTestBot](https://github.com/BrewTestBot)) approval. See the [Automatic approvals](#automatic-approvals) section below for more details about how [@BrewTestBot](https://github.com/BrewTestBot) approves PRs.
+- Have at least one maintainer approval.
 - Have passing CI (continuous integration). This is a _mandatory_ step. PRs with failing CI should _never_ be merged. See the [CI](#ci) section below for more information about `Homebrew/brew` CI.
 
 If possible, PRs should also have GPG-signed commits (see the private `ops` repository for instructions on setting this up).
 
 ### Automatic approvals
 
-To ensure that non-urgent PRs have the opportunity to be seen and reviewed by any other maintainers who wish to take a look, all PRs require an approval before they can be merged. However, some PRs are urgent enough that they need to be merged without an approval by another maintainer.
-
-As a compromise between always needing a review and allowing maintainers to merge PRs they deem critical, the `Triage` CI job will ensure that if a PR is labelled `critical`, [@BrewTestBot](https://github.com/BrewTestBot) approves the PR, allowing it to be merged.
+To ensure that non-urgent PRs have the opportunity to be seen and reviewed by any other maintainers who wish to take a look, all PRs require an approval before they can be merged.
 
 ## CI
 
@@ -35,7 +33,6 @@ Every PR in `Homebrew/brew` runs a series of CI tests to try to prevent bugs fro
 
 There are many checks that run on every PR. The following is a quick list of the various checks and what they represent:
 
-- `Triage / review`: This verifies that the PR has been open for long enough. See the [Automatic approvals](#automatic-approvals) section above for more information about automatic approvals.
 - `Vendor Gems / vendor-gems`: This is skipped except for dependabot PRs. It updates the RBI files to match any new/changed dependencies. See [Type Checking With Sorbet](Typechecking.md) for more information about RBI files and typechecking.
 - `Codecov / codecov/patch` and `codecov/project`: These show the Codecov report for the PR. See the [`brew tests` and Codecov](#brew-tests-and-codecov) section below for more info about Codecov.
 - `CI / vendored gems`: This checks whether there was a change to the vendored gems on Linux that needs to be committed to the PR branch.
