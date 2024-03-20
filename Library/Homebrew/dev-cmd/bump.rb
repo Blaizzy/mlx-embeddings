@@ -240,7 +240,7 @@ module Homebrew
       name = formula_or_cask.token
       text = "Cask is disabled.\n"
     end
-    unless formula_or_cask.tap.allow_bump?(name)
+    if (tap = formula_or_cask.tap) && !tap.allow_bump?(name)
       skip = true
       text = "#{text.split.first} is on autobump list.\n"
     end
