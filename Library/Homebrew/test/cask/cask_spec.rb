@@ -46,15 +46,13 @@ RSpec.describe Cask::Cask, :cask do
       expect(c.token).to eq("caffeine")
     end
 
-    it "returns an instance of the Cask from a URL", :needs_utils_curl do
-      expect(Homebrew::API).not_to receive(:fetch_json_api_file)
+    it "returns an instance of the Cask from a URL", :needs_utils_curl, :no_api do
       c = Cask::CaskLoader.load("file://#{tap_path}/Casks/local-caffeine.rb")
       expect(c).to be_a(described_class)
       expect(c.token).to eq("local-caffeine")
     end
 
-    it "raises an error when failing to download a Cask from a URL", :needs_utils_curl do
-      expect(Homebrew::API).not_to receive(:fetch_json_api_file)
+    it "raises an error when failing to download a Cask from a URL", :needs_utils_curl, :no_api do
       expect do
         Cask::CaskLoader.load("file://#{tap_path}/Casks/notacask.rb")
       end.to raise_error(Cask::CaskUnavailableError)

@@ -119,8 +119,7 @@ RSpec.describe Formulary do
       expect(described_class.factory(formula_path)).to be_a(Formula)
     end
 
-    it "returns a Formula when given a URL", :needs_utils_curl do
-      expect(Homebrew::API).not_to receive(:fetch_json_api_file)
+    it "returns a Formula when given a URL", :needs_utils_curl, :no_api do
       formula = described_class.factory("file://#{formula_path}")
       expect(formula).to be_a(Formula)
     end

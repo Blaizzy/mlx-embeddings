@@ -174,6 +174,10 @@ RSpec.configure do |config|
     ERROR
   end
 
+  config.before(:each, :no_api) do
+    ENV["HOMEBREW_NO_INSTALL_FROM_API"] = "1"
+  end
+
   config.before(:each, :needs_svn) do
     svn_shim = HOMEBREW_SHIMS_PATH/"shared/svn"
     skip "Subversion is not installed." unless quiet_system svn_shim, "--version"

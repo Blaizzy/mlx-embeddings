@@ -488,8 +488,7 @@ RSpec.describe Tap do
         expect(described_class.to_a).to include(CoreTap.instance)
       end
 
-      it "omits the core tap without the api" do
-        ENV["HOMEBREW_NO_INSTALL_FROM_API"] = "1"
+      it "omits the core tap without the api", :no_api do
         expect(described_class.to_a).not_to include(CoreTap.instance)
       end
     end
