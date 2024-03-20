@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "abstract_command"
 require "env_config"
 require "cask/config"
 require "cli/args"
@@ -19,9 +20,18 @@ module Homebrew
 
       def self.from_cmd_path(cmd_path)
         cmd_args_method_name = Commands.args_method_name(cmd_path)
+        cmd_name = cmd_args_method_name.to_s.delete_suffix("_args").tr("_", "-")
 
         begin
-          Homebrew.send(cmd_args_method_name) if require?(cmd_path)
+          if require?(cmd_path)
+            cmd = Homebrew::AbstractCommand.command(cmd_name)
+            if cmd
+              cmd.parser
+            else
+              # FIXME: remove once commands are all subclasses of `AbstractCommand`:
+              Homebrew.send(cmd_args_method_name)
+            end
+          end
         rescue NoMethodError => e
           raise if e.name.to_sym != cmd_args_method_name
 
@@ -109,8 +119,10 @@ module Homebrew
         ]
       end
 
-      sig { params(block: T.nilable(T.proc.bind(Parser).void)).void }
-      def initialize(&block)
+      sig {
+        params(cmd: T.nilable(T.class_of(Homebrew::AbstractCommand)), block: T.nilable(T.proc.bind(Parser).void)).void
+      }
+      def initialize(cmd = nil, &block)
         @parser = OptionParser.new
 
         @parser.summary_indent = " " * 2
@@ -123,12 +135,18 @@ module Homebrew
 
         @args = Homebrew::CLI::Args.new
 
-        # Filter out Sorbet runtime type checking method calls.
-        cmd_location = T.must(caller_locations).select do |location|
-          T.must(location.path).exclude?("/gems/sorbet-runtime-")
-        end.fetch(1)
-        @command_name = T.must(cmd_location.label).chomp("_args").tr("_", "-")
-        @is_dev_cmd = T.must(cmd_location.absolute_path).start_with?(Commands::HOMEBREW_DEV_CMD_PATH)
+        if cmd
+          @command_name = cmd.command_name
+          @is_dev_cmd = cmd.name&.start_with?("Homebrew::DevCmd")
+        else
+          # FIXME: remove once commands are all subclasses of `AbstractCommand`:
+          # Filter out Sorbet runtime type checking method calls.
+          cmd_location = T.must(caller_locations).select do |location|
+            T.must(location.path).exclude?("/gems/sorbet-runtime-")
+          end.fetch(1)
+          @command_name = T.must(cmd_location.label).chomp("_args").tr("_", "-")
+          @is_dev_cmd = T.must(cmd_location.absolute_path).start_with?(Commands::HOMEBREW_DEV_CMD_PATH)
+        end
 
         @constraints = []
         @conflicts = []

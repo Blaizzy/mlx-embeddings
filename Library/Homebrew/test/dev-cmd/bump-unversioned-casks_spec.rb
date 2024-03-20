@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require "cmd/shared_examples/args_parse"
+require "dev-cmd/bump-unversioned-casks"
 
-RSpec.describe "brew bump-unversioned-casks" do
-  it_behaves_like "parseable arguments"
+RSpec.describe Homebrew::DevCmd::BumpUnversionedCask do
+  it_behaves_like "parseable arguments", argv: ["foo"]
 end

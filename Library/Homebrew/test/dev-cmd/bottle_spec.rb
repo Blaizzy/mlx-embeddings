@@ -3,7 +3,7 @@
 require "cmd/shared_examples/args_parse"
 require "dev-cmd/bottle"
 
-RSpec.describe "brew bottle" do
+RSpec.describe Homebrew::DevCmd::Bottle do
   def stub_hash(parameters)
     <<~EOS
       {
@@ -30,7 +30,7 @@ RSpec.describe "brew bottle" do
     EOS
   end
 
-  it_behaves_like "parseable arguments"
+  it_behaves_like "parseable arguments", argv: ["foo"]
 
   it "builds a bottle for the given Formula", :integration_test do
     install_test_formula "testball", build_bottle: true
@@ -308,8 +308,8 @@ RSpec.describe "brew bottle" do
     end
   end
 
-  describe Homebrew do
-    subject(:homebrew) { described_class }
+  describe "bottle_cmd" do
+    subject(:homebrew) { described_class.new(["foo"]) }
 
     let(:hello_hash_big_sur) do
       JSON.parse stub_hash(
