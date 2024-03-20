@@ -970,7 +970,7 @@ end
 
 #### Service block methods
 
-This table lists the options you can set within a `service` block. The `run` or `name` field must be defined inside the service block. The `run` field indicates what command to run and is required before using fields other than `name`.
+This table lists the options you can set within a `service` block. The `run` or `name` field must be defined inside the service block. The `run` field indicates what command to run and is required before using fields other than `name` and `require_root`.
 
 | method                  | default      | macOS | Linux | description |
 | ----------------------- | ------------ | :---: | :---: | ----------- |
