@@ -970,7 +970,7 @@ end
 
 #### Service block methods
 
-This table lists the options you can set within a `service` block. The `run` or `name` field must be defined inside the service block. The `run` field indicates what command to run and is required before using fields other than `name` and `require_root`.
+This table lists the options you can set within a `service` block. The `run` or `name` field must be defined inside the service block. If `name` is defined without `run`, then Homebrew makes no attempt to change the package-provided service file according these fields. The `run` field indicates what command to run, instructs Homebrew to create a service description file using options set in the block, and therefore is required before using fields other than `name` and `require_root`.
 
 | method                  | default      | macOS | Linux | description |
 | ----------------------- | ------------ | :---: | :---: | ----------- |
@@ -980,7 +980,7 @@ This table lists the options you can set within a `service` block. The `run` or 
 | `cron`                  | -            |  yes  |  yes  | controls the trigger times, required for the `:cron` type |
 | `keep_alive`            | `false`      |  yes  |  yes  | [sets contexts](#keep_alive-options) in which the service will keep the process running |
 | `launch_only_once`      | `false`      |  yes  |  yes  | whether the command should only run once |
-| `require_root`          | `false`      |  yes  |  yes  | whether the service requires root access |
+| `require_root`          | `false`      |  yes  |  yes  | whether the service requires root access. If true, Homebrew hints at using `sudo` on various occasions, but does not enforce it |
 | `environment_variables` | -            |  yes  |  yes  | hash of variables to set |
 | `working_dir`           | -            |  yes  |  yes  | directory to operate from |
 | `root_dir`              | -            |  yes  |  yes  | directory to use as a chroot for the process |
@@ -991,7 +991,7 @@ This table lists the options you can set within a `service` block. The `run` or 
 | `process_type`          | -            |  yes  | no-op | type of process to manage: `:background`, `:standard`, `:interactive` or `:adaptive` |
 | `macos_legacy_timers`   | -            |  yes  | no-op | timers created by `launchd` jobs are coalesced unless this is set |
 | `sockets`               | -            |  yes  | no-op | socket that is created as an accesspoint to the service |
-| `name`                  | -            |  yes  |  yes  | a hash with the `launchd` service name on macOS and/or the `systemd` service name on Linux |
+| `name`                  | -            |  yes  |  yes  | a hash with the `launchd` service name on macOS and/or the `systemd` service name on Linux. Homebrew generates a default name for the service file if this is not present |
 
 For services that are kept alive after starting you can use the default `run_type`:
 
