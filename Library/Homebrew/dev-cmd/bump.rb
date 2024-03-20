@@ -156,7 +156,7 @@ module Homebrew
           retrieve_and_display_info_and_open_pr(
             formula_or_cask,
             name,
-            package_data&.values&.first,
+            package_data&.values&.first || [],
             ambiguous_cask: ambiguous_casks.include?(formula_or_cask),
           )
         end
