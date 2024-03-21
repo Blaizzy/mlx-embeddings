@@ -1330,6 +1330,7 @@ _brew_lc() {
       --cask
       --debug
       --eval-all
+      --extract-plist
       --formula
       --full-name
       --help
@@ -1445,6 +1446,7 @@ _brew_livecheck() {
       --cask
       --debug
       --eval-all
+      --extract-plist
       --formula
       --full-name
       --help

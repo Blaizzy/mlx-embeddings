@@ -167,6 +167,7 @@ module Homebrew
         check_resources:             T::Boolean,
         json:                        T::Boolean,
         newer_only:                  T::Boolean,
+        extract_plist:               T::Boolean,
         debug:                       T::Boolean,
         quiet:                       T::Boolean,
         verbose:                     T::Boolean,
@@ -175,7 +176,7 @@ module Homebrew
     def run_checks(
       formulae_and_casks_to_check,
       full_name: false, handle_name_conflict: false, check_resources: false, json: false, newer_only: false,
-      debug: false, quiet: false, verbose: false
+      extract_plist: false, debug: false, quiet: false, verbose: false
     )
       load_other_tap_strategies(formulae_and_casks_to_check)
 
@@ -200,9 +201,9 @@ module Homebrew
 
       has_a_newer_upstream_version = T.let(false, T::Boolean)
 
-      if json && !quiet && $stderr.tty?
-        formulae_and_casks_total = formulae_and_casks_to_check.count
+      formulae_and_casks_total = formulae_and_casks_to_check.count
 
+      if json && !quiet && $stderr.tty?
         Tty.with($stderr) do |stderr|
           stderr.puts Formatter.headline("Running checks", color: :blue)
         end
@@ -216,6 +217,9 @@ module Homebrew
           output:         $stderr,
         )
       end
+
+      # If only one formula/cask is being checked, we enable extract-plist
+      extract_plist = true if formulae_and_casks_total == 1
 
       formulae_checked = formulae_and_casks_to_check.map.with_index do |formula_or_cask, i|
         formula = formula_or_cask if formula_or_cask.is_a?(Formula)
@@ -235,6 +239,18 @@ module Homebrew
           EOS
         elsif debug
           puts
+        end
+
+        if cask && !extract_plist && formula_or_cask.livecheck.strategy == :extract_plist
+          skip_info = {
+            cask:     cask.token,
+            status:   "skipped",
+            messages: ["Livecheck skipped due to the ExtractPlist strategy"],
+            meta:     { livecheckable: true },
+          }
+
+          SkipConditions.print_skip_information(skip_info) if !newer_only && !quiet
+          next
         end
 
         # Check skip conditions for a referenced formula/cask

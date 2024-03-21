@@ -38,10 +38,13 @@ module Homebrew
              description: "Only check formulae."
       switch "--cask", "--casks",
              description: "Only check casks."
+      switch "--extract-plist",
+             description: "Include casks using the ExtractPlist livecheck strategy."
 
       conflicts "--debug", "--json"
       conflicts "--tap=", "--eval-all", "--installed"
       conflicts "--cask", "--formula"
+      conflicts "--formula", "--extract-plist"
 
       named_args [:formula, :cask], without_api: true
     end
@@ -125,6 +128,7 @@ module Homebrew
       handle_name_conflict: !args.formula? && !args.cask?,
       check_resources:      args.resources?,
       newer_only:           args.newer_only?,
+      extract_plist:        args.extract_plist?,
       quiet:                args.quiet?,
       debug:                args.debug?,
       verbose:              args.verbose?,
