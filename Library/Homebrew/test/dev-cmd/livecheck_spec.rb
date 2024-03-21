@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 require "cmd/shared_examples/args_parse"
+require "dev-cmd/livecheck"
 
-RSpec.describe "brew livecheck" do
+RSpec.describe Homebrew::DevCmd::LivecheckCmd do
   it_behaves_like "parseable arguments"
 
   it "reports the latest version of a Formula", :integration_test, :needs_network do
