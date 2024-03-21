@@ -25,11 +25,11 @@ class Livecheck
     @referenced_cask_name = nil
     @referenced_formula_name = nil
     @regex = nil
-    @throttle = nil
     @skip = false
     @skip_msg = nil
     @strategy = nil
     @strategy_block = nil
+    @throttle = nil
     @url = nil
   end
 
@@ -88,23 +88,6 @@ class Livecheck
     end
   end
 
-  # Sets the `@throttle` instance variable to the provided `Integer` or returns
-  # the `@throttle` instance variable when no argument is provided.
-  sig {
-    params(
-      # Throttle rate of version patch number to use for bumpable versions.
-      rate: T.nilable(Integer),
-    ).returns(T.nilable(Integer))
-  }
-  def throttle(rate = T.unsafe(nil))
-    case rate
-    when nil
-      @throttle
-    when Integer
-      @throttle = rate
-    end
-  end
-
   # Sets the `@skip` instance variable to `true` and sets the `@skip_msg`
   # instance variable if a `String` is provided. `@skip` is used to indicate
   # that the formula/cask/resource should be skipped and the `skip_msg` very
@@ -153,6 +136,23 @@ class Livecheck
   sig { returns(T.nilable(Proc)) }
   attr_reader :strategy_block
 
+  # Sets the `@throttle` instance variable to the provided `Integer` or returns
+  # the `@throttle` instance variable when no argument is provided.
+  sig {
+    params(
+      # Throttle rate of version patch number to use for bumpable versions.
+      rate: T.nilable(Integer),
+    ).returns(T.nilable(Integer))
+  }
+  def throttle(rate = T.unsafe(nil))
+    case rate
+    when nil
+      @throttle
+    when Integer
+      @throttle = rate
+    end
+  end
+
   # Sets the `@url` instance variable to the provided argument or returns the
   # `@url` instance variable when no argument is provided. The argument can be
   # a `String` (a URL) or a supported `Symbol` corresponding to a URL in the
@@ -186,10 +186,10 @@ class Livecheck
       "cask"     => @referenced_cask_name,
       "formula"  => @referenced_formula_name,
       "regex"    => @regex,
-      "throttle" => @throttle,
       "skip"     => @skip,
       "skip_msg" => @skip_msg,
       "strategy" => @strategy,
+      "throttle" => @throttle,
       "url"      => @url,
     }
   end

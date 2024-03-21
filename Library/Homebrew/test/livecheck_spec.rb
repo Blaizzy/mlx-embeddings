@@ -66,17 +66,6 @@ RSpec.describe Livecheck do
     end
   end
 
-  describe "#throttle" do
-    it "returns nil if not set" do
-      expect(livecheckable_f.throttle).to be_nil
-    end
-
-    it "returns the Integer if set" do
-      livecheckable_f.throttle(10)
-      expect(livecheckable_f.throttle).to eq(10)
-    end
-  end
-
   describe "#skip" do
     it "sets @skip to true when no argument is provided" do
       expect(livecheckable_f.skip).to be true
@@ -108,6 +97,17 @@ RSpec.describe Livecheck do
     it "returns the Symbol if set" do
       livecheckable_f.strategy(:page_match)
       expect(livecheckable_f.strategy).to eq(:page_match)
+    end
+  end
+
+  describe "#throttle" do
+    it "returns nil if not set" do
+      expect(livecheckable_f.throttle).to be_nil
+    end
+
+    it "returns the Integer if set" do
+      livecheckable_f.throttle(10)
+      expect(livecheckable_f.throttle).to eq(10)
     end
   end
 
@@ -151,10 +151,10 @@ RSpec.describe Livecheck do
           "cask"     => nil,
           "formula"  => nil,
           "regex"    => nil,
-          "throttle" => nil,
           "skip"     => false,
           "skip_msg" => nil,
           "strategy" => nil,
+          "throttle" => nil,
           "url"      => nil,
         },
       )
