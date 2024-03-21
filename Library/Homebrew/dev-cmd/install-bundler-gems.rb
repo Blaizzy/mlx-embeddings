@@ -1,6 +1,7 @@
 # typed: strict
 # frozen_string_literal: true
 
+require "abstract_command"
 require "cli/parser"
 
 module Homebrew

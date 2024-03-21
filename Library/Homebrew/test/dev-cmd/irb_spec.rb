@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 require "cmd/shared_examples/args_parse"
+require "dev-cmd/irb"
 
-RSpec.describe "brew irb" do
+RSpec.describe Homebrew::DevCmd::Irb do
   it_behaves_like "parseable arguments"
 
   describe "integration test" do
