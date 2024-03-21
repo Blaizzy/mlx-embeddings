@@ -42,6 +42,9 @@ module Utils
           server.close
           read.close
           write.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
+
+          Process::UID.change_privilege(Process.euid) if Process.euid != Process.uid
+
           yield
         rescue Exception => e # rubocop:disable Lint/RescueException
           error_hash = JSON.parse e.to_json

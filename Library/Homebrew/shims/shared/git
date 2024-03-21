@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -p
 
 # This script because we support $HOMEBREW_GIT, $HOMEBREW_SVN, etc., Xcode-only and
 # no Xcode/CLT configurations. Order is careful to be what the user would want.

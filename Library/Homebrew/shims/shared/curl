@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -p
 
 # Make our $HOMEBREW_CURL selection universal - including in formulae usage.
 

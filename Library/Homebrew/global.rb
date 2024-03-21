@@ -106,8 +106,8 @@ module Homebrew
     end
 
     def running_as_root?
-      @process_uid ||= Process.uid
-      @process_uid.zero?
+      @process_euid ||= Process.euid
+      @process_euid.zero?
     end
 
     def owner_uid
