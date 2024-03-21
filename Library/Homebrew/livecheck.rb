@@ -141,7 +141,7 @@ class Livecheck
   sig {
     params(
       # Throttle rate of version patch number to use for bumpable versions.
-      rate: T.nilable(Integer),
+      rate: Integer,
     ).returns(T.nilable(Integer))
   }
   def throttle(rate = T.unsafe(nil))
