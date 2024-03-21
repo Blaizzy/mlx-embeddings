@@ -12,7 +12,7 @@ require "unversioned_cask_checker"
 
 module Homebrew
   module DevCmd
-    class BumpUnversionedCask < AbstractCommand
+    class BumpUnversionedCasks < AbstractCommand
       include SystemCommand::Mixin
 
       cmd_args do
