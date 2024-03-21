@@ -2288,6 +2288,10 @@ from `HOMEBREW_LIVECHECK_WATCHLIST` or `~/.homebrew/livecheck_watchlist.txt`.
 
 : Only check casks.
 
+`--extract-plist`
+
+: Include casks using the ExtractPlist livecheck strategy.
+
 ### `pr-automerge` \[*`options`*\]
 
 Find pull requests that can be automatically merged using `brew pr-publish`.

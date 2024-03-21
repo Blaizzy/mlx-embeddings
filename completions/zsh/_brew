@@ -1168,6 +1168,7 @@ _brew_lc() {
   _arguments \
     '(--json)--debug[Display any debugging information]' \
     '(--tap --installed)--eval-all[Evaluate all available formulae and casks, whether installed or not, to check them]' \
+    '(--formula)--extract-plist[Include casks using the ExtractPlist livecheck strategy]' \
     '--full-name[Print formulae and casks with fully-qualified names]' \
     '--help[Show this message]' \
     '(--tap --eval-all)--installed[Check formulae and casks that are currently installed]' \
@@ -1178,7 +1179,7 @@ _brew_lc() {
     '(--eval-all --installed)--tap[Check formulae and casks within the given tap, specified as user`/`repo]' \
     '--verbose[Make some output more verbose]' \
     - formula \
-    '(--cask)--formula[Only check formulae]' \
+    '(--cask --extract-plist)--formula[Only check formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
     '(--formula)--cask[Only check casks]' \
@@ -1254,6 +1255,7 @@ _brew_livecheck() {
   _arguments \
     '(--json)--debug[Display any debugging information]' \
     '(--tap --installed)--eval-all[Evaluate all available formulae and casks, whether installed or not, to check them]' \
+    '(--formula)--extract-plist[Include casks using the ExtractPlist livecheck strategy]' \
     '--full-name[Print formulae and casks with fully-qualified names]' \
     '--help[Show this message]' \
     '(--tap --eval-all)--installed[Check formulae and casks that are currently installed]' \
@@ -1264,7 +1266,7 @@ _brew_livecheck() {
     '(--eval-all --installed)--tap[Check formulae and casks within the given tap, specified as user`/`repo]' \
     '--verbose[Make some output more verbose]' \
     - formula \
-    '(--cask)--formula[Only check formulae]' \
+    '(--cask --extract-plist)--formula[Only check formulae]' \
     '*::formula:__brew_formulae' \
     - cask \
     '(--formula)--cask[Only check casks]' \
