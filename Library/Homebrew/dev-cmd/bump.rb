@@ -248,9 +248,7 @@ module Homebrew
       end
 
       sig {
-        params(
-          formula_or_cask: T.any(Formula, Cask::Cask),
-        ).returns([T.any(Version, String), T.nilable(T.any(Version, String))])
+        params(formula_or_cask: T.any(Formula, Cask::Cask)).returns(T.any(Version, String))
       }
       def livecheck_result(formula_or_cask)
         name = Livecheck.package_or_resource_name(formula_or_cask)
@@ -279,8 +277,7 @@ module Homebrew
 
         if skip_info.present?
           return "#{skip_info[:status]}" \
-                 "#{" - #{skip_info[:messages].join(", ")}" if skip_info[:messages].present?}",
-                 nil
+                 "#{" - #{skip_info[:messages].join(", ")}" if skip_info[:messages].present?}"
         end
 
         version_info = Livecheck.latest_version(
@@ -288,20 +285,17 @@ module Homebrew
           referenced_formula_or_cask:,
           json: true, full_name: false, verbose: true, debug: false
         )
-        return "unable to get versions", nil if version_info.blank?
+        return "unable to get versions" if version_info.blank?
 
-        latest = Version.new(version_info[:latest])
-        latest_throttled = if !version_info.key?(:latest_throttled)
-          nil
+        if !version_info.key?(:latest_throttled)
+          Version.new(version_info[:latest])
         elsif version_info[:latest_throttled].nil?
           "unable to get throttled versions"
         else
           Version.new(version_info[:latest_throttled])
         end
-
-        [latest, latest_throttled]
       rescue => e
-        ["error: #{e}", nil]
+        "error: #{e}"
       end
 
       sig {
@@ -360,9 +354,7 @@ module Homebrew
               current_version_value = Version.new(loaded_formula_or_cask.version)
             end
 
-            livecheck_latest, livecheck_latest_throttled = livecheck_result(loaded_formula_or_cask)
-            # TODO: Pass down `livecheck_latest` info to print output for throttled formulae or casks
-            livecheck_latest = livecheck_latest_throttled if livecheck_latest_throttled
+            livecheck_latest = livecheck_result(loaded_formula_or_cask)
 
             new_version_value = if (livecheck_latest.is_a?(Version) && livecheck_latest >= current_version_value) ||
                                    current_version_value == "latest"
