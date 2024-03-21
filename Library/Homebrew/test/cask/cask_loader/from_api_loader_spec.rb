@@ -22,11 +22,7 @@ RSpec.describe Cask::CaskLoader::FromAPILoader, :cask do
   describe ".can_load?" do
     include_context "with API setup", "test-opera"
 
-    context "when not using the API" do
-      before do
-        ENV["HOMEBREW_NO_INSTALL_FROM_API"] = "1"
-      end
-
+    context "when not using the API", :no_api do
       it "returns false" do
         expect(described_class.try_new(token)).to be_nil
       end

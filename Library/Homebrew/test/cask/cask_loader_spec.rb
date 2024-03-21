@@ -30,11 +30,7 @@ RSpec.describe Cask::CaskLoader, :cask do
           .and_return(cask_renames)
       end
 
-      context "when not using the API" do
-        before do
-          ENV["HOMEBREW_NO_INSTALL_FROM_API"] = "1"
-        end
-
+      context "when not using the API", :no_api do
         it "warns when using the short token" do
           expect do
             expect(described_class.for("version-newest")).to be_a Cask::CaskLoader::FromPathLoader
@@ -67,11 +63,7 @@ RSpec.describe Cask::CaskLoader, :cask do
       end
     end
 
-    context "when not using the API" do
-      before do
-        ENV["HOMEBREW_NO_INSTALL_FROM_API"] = "1"
-      end
-
+    context "when not using the API", :no_api do
       context "when a cask is migrated" do
         let(:token) { "local-caffeine" }
 

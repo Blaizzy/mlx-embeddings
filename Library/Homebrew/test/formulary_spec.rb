@@ -119,7 +119,7 @@ RSpec.describe Formulary do
       expect(described_class.factory(formula_path)).to be_a(Formula)
     end
 
-    it "returns a Formula when given a URL" do
+    it "returns a Formula when given a URL", :needs_utils_curl, :no_api do
       formula = described_class.factory("file://#{formula_path}")
       expect(formula).to be_a(Formula)
     end
@@ -382,6 +382,10 @@ RSpec.describe Formulary do
 
       before do
         ENV.delete("HOMEBREW_NO_INSTALL_FROM_API")
+
+        # avoid unnecessary network calls
+        allow(Homebrew::API::Formula).to receive_messages(all_aliases: {}, all_renames: {})
+        allow(CoreTap.instance).to receive(:tap_migrations).and_return({})
 
         # don't try to load/fetch gcc/glibc
         allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)

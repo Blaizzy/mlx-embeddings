@@ -3,6 +3,11 @@
 require "utils"
 
 RSpec.describe Cask::Info, :cask do
+  before do
+    # Prevent unnecessary network requests in `Utils::Analytics.cask_output`
+    ENV["HOMEBREW_NO_ANALYTICS"] = "1"
+  end
+
   it "displays some nice info about the specified Cask" do
     expect do
       described_class.info(Cask::CaskLoader.load("local-transmission"))
