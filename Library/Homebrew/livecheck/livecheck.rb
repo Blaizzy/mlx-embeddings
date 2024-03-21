@@ -372,9 +372,10 @@ module Homebrew
         info[:version] = {
           current:             current_str,
           latest:              latest_str,
+          latest_throttled:    version_info&.dig(:latest_throttled),
           outdated:            is_outdated,
           newer_than_upstream: is_newer_than_upstream,
-        }
+        }.compact
         info[:meta] = {
           livecheckable: formula_or_cask.livecheckable?,
         }
@@ -678,6 +679,7 @@ module Homebrew
       livecheck_regex = livecheck.regex || referenced_livecheck&.regex
       livecheck_strategy = livecheck.strategy || referenced_livecheck&.strategy
       livecheck_strategy_block = livecheck.strategy_block || referenced_livecheck&.strategy_block
+      livecheck_throttle = livecheck.throttle || referenced_livecheck&.throttle
 
       livecheck_url_string = livecheck_url_to_string(
         livecheck_url,
@@ -695,6 +697,7 @@ module Homebrew
           puts "Cask:             #{cask_name(formula_or_cask, full_name:)}"
         end
         puts "Livecheckable?:   #{has_livecheckable ? "Yes" : "No"}"
+        puts "Throttle:         #{livecheck_throttle}" if livecheck_throttle
 
         livecheck_references.each do |ref_formula_or_cask|
           case ref_formula_or_cask
@@ -826,6 +829,28 @@ module Homebrew
           latest: Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(formula_or_cask, v) }),
         }
 
+        if livecheck_throttle
+          match_version_map.keep_if { |_match, version| version.patch.to_i.modulo(livecheck_throttle).zero? }
+          version_info[:latest_throttled] = if match_version_map.blank?
+            nil
+          else
+            Version.new(match_version_map.values.max_by { |v| LivecheckVersion.create(formula_or_cask, v) })
+          end
+
+          if debug
+            puts
+            puts "Matched Throttled Versions:"
+
+            if verbose
+              match_version_map.each do |match, version|
+                puts "#{match} => #{version.inspect}"
+              end
+            else
+              puts match_version_map.values.join(", ")
+            end
+          end
+        end
+
         if json && verbose
           version_info[:meta] = {}
 
@@ -854,6 +879,7 @@ module Homebrew
           version_info[:meta][:strategies] = strategies.map { |s| livecheck_strategy_names[s] } if strategies.present?
           version_info[:meta][:regex] = regex.inspect if regex.present?
           version_info[:meta][:cached] = true if strategy_data[:cached] == true
+          version_info[:meta][:throttle] = livecheck_throttle if livecheck_throttle
         end
 
         return version_info

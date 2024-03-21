@@ -276,7 +276,8 @@ module Homebrew
         )
 
         if skip_info.present?
-          return "#{skip_info[:status]}#{" - #{skip_info[:messages].join(", ")}" if skip_info[:messages].present?}"
+          return "#{skip_info[:status]}" \
+                 "#{" - #{skip_info[:messages].join(", ")}" if skip_info[:messages].present?}"
         end
 
         version_info = Livecheck.latest_version(
@@ -286,9 +287,13 @@ module Homebrew
         )
         return "unable to get versions" if version_info.blank?
 
-        latest = version_info[:latest]
-
-        Version.new(latest)
+        if !version_info.key?(:latest_throttled)
+          Version.new(version_info[:latest])
+        elsif version_info[:latest_throttled].nil?
+          "unable to get throttled versions"
+        else
+          Version.new(version_info[:latest_throttled])
+        end
       rescue => e
         "error: #{e}"
       end
@@ -475,7 +480,7 @@ module Homebrew
         ohai title
         puts <<~EOS
           Current #{version_label}  #{current_versions}
-          Latest livecheck version: #{new_versions}
+          Latest livecheck version: #{new_versions}#{" (throttled)" if formula_or_cask.livecheck.throttle}
         EOS
         puts <<~EOS unless skip_repology?(formula_or_cask)
           Latest Repology version:  #{repology_latest}
