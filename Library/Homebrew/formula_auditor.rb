@@ -519,6 +519,18 @@ module Homebrew
               "It must not be upgraded to version #{relicensed_version} or newer."
     end
 
+    # https://redis.com/blog/redis-adopts-dual-source-available-licensing
+    REDIS_RELICENSED_VERSION = "7.4"
+
+    def audit_redis
+      return if formula.name != "redis"
+      return unless @core_tap
+      return if formula.version < Version.new(REDIS_RELICENSED_VERSION)
+
+      problem "Redis was relicensed to a non-open-source license from version 7.4. " \
+              "It must not be upgraded to version 7.4 or newer."
+    end
+
     def audit_keg_only_reason
       return unless @core_tap
       return unless formula.keg_only?
