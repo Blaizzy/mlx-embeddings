@@ -1,38 +1,38 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
+require "abstract_command"
 require "formula"
 require "completions"
 require "manpages"
 require "system_command"
 
 module Homebrew
-  extend SystemCommand::Mixin
+  module DevCmd
+    class GenerateManCompletions < AbstractCommand
+      include SystemCommand::Mixin
+      cmd_args do
+        description <<~EOS
+          Generate Homebrew's manpages and shell completions.
+        EOS
+        named_args :none
+      end
 
-  sig { returns(CLI::Parser) }
-  def self.generate_man_completions_args
-    Homebrew::CLI::Parser.new do
-      description <<~EOS
-        Generate Homebrew's manpages and shell completions.
-      EOS
-      named_args :none
-    end
-  end
+      sig { override.void }
+      def run
+        Commands.rebuild_internal_commands_completion_list
+        Manpages.regenerate_man_pages(quiet: args.quiet?)
+        Completions.update_shell_completions!
 
-  def self.generate_man_completions
-    args = generate_man_completions_args.parse
-
-    Commands.rebuild_internal_commands_completion_list
-    Manpages.regenerate_man_pages(quiet: args.quiet?)
-    Completions.update_shell_completions!
-
-    diff = system_command "git", args: [
-      "-C", HOMEBREW_REPOSITORY, "diff", "--exit-code", "docs/Manpage.md", "manpages", "completions"
-    ]
-    if diff.status.success?
-      ofail "No changes to manpage or completions."
-    else
-      puts "Manpage and completions updated."
+        diff = system_command "git", args: [
+          "-C", HOMEBREW_REPOSITORY, "diff", "--exit-code", "docs/Manpage.md", "manpages", "completions"
+        ]
+        if diff.status.success?
+          ofail "No changes to manpage or completions."
+        else
+          puts "Manpage and completions updated."
+        end
+      end
     end
   end
 end
