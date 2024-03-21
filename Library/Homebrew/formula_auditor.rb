@@ -484,35 +484,26 @@ module Homebrew
               "which allows them to use our Linux bottles, which were compiled against system glibc on CI."
     end
 
-    ELASTICSEARCH_KIBANA_RELICENSED_VERSION = "7.11"
-
-    def audit_elasticsearch_kibana
-      return if formula.name != "elasticsearch" && formula.name != "kibana"
-      return unless @core_tap
-      return if formula.version < Version.new(ELASTICSEARCH_KIBANA_RELICENSED_VERSION)
-
-      problem "Elasticsearch and Kibana were relicensed to a non-open-source license from version 7.11. " \
-              "They must not be upgraded to version 7.11 or newer."
-    end
-
-    # https://www.hashicorp.com/license-faq#products-covered-by-bsl
-    HASHICORP_RELICENSED_FORMULAE_VERSIONS = {
-      "terraform"         => "1.6",
-      "packer"            => "1.10",
-      "vault"             => "1.15",
-      "boundary"          => "0.14",
-      "consul"            => "1.17",
-      "nomad"             => "1.7",
-      "waypoint"          => "0.12",
-      "vagrant"           => "2.4",
-      "vagrant-compleion" => "2.4",
+    RELICENSED_FORMULAE_VERSIONS = {
+      "boundary"           => "0.14",
+      "consul"             => "1.17",
+      "elasticsearch"      => "7.11",
+      "kibana"             => "7.11",
+      "nomad"              => "1.7",
+      "packer"             => "1.10",
+      "redis"              => "7.4",
+      "terraform"          => "1.6",
+      "vagrant"            => "2.4",
+      "vagrant-completion" => "2.4",
+      "vault"              => "1.15",
+      "waypoint"           => "0.12",
     }.freeze
 
-    def audit_hashicorp_formulae
-      return unless HASHICORP_RELICENSED_FORMULAE_VERSIONS.key? formula.name
+    def audit_relicensed_formulae
+      return unless RELICENSED_FORMULAE_VERSIONS.key? formula.name
       return unless @core_tap
 
-      relicensed_version = Version.new(HASHICORP_RELICENSED_FORMULAE_VERSIONS[formula.name])
+      relicensed_version = Version.new(RELICENSED_FORMULAE_VERSIONS[formula.name])
       return if formula.version < relicensed_version
 
       problem "#{formula.name} was relicensed to a non-open-source license from version #{relicensed_version}. " \
