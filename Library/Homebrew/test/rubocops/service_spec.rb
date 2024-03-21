@@ -19,13 +19,14 @@ RSpec.describe RuboCop::Cop::FormulaAudit::Service do
     RUBY
   end
 
-  it "reports no offenses when a service block only includes custom names" do
+  it "reports no offenses when a service block includes custom names and requires root" do
     expect_no_offenses(<<~RUBY)
       class Foo < Formula
         url "https://brew.sh/foo-1.0.tgz"
 
         service do
           name macos: "custom.mcxl.foo", linux: "custom.foo"
+          require_root true
         end
       end
     RUBY
