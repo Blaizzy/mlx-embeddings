@@ -11,6 +11,7 @@ module Homebrew
   module DevCmd
     class GenerateManCompletions < AbstractCommand
       include SystemCommand::Mixin
+
       cmd_args do
         description <<~EOS
           Generate Homebrew's manpages and shell completions.
