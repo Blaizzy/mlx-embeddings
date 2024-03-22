@@ -9,10 +9,11 @@ RSpec.describe Tapioca::Compilers::Args do
     require "cmd/list"
     Homebrew::Cmd::List.parser
   end
+
   # good testing candidate, bc it has multiple for each of switch, flag, and comma_array args:
   let(:update_python_resources_parser) do
     require "dev-cmd/update-python-resources"
-    Homebrew.update_python_resources_args
+    Homebrew::DevCmd::UpdatePythonResources.parser
   end
 
   describe "#args_table" do
@@ -23,7 +24,7 @@ RSpec.describe Tapioca::Compilers::Args do
       )
     end
 
-    it "rreturns a mapping of update-python-resources args to default values" do
+    it "returns a mapping of update-python-resources args to default values" do
       expect(compiler.args_table(update_python_resources_parser)).to eq({
         d?:                        false,
         debug?:                    false,

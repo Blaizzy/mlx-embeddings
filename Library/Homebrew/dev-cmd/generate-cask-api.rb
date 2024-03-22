@@ -4,6 +4,7 @@
 require "abstract_command"
 require "cli/parser"
 require "cask/cask"
+require "fileutils"
 require "formula"
 
 module Homebrew

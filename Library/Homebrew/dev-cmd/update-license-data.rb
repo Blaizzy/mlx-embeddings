@@ -1,34 +1,35 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
+require "abstract_command"
 require "cli/parser"
 require "utils/spdx"
 require "system_command"
 
 module Homebrew
-  extend SystemCommand::Mixin
+  module DevCmd
+    class UpdateLicenseData < AbstractCommand
+      include SystemCommand::Mixin
 
-  sig { returns(CLI::Parser) }
-  def self.update_license_data_args
-    Homebrew::CLI::Parser.new do
-      description <<~EOS
-        Update SPDX license data in the Homebrew repository.
-      EOS
-      named_args :none
-    end
-  end
+      cmd_args do
+        description <<~EOS
+          Update SPDX license data in the Homebrew repository.
+        EOS
+        named_args :none
+      end
 
-  def self.update_license_data
-    update_license_data_args.parse
-
-    SPDX.download_latest_license_data!
-    diff = system_command "git", args: [
-      "-C", HOMEBREW_REPOSITORY, "diff", "--exit-code", SPDX::DATA_PATH
-    ]
-    if diff.status.success?
-      ofail "No changes to SPDX license data."
-    else
-      puts "SPDX license data updated."
+      sig { override.void }
+      def run
+        SPDX.download_latest_license_data!
+        diff = system_command "git", args: [
+          "-C", HOMEBREW_REPOSITORY, "diff", "--exit-code", SPDX::DATA_PATH
+        ]
+        if diff.status.success?
+          ofail "No changes to SPDX license data."
+        else
+          puts "SPDX license data updated."
+        end
+      end
     end
   end
 end

@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 require "cmd/shared_examples/args_parse"
+require "dev-cmd/sh"
 
-RSpec.describe "brew sh" do
+RSpec.describe Homebrew::DevCmd::Sh do
   it_behaves_like "parseable arguments"
 
   it "runs a shell with the Homebrew environment", :integration_test do

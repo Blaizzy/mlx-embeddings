@@ -13,14 +13,6 @@ module Tapioca
         end.flatten.freeze, T::Array[String]
       )
 
-      # This is ugly, but we're moving to a new interface that will use a consistent DSL
-      # These are cmd/dev-cmd methods that end in `_args` but are not parsers
-      NON_PARSER_ARGS_METHODS = T.let([
-        :formulae_all_installs_from_args,
-        :reproducible_gnutar_args,
-        :tar_args,
-      ].freeze, T::Array[Symbol])
-
       # FIXME: Enable cop again when https://github.com/sorbet/sorbet/issues/3532 is fixed.
       # rubocop:disable Style/MutableConstant
       Parsable = T.type_alias { T.any(T.class_of(Homebrew::CLI::Args), T.class_of(Homebrew::AbstractCommand)) }
@@ -41,8 +33,6 @@ module Tapioca
         if constant == Homebrew::CLI::Args
           root.create_path(Homebrew::CLI::Args) do |klass|
             Homebrew.methods(false).select { _1.end_with?("_args") }.each do |args_method_name|
-              next if NON_PARSER_ARGS_METHODS.include?(args_method_name)
-
               parser = Homebrew.method(args_method_name).call
               create_args_methods(klass, parser)
             end
