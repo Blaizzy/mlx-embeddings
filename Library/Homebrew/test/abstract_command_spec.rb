@@ -7,6 +7,7 @@ RSpec.describe Homebrew::AbstractCommand do
     before do
       cat = Class.new(described_class) do
         cmd_args do
+          description "test"
           switch "--foo"
           flag "--bar="
         end
