@@ -1,87 +1,86 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
+require "abstract_command"
 require "cli/parser"
 require "utils/github"
 
 module Homebrew
-  module_function
+  module DevCmd
+    class PrAutomerge < AbstractCommand
+      cmd_args do
+        description <<~EOS
+          Find pull requests that can be automatically merged using `brew pr-publish`.
+        EOS
+        flag   "--tap=",
+               description: "Target tap repository (default: `homebrew/core`)."
+        flag   "--workflow=",
+               description: "Workflow file to use with `brew pr-publish`."
+        flag   "--with-label=",
+               description: "Pull requests must have this label."
+        comma_array "--without-labels",
+                    description: "Pull requests must not have these labels (default: " \
+                                 "`do not merge`, `new formula`, `automerge-skip`, " \
+                                 "`pre-release`, `CI-published-bottle-commits`)."
+        switch "--without-approval",
+               description: "Pull requests do not require approval to be merged."
+        switch "--publish",
+               description: "Run `brew pr-publish` on matching pull requests."
+        switch "--autosquash",
+               description: "Instruct `brew pr-publish` to automatically reformat and reword commits " \
+                            "in the pull request to the preferred format."
+        switch "--no-autosquash",
+               description: "Instruct `brew pr-publish` to skip automatically reformatting and rewording commits " \
+                            "in the pull request to the preferred format.",
+               disable:     true, # odisabled: remove this switch with 4.3.0
+               hidden:      true
+        switch "--ignore-failures",
+               description: "Include pull requests that have failing status checks."
 
-  sig { returns(CLI::Parser) }
-  def pr_automerge_args
-    Homebrew::CLI::Parser.new do
-      description <<~EOS
-        Find pull requests that can be automatically merged using `brew pr-publish`.
-      EOS
-      flag   "--tap=",
-             description: "Target tap repository (default: `homebrew/core`)."
-      flag   "--workflow=",
-             description: "Workflow file to use with `brew pr-publish`."
-      flag   "--with-label=",
-             description: "Pull requests must have this label."
-      comma_array "--without-labels",
-                  description: "Pull requests must not have these labels (default: " \
-                               "`do not merge`, `new formula`, `automerge-skip`, " \
-                               "`pre-release`, `CI-published-bottle-commits`)."
-      switch "--without-approval",
-             description: "Pull requests do not require approval to be merged."
-      switch "--publish",
-             description: "Run `brew pr-publish` on matching pull requests."
-      switch "--autosquash",
-             description: "Instruct `brew pr-publish` to automatically reformat and reword commits " \
-                          "in the pull request to the preferred format."
-      switch "--no-autosquash",
-             description: "Instruct `brew pr-publish` to skip automatically reformatting and rewording commits " \
-                          "in the pull request to the preferred format.",
-             disable:     true, # odisabled: remove this switch with 4.3.0
-             hidden:      true
-      switch "--ignore-failures",
-             description: "Include pull requests that have failing status checks."
+        named_args :none
+      end
 
-      named_args :none
-    end
-  end
+      sig { override.void }
+      def run
+        without_labels = args.without_labels || [
+          "do not merge",
+          "new formula",
+          "automerge-skip",
+          "pre-release",
+          "CI-published-bottle-commits",
+        ]
+        tap = Tap.fetch(args.tap || CoreTap.instance.name)
 
-  def pr_automerge
-    args = pr_automerge_args.parse
+        query = "is:pr is:open repo:#{tap.full_name} draft:false"
+        query += args.ignore_failures? ? " -status:pending" : " status:success"
+        query += " review:approved" unless args.without_approval?
+        query += " label:\"#{args.with_label}\"" if args.with_label
+        without_labels.each { |label| query += " -label:\"#{label}\"" }
+        odebug "Searching: #{query}"
 
-    without_labels = args.without_labels || [
-      "do not merge",
-      "new formula",
-      "automerge-skip",
-      "pre-release",
-      "CI-published-bottle-commits",
-    ]
-    tap = Tap.fetch(args.tap || CoreTap.instance.name)
+        prs = GitHub.search_issues query
+        if prs.blank?
+          ohai "No matching pull requests!"
+          return
+        end
 
-    query = "is:pr is:open repo:#{tap.full_name} draft:false"
-    query += args.ignore_failures? ? " -status:pending" : " status:success"
-    query += " review:approved" unless args.without_approval?
-    query += " label:\"#{args.with_label}\"" if args.with_label
-    without_labels&.each { |label| query += " -label:\"#{label}\"" }
-    odebug "Searching: #{query}"
+        ohai "#{prs.count} matching pull #{Utils.pluralize("request", prs.count)}:"
+        pr_urls = []
+        prs.each do |pr|
+          puts "#{tap.full_name unless tap.core_tap?}##{pr["number"]}: #{pr["title"]}"
+          pr_urls << pr["html_url"]
+        end
 
-    prs = GitHub.search_issues query
-    if prs.blank?
-      ohai "No matching pull requests!"
-      return
-    end
-
-    ohai "#{prs.count} matching pull #{Utils.pluralize("request", prs.count)}:"
-    pr_urls = []
-    prs.each do |pr|
-      puts "#{tap.full_name unless tap.core_tap?}##{pr["number"]}: #{pr["title"]}"
-      pr_urls << pr["html_url"]
-    end
-
-    publish_args = ["pr-publish"]
-    publish_args << "--tap=#{tap}" if tap
-    publish_args << "--workflow=#{args.workflow}" if args.workflow
-    publish_args << "--autosquash" if args.autosquash?
-    if args.publish?
-      safe_system HOMEBREW_BREW_FILE, *publish_args, *pr_urls
-    else
-      ohai "Now run:", "  brew #{publish_args.join " "} \\\n    #{pr_urls.join " \\\n    "}"
+        publish_args = ["pr-publish"]
+        publish_args << "--tap=#{tap}" if tap
+        publish_args << "--workflow=#{args.workflow}" if args.workflow
+        publish_args << "--autosquash" if args.autosquash?
+        if args.publish?
+          safe_system HOMEBREW_BREW_FILE, *publish_args, *pr_urls
+        else
+          ohai "Now run:", "  brew #{publish_args.join " "} \\\n    #{pr_urls.join " \\\n    "}"
+        end
+      end
     end
   end
 end

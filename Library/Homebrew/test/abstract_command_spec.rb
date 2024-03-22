@@ -39,6 +39,11 @@ RSpec.describe Homebrew::AbstractCommand do
         expect(described_class.command("test-cat")).to be(TestCat)
       end
 
+      it "removes -cmd suffix from command name" do
+        require "dev-cmd/formula"
+        expect(Homebrew::DevCmd::FormulaCmd.command_name).to eq("formula")
+      end
+
       describe "when command name is overridden" do
         before do
           tac = Class.new(described_class) do
@@ -61,7 +66,7 @@ RSpec.describe Homebrew::AbstractCommand do
       ["cmd", "dev-cmd"].each do |dir|
         Dir[File.join(__dir__, "../#{dir}", "*.rb")].each { require(_1) }
       end
-      test_classes = ["Cat", "Tac"]
+      test_classes = ["TestCat", "Tac"]
 
       described_class.subclasses.each do |klass|
         next if test_classes.include?(klass.name)

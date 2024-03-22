@@ -17,7 +17,7 @@ module Homebrew
 
     class << self
       sig { returns(String) }
-      def command_name = Utils.underscore(T.must(name).split("::").fetch(-1)).tr("_", "-")
+      def command_name = Utils.underscore(T.must(name).split("::").fetch(-1)).tr("_", "-").delete_suffix("-cmd")
 
       # @return the AbstractCommand subclass associated with the brew CLI command name.
       sig { params(name: String).returns(T.nilable(T.class_of(AbstractCommand))) }

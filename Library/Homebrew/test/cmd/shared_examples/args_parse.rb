@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples "parseable arguments" do |argv: []|
+RSpec.shared_examples "parseable arguments" do |argv: nil|
   subject(:method_name) { "#{command_name.tr("-", "_")}_args" }
 
   let(:command_name) do |example|
@@ -9,6 +9,8 @@ RSpec.shared_examples "parseable arguments" do |argv: []|
 
   it "can parse arguments" do
     if described_class
+      argv ||= described_class.parser.instance_variable_get(:@min_named_args)&.times&.map { "argument" }
+      argv ||= []
       cmd = described_class.new(argv)
       expect(cmd.args).to be_a Homebrew::CLI::Args
     else

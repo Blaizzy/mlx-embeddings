@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 require "cmd/shared_examples/args_parse"
+require "dev-cmd/extract"
 
-RSpec.describe "brew extract" do
+RSpec.describe Homebrew::DevCmd::Extract do
   it_behaves_like "parseable arguments"
 
   context "when extracting a formula" do

@@ -30,7 +30,7 @@ RSpec.describe Homebrew::DevCmd::Bottle do
     EOS
   end
 
-  it_behaves_like "parseable arguments", argv: ["foo"]
+  it_behaves_like "parseable arguments"
 
   it "builds a bottle for the given Formula", :integration_test do
     install_test_formula "testball", build_bottle: true

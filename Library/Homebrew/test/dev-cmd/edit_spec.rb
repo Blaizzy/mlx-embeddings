@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 require "cmd/shared_examples/args_parse"
+require "dev-cmd/edit"
 
-RSpec.describe "brew edit" do
+RSpec.describe Homebrew::DevCmd::Edit do
   it_behaves_like "parseable arguments"
 
   it "opens a given Formula in an editor", :integration_test do
