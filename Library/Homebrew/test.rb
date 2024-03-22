@@ -18,7 +18,7 @@ require "dev-cmd/test"
 TEST_TIMEOUT_SECONDS = 5 * 60
 
 begin
-  args = Homebrew.test_args.parse
+  args = Homebrew::DevCmd::Test.new.args
   Context.current = args.context
 
   error_pipe = UNIXSocket.open(ENV.fetch("HOMEBREW_ERROR_PIPE"), &:recv_io)

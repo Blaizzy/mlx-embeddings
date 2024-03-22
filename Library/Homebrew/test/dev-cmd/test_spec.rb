@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 require "cmd/shared_examples/args_parse"
+require "dev-cmd/test"
 
-RSpec.describe "brew test" do
+RSpec.describe Homebrew::DevCmd::Test do
   it_behaves_like "parseable arguments"
 
   it "tests a given Formula", :integration_test do
