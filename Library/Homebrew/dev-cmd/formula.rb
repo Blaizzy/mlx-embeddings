@@ -8,9 +8,6 @@ require "cli/parser"
 module Homebrew
   module DevCmd
     class FormulaCmd < AbstractCommand
-      sig { returns(String) }
-      def self.command_name = "formula"
-
       cmd_args do
         description <<~EOS
           Display the path where <formula> is located.

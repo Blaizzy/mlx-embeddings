@@ -10,9 +10,6 @@ require "livecheck/strategy"
 module Homebrew
   module DevCmd
     class LivecheckCmd < AbstractCommand
-      sig { returns(String) }
-      def self.command_name = "livecheck"
-
       cmd_args do
         description <<~EOS
           Check for newer versions of formulae and/or casks from upstream.
