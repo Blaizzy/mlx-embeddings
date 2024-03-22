@@ -4,7 +4,7 @@ require "cmd/shared_examples/args_parse"
 require "dev-cmd/formula"
 
 RSpec.describe Homebrew::DevCmd::FormulaCmd do
-  it_behaves_like "parseable arguments", argv: ["foo"]
+  it_behaves_like "parseable arguments"
 
   it "prints a given Formula's path", :integration_test do
     formula_file = setup_test_formula "testball"

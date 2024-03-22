@@ -4,5 +4,5 @@ require "cmd/shared_examples/args_parse"
 require "dev-cmd/pr-publish"
 
 RSpec.describe Homebrew::DevCmd::PrPublish do
-  it_behaves_like "parseable arguments", argv: ["foo"]
+  it_behaves_like "parseable arguments"
 end

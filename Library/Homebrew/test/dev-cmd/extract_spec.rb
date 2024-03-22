@@ -4,7 +4,7 @@ require "cmd/shared_examples/args_parse"
 require "dev-cmd/extract"
 
 RSpec.describe Homebrew::DevCmd::Extract do
-  it_behaves_like "parseable arguments", argv: ["foo", "bar"]
+  it_behaves_like "parseable arguments"
 
   context "when extracting a formula" do
     let!(:target) do

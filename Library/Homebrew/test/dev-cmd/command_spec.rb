@@ -4,7 +4,7 @@ require "cmd/shared_examples/args_parse"
 require "dev-cmd/command"
 
 RSpec.describe Homebrew::DevCmd::Command do
-  it_behaves_like "parseable arguments", argv: ["foo"]
+  it_behaves_like "parseable arguments"
 
   it "returns the file for a given command", :integration_test do
     expect { brew "command", "info" }
