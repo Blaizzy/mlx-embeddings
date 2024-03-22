@@ -210,6 +210,9 @@ class Homebrew::CLI::Args
   def extra_packages; end
 
   sig { returns(T::Boolean) }
+  def extract_plist?; end
+
+  sig { returns(T::Boolean) }
   def f?; end
 
   sig { returns(T::Boolean) }
