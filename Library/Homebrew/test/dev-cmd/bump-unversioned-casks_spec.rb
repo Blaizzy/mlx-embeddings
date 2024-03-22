@@ -3,6 +3,6 @@
 require "cmd/shared_examples/args_parse"
 require "dev-cmd/bump-unversioned-casks"
 
-RSpec.describe Homebrew::DevCmd::BumpUnversionedCask do
+RSpec.describe Homebrew::DevCmd::BumpUnversionedCasks do
   it_behaves_like "parseable arguments", argv: ["foo"]
 end
