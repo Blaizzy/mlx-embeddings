@@ -1,4 +1,4 @@
 # typed: strict
 
-class Cat < Homebrew::AbstractCommand; end
+class TestCat < Homebrew::AbstractCommand; end
 class Tac < Homebrew::AbstractCommand; end
