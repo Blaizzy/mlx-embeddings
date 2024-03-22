@@ -3,6 +3,7 @@
 
 require "abstract_command"
 require "cli/parser"
+require "fileutils"
 
 module Homebrew
   module DevCmd
