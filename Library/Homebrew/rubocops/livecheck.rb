@@ -45,20 +45,19 @@ module RuboCop
       class LivecheckUrlProvided < FormulaCop
         def audit_formula(_node, _class_node, _parent_class_node, body_node)
           livecheck_node = find_block(body_node, :livecheck)
-          return if livecheck_node.blank?
+          return unless livecheck_node
 
-          skip = find_every_method_call_by_name(livecheck_node, :skip).first
-          return if skip.present?
+          url_node = find_every_method_call_by_name(livecheck_node, :url).first
+          return if url_node
 
-          formula_node = find_every_method_call_by_name(livecheck_node, :formula).first
-          cask_node = find_every_method_call_by_name(livecheck_node, :cask).first
-          return if formula_node.present? || cask_node.present?
-
-          livecheck_url = find_every_method_call_by_name(livecheck_node, :url).first
-          return if livecheck_url.present?
+          # A regex and/or strategy is specific to a particular URL, so we
+          # should require an explicit URL.
+          regex_node = find_every_method_call_by_name(livecheck_node, :regex).first
+          strategy_node = find_every_method_call_by_name(livecheck_node, :strategy).first
+          return if !regex_node && !strategy_node
 
           offending_node(livecheck_node)
-          problem "A `url` must be provided to livecheck."
+          problem "A `url` should be provided when `regex` or `strategy` are used."
         end
       end
 
