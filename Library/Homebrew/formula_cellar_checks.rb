@@ -334,6 +334,7 @@ module FormulaCellarChecks
     "No `cpuid` instruction detected. #{formula} should not use `ENV.runtime_cpu_detection`."
   end
 
+  sig { params(formula: Formula).returns(T.nilable(String)) }
   def check_binary_arches(formula)
     return unless formula.prefix.directory?
 
@@ -347,19 +348,31 @@ module FormulaCellarChecks
 
     compatible_universal_binaries, mismatches = mismatches.partition do |file, arch|
       arch == :universal && file.archs.include?(Hardware::CPU.arch)
-    end.map(&:to_h) # To prevent transformation into nested arrays
+    end
+    # To prevent transformation into nested arrays
+    compatible_universal_binaries = compatible_universal_binaries.to_h
+    mismatches = mismatches.to_h
 
-    universal_binaries_expected = if formula.tap.present? && formula.tap.core_tap?
-      formula.tap.audit_exception(:universal_binary_allowlist, formula.name)
+    universal_binaries_expected = if (formula_tap = formula.tap).present? && formula_tap.core_tap?
+      formula_tap.audit_exception(:universal_binary_allowlist, formula.name)
     else
       true
     end
-    return if T.must(mismatches).empty? && universal_binaries_expected
 
-    mismatches_expected = formula.tap.blank? ||
-                          formula.tap.audit_exception(:mismatched_binary_allowlist, formula.name)
-    return if T.must(compatible_universal_binaries).empty? && mismatches_expected
+    mismatches_expected = (formula_tap = formula.tap).blank? ||
+                          formula_tap.audit_exception(:mismatched_binary_allowlist, formula.name)
+    mismatches_expected = [mismatches_expected] if mismatches_expected.is_a?(String)
+    if mismatches_expected.is_a?(Array)
+      glob_flags = File::FNM_DOTMATCH | File::FNM_EXTGLOB | File::FNM_PATHNAME
+      mismatches.delete_if do |file, _arch|
+        mismatches_expected.any? { |pattern| file.fnmatch?("#{formula.prefix.realpath}/#{pattern}", glob_flags) }
+      end
+      mismatches_expected = false
+      return if mismatches.empty? && compatible_universal_binaries.empty?
+    end
 
+    return if mismatches.empty? && universal_binaries_expected
+    return if compatible_universal_binaries.empty? && mismatches_expected
     return if universal_binaries_expected && mismatches_expected
 
     s = ""
