@@ -17,7 +17,8 @@ module UnpackStrategy
         ".tgz", ".tar.gz",
         ".tlzma", ".tar.lzma",
         ".txz", ".tar.xz",
-        ".tar.zst"
+        ".tar.zst",
+        ".crate"
       ]
     end
 
