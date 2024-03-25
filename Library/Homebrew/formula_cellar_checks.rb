@@ -17,6 +17,7 @@ module FormulaCellarChecks
   sig { abstract.params(output: T.nilable(String)).void }
   def problem_if_output(output); end
 
+  sig { params(bin: Pathname).returns(T.nilable(String)) }
   def check_env_path(bin)
     return if Homebrew::EnvConfig.no_env_hints?
 
@@ -36,6 +37,7 @@ module FormulaCellarChecks
     EOS
   end
 
+  sig { returns(T.nilable(String)) }
   def check_manpages
     # Check for man pages that aren't in share/man
     return unless (formula.prefix/"man").directory?
@@ -47,6 +49,7 @@ module FormulaCellarChecks
     EOS
   end
 
+  sig { returns(T.nilable(String)) }
   def check_infopages
     # Check for info pages that aren't in share/info
     return unless (formula.prefix/"info").directory?
@@ -58,6 +61,7 @@ module FormulaCellarChecks
     EOS
   end
 
+  sig { returns(T.nilable(String)) }
   def check_jars
     return unless formula.lib.directory?
 
@@ -77,11 +81,13 @@ module FormulaCellarChecks
 
   VALID_LIBRARY_EXTENSIONS = %w[.a .jnilib .la .o .so .jar .prl .pm .sh].freeze
 
+  sig { params(filename: Pathname).returns(T::Boolean) }
   def valid_library_extension?(filename)
     VALID_LIBRARY_EXTENSIONS.include? filename.extname
   end
   alias generic_valid_library_extension? valid_library_extension?
 
+  sig { returns(T.nilable(String)) }
   def check_non_libraries
     return unless formula.lib.directory?
 
@@ -100,6 +106,7 @@ module FormulaCellarChecks
     EOS
   end
 
+  sig { params(bin: Pathname).returns(T.nilable(String)) }
   def check_non_executables(bin)
     return unless bin.directory?
 
@@ -113,6 +120,7 @@ module FormulaCellarChecks
     EOS
   end
 
+  sig { params(bin: Pathname).returns(T.nilable(String)) }
   def check_generic_executables(bin)
     return unless bin.directory?
 
@@ -130,6 +138,7 @@ module FormulaCellarChecks
     EOS
   end
 
+  sig { params(lib: Pathname).returns(T.nilable(String)) }
   def check_easy_install_pth(lib)
     pth_found = Dir["#{lib}/python3*/site-packages/easy-install.pth"].map { |f| File.dirname(f) }
     return if pth_found.empty?
@@ -143,6 +152,7 @@ module FormulaCellarChecks
     EOS
   end
 
+  sig { params(share: Pathname, name: String).returns(T.nilable(String)) }
   def check_elisp_dirname(share, name)
     return unless (share/"emacs/site-lisp").directory?
     # Emacs itself can do what it wants
@@ -161,6 +171,7 @@ module FormulaCellarChecks
     EOS
   end
 
+  sig { params(share: Pathname, name: String).returns(T.nilable(String)) }
   def check_elisp_root(share, name)
     return unless (share/"emacs/site-lisp").directory?
     # Emacs itself can do what it wants
@@ -216,6 +227,7 @@ module FormulaCellarChecks
     EOS
   end
 
+  sig { params(prefix: Pathname).returns(T.nilable(String)) }
   def check_shim_references(prefix)
     return unless prefix.directory?
 
@@ -274,6 +286,7 @@ module FormulaCellarChecks
     EOS
   end
 
+  sig { params(name: String, keg_only: T::Boolean).returns(T.nilable(String)) }
   def check_python_symlinks(name, keg_only)
     return unless keg_only
     return unless name.start_with? "python"
@@ -286,6 +299,7 @@ module FormulaCellarChecks
     "Python formulae that are keg-only should not create `pip3` and `wheel3` symlinks."
   end
 
+  sig { params(formula: Formula).returns(T.nilable(String)) }
   def check_service_command(formula)
     return unless formula.prefix.directory?
     return unless formula.service?
@@ -294,6 +308,7 @@ module FormulaCellarChecks
     "Service command does not exist" unless File.exist?(formula.service.command.first)
   end
 
+  sig { params(formula: Formula).returns(T.nilable(String)) }
   def check_cpuid_instruction(formula)
     # Checking for `cpuid` only makes sense on Intel:
     # https://en.wikipedia.org/wiki/CPUID
@@ -396,6 +411,7 @@ module FormulaCellarChecks
     s
   end
 
+  sig { void }
   def audit_installed
     @new_formula ||= false
 
@@ -422,6 +438,7 @@ module FormulaCellarChecks
 
   private
 
+  sig { params(dir: T.any(Pathname, String), pattern: String).returns(T::Array[String]) }
   def relative_glob(dir, pattern)
     File.directory?(dir) ? Dir.chdir(dir) { Dir[pattern] } : []
   end
