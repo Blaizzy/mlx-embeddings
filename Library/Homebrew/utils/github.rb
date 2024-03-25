@@ -521,6 +521,8 @@ module GitHub
       .returns(T::Array[T::Hash[String, T.untyped]])
   }
   def self.fetch_pull_requests(name, tap_remote_repo, state: nil, version: nil)
+    return [] if Homebrew::EnvConfig.no_github_api?
+
     regex = pull_request_title_regex(name, version)
     query = "is:pr #{name} #{version}".strip
 
