@@ -65,7 +65,7 @@ module FormulaCellarChecks
     EOS
   end
 
-  sig { returns(T.nilable(String)) }
+  sig { void }
   def check_linkage
     return unless formula.prefix.directory?
 
