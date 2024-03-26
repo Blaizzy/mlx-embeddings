@@ -1209,7 +1209,7 @@ on_request: installed_on_request?, options:)
     @fetch_bottle_tab ||= begin
       formula.fetch_bottle_tab
       @bottle_tab_runtime_dependencies = formula.bottle_tab_attributes
-                                                .fetch("runtime_dependencies", [])
+                                                .fetch("runtime_dependencies", []).then { |deps| deps || [] }
                                                 .each_with_object({}) { |dep, h| h[dep["full_name"]] = dep }
                                                 .freeze
       true
@@ -1262,7 +1262,7 @@ on_request: installed_on_request?, options:)
     tab = Utils::Bottles.load_tab(formula)
 
     # fill in missing/outdated parts of the tab
-    # keep in sync with Tab#to_bottle_json
+    # keep in sync with Tab#to_bottle_hash
     tab.used_options = []
     tab.unused_options = []
     tab.built_as_bottle = true
