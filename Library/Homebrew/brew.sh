@@ -216,7 +216,7 @@ numeric() {
 }
 
 check-run-command-as-root() {
-  [[ "$(id -u)" == 0 ]] || return
+  [[ "$(id -u)" == 0 || "$(id -ur)" == 0 ]] || return
 
   # Allow Azure Pipelines/GitHub Actions/Docker/Concourse/Kubernetes to do everything as root (as it's normal there)
   [[ -f /.dockerenv ]] && return

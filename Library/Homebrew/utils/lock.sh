@@ -44,9 +44,12 @@ _create_lock() {
   [[ -x "${ruby}" ]] || ruby="$(type -P ruby)"
   [[ -x "${python}" ]] || python="$(type -P python)"
 
-  if [[ -x "${ruby}" ]] && "${ruby}" -e "exit(RUBY_VERSION >= '1.8.7')"
+  # Use /dev/stdin, otherwise Ruby can error if uid != euid.
+  # Can't use "-" as that's also blocked:
+  # https://github.com/ruby/ruby/blob/e51435177e88fc845528dff7cf2bc2b75dd36144/ruby.c#L2333-L2335
+  if [[ -x "${ruby}" ]] && "${ruby}" /dev/stdin <<<"exit(RUBY_VERSION >= '1.8.7')"
   then
-    "${ruby}" -e "File.new(${lock_fd}).flock(File::LOCK_EX | File::LOCK_NB) || exit(1)"
+    "${ruby}" /dev/stdin <<<"File.new(${lock_fd}).flock(File::LOCK_EX | File::LOCK_NB) || exit(1)"
   elif [[ -x "${python}" ]]
   then
     "${python}" -c "import fcntl; fcntl.flock(${lock_fd}, fcntl.LOCK_EX | fcntl.LOCK_NB)"
