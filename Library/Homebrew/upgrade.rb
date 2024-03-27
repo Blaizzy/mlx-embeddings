@@ -136,10 +136,8 @@ module Homebrew
       else
         "-> #{formula.pkg_version}"
       end
-      oh1 <<~EOS
-        Upgrading #{Formatter.identifier(formula.full_specified_name)}
-          #{version_upgrade} #{fi_options.to_a.join(" ")}
-      EOS
+      oh1 "Upgrading #{Formatter.identifier(formula.full_specified_name)}"
+      puts "  #{version_upgrade} #{fi_options.to_a.join(" ")}"
     end
 
     def create_formula_installer(
