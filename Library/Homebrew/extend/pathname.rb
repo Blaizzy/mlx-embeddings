@@ -333,7 +333,7 @@ class Pathname
   # @private
   def ensure_writable
     saved_perms = nil
-    unless writable_real?
+    unless writable?
       saved_perms = stat.mode
       FileUtils.chmod "u+rw", to_path
     end
