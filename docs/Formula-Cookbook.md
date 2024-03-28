@@ -257,7 +257,7 @@ bin.env_script_all_files(libexec/"bin", GEM_HOME: ENV.fetch("GEM_HOME", nil))
 
 ### Python dependencies
 
-For python we [`resource`](https://rubydoc.brew.sh/Formula#resource-class_method)s for dependencies and there's automation to generate these for you. Running `brew update-python-resources <formula>` will automatically add the necessary [`resource`](https://rubydoc.brew.sh/Formula#resource-class_method) stanzas for the dependencies of your Python application to the formula. Note that `brew update-python-resources` is run automatically by `brew create` if you pass the `--python` switch. If `brew update-python-resources` is unable to determine the correct `resource` stanzas, [homebrew-pypi-poet](https://github.com/tdsmith/homebrew-pypi-poet) is a good third-party alternative that may help.
+For python we use [`resource`](https://rubydoc.brew.sh/Formula#resource-class_method)s for dependencies and there's automation to generate these for you. Running `brew update-python-resources <formula>` will automatically add the necessary [`resource`](https://rubydoc.brew.sh/Formula#resource-class_method) stanzas for the dependencies of your Python application to the formula. Note that `brew update-python-resources` is run automatically by `brew create` if you pass the `--python` switch. If `brew update-python-resources` is unable to determine the correct `resource` stanzas, [homebrew-pypi-poet](https://github.com/tdsmith/homebrew-pypi-poet) is a good third-party alternative that may help.
 
 ### All other cases
 
@@ -322,12 +322,12 @@ Some advice for specific cases:
 * If your test requires a test file that isn't a standard test fixture, you can install it from a source repository during the `test` phase with a [`resource`](https://rubydoc.brew.sh/Formula#resource-class_method) block, like this:
 
 ```ruby
-resource("testdata") do
-  url "https://example.com/input.foo"
-  sha256 "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-end
-
 test do
+  resource "testdata" do
+    url "https://example.com/input.foo"
+    sha256 "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+  end
+
   resource("testdata").stage do
     assert_match "OK", shell_output("#{bin}/foo build-foo input.foo")
   end
