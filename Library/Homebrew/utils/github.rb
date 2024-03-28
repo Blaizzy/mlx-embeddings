@@ -869,7 +869,7 @@ module GitHub
   sig { params(tap: T.nilable(Tap)).returns(T::Boolean) }
   def self.too_many_open_prs?(tap)
     # We don't enforce unofficial taps.
-    return false if tap.nil? && !tap.official?
+    return false if tap.nil? || !tap.official?
 
     # BrewTestBot can open as many PRs as it wants.
     return false if ENV["HOMEBREW_TEST_BOT_AUTOBUMP"].present?
