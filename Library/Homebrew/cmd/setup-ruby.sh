@@ -17,7 +17,8 @@ homebrew-setup-ruby() {
     return
   fi
 
-  GEM_VERSION="$("${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_DISABLE_OPTIONS}" -rrbconfig -e 'puts RbConfig::CONFIG["ruby_version"]')"
+  GEM_VERSION="$("${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_DISABLE_OPTIONS}" /dev/stdin <<<'require "rbconfig"; puts RbConfig::CONFIG["ruby_version"]')"
+  echo "${GEM_VERSION}"
   GEM_HOME="${HOMEBREW_LIBRARY}/Homebrew/vendor/bundle/ruby/${GEM_VERSION}"
   BUNDLE_GEMFILE="${HOMEBREW_LIBRARY}/Homebrew/Gemfile"
 
