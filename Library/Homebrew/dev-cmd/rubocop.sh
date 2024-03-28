@@ -11,7 +11,7 @@ homebrew-rubocop() {
   source "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby.sh"
   setup-ruby-path
 
-  GEM_VERSION="$("${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_DISABLE_OPTIONS}" -rrbconfig -e 'puts RbConfig::CONFIG["ruby_version"]')"
+  GEM_VERSION="$("${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_DISABLE_OPTIONS}" /dev/stdin <<<'require "rbconfig"; puts RbConfig::CONFIG["ruby_version"]')"
   GEM_HOME="${HOMEBREW_LIBRARY}/Homebrew/vendor/bundle/ruby/${GEM_VERSION}"
   BUNDLE_GEMFILE="${HOMEBREW_LIBRARY}/Homebrew/Gemfile"
   BUNDLE_WITH="style"
