@@ -1492,9 +1492,8 @@ class Formula
         version = keg.version
         next if version.head?
 
-        tab = Tab.for_keg(keg)
-        next if version_scheme > tab.version_scheme && pkg_version != version
-        next if version_scheme == tab.version_scheme && pkg_version > version
+        next if version_scheme > keg.version_scheme && pkg_version != version
+        next if version_scheme == keg.version_scheme && pkg_version > version
 
         # don't consider this keg current if there's a newer formula available
         next if follow_installed_alias? && new_formula_available?
@@ -1509,7 +1508,7 @@ class Formula
         []
       else
         all_kegs += old_installed_formulae.flat_map(&:installed_kegs)
-        all_kegs.sort_by(&:version)
+        Keg.sort(all_kegs)
       end
     end
   end
@@ -2244,7 +2243,7 @@ class Formula
       "conflicts_with_reasons"   => conflicts.map(&:reason),
       "link_overwrite"           => self.class.link_overwrite_paths.to_a,
       "caveats"                  => caveats_with_placeholders,
-      "installed"                => [],
+      "installed"                => T.let([], T::Array[T::Hash[String, T.untyped]]),
       "linked_keg"               => linked_version&.to_s,
       "pinned"                   => pinned?,
       "outdated"                 => outdated?,
@@ -2269,7 +2268,7 @@ class Formula
 
     hsh.merge!(dependencies_hash)
 
-    hsh["installed"] = installed_kegs.sort_by(&:version).map do |keg|
+    hsh["installed"] = Keg.sort(installed_kegs).map do |keg|
       tab = Tab.for_keg keg
       {
         "version"                 => keg.version.to_s,
@@ -2842,7 +2841,7 @@ class Formula
       eligible_kegs = if head? && (head_prefix = latest_head_prefix)
         head, stable = installed_kegs.partition { |k| k.version.head? }
         # Remove newest head and stable kegs
-        head - [Keg.new(head_prefix)] + stable.sort_by(&:version).slice(0...-1)
+        head - [Keg.new(head_prefix)] + Keg.sort(stable).drop(1)
       else
         installed_kegs.select do |keg|
           tab = Tab.for_keg(keg)
