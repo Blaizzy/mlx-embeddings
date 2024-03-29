@@ -175,12 +175,11 @@ module Homebrew
       end
 
       not_outdated.each do |f|
-        versions = f.installed_kegs.map(&:version)
-        if versions.empty?
+        latest_keg = Keg.sort(f.installed_kegs).first
+        if latest_keg.nil?
           ofail "#{f.full_specified_name} not installed"
         else
-          version = versions.max
-          opoo "#{f.full_specified_name} #{version} already installed"
+          opoo "#{f.full_specified_name} #{latest_keg.version} already installed"
         end
       end
     end

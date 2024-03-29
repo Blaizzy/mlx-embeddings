@@ -994,7 +994,7 @@ module Formulary
     flags: T.unsafe(nil)
   )
     kegs = rack.directory? ? rack.subdirs.map { |d| Keg.new(d) } : []
-    keg = kegs.find(&:linked?) || kegs.find(&:optlinked?) || kegs.max_by(&:version)
+    keg = kegs.find(&:linked?) || kegs.find(&:optlinked?) || Keg.sort(kegs).first
 
     options = {
       alias_path:,

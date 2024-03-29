@@ -22,7 +22,10 @@ class FormulaPin
   end
 
   def pin
-    pin_at(@formula.installed_kegs.map(&:version).max)
+    latest_keg = Keg.sort(@formula.installed_kegs).first
+    return if latest_keg.nil?
+
+    pin_at(latest_keg.version)
   end
 
   def unpin
