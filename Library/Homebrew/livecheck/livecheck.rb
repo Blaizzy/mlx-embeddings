@@ -218,7 +218,7 @@ module Homebrew
         )
       end
 
-      # If only one formula/cask is being checked, we enable extract-plist
+      # Allow ExtractPlist strategy if only one formula/cask is being checked.
       extract_plist = true if formulae_and_casks_total == 1
 
       formulae_checked = formulae_and_casks_to_check.map.with_index do |formula_or_cask, i|
