@@ -241,29 +241,23 @@ module Homebrew
           puts
         end
 
-        if cask && !extract_plist && formula_or_cask.livecheck.strategy == :extract_plist
-          skip_info = {
-            cask:     cask.token,
-            status:   "skipped",
-            messages: ["Livecheck skipped due to the ExtractPlist strategy"],
-            meta:     { livecheckable: true },
-          }
-
-          SkipConditions.print_skip_information(skip_info) if !newer_only && !quiet
-          next
-        end
-
         # Check skip conditions for a referenced formula/cask
         if referenced_formula_or_cask
           skip_info = SkipConditions.referenced_skip_information(
             referenced_formula_or_cask,
             name,
-            full_name: use_full_name,
+            full_name:     use_full_name,
             verbose:,
+            extract_plist:,
           )
         end
 
-        skip_info ||= SkipConditions.skip_information(formula_or_cask, full_name: use_full_name, verbose:)
+        skip_info ||= SkipConditions.skip_information(
+          formula_or_cask,
+          full_name:     use_full_name,
+          verbose:,
+          extract_plist:,
+        )
         if skip_info.present?
           next skip_info if json && !newer_only
 
