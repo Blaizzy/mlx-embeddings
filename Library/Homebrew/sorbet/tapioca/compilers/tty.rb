@@ -27,7 +27,7 @@ module Tapioca
 
           methods.each do |method|
             return_type = (method.to_s.end_with?("?") ? "T::Boolean" : "String")
-            mod.create_method(method.to_s, return_type:)
+            mod.create_method(method.to_s, return_type:, class_method: true)
           end
         end
       end

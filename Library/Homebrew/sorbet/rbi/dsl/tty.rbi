@@ -5,60 +5,62 @@
 # Please instead update this file by running `bin/tapioca dsl Tty`.
 
 module Tty
-  sig { returns(String) }
-  def blue; end
+  class << self
+    sig { returns(String) }
+    def blue; end
 
-  sig { returns(String) }
-  def bold; end
+    sig { returns(String) }
+    def bold; end
 
-  sig { returns(String) }
-  def cyan; end
+    sig { returns(String) }
+    def cyan; end
 
-  sig { returns(String) }
-  def default; end
+    sig { returns(String) }
+    def default; end
 
-  sig { returns(String) }
-  def down; end
+    sig { returns(String) }
+    def down; end
 
-  sig { returns(String) }
-  def erase_char; end
+    sig { returns(String) }
+    def erase_char; end
 
-  sig { returns(String) }
-  def erase_line; end
+    sig { returns(String) }
+    def erase_line; end
 
-  sig { returns(String) }
-  def green; end
+    sig { returns(String) }
+    def green; end
 
-  sig { returns(String) }
-  def italic; end
+    sig { returns(String) }
+    def italic; end
 
-  sig { returns(String) }
-  def left; end
+    sig { returns(String) }
+    def left; end
 
-  sig { returns(String) }
-  def magenta; end
+    sig { returns(String) }
+    def magenta; end
 
-  sig { returns(String) }
-  def no_underline; end
+    sig { returns(String) }
+    def no_underline; end
 
-  sig { returns(String) }
-  def red; end
+    sig { returns(String) }
+    def red; end
 
-  sig { returns(String) }
-  def reset; end
+    sig { returns(String) }
+    def reset; end
 
-  sig { returns(String) }
-  def right; end
+    sig { returns(String) }
+    def right; end
 
-  sig { returns(String) }
-  def strikethrough; end
+    sig { returns(String) }
+    def strikethrough; end
 
-  sig { returns(String) }
-  def underline; end
+    sig { returns(String) }
+    def underline; end
 
-  sig { returns(String) }
-  def up; end
+    sig { returns(String) }
+    def up; end
 
-  sig { returns(String) }
-  def yellow; end
+    sig { returns(String) }
+    def yellow; end
+  end
 end
