@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require "cmd/completions"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew completions" do
+RSpec.describe Homebrew::Cmd::CompletionsCmd do
   it_behaves_like "parseable arguments"
 
   it "runs the status subcommand correctly", :integration_test do
