@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Language
@@ -11,6 +11,7 @@ module Language
       "cache=#{HOMEBREW_CACHE}/npm_cache"
     end
 
+    sig { returns(String) }
     def self.pack_for_installation
       # Homebrew assumes the buildpath/testpath will always be disposable
       # and from npm 5.0.0 the logic changed so that when a directory is
@@ -36,11 +37,12 @@ module Language
       output.lines.last.chomp
     end
 
+    sig { void }
     def self.setup_npm_environment
       # guard that this is only run once
       return if @env_set
 
-      @env_set = true
+      @env_set = T.let(true, T.nilable(T::Boolean))
       # explicitly use our npm and node-gyp executables instead of the user
       # managed ones in HOMEBREW_PREFIX/lib/node_modules which might be broken
       begin
@@ -50,6 +52,7 @@ module Language
       end
     end
 
+    sig { params(libexec: Pathname).returns(T::Array[String]) }
     def self.std_npm_install_args(libexec)
       setup_npm_environment
       # tell npm to not install .brew_home by adding it to the .npmignore file
@@ -95,7 +98,7 @@ module Language
       NODE_SHEBANG_REGEX = %r{^#! ?/usr/bin/(?:env )?node( |$)}
 
       # The length of the longest shebang matching `SHEBANG_REGEX`.
-      NODE_SHEBANG_MAX_LENGTH = "#! /usr/bin/env node ".length
+      NODE_SHEBANG_MAX_LENGTH = T.let("#! /usr/bin/env node ".length, Integer)
 
       # @private
       sig { params(node_path: T.any(String, Pathname)).returns(Utils::Shebang::RewriteInfo) }
@@ -107,8 +110,8 @@ module Language
         )
       end
 
-      sig { params(formula: T.untyped).returns(Utils::Shebang::RewriteInfo) }
-      def detected_node_shebang(formula = self)
+      sig { params(formula: Formula).returns(Utils::Shebang::RewriteInfo) }
+      def detected_node_shebang(formula = T.cast(self, Formula))
         node_deps = formula.deps.map(&:name).grep(/^node(@.+)?$/)
         raise ShebangDetectionError.new("Node", "formula does not depend on Node") if node_deps.empty?
         raise ShebangDetectionError.new("Node", "formula has multiple Node dependencies") if node_deps.length > 1

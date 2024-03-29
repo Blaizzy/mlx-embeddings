@@ -15,17 +15,20 @@ RSpec.describe Language::Node do
         expect(ENV).to receive(:prepend_path)
       end
       described_class.instance_variable_set(:@env_set, false)
-      expect(described_class.setup_npm_environment).to be_nil
+      described_class.setup_npm_environment
 
       expect(described_class.instance_variable_get(:@env_set)).to be(true)
       without_partial_double_verification do
         expect(ENV).not_to receive(:prepend_path)
       end
-      expect(described_class.setup_npm_environment).to be_nil
+      described_class.setup_npm_environment
     end
 
     it "does not call prepend_path when node formula does not exist" do
-      expect(described_class.setup_npm_environment).to be_nil
+      without_partial_double_verification do
+        expect(ENV).not_to receive(:prepend_path)
+      end
+      described_class.setup_npm_environment
     end
   end
 
