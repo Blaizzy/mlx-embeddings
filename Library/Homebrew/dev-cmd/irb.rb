@@ -4,7 +4,6 @@
 require "abstract_command"
 require "formulary"
 require "cask/cask_loader"
-require "cli/parser"
 
 class String
   def f(*args)

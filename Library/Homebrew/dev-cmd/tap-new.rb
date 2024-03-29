@@ -4,7 +4,6 @@
 require "abstract_command"
 require "fileutils"
 require "tap"
-require "cli/parser"
 
 module Homebrew
   module DevCmd
