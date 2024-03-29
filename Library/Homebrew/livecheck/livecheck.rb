@@ -202,7 +202,6 @@ module Homebrew
       has_a_newer_upstream_version = T.let(false, T::Boolean)
 
       formulae_and_casks_total = formulae_and_casks_to_check.count
-
       if json && !quiet && $stderr.tty?
         Tty.with($stderr) do |stderr|
           stderr.puts Formatter.headline("Running checks", color: :blue)

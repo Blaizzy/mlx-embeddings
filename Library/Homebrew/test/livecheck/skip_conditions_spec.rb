@@ -31,11 +31,6 @@ RSpec.describe Homebrew::Livecheck::SkipConditions do
         url "https://brew.sh/test-0.0.1.tgz"
         disable! date: "2020-06-25", because: :unmaintained
       end,
-      versioned:           formula("test@0.0.1") do
-        desc "Versioned test formula"
-        homepage "https://brew.sh"
-        url "https://brew.sh/test-0.0.1.tgz"
-      end,
       head_only:           formula("test_head_only") do
         desc "HEAD-only test formula"
         homepage "https://brew.sh"
@@ -73,6 +68,11 @@ RSpec.describe Homebrew::Livecheck::SkipConditions do
         livecheck do
           skip "Not maintained"
         end
+      end,
+      versioned:           formula("test@0.0.1") do
+        desc "Versioned test formula"
+        homepage "https://brew.sh"
+        url "https://brew.sh/test-0.0.1.tgz"
       end,
     }
   end
