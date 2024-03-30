@@ -210,7 +210,7 @@ module Commands
 
     if (cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path))
       if short
-        cmd_parser.description.split(DESCRIPTION_SPLITTING_PATTERN).first
+        cmd_parser.description&.split(DESCRIPTION_SPLITTING_PATTERN)&.first
       else
         cmd_parser.description
       end
