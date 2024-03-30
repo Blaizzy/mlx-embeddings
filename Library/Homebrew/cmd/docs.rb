@@ -1,22 +1,21 @@
 # typed: strict
 # frozen_string_literal: true
 
-require "cli/parser"
+require "abstract_command"
 
 module Homebrew
-  module_function
+  module Cmd
+    class Docs < AbstractCommand
+      cmd_args do
+        description <<~EOS
+          Open Homebrew's online documentation at <#{HOMEBREW_DOCS_WWW}> in a browser.
+        EOS
+      end
 
-  sig { returns(CLI::Parser) }
-  def docs_args
-    Homebrew::CLI::Parser.new do
-      description <<~EOS
-        Open Homebrew's online documentation at <#{HOMEBREW_DOCS_WWW}> in a browser.
-      EOS
+      sig { override.void }
+      def run
+        exec_browser HOMEBREW_DOCS_WWW
+      end
     end
-  end
-
-  sig { void }
-  def docs
-    exec_browser HOMEBREW_DOCS_WWW
   end
 end
