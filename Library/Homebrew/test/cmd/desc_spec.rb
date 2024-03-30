@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require "cmd/desc"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew desc" do
+RSpec.describe Homebrew::Cmd::Desc do
   it_behaves_like "parseable arguments"
 
   it "shows a given Formula's description", :integration_test do
