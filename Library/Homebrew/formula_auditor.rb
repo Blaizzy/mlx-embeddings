@@ -3,6 +3,7 @@
 
 require "deprecate_disable"
 require "formula_text_auditor"
+require "formula_versions"
 require "resource_auditor"
 
 module Homebrew

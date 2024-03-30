@@ -2,16 +2,12 @@
 
 require "formula_auditor"
 
-module Count
-  def self.increment
+RSpec.describe Homebrew::FormulaAuditor do
+  let(:dir) { mktmpdir }
+  let(:foo_version) do
     @count ||= 0
     @count += 1
   end
-end
-
-RSpec.describe Homebrew::FormulaAuditor do
-  let(:dir) { mktmpdir }
-  let(:foo_version) { Count.increment }
   let(:formula_subpath) { "Formula/foo#{foo_version}.rb" }
   let(:origin_tap_path) { Tap::TAP_DIRECTORY/"homebrew/homebrew-foo" }
   let(:origin_formula_path) { origin_tap_path/formula_subpath }
