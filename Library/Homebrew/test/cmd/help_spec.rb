@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.describe "brew", :integration_test do
+require "cmd/help"
+
+RSpec.describe Homebrew::Cmd::HelpCmd, :integration_test do
   describe "help" do
     it "prints help for a documented Ruby command" do
       expect { brew "help", "cat" }
