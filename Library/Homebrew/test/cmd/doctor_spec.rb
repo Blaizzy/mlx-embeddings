@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require "cmd/doctor"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew doctor" do
+RSpec.describe Homebrew::Cmd::Doctor do
   it_behaves_like "parseable arguments"
 
   specify "check_integration_test", :integration_test do
