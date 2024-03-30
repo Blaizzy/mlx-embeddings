@@ -143,7 +143,7 @@ module Homebrew
           return true unless patch_hashes&.include?(Checksum.new(version.to_s))
         elsif resource_name && (resource_version = formula.stable&.resources&.dig(resource_name)&.version)
           return true if resource_version != version
-        elsif formula.version > version
+        elsif (formula.latest_version_installed? && formula.version != version) || formula.version > version
           return true
         end
 
