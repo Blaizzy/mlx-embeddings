@@ -3,20 +3,17 @@
 require "formula_text_auditor"
 
 RSpec.describe Homebrew::FormulaTextAuditor do
-  alias_matcher :have_data, :be_data
-  alias_matcher :have_end, :be_end
   alias_matcher :have_trailing_newline, :be_trailing_newline
 
   let(:dir) { mktmpdir }
 
-  def formula_text(name, body = nil, options = {})
+  def formula_text(name, body = nil)
     path = dir/"#{name}.rb"
 
     path.write <<~RUBY
       class #{Formulary.class_s(name)} < Formula
         #{body}
       end
-      #{options[:patch]}
     RUBY
 
     described_class.new(path)
