@@ -37,6 +37,8 @@ module Homebrew
                    .each(&method(:puts))
       end
 
+      private
+
       def installed_on_request?(formula)
         Tab.for_keg(formula.any_installed_keg).installed_on_request
       end

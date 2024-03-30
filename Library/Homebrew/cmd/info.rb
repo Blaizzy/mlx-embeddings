@@ -107,6 +107,16 @@ module Homebrew
         end
       end
 
+      def github_remote_path(remote, path)
+        if remote =~ %r{^(?:https?://|git(?:@|://))github\.com[:/](.+)/(.+?)(?:\.git)?$}
+          "https://github.com/#{Regexp.last_match(1)}/#{Regexp.last_match(2)}/blob/HEAD/#{path}"
+        else
+          "#{remote}/#{path}"
+        end
+      end
+
+      private
+
       sig { void }
       def print_statistics
         return unless HOMEBREW_CELLAR.exist?
@@ -228,14 +238,6 @@ module Homebrew
         end
 
         puts JSON.pretty_generate(json)
-      end
-
-      def github_remote_path(remote, path)
-        if remote =~ %r{^(?:https?://|git(?:@|://))github\.com[:/](.+)/(.+?)(?:\.git)?$}
-          "https://github.com/#{Regexp.last_match(1)}/#{Regexp.last_match(2)}/blob/HEAD/#{path}"
-        else
-          "#{remote}/#{path}"
-        end
       end
 
       def github_info(formula_or_cask)

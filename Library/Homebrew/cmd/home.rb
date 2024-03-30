@@ -39,6 +39,8 @@ module Homebrew
         exec_browser(*T.unsafe(homepages))
       end
 
+      private
+
       def name_of(formula_or_cask)
         if formula_or_cask.is_a? Formula
           "Formula #{formula_or_cask.name}"

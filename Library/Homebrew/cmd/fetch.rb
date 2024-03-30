@@ -183,6 +183,8 @@ module Homebrew
         end
       end
 
+      private
+
       def fetch_resource(resource)
         puts "Resource: #{resource.name}"
         fetch_fetchable resource

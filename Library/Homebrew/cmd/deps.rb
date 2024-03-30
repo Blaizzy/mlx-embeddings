@@ -163,6 +163,8 @@ module Homebrew
         puts all_deps
       end
 
+      private
+
       def sorted_dependents(formulae_or_casks)
         dependents(formulae_or_casks).sort_by(&:name)
       end

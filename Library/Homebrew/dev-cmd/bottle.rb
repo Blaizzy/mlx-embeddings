@@ -107,6 +107,110 @@ module Homebrew
         end
       end
 
+      def generate_sha256_line(tag, digest, cellar, tag_column, digest_column)
+        line = "sha256 "
+        tag_column += line.length
+        digest_column += line.length
+        if cellar.is_a?(Symbol)
+          line += "cellar: :#{cellar},"
+        elsif cellar_parameter_needed?(cellar)
+          line += %Q(cellar: "#{cellar}",)
+        end
+        line += " " * (tag_column - line.length)
+        line += "#{tag}:"
+        line += " " * (digest_column - line.length)
+        %Q(#{line}"#{digest}")
+      end
+
+      def bottle_output(bottle, root_url_using)
+        cellars = bottle.checksums.filter_map do |checksum|
+          cellar = checksum["cellar"]
+          next unless cellar_parameter_needed? cellar
+
+          case cellar
+          when String
+            %Q("#{cellar}")
+          when Symbol
+            ":#{cellar}"
+          end
+        end
+        tag_column = cellars.empty? ? 0 : "cellar: #{cellars.max_by(&:length)}, ".length
+
+        tags = bottle.checksums.map { |checksum| checksum["tag"] }
+        # Start where the tag ends, add the max length of the tag, add two for the `: `
+        digest_column = tag_column + tags.max_by(&:length).length + 2
+
+        sha256_lines = bottle.checksums.map do |checksum|
+          generate_sha256_line(checksum["tag"], checksum["digest"], checksum["cellar"], tag_column, digest_column)
+        end
+        erb_binding = bottle.instance_eval { binding }
+        erb_binding.local_variable_set(:sha256_lines, sha256_lines)
+        erb_binding.local_variable_set(:root_url_using, root_url_using)
+        erb = ERB.new BOTTLE_ERB
+        erb.result(erb_binding).gsub(/^\s*$\n/, "")
+      end
+
+      def parse_json_files(filenames)
+        filenames.map do |filename|
+          JSON.parse(File.read(filename))
+        end
+      end
+
+      def merge_json_files(json_files)
+        json_files.reduce({}) do |hash, json_file|
+          json_file.each_value do |json_hash|
+            json_bottle = json_hash["bottle"]
+            cellar = json_bottle.delete("cellar")
+            json_bottle["tags"].each_value do |json_platform|
+              json_platform["cellar"] ||= cellar
+            end
+          end
+          hash.deep_merge(json_file)
+        end
+      end
+
+      def merge_bottle_spec(old_keys, old_bottle_spec, new_bottle_hash)
+        mismatches = []
+        checksums = []
+
+        new_values = {
+          root_url: new_bottle_hash["root_url"],
+          rebuild:  new_bottle_hash["rebuild"],
+        }
+
+        skip_keys = [:sha256, :cellar]
+        old_keys.each do |key|
+          next if skip_keys.include?(key)
+
+          old_value = old_bottle_spec.send(key).to_s
+          new_value = new_values[key].to_s
+
+          next if old_value.present? && new_value == old_value
+
+          mismatches << "#{key}: old: #{old_value.inspect}, new: #{new_value.inspect}"
+        end
+
+        return [mismatches, checksums] if old_keys.exclude? :sha256
+
+        old_bottle_spec.collector.each_tag do |tag|
+          old_tag_spec = old_bottle_spec.collector.specification_for(tag)
+          old_hexdigest = old_tag_spec.checksum.hexdigest
+          old_cellar = old_tag_spec.cellar
+          new_value = new_bottle_hash.dig("tags", tag.to_s)
+          if new_value.present? && new_value["sha256"] != old_hexdigest
+            mismatches << "sha256 #{tag}: old: #{old_hexdigest.inspect}, new: #{new_value["sha256"].inspect}"
+          elsif new_value.present? && new_value["cellar"] != old_cellar.to_s
+            mismatches << "cellar #{tag}: old: #{old_cellar.to_s.inspect}, new: #{new_value["cellar"].inspect}"
+          else
+            checksums << { cellar: old_cellar, tag.to_sym => old_hexdigest }
+          end
+        end
+
+        [mismatches, checksums]
+      end
+
+      private
+
       def keg_contain?(string, keg, ignores, formula_and_runtime_deps_names = nil)
         @put_string_exists_header, @put_filenames = nil
 
@@ -183,49 +287,6 @@ module Homebrew
           Homebrew::DEFAULT_LINUX_CELLAR,
         ]
         cellar.present? && default_cellars.exclude?(cellar)
-      end
-
-      def generate_sha256_line(tag, digest, cellar, tag_column, digest_column)
-        line = "sha256 "
-        tag_column += line.length
-        digest_column += line.length
-        if cellar.is_a?(Symbol)
-          line += "cellar: :#{cellar},"
-        elsif cellar_parameter_needed?(cellar)
-          line += %Q(cellar: "#{cellar}",)
-        end
-        line += " " * (tag_column - line.length)
-        line += "#{tag}:"
-        line += " " * (digest_column - line.length)
-        %Q(#{line}"#{digest}")
-      end
-
-      def bottle_output(bottle, root_url_using)
-        cellars = bottle.checksums.filter_map do |checksum|
-          cellar = checksum["cellar"]
-          next unless cellar_parameter_needed? cellar
-
-          case cellar
-          when String
-            %Q("#{cellar}")
-          when Symbol
-            ":#{cellar}"
-          end
-        end
-        tag_column = cellars.empty? ? 0 : "cellar: #{cellars.max_by(&:length)}, ".length
-
-        tags = bottle.checksums.map { |checksum| checksum["tag"] }
-        # Start where the tag ends, add the max length of the tag, add two for the `: `
-        digest_column = tag_column + tags.max_by(&:length).length + 2
-
-        sha256_lines = bottle.checksums.map do |checksum|
-          generate_sha256_line(checksum["tag"], checksum["digest"], checksum["cellar"], tag_column, digest_column)
-        end
-        erb_binding = bottle.instance_eval { binding }
-        erb_binding.local_variable_set(:sha256_lines, sha256_lines)
-        erb_binding.local_variable_set(:root_url_using, root_url_using)
-        erb = ERB.new BOTTLE_ERB
-        erb.result(erb_binding).gsub(/^\s*$\n/, "")
       end
 
       def sudo_purge
@@ -600,25 +661,6 @@ module Homebrew
         json_path.write(JSON.pretty_generate(json))
       end
 
-      def parse_json_files(filenames)
-        filenames.map do |filename|
-          JSON.parse(File.read(filename))
-        end
-      end
-
-      def merge_json_files(json_files)
-        json_files.reduce({}) do |hash, json_file|
-          json_file.each_value do |json_hash|
-            json_bottle = json_hash["bottle"]
-            cellar = json_bottle.delete("cellar")
-            json_bottle["tags"].each_value do |json_platform|
-              json_platform["cellar"] ||= cellar
-            end
-          end
-          hash.deep_merge(json_file)
-        end
-      end
-
       def merge
         bottles_hash = merge_json_files(parse_json_files(args.named))
 
@@ -771,46 +813,6 @@ module Homebrew
                         "--", path
           end
         end
-      end
-
-      def merge_bottle_spec(old_keys, old_bottle_spec, new_bottle_hash)
-        mismatches = []
-        checksums = []
-
-        new_values = {
-          root_url: new_bottle_hash["root_url"],
-          rebuild:  new_bottle_hash["rebuild"],
-        }
-
-        skip_keys = [:sha256, :cellar]
-        old_keys.each do |key|
-          next if skip_keys.include?(key)
-
-          old_value = old_bottle_spec.send(key).to_s
-          new_value = new_values[key].to_s
-
-          next if old_value.present? && new_value == old_value
-
-          mismatches << "#{key}: old: #{old_value.inspect}, new: #{new_value.inspect}"
-        end
-
-        return [mismatches, checksums] if old_keys.exclude? :sha256
-
-        old_bottle_spec.collector.each_tag do |tag|
-          old_tag_spec = old_bottle_spec.collector.specification_for(tag)
-          old_hexdigest = old_tag_spec.checksum.hexdigest
-          old_cellar = old_tag_spec.cellar
-          new_value = new_bottle_hash.dig("tags", tag.to_s)
-          if new_value.present? && new_value["sha256"] != old_hexdigest
-            mismatches << "sha256 #{tag}: old: #{old_hexdigest.inspect}, new: #{new_value["sha256"].inspect}"
-          elsif new_value.present? && new_value["cellar"] != old_cellar.to_s
-            mismatches << "cellar #{tag}: old: #{old_cellar.to_s.inspect}, new: #{new_value["cellar"].inspect}"
-          else
-            checksums << { cellar: old_cellar, tag.to_sym => old_hexdigest }
-          end
-        end
-
-        [mismatches, checksums]
       end
 
       def old_checksums(formula, formula_ast, bottle_hash)

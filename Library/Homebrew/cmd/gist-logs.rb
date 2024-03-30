@@ -36,6 +36,8 @@ module Homebrew
         gistify_logs(args.named.to_resolved_formulae.first)
       end
 
+      private
+
       def gistify_logs(formula)
         files = load_logs(formula.logs)
         build_time = formula.logs.ctime
