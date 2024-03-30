@@ -23,13 +23,13 @@ module Tapioca
             next if Homebrew::EnvConfig::CUSTOM_IMPLEMENTATIONS.include?(env)
 
             name = Homebrew::EnvConfig.env_method_name(env, hash)
-            dynamic_methods[name] = { default: hash[:default] }
+            dynamic_methods[name] = hash[:default]
           end
 
-          dynamic_methods.each_key do |method|
+          dynamic_methods.each do |method, default|
             return_type = if method.end_with?("?")
               T::Boolean
-            elsif (default = dynamic_methods[method][:default])
+            elsif default
               default.class
             else
               T.nilable(String)
