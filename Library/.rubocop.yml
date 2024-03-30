@@ -253,6 +253,8 @@ RSpec/NestedGroups:
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
 
+RSpec/DescribedClassModuleWrapping:
+  Enabled: true
 # Annoying to have these autoremoved.
 RSpec/Focus:
   AutoCorrect: false
