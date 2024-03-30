@@ -33,16 +33,15 @@ module Utils
       end
 
       def file_outdated?(formula, file)
+        file = file.resolved_path
+
         filename = file.basename.to_s
         return false if formula.bottle.blank?
 
-        bottle_ext, bottle_tag, = extname_tag_rebuild(filename)
-        return false if bottle_ext.blank?
-        return false if bottle_tag != tag.to_s
+        _, bottle_tag, bottle_rebuild = extname_tag_rebuild(filename)
+        return false if bottle_tag.blank?
 
-        bottle_url_ext, = extname_tag_rebuild(formula.bottle.url)
-
-        bottle_ext && bottle_url_ext && bottle_ext != bottle_url_ext
+        bottle_tag != formula.bottle.tag.to_s || bottle_rebuild.to_i != formula.bottle.rebuild
       end
 
       def extname_tag_rebuild(filename)
