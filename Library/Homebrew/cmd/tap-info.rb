@@ -48,7 +48,7 @@ module Homebrew
       formula_count = 0
       command_count = 0
       private_count = 0
-      Tap.each do |tap|
+      Tap.installed.each do |tap|
         tap_count += 1
         formula_count += tap.formula_files.size
         command_count += tap.command_files.size

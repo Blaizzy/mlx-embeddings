@@ -13,4 +13,11 @@ RSpec.describe "brew tap-info" do
       .and not_to_output.to_stderr
       .and be_a_success
   end
+
+  it "display brief statistics for all installed taps", :integration_test, :needs_network do
+    expect { brew "tap-info", "HOMEBREW_NO_INSTALL_FROM_API" => nil }
+      .to output(/\d+ taps?, \d+ private/).to_stdout
+      .and not_to_output.to_stderr
+      .and be_a_success
+  end
 end
