@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require "cmd/leaves"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew leaves" do
+RSpec.describe Homebrew::Cmd::Leaves do
   it_behaves_like "parseable arguments"
 
   context "when there are no installed Formulae", :integration_test do

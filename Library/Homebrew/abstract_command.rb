@@ -9,7 +9,7 @@ module Homebrew
   # - Each Command lives in an isolated namespace.
   # - Each Command implements a defined interface.
   # - `args` is available as an ivar, and thus does not need to be passed as an argument to helper methods.
-  # - Subclasses no longer need to reference CLI::Parser directly.
+  # - Subclasses no longer need to reference `CLI::Parser` or parse args explicitly.
   #
   # To subclass, implement a `run` method and provide a `cmd_args` block to document the command and its allowed args.
   # To generate method signatures for command args, run `brew typecheck --update`.
