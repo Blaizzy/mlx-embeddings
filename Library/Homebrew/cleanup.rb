@@ -134,6 +134,14 @@ module Homebrew
           nil
         end
 
+        if formula.blank? && formula_name.delete_suffix!("_bottle_manifest")
+          formula = begin
+            Formulary.from_rack(HOMEBREW_CELLAR/formula_name)
+          rescue FormulaUnavailableError, TapFormulaAmbiguityError
+            nil
+          end
+        end
+
         return false if formula.blank?
 
         resource_name = basename_str[/\A.*?--(.*?)--?(?:#{Regexp.escape(version.to_s)})/, 1]
@@ -143,7 +151,7 @@ module Homebrew
           return true unless patch_hashes&.include?(Checksum.new(version.to_s))
         elsif resource_name && (resource_version = formula.stable&.resources&.dig(resource_name)&.version)
           return true if resource_version != version
-        elsif formula.version > version
+        elsif (formula.latest_version_installed? && formula.version != version) || formula.version > version
           return true
         end
 
@@ -328,7 +336,7 @@ module Homebrew
     def cleanup_formula(formula, quiet: false, ds_store: true, cache_db: true)
       formula.eligible_kegs_for_cleanup(quiet:)
              .each(&method(:cleanup_keg))
-      cleanup_cache(Pathname.glob(cache/"#{formula.name}--*").map { |path| { path:, type: nil } })
+      cleanup_cache(Pathname.glob(cache/"#{formula.name}{_bottle_manifest,}--*").map { |path| { path:, type: nil } })
       rm_ds_store([formula.rack]) if ds_store
       cleanup_cache_db(formula.rack) if cache_db
       cleanup_lockfiles(FormulaLock.new(formula.name).path)

@@ -340,7 +340,7 @@ class Bottle
 
   extend Forwardable
 
-  attr_reader :name, :resource, :cellar, :rebuild
+  attr_reader :name, :resource, :tag, :cellar, :rebuild
 
   def_delegators :resource, :url, :verify_download_integrity
   def_delegators :resource, :cached_download
