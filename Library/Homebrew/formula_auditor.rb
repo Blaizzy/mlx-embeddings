@@ -5,6 +5,7 @@ require "deprecate_disable"
 require "formula_text_auditor"
 require "formula_versions"
 require "resource_auditor"
+require "utils/shared_audits"
 
 module Homebrew
   # Auditor for checking common violations in {Formula}e.
