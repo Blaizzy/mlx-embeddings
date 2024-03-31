@@ -44,7 +44,6 @@ require "test/support/helper/files"
 require "test/support/helper/fixtures"
 require "test/support/helper/formula"
 require "test/support/helper/mktmpdir"
-require "test/support/helper/output_as_tty"
 
 require "test/support/helper/spec/shared_context/homebrew_cask" if OS.mac?
 require "test/support/helper/spec/shared_context/integration_test"
@@ -129,17 +128,12 @@ RSpec.configure do |config|
   # Never truncate output objects.
   RSpec::Support::ObjectFormatter.default_instance.max_formatted_output_length = nil
 
-  config.include(FileUtils)
-
-  config.include(Context)
-
   config.include(RuboCop::RSpec::ExpectOffense)
 
   config.include(Test::Helper::Cask)
   config.include(Test::Helper::Fixtures)
   config.include(Test::Helper::Formula)
   config.include(Test::Helper::MkTmpDir)
-  config.include(Test::Helper::OutputAsTTY)
 
   config.before(:each, :needs_linux) do
     skip "Not running on Linux." unless OS.linux?
@@ -310,16 +304,6 @@ end
 
 RSpec::Matchers.define_negated_matcher :not_to_output, :output
 RSpec::Matchers.alias_matcher :have_failed, :be_failed
-RSpec::Matchers.alias_matcher :a_string_containing, :include
-
-RSpec::Matchers.define :a_json_string do
-  match do |actual|
-    JSON.parse(actual)
-    true
-  rescue JSON::ParserError
-    false
-  end
-end
 
 # Match consecutive elements in an array.
 RSpec::Matchers.define :array_including_cons do |*cons|

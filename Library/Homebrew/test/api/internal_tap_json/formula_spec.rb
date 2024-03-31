@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe "Internal Tap JSON -- Formula" do
+  include FileUtils
+
   let(:internal_tap_json) { File.read(TEST_FIXTURE_DIR/"internal_tap_json/homebrew-core.json").chomp }
   let(:tap_git_head) { "9977471165641744a829d3e494fa563407503297" }
 

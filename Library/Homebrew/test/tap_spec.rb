@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Tap do
+  include FileUtils
+
   alias_matcher :have_formula_file, :be_formula_file
   alias_matcher :have_custom_remote, :be_custom_remote
 

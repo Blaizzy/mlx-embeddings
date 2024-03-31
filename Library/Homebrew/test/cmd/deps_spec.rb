@@ -4,6 +4,8 @@ require "cmd/deps"
 require "cmd/shared_examples/args_parse"
 
 RSpec.describe Homebrew::Cmd::Deps do
+  include FileUtils
+
   it_behaves_like "parseable arguments"
 
   it "outputs all of a Formula's dependencies and their dependencies on separate lines", :integration_test do

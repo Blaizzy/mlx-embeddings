@@ -4,6 +4,15 @@ require "cmd/info"
 require "cmd/shared_examples/args_parse"
 
 RSpec.describe Homebrew::Cmd::Info do
+  RSpec::Matchers.define :a_json_string do
+    match do |actual|
+      JSON.parse(actual)
+      true
+    rescue JSON::ParserError
+      false
+    end
+  end
+
   it_behaves_like "parseable arguments"
 
   it "prints as json with the --json=v1 flag", :integration_test do
