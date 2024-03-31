@@ -304,16 +304,6 @@ end
 
 RSpec::Matchers.define_negated_matcher :not_to_output, :output
 RSpec::Matchers.alias_matcher :have_failed, :be_failed
-RSpec::Matchers.alias_matcher :a_string_containing, :include
-
-RSpec::Matchers.define :a_json_string do
-  match do |actual|
-    JSON.parse(actual)
-    true
-  rescue JSON::ParserError
-    false
-  end
-end
 
 # Match consecutive elements in an array.
 RSpec::Matchers.define :array_including_cons do |*cons|
