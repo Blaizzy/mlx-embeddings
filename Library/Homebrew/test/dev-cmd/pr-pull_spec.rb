@@ -6,6 +6,8 @@ require "tap"
 require "cmd/shared_examples/args_parse"
 
 RSpec.describe Homebrew::DevCmd::PrPull do
+  include FileUtils
+
   let(:pr_pull) { described_class.new(["foo"]) }
   let(:formula_rebuild) do
     <<~EOS

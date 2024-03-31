@@ -128,8 +128,6 @@ RSpec.configure do |config|
   # Never truncate output objects.
   RSpec::Support::ObjectFormatter.default_instance.max_formatted_output_length = nil
 
-  config.include(FileUtils)
-
   config.include(RuboCop::RSpec::ExpectOffense)
 
   config.include(Test::Helper::Cask)

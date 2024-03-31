@@ -3,6 +3,8 @@
 require "formula_auditor"
 
 RSpec.describe Homebrew::FormulaAuditor do
+  include FileUtils
+
   let(:dir) { mktmpdir }
   let(:foo_version) do
     @count ||= 0
