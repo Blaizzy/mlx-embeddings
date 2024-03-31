@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require "cmd/deps"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew deps" do
+RSpec.describe Homebrew::Cmd::Deps do
   include FileUtils
 
   it_behaves_like "parseable arguments"

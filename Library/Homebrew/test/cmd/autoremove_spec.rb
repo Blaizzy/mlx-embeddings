@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require "cmd/autoremove"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew autoremove" do
+RSpec.describe Homebrew::Cmd::Autoremove do
   it_behaves_like "parseable arguments"
 
   describe "integration test" do

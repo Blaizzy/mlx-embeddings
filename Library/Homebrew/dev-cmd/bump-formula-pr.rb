@@ -4,7 +4,6 @@
 require "abstract_command"
 require "fileutils"
 require "formula"
-require "cli/parser"
 require "utils/pypi"
 require "utils/tar"
 

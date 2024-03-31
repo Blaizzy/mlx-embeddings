@@ -70,7 +70,7 @@ RSpec.describe FormulaInstaller do
   # rubocop:disable RSpec/NoExpectationExample
   specify "basic bottle install" do
     allow(DevelopmentTools).to receive(:installed?).and_return(false)
-    Homebrew.install_args.parse(["testball_bottle"])
+    Homebrew::Cmd::InstallCmd.new(["testball_bottle"])
     temporarily_install_bottle(TestballBottle.new) do |f|
       test_basic_formula_setup(f)
     end
@@ -79,7 +79,7 @@ RSpec.describe FormulaInstaller do
 
   specify "basic bottle install with cellar information on sha256 line" do
     allow(DevelopmentTools).to receive(:installed?).and_return(false)
-    Homebrew.install_args.parse(["testball_bottle_cellar"])
+    Homebrew::Cmd::InstallCmd.new(["testball_bottle_cellar"])
     temporarily_install_bottle(TestballBottleCellar.new) do |f|
       test_basic_formula_setup(f)
 

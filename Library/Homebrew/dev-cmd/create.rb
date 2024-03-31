@@ -4,7 +4,6 @@
 require "formula"
 require "formula_creator"
 require "missing_formula"
-require "cli/parser"
 require "utils/pypi"
 require "cask/cask_loader"
 

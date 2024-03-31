@@ -5,7 +5,6 @@ require "abstract_command"
 require "bump_version_parser"
 require "cask"
 require "cask/download"
-require "cli/parser"
 require "utils/tar"
 
 module Homebrew

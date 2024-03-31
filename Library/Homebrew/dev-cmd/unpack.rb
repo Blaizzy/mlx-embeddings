@@ -5,7 +5,6 @@ require "abstract_command"
 require "fileutils"
 require "stringio"
 require "formula"
-require "cli/parser"
 
 module Homebrew
   module DevCmd

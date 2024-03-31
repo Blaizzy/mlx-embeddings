@@ -5,7 +5,6 @@ require "abstract_command"
 require "json"
 require "open3"
 require "style"
-require "cli/parser"
 
 module Homebrew
   module DevCmd

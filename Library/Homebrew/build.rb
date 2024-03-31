@@ -217,7 +217,7 @@ class Build
 end
 
 begin
-  args = Homebrew.install_args.parse
+  args = Homebrew::Cmd::InstallCmd.new.args
   Context.current = args.context
 
   error_pipe = UNIXSocket.open(ENV.fetch("HOMEBREW_ERROR_PIPE"), &:recv_io)

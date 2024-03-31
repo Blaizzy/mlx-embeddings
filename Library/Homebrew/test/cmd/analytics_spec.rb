@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require "cmd/analytics"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew analytics" do
+RSpec.describe Homebrew::Cmd::Analytics do
   it_behaves_like "parseable arguments"
 
   it "when HOMEBREW_NO_ANALYTICS is unset is disabled after running `brew analytics off`", :integration_test do
