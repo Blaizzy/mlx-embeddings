@@ -44,7 +44,6 @@ require "test/support/helper/files"
 require "test/support/helper/fixtures"
 require "test/support/helper/formula"
 require "test/support/helper/mktmpdir"
-require "test/support/helper/output_as_tty"
 
 require "test/support/helper/spec/shared_context/homebrew_cask" if OS.mac?
 require "test/support/helper/spec/shared_context/integration_test"
@@ -131,15 +130,12 @@ RSpec.configure do |config|
 
   config.include(FileUtils)
 
-  config.include(Context)
-
   config.include(RuboCop::RSpec::ExpectOffense)
 
   config.include(Test::Helper::Cask)
   config.include(Test::Helper::Fixtures)
   config.include(Test::Helper::Formula)
   config.include(Test::Helper::MkTmpDir)
-  config.include(Test::Helper::OutputAsTTY)
 
   config.before(:each, :needs_linux) do
     skip "Not running on Linux." unless OS.linux?
