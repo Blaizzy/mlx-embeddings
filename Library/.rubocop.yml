@@ -230,19 +230,12 @@ RSpec/AnyInstance:
   Enabled: false
 RSpec/DescribeClass:
   Enabled: false
-RSpec/FilePath:
-  Enabled: false
 RSpec/SpecFilePathFormat:
   Enabled: false
 RSpec/StubbedMock:
   Enabled: false
 RSpec/SubjectStub:
   Enabled: false
-
-# We use `allow(:foo).to receive(:bar)` everywhere.
-RSpec/MessageSpies:
-  EnforcedStyle: receive
-
 # These were ever-growing numbers, not useful.
 RSpec/ExampleLength:
   Enabled: false
@@ -253,9 +246,16 @@ RSpec/NestedGroups:
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
 
+RSpec/DescribedClassModuleWrapping:
+  Enabled: true
+RSpec/FilePath:
+  SpecSuffixOnly: true
 # Annoying to have these autoremoved.
 RSpec/Focus:
   AutoCorrect: false
+# We use `allow(:foo).to receive(:bar)` everywhere.
+RSpec/MessageSpies:
+  EnforcedStyle: receive
 
 # Try getting rid of these.
 Sorbet/ConstantsFromStrings:
