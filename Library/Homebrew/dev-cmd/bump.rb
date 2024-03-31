@@ -3,7 +3,6 @@
 
 require "abstract_command"
 require "bump_version_parser"
-require "cli/parser"
 require "livecheck/livecheck"
 
 module Homebrew

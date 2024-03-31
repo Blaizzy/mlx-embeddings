@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "abstract_command"
-require "cli/parser"
 require "test_runner_formula"
 require "github_runner_matrix"
 

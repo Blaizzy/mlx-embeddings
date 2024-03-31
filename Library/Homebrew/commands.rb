@@ -177,7 +177,10 @@ module Commands
     external_commands_file.atomic_write("#{external_commands.sort.join("\n")}\n")
   end
 
+  sig { params(command: String).returns(T.nilable(T::Array[[String, String]])) }
   def self.command_options(command)
+    return if command == "help"
+
     path = self.path(command)
     return if path.blank?
 
@@ -207,7 +210,7 @@ module Commands
 
     if (cmd_parser = Homebrew::CLI::Parser.from_cmd_path(path))
       if short
-        cmd_parser.description.split(DESCRIPTION_SPLITTING_PATTERN).first
+        cmd_parser.description&.split(DESCRIPTION_SPLITTING_PATTERN)&.first
       else
         cmd_parser.description
       end

@@ -5,7 +5,6 @@ require "abstract_command"
 require "extend/ENV"
 require "sandbox"
 require "timeout"
-require "cli/parser"
 
 module Homebrew
   module DevCmd

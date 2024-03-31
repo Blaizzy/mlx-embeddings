@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require "cmd/link"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew link" do
+RSpec.describe Homebrew::Cmd::Link do
   it_behaves_like "parseable arguments"
 
   it "links a given Formula", :integration_test do

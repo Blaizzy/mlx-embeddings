@@ -1,11 +1,16 @@
-# typed: strict
+# typed: strong
 # frozen_string_literal: true
 
+require "abstract_command"
 require "help"
 
 module Homebrew
-  sig { returns(T.noreturn) }
-  def help
-    Help.help
+  module Cmd
+    class HelpCmd < AbstractCommand
+      sig { override.void }
+      def run
+        Help.help
+      end
+    end
   end
 end

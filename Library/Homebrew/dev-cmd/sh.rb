@@ -4,7 +4,6 @@
 require "abstract_command"
 require "extend/ENV"
 require "formula"
-require "cli/parser"
 
 module Homebrew
   module DevCmd
