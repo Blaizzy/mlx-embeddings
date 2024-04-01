@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require "cmd/--cellar"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew --cellar" do
+RSpec.describe Homebrew::Cmd::Cellar do
   it_behaves_like "parseable arguments"
 
   it "prints Homebrew's Cellar", :integration_test do

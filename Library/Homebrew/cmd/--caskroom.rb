@@ -6,7 +6,6 @@ require "abstract_command"
 module Homebrew
   module Cmd
     class Caskroom < AbstractCommand
-
       sig { override.returns(String) }
       def self.command_name = "--caskroom"
 
