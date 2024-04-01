@@ -263,7 +263,7 @@ module Language
         sig { params(formula: Formula, venv_root: T.any(String, Pathname), python: T.any(String, Pathname)).void }
         def initialize(formula, venv_root, python)
           @formula = formula
-          @venv_root = T.let(Pathname.new(venv_root), Pathname)
+          @venv_root = T.let(Pathname(venv_root), Pathname)
           @python = python
         end
 
