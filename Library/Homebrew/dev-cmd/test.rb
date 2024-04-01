@@ -98,7 +98,7 @@ module Homebrew
               end
             end
           rescue Exception => e # rubocop:disable Lint/RescueException
-            retry if retry_test?(f, args:)
+            retry if retry_test?(f)
             ofail "#{f.full_name}: failed"
             $stderr.puts e, Utils::Backtrace.clean(e)
           ensure
@@ -109,7 +109,7 @@ module Homebrew
 
       private
 
-      def retry_test?(formula, args:)
+      def retry_test?(formula)
         @test_failed ||= Set.new
         if args.retry? && @test_failed.add?(formula)
           oh1 "Testing #{formula.full_name} (again)"
