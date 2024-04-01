@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Language
@@ -14,7 +14,7 @@ module Language
       PERL_SHEBANG_REGEX = %r{^#! ?/usr/bin/(?:env )?perl( |$)}
 
       # The length of the longest shebang matching `SHEBANG_REGEX`.
-      PERL_SHEBANG_MAX_LENGTH = "#! /usr/bin/env perl ".length
+      PERL_SHEBANG_MAX_LENGTH = T.let("#! /usr/bin/env perl ".length, Integer)
 
       # @private
       sig { params(perl_path: T.any(String, Pathname)).returns(Utils::Shebang::RewriteInfo) }
@@ -26,8 +26,8 @@ module Language
         )
       end
 
-      sig { params(formula: T.untyped).returns(Utils::Shebang::RewriteInfo) }
-      def detected_perl_shebang(formula = self)
+      sig { params(formula: Formula).returns(Utils::Shebang::RewriteInfo) }
+      def detected_perl_shebang(formula = T.cast(self, Formula))
         perl_deps = formula.declared_deps.select { |dep| dep.name == "perl" }
         raise ShebangDetectionError.new("Perl", "formula does not depend on Perl") if perl_deps.empty?
 
