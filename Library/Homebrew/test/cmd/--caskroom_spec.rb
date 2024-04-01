@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require "cmd/--caskroom"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew --caskroom" do
+RSpec.describe Homebrew::Cmd::Caskroom do
   it_behaves_like "parseable arguments"
 
   it "prints Homebrew's Caskroom", :integration_test do
