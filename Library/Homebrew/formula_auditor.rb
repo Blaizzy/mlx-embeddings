@@ -738,7 +738,7 @@ module Homebrew
       stable_url_minor_version = stable_url_version.minor.to_i
 
       formula_suffix = stable.version.patch.to_i
-      throttled_rate = formula.tap&.audit_exception(:throttled_formulae, formula.name)
+      throttled_rate = formula.livecheck.throttle
       if throttled_rate && formula_suffix.modulo(throttled_rate).nonzero?
         problem "should only be updated every #{throttled_rate} releases on multiples of #{throttled_rate}"
       end
