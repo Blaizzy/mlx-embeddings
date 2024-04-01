@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# This shim is a workaround for the missing `m4` in Xcode CLT 15.3.
+# It can be removed after Apple provides a new CLT with a fix for FB13679972.
+# See https://github.com/Homebrew/homebrew-core/issues/165388
+
+# HOMEBREW_LIBRARY is set by bin/brew
+# HOMEBREW_DEVELOPER_DIR is set by extend/ENV/super.rb
+# shellcheck disable=SC2154
+source "${HOMEBREW_LIBRARY}/Homebrew/shims/utils.sh"
+
+try_exec_non_system "${SHIM_FILE}" "$@"
+
+if [[ -n "${HOMEBREW_DEVELOPER_DIR}" && ! -x "${HOMEBREW_DEVELOPER_DIR}/usr/bin/m4" ]]
+then
+  safe_exec "/usr/bin/gm4" "$@"
+fi
+
+exec "/usr/bin/m4" "$@"

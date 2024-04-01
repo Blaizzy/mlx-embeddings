@@ -148,11 +148,6 @@ class Keg
     Formula.racks.flat_map(&:subdirs).map { |d| new(d) }
   end
 
-  sig { params(kegs: T::Array[Keg]).returns(T::Array[Keg]) }
-  def self.sort(kegs)
-    kegs.sort_by { |keg| [keg.version_scheme, keg.version] }.reverse!
-  end
-
   attr_reader :path, :name, :linked_keg_record, :opt_record
 
   protected :path
@@ -394,6 +389,12 @@ class Keg
 
   def version_scheme
     @version_scheme ||= tab.version_scheme
+  end
+
+  # For ordering kegs by version with `.sort_by`, `.max_by`, etc.
+  # @see Formula.version_scheme
+  def scheme_and_version
+    [version_scheme, version]
   end
 
   def to_formula

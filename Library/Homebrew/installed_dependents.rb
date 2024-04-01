@@ -56,7 +56,7 @@ module InstalledDependents
         f_kegs = kegs_by_source[[f.name, f.tap]]
         next unless f_kegs
 
-        Keg.sort(f_kegs).first
+        f_kegs.max_by(&:scheme_and_version)
       end
 
       next if required_kegs.empty?

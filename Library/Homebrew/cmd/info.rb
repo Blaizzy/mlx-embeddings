@@ -296,7 +296,7 @@ module Homebrew
         heads, versioned = kegs.partition { |k| k.version.head? }
         kegs = [
           *heads.sort_by { |k| -Tab.for_keg(k).time.to_i },
-          *Keg.sort(versioned),
+          *versioned.sort_by(&:scheme_and_version),
         ]
         if kegs.empty?
           puts "Not installed"

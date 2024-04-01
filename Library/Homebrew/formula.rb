@@ -1508,7 +1508,7 @@ class Formula
         []
       else
         all_kegs += old_installed_formulae.flat_map(&:installed_kegs)
-        Keg.sort(all_kegs)
+        all_kegs.sort_by(&:scheme_and_version)
       end
     end
   end
@@ -2268,7 +2268,7 @@ class Formula
 
     hsh.merge!(dependencies_hash)
 
-    hsh["installed"] = Keg.sort(installed_kegs).map do |keg|
+    hsh["installed"] = installed_kegs.sort_by(&:scheme_and_version).map do |keg|
       tab = Tab.for_keg keg
       {
         "version"                 => keg.version.to_s,
@@ -2841,7 +2841,7 @@ class Formula
       eligible_kegs = if head? && (head_prefix = latest_head_prefix)
         head, stable = installed_kegs.partition { |k| k.version.head? }
         # Remove newest head and stable kegs
-        head - [Keg.new(head_prefix)] + Keg.sort(stable).drop(1)
+        head - [Keg.new(head_prefix)] + stable.sort_by(&:scheme_and_version).slice(0...-1)
       else
         installed_kegs.select do |keg|
           tab = Tab.for_keg(keg)
@@ -3324,6 +3324,7 @@ class Formula
     end
 
     def go_resource(name, &block)
+      # odeprecated "Formula#go_resource", "Go modules"
       specs.each { |spec| spec.go_resource(name, &block) }
     end
 

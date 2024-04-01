@@ -474,7 +474,10 @@ module Homebrew
 
       def check_throttle(formula, new_version)
         throttled_rate = formula.livecheck.throttle
-        throttled_rate ||= formula.tap.audit_exceptions.dig(:throttled_formulae, formula.name)
+        throttled_rate ||= if (rate = formula.tap.audit_exceptions.dig(:throttled_formulae, formula.name))
+          odeprecated "throttled_formulae.json", "Livecheck#throttle"
+          rate
+        end
         return if throttled_rate.blank?
 
         formula_suffix = Version.new(new_version).patch.to_i

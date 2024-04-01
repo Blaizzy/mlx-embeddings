@@ -68,15 +68,19 @@ module Cask
       rescue
         # in case of permissions problems
         unless tried_permissions
+          print_stderr = Context.current.debug? || Context.current.verbose?
           # TODO: Better handling for the case where path is a symlink.
           #       The -h and -R flags cannot be combined, and behavior is
           #       dependent on whether the file argument has a trailing
           #       slash.  This should do the right thing, but is fragile.
           command.run("/usr/bin/chflags",
+                      print_stderr:,
                       args:         command_args + ["--", "000", path])
           command.run("/bin/chmod",
+                      print_stderr:,
                       args:         command_args + ["--", "u+rwx", path])
           command.run("/bin/chmod",
+                      print_stderr:,
                       args:         command_args + ["-N", path])
           tried_permissions = true
           retry # rmtree

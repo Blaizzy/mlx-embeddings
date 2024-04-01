@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Language
@@ -28,6 +28,12 @@ module Language
       end
     end
 
+    sig {
+      params(
+        build: T.any(BuildOptions, Tab),
+        block: T.nilable(T.proc.params(python: String, version: T.nilable(Version)).void),
+      ).void
+    }
     def self.each_python(build, &block)
       original_pythonpath = ENV.fetch("PYTHONPATH", nil)
       pythons = { "python@3" => "python3",
@@ -48,6 +54,7 @@ module Language
       ENV["PYTHONPATH"] = original_pythonpath
     end
 
+    sig { params(python: T.any(String, Pathname)).returns(T::Boolean) }
     def self.reads_brewed_pth_files?(python)
       return false unless homebrew_site_packages(python).directory?
       return false unless homebrew_site_packages(python).writable?
@@ -61,10 +68,12 @@ module Language
       end
     end
 
+    sig { params(python: T.any(String, Pathname)).returns(Pathname) }
     def self.user_site_packages(python)
       Pathname.new(`#{python} -c "import site; print(site.getusersitepackages())"`.chomp)
     end
 
+    sig { params(python: T.any(String, Pathname), path: T.any(String, Pathname)).returns(T::Boolean) }
     def self.in_sys_path?(python, path)
       script = <<~PYTHON
         import os, sys
@@ -102,7 +111,7 @@ module Language
       PYTHON_SHEBANG_REGEX = %r{^#! ?/usr/bin/(?:env )?python(?:[23](?:\.\d{1,2})?)?( |$)}
 
       # The length of the longest shebang matching `SHEBANG_REGEX`.
-      PYTHON_SHEBANG_MAX_LENGTH = "#! /usr/bin/env pythonx.yyy ".length
+      PYTHON_SHEBANG_MAX_LENGTH = T.let("#! /usr/bin/env pythonx.yyy ".length, Integer)
 
       # @private
       sig { params(python_path: T.any(String, Pathname)).returns(Utils::Shebang::RewriteInfo) }
@@ -254,7 +263,7 @@ module Language
         sig { params(formula: Formula, venv_root: T.any(String, Pathname), python: T.any(String, Pathname)).void }
         def initialize(formula, venv_root, python)
           @formula = formula
-          @venv_root = Pathname.new(venv_root)
+          @venv_root = T.let(Pathname(venv_root), Pathname)
           @python = python
         end
 

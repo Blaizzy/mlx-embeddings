@@ -3,6 +3,8 @@
 require "formula_auditor"
 
 RSpec.describe Homebrew::FormulaAuditor do
+  include FileUtils
+
   let(:dir) { mktmpdir }
   let(:foo_version) do
     @count ||= 0
@@ -655,7 +657,7 @@ RSpec.describe Homebrew::FormulaAuditor do
   end
 
   describe "#audit_specs" do
-    let(:throttle_list) { { throttled_formulae: { "foo" => 10 } } }
+    let(:livecheck_throttle) { "livecheck do\n    throttle 10\n  end" }
     let(:versioned_head_spec_list) { { versioned_head_spec_allowlist: ["foo"] } }
 
     it "doesn't allow to miss a checksum" do
@@ -694,7 +696,7 @@ RSpec.describe Homebrew::FormulaAuditor do
     end
 
     it "allows versions with no throttle rate" do
-      fa = formula_auditor "bar", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
+      fa = formula_auditor "bar", <<~RUBY, core_tap: true
         class Bar < Formula
           url "https://brew.sh/foo-1.0.1.tgz"
           sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
@@ -706,10 +708,11 @@ RSpec.describe Homebrew::FormulaAuditor do
     end
 
     it "allows major/minor versions with throttle rate" do
-      fa = formula_auditor "foo", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
+      fa = formula_auditor "foo", <<~RUBY, core_tap: true
         class Foo < Formula
           url "https://brew.sh/foo-1.0.0.tgz"
           sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
+          #{livecheck_throttle}
         end
       RUBY
 
@@ -718,10 +721,11 @@ RSpec.describe Homebrew::FormulaAuditor do
     end
 
     it "allows patch versions to be multiples of the throttle rate" do
-      fa = formula_auditor "foo", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
+      fa = formula_auditor "foo", <<~RUBY, core_tap: true
         class Foo < Formula
           url "https://brew.sh/foo-1.0.10.tgz"
           sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
+          #{livecheck_throttle}
         end
       RUBY
 
@@ -730,10 +734,11 @@ RSpec.describe Homebrew::FormulaAuditor do
     end
 
     it "doesn't allow patch versions that aren't multiples of the throttle rate" do
-      fa = formula_auditor "foo", <<~RUBY, core_tap: true, tap_audit_exceptions: throttle_list
+      fa = formula_auditor "foo", <<~RUBY, core_tap: true
         class Foo < Formula
           url "https://brew.sh/foo-1.0.1.tgz"
           sha256 "31cccfc6630528db1c8e3a06f6decf2a370060b982841cfab2b8677400a5092e"
+          #{livecheck_throttle}
         end
       RUBY
 

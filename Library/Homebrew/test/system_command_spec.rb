@@ -194,6 +194,8 @@ RSpec.describe SystemCommand do
       end
 
       context "when `debug?` is true" do
+        include Context
+
         let(:options) do
           { args: [
             "-c",

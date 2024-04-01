@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "resource"
@@ -12,7 +12,9 @@ module Language
     # building Go software.
     # The resource names should be the import name of the package,
     # e.g. `resource "github.com/foo/bar"`.
+    sig { params(resources: T::Array[Resource], target: T.any(String, Pathname)).void }
     def self.stage_deps(resources, target)
+      # odeprecated "Language::Go::stage_deps", "Go modules"
       if resources.empty?
         if Homebrew::EnvConfig.developer?
           odie "Tried to stage empty Language::Go resources array"
