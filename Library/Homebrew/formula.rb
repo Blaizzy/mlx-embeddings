@@ -3324,6 +3324,7 @@ class Formula
     end
 
     def go_resource(name, &block)
+      # odeprecated "Formula#go_resource", "Go modules"
       specs.each { |spec| spec.go_resource(name, &block) }
     end
 

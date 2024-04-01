@@ -14,7 +14,7 @@ module Language
     # e.g. `resource "github.com/foo/bar"`.
     sig { params(resources: T::Array[Resource], target: T.any(String, Pathname)).void }
     def self.stage_deps(resources, target)
-      # odeprecated "Language::Go::stage_deps", "or request upstream to migrate to Go modules"
+      # odeprecated "Language::Go::stage_deps", "Go modules"
       if resources.empty?
         if Homebrew::EnvConfig.developer?
           odie "Tried to stage empty Language::Go resources array"
