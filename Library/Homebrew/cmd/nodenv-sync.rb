@@ -1,69 +1,68 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
-require "cli/parser"
+require "abstract_command"
 require "formula"
 
 module Homebrew
-  module_function
+  module Cmd
+    class NodenvSync < AbstractCommand
+      cmd_args do
+        description <<~EOS
+          Create symlinks for Homebrew's installed NodeJS versions in `~/.nodenv/versions`.
 
-  sig { returns(CLI::Parser) }
-  def nodenv_sync_args
-    Homebrew::CLI::Parser.new do
-      description <<~EOS
-        Create symlinks for Homebrew's installed NodeJS versions in `~/.nodenv/versions`.
+          Note that older version symlinks will also be created so e.g. NodeJS 19.1.0 will
+          also be symlinked to 19.0.0.
+        EOS
 
-        Note that older version symlinks will also be created so e.g. NodeJS 19.1.0 will
-        also be symlinked to 19.0.0.
-      EOS
+        named_args :none
+      end
 
-      named_args :none
-    end
-  end
+      sig { override.void }
+      def run
+        nodenv_root = Pathname(ENV.fetch("HOMEBREW_NODENV_ROOT", Pathname(Dir.home)/".nodenv"))
 
-  sig { void }
-  def nodenv_sync
-    nodenv_root = Pathname(ENV.fetch("HOMEBREW_NODENV_ROOT", Pathname(Dir.home)/".nodenv"))
+        # Don't run multiple times at once.
+        nodenv_sync_running = nodenv_root/".nodenv_sync_running"
+        return if nodenv_sync_running.exist?
 
-    # Don't run multiple times at once.
-    nodenv_sync_running = nodenv_root/".nodenv_sync_running"
-    return if nodenv_sync_running.exist?
+        begin
+          nodenv_versions = nodenv_root/"versions"
+          nodenv_versions.mkpath
+          FileUtils.touch nodenv_sync_running
 
-    begin
-      nodenv_versions = nodenv_root/"versions"
-      nodenv_versions.mkpath
-      FileUtils.touch nodenv_sync_running
+          HOMEBREW_CELLAR.glob("node{,@*}")
+                         .flat_map(&:children)
+                         .each { |path| link_nodenv_versions(path, nodenv_versions) }
 
-      nodenv_sync_args.parse
+          nodenv_versions.children
+                         .select(&:symlink?)
+                         .reject(&:exist?)
+                         .each { |path| FileUtils.rm_f path }
+        ensure
+          nodenv_sync_running.unlink if nodenv_sync_running.exist?
+        end
+      end
 
-      HOMEBREW_CELLAR.glob("node{,@*}")
-                     .flat_map(&:children)
-                     .each { |path| link_nodenv_versions(path, nodenv_versions) }
+      private
 
-      nodenv_versions.children
-                     .select(&:symlink?)
-                     .reject(&:exist?)
-                     .each { |path| FileUtils.rm_f path }
-    ensure
-      nodenv_sync_running.unlink if nodenv_sync_running.exist?
-    end
-  end
+      sig { params(path: Pathname, nodenv_versions: Pathname).void }
+      def link_nodenv_versions(path, nodenv_versions)
+        nodenv_versions.mkpath
 
-  sig { params(path: Pathname, nodenv_versions: Pathname).void }
-  def link_nodenv_versions(path, nodenv_versions)
-    nodenv_versions.mkpath
+        version = Keg.new(path).version
+        major_version = version.major.to_i
+        minor_version = version.minor.to_i || 0
+        patch_version = version.patch.to_i || 0
 
-    version = Keg.new(path).version
-    major_version = version.major.to_i
-    minor_version = version.minor.to_i || 0
-    patch_version = version.patch.to_i || 0
+        (0..minor_version).each do |minor|
+          (0..patch_version).each do |patch|
+            link_path = nodenv_versions/"#{major_version}.#{minor}.#{patch}"
 
-    (0..minor_version).each do |minor|
-      (0..patch_version).each do |patch|
-        link_path = nodenv_versions/"#{major_version}.#{minor}.#{patch}"
-
-        FileUtils.rm_f link_path
-        FileUtils.ln_sf path, link_path
+            FileUtils.rm_f link_path
+            FileUtils.ln_sf path, link_path
+          end
+        end
       end
     end
   end
