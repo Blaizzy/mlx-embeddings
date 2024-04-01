@@ -81,8 +81,6 @@ RSpec.describe Formulary do
     end
 
     context "with sharded Formula directory" do
-      before { CoreTap.instance.clear_cache }
-
       let(:formula_name) { "testball_sharded" }
       let(:formula_path) do
         core_tap = CoreTap.instance
@@ -236,7 +234,6 @@ RSpec.describe Formulary do
       before do
         alias_dir.mkpath
         FileUtils.ln_s formula_path, alias_path
-        tap.clear_cache
       end
 
       it "returns a Formula when given a name" do

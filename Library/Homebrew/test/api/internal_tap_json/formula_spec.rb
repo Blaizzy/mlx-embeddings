@@ -44,12 +44,6 @@ RSpec.describe "Internal Tap JSON -- Formula" do
 
       # To allow `formula_names.txt` to be written to the cache.
       (HOMEBREW_CACHE/"api").mkdir
-
-      Homebrew::API::Formula.clear_cache
-    end
-
-    after do
-      Homebrew::API::Formula.clear_cache
     end
 
     it "loads tap aliases" do

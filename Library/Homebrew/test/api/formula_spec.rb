@@ -7,7 +7,6 @@ RSpec.describe Homebrew::API::Formula do
 
   before do
     stub_const("Homebrew::API::HOMEBREW_CACHE_API", cache_dir)
-    described_class.clear_cache
   end
 
   def mock_curl_download(stdout:)
