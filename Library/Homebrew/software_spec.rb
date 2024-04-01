@@ -138,6 +138,7 @@ class SoftwareSpec
   end
 
   def go_resource(name, &block)
+    # odeprecated "SoftwareSpec#go_resource", "Go modules"
     resource name, Resource::Go, &block
   end
 
