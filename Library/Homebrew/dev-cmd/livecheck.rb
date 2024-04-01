@@ -37,7 +37,7 @@ module Homebrew
         switch "--cask", "--casks",
                description: "Only check casks."
         switch "--extract-plist",
-               description: "Include casks using the ExtractPlist livecheck strategy."
+               description: "Enable checking multiple casks with ExtractPlist strategy."
 
         conflicts "--debug", "--json"
         conflicts "--tap=", "--eval-all", "--installed"
