@@ -4,10 +4,6 @@ require "utils/analytics"
 require "formula_installer"
 
 RSpec.describe Utils::Analytics do
-  before do
-    described_class.clear_cache
-  end
-
   describe "::default_package_tags" do
     let(:ci) { ", CI" if ENV["CI"] }
 

@@ -16,6 +16,8 @@ module Utils
     INFLUX_HOST = "https://eu-central-1-1.aws.cloud2.influxdata.com"
     INFLUX_ORG = "d81a3e6d582d485f"
 
+    extend Cachable
+
     class << self
       include Context
 
@@ -277,14 +279,9 @@ module Utils
         nil
       end
 
-      def clear_cache
-        remove_instance_variable(:@default_package_tags) if instance_variable_defined?(:@default_package_tags)
-        remove_instance_variable(:@default_package_fields) if instance_variable_defined?(:@default_package_fields)
-      end
-
       sig { returns(T::Hash[Symbol, String]) }
       def default_package_tags
-        @default_package_tags ||= begin
+        cache[:default_package_tags] ||= begin
           # Only display default prefixes to reduce cardinality and improve privacy
           prefix = Homebrew.default_prefix? ? HOMEBREW_PREFIX.to_s : "custom-prefix"
 
@@ -305,7 +302,7 @@ module Utils
       # remove macOS patch release
       sig { returns(T::Hash[Symbol, String]) }
       def default_package_fields
-        @default_package_fields ||= begin
+        cache[:default_package_fields] ||= begin
           version = if (match_data = HOMEBREW_VERSION.match(/^[\d.]+/))
             suffix = "-dev" if HOMEBREW_VERSION.include?("-")
             match_data[0] + suffix.to_s
