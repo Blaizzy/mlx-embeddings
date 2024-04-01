@@ -140,6 +140,15 @@ module Homebrew
           rescue FormulaUnavailableError, TapFormulaAmbiguityError
             nil
           end
+
+          return false if formula.blank?
+
+          # We can't determine an installed rebuild and parsing manifest version cannot be reliably done.
+          return false unless formula.latest_version_installed?
+
+          return true if (bottle = formula.bottle).blank?
+
+          return version != GitHubPackages.version_rebuild(bottle.resource.version, bottle.rebuild)
         end
 
         return false if formula.blank?
@@ -151,7 +160,8 @@ module Homebrew
           return true unless patch_hashes&.include?(Checksum.new(version.to_s))
         elsif resource_name && (resource_version = formula.stable&.resources&.dig(resource_name)&.version)
           return true if resource_version != version
-        elsif (formula.latest_version_installed? && formula.version != version) || formula.version > version
+        elsif (formula.latest_version_installed? && formula.pkg_version.to_s != version) ||
+              formula.pkg_version.to_s > version
           return true
         end
 
