@@ -67,10 +67,10 @@ module Homebrew
 
     sig {
       params(
-        command: T.nilable(T.any(T::Array[String], String, Pathname)),
-        macos:   T.nilable(T.any(T::Array[String], String, Pathname)),
-        linux:   T.nilable(T.any(T::Array[String], String, Pathname)),
-      ).returns(T.nilable(Array))
+        command: T.nilable(T.any(T::Array[T.any(String, Pathname)], String, Pathname)),
+        macos:   T.nilable(T.any(T::Array[T.any(String, Pathname)], String, Pathname)),
+        linux:   T.nilable(T.any(T::Array[T.any(String, Pathname)], String, Pathname)),
+      ).returns(T.nilable(T::Array[T.any(String, Pathname)]))
     }
     def run(command = nil, macos: nil, linux: nil)
       # Save parameters for serialization
