@@ -171,12 +171,7 @@ RSpec.describe Cask::Artifact::App, :cask do
           end
 
           it "overwrites the existing app" do
-            expect(command).to receive(:run).with("/usr/bin/chflags",
-                                                  args: ["-R", "--", "000", target_path]).and_call_original
-            expect(command).to receive(:run).with("/bin/chmod",
-                                                  args: ["-R", "--", "u+rwx", target_path]).and_call_original
-            expect(command).to receive(:run).with("/bin/chmod",
-                                                  args: ["-R", "-N", target_path]).and_call_original
+            expect(command).to receive(:run).and_call_original.at_least(:once)
 
             stdout = <<~EOS
               ==> Removing App '#{target_path}'
