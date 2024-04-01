@@ -175,7 +175,7 @@ module Homebrew
       end
 
       not_outdated.each do |f|
-        latest_keg = Keg.sort(f.installed_kegs).first
+        latest_keg = f.installed_kegs.max_by(&:scheme_and_version)
         if latest_keg.nil?
           ofail "#{f.full_specified_name} not installed"
         else
