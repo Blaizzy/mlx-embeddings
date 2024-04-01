@@ -33,7 +33,7 @@ defaults:
 kramdown:
   toc_levels: 2..3
 
-logo: /assets/img/homebrew-256x256.png
+logo: /assets/img/homebrew.svg
 
 twitter:
   username: MacHomebrew
