@@ -21,6 +21,7 @@
 /Library/Taps
 /Library/PinnedTaps
 /Library/Homebrew/.byebug_history
+/Library/Homebrew/test/.rdbg_history
 
 # Ignore Bundler files
 **/.bundle/bin
