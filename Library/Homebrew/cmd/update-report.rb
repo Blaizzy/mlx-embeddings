@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "abstract_command"
 require "migrator"
 require "formulary"
 require "cask/cask_loader"
@@ -8,404 +9,405 @@ require "cask/migrator"
 require "descriptions"
 require "cleanup"
 require "description_cache_store"
-require "cli/parser"
 require "settings"
 require "linuxbrew-core-migration"
 
 module Homebrew
-  module_function
-
-  def auto_update_header(args:)
-    @auto_update_header ||= begin
-      ohai "Auto-updated Homebrew!" if args.auto_update?
-      true
-    end
-  end
-
-  sig { returns(CLI::Parser) }
-  def update_report_args
-    Homebrew::CLI::Parser.new do
-      description <<~EOS
-        The Ruby implementation of `brew update`. Never called manually.
-      EOS
-      switch "--auto-update", "--preinstall",
-             description: "Run in 'auto-update' mode (faster, less output)."
-      switch "-f", "--force",
-             description: "Treat installed and updated formulae as if they are from " \
-                          "the same taps and migrate them anyway."
-
-      hide_from_man_page!
-    end
-  end
-
-  def update_report
-    return output_update_report if $stdout.tty?
-
-    redirect_stdout($stderr) do
-      output_update_report
-    end
-  end
-
-  def output_update_report
-    args = update_report_args.parse
-
-    # Run `brew update` (again) if we've got a linuxbrew-core CoreTap
-    if CoreTap.instance.installed? && CoreTap.instance.linuxbrew_core? &&
-       ENV["HOMEBREW_LINUXBREW_CORE_MIGRATION"].blank?
-      ohai "Re-running `brew update` for linuxbrew-core migration"
-
-      if Homebrew::EnvConfig.core_git_remote != HOMEBREW_CORE_DEFAULT_GIT_REMOTE
-        opoo <<~EOS
-          HOMEBREW_CORE_GIT_REMOTE was set: #{Homebrew::EnvConfig.core_git_remote}.
-          It has been unset for the migration.
-          You may need to change this from a linuxbrew-core mirror to a homebrew-core one.
-
+  module Cmd
+    class UpdateReport < AbstractCommand
+      cmd_args do
+        description <<~EOS
+          The Ruby implementation of `brew update`. Never called manually.
         EOS
+        switch "--auto-update", "--preinstall",
+               description: "Run in 'auto-update' mode (faster, less output)."
+        switch "-f", "--force",
+               description: "Treat installed and updated formulae as if they are from " \
+                            "the same taps and migrate them anyway."
+
+        hide_from_man_page!
       end
-      ENV.delete("HOMEBREW_CORE_GIT_REMOTE")
 
-      if Homebrew::EnvConfig.bottle_domain != HOMEBREW_BOTTLE_DEFAULT_DOMAIN
-        opoo <<~EOS
-          HOMEBREW_BOTTLE_DOMAIN was set: #{Homebrew::EnvConfig.bottle_domain}.
-          It has been unset for the migration.
-          You may need to change this from a Linuxbrew package mirror to a Homebrew one.
+      sig { override.void }
+      def run
+        return output_update_report if $stdout.tty?
 
-        EOS
+        redirect_stdout($stderr) do
+          output_update_report
+        end
       end
-      ENV.delete("HOMEBREW_BOTTLE_DOMAIN")
 
-      ENV["HOMEBREW_LINUXBREW_CORE_MIGRATION"] = "1"
-      FileUtils.rm_f HOMEBREW_LOCKS/"update"
+      private
 
-      update_args = []
-      update_args << "--auto-update" if args.auto_update?
-      update_args << "--force" if args.force?
-      exec HOMEBREW_BREW_FILE, "update", *update_args
-    end
-
-    if ENV["HOMEBREW_ADDITIONAL_GOOGLE_ANALYTICS_ID"].present?
-      opoo "HOMEBREW_ADDITIONAL_GOOGLE_ANALYTICS_ID is now a no-op so can be unset."
-      puts "All Homebrew Google Analytics code and data was destroyed."
-    end
-
-    if ENV["HOMEBREW_NO_GOOGLE_ANALYTICS"].present?
-      opoo "HOMEBREW_NO_GOOGLE_ANALYTICS is now a no-op so can be unset."
-      puts "All Homebrew Google Analytics code and data was destroyed."
-    end
-
-    unless args.quiet?
-      analytics_message
-      donation_message
-      install_from_api_message
-    end
-
-    tap_or_untap_core_taps_if_necessary
-
-    updated = false
-    new_tag = nil
-
-    initial_revision = ENV["HOMEBREW_UPDATE_BEFORE"].to_s
-    current_revision = ENV["HOMEBREW_UPDATE_AFTER"].to_s
-    odie "update-report should not be called directly!" if initial_revision.empty? || current_revision.empty?
-
-    if initial_revision != current_revision
-      auto_update_header(args:)
-
-      updated = true
-
-      old_tag = Settings.read "latesttag"
-
-      new_tag = Utils.popen_read(
-        "git", "-C", HOMEBREW_REPOSITORY, "tag", "--list", "--sort=-version:refname", "*.*"
-      ).lines.first.chomp
-
-      Settings.write "latesttag", new_tag if new_tag != old_tag
-
-      if new_tag == old_tag
-        ohai "Updated Homebrew from #{shorten_revision(initial_revision)} to #{shorten_revision(current_revision)}."
-      elsif old_tag.blank?
-        ohai "Updated Homebrew from #{shorten_revision(initial_revision)} " \
-             "to #{new_tag} (#{shorten_revision(current_revision)})."
-      else
-        ohai "Updated Homebrew from #{old_tag} (#{shorten_revision(initial_revision)}) " \
-             "to #{new_tag} (#{shorten_revision(current_revision)})."
+      def auto_update_header
+        @auto_update_header ||= begin
+          ohai "Auto-updated Homebrew!" if args.auto_update?
+          true
+        end
       end
-    end
 
-    # Check if we can parse the JSON and do any Ruby-side follow-up.
-    unless Homebrew::EnvConfig.no_install_from_api?
-      Homebrew::API::Formula.write_names_and_aliases
-      Homebrew::API::Cask.write_names
-    end
+      def output_update_report
+        # Run `brew update` (again) if we've got a linuxbrew-core CoreTap
+        if CoreTap.instance.installed? && CoreTap.instance.linuxbrew_core? &&
+           ENV["HOMEBREW_LINUXBREW_CORE_MIGRATION"].blank?
+          ohai "Re-running `brew update` for linuxbrew-core migration"
 
-    Homebrew.failed = true if ENV["HOMEBREW_UPDATE_FAILED"]
-    return if Homebrew::EnvConfig.disable_load_formula?
+          if Homebrew::EnvConfig.core_git_remote != HOMEBREW_CORE_DEFAULT_GIT_REMOTE
+            opoo <<~EOS
+              HOMEBREW_CORE_GIT_REMOTE was set: #{Homebrew::EnvConfig.core_git_remote}.
+              It has been unset for the migration.
+              You may need to change this from a linuxbrew-core mirror to a homebrew-core one.
 
-    migrate_gcc_dependents_if_needed
-
-    hub = ReporterHub.new
-
-    updated_taps = []
-    Tap.installed.each do |tap|
-      next if !tap.git? || tap.git_repo.origin_url.nil?
-      next if (tap.core_tap? || tap.core_cask_tap?) && !Homebrew::EnvConfig.no_install_from_api?
-
-      if ENV["HOMEBREW_MIGRATE_LINUXBREW_FORMULAE"].present? && tap.core_tap? &&
-         Settings.read("linuxbrewmigrated") != "true"
-        ohai "Migrating formulae from linuxbrew-core to homebrew-core"
-
-        LINUXBREW_CORE_MIGRATION_LIST.each do |name|
-          begin
-            formula = Formula[name]
-          rescue FormulaUnavailableError
-            next
+            EOS
           end
-          next unless formula.any_version_installed?
+          ENV.delete("HOMEBREW_CORE_GIT_REMOTE")
 
-          keg = formula.installed_kegs.last
-          tab = Tab.for_keg(keg)
-          # force a `brew upgrade` from the linuxbrew-core version to the homebrew-core version (even if lower)
-          tab.source["versions"]["version_scheme"] = -1
-          tab.write
+          if Homebrew::EnvConfig.bottle_domain != HOMEBREW_BOTTLE_DEFAULT_DOMAIN
+            opoo <<~EOS
+              HOMEBREW_BOTTLE_DOMAIN was set: #{Homebrew::EnvConfig.bottle_domain}.
+              It has been unset for the migration.
+              You may need to change this from a Linuxbrew package mirror to a Homebrew one.
+
+            EOS
+          end
+          ENV.delete("HOMEBREW_BOTTLE_DOMAIN")
+
+          ENV["HOMEBREW_LINUXBREW_CORE_MIGRATION"] = "1"
+          FileUtils.rm_f HOMEBREW_LOCKS/"update"
+
+          update_args = []
+          update_args << "--auto-update" if args.auto_update?
+          update_args << "--force" if args.force?
+          exec HOMEBREW_BREW_FILE, "update", *update_args
         end
 
-        Settings.write "linuxbrewmigrated", true
-      end
+        if ENV["HOMEBREW_ADDITIONAL_GOOGLE_ANALYTICS_ID"].present?
+          opoo "HOMEBREW_ADDITIONAL_GOOGLE_ANALYTICS_ID is now a no-op so can be unset."
+          puts "All Homebrew Google Analytics code and data was destroyed."
+        end
 
-      begin
-        reporter = Reporter.new(tap)
-      rescue Reporter::ReporterRevisionUnsetError => e
-        onoe "#{e.message}\n#{Utils::Backtrace.clean(e)&.join("\n")}" if Homebrew::EnvConfig.developer?
-        next
-      end
-      if reporter.updated?
-        updated_taps << tap.name
-        hub.add(reporter, auto_update: args.auto_update?)
-      end
-    end
+        if ENV["HOMEBREW_NO_GOOGLE_ANALYTICS"].present?
+          opoo "HOMEBREW_NO_GOOGLE_ANALYTICS is now a no-op so can be unset."
+          puts "All Homebrew Google Analytics code and data was destroyed."
+        end
 
-    # If we're installing from the API: we cannot use Git to check for #
-    # differences in packages so instead use {formula,cask}_names.txt to do so.
-    # The first time this runs: we won't yet have a base state
-    # ({formula,cask}_names.before.txt) to compare against so we don't output a
-    # anything and just copy the files for next time.
-    unless Homebrew::EnvConfig.no_install_from_api?
-      api_cache = Homebrew::API::HOMEBREW_CACHE_API
-      core_tap = CoreTap.instance
-      cask_tap = CoreCaskTap.instance
-      [
-        [:formula, core_tap, core_tap.formula_dir],
-        [:cask,    cask_tap, cask_tap.cask_dir],
-      ].each do |type, tap, dir|
-        names_txt = api_cache/"#{type}_names.txt"
-        next unless names_txt.exist?
+        unless args.quiet?
+          analytics_message
+          donation_message
+          install_from_api_message
+        end
 
-        names_before_txt = api_cache/"#{type}_names.before.txt"
-        if names_before_txt.exist?
-          reporter = Reporter.new(
-            tap,
-            api_names_txt:        names_txt,
-            api_names_before_txt: names_before_txt,
-            api_dir_prefix:       dir,
-          )
+        tap_or_untap_core_taps_if_necessary
+
+        updated = false
+        new_tag = nil
+
+        initial_revision = ENV["HOMEBREW_UPDATE_BEFORE"].to_s
+        current_revision = ENV["HOMEBREW_UPDATE_AFTER"].to_s
+        odie "update-report should not be called directly!" if initial_revision.empty? || current_revision.empty?
+
+        if initial_revision != current_revision
+          auto_update_header
+
+          updated = true
+
+          old_tag = Settings.read "latesttag"
+
+          new_tag = Utils.popen_read(
+            "git", "-C", HOMEBREW_REPOSITORY, "tag", "--list", "--sort=-version:refname", "*.*"
+          ).lines.first.chomp
+
+          Settings.write "latesttag", new_tag if new_tag != old_tag
+
+          if new_tag == old_tag
+            ohai "Updated Homebrew from #{shorten_revision(initial_revision)} " \
+                 "to #{shorten_revision(current_revision)}."
+          elsif old_tag.blank?
+            ohai "Updated Homebrew from #{shorten_revision(initial_revision)} " \
+                 "to #{new_tag} (#{shorten_revision(current_revision)})."
+          else
+            ohai "Updated Homebrew from #{old_tag} (#{shorten_revision(initial_revision)}) " \
+                 "to #{new_tag} (#{shorten_revision(current_revision)})."
+          end
+        end
+
+        # Check if we can parse the JSON and do any Ruby-side follow-up.
+        unless Homebrew::EnvConfig.no_install_from_api?
+          Homebrew::API::Formula.write_names_and_aliases
+          Homebrew::API::Cask.write_names
+        end
+
+        Homebrew.failed = true if ENV["HOMEBREW_UPDATE_FAILED"]
+        return if Homebrew::EnvConfig.disable_load_formula?
+
+        migrate_gcc_dependents_if_needed
+
+        hub = ReporterHub.new
+
+        updated_taps = []
+        Tap.installed.each do |tap|
+          next if !tap.git? || tap.git_repo.origin_url.nil?
+          next if (tap.core_tap? || tap.core_cask_tap?) && !Homebrew::EnvConfig.no_install_from_api?
+
+          if ENV["HOMEBREW_MIGRATE_LINUXBREW_FORMULAE"].present? && tap.core_tap? &&
+             Settings.read("linuxbrewmigrated") != "true"
+            ohai "Migrating formulae from linuxbrew-core to homebrew-core"
+
+            LINUXBREW_CORE_MIGRATION_LIST.each do |name|
+              begin
+                formula = Formula[name]
+              rescue FormulaUnavailableError
+                next
+              end
+              next unless formula.any_version_installed?
+
+              keg = formula.installed_kegs.last
+              tab = Tab.for_keg(keg)
+              # force a `brew upgrade` from the linuxbrew-core version to the homebrew-core version (even if lower)
+              tab.source["versions"]["version_scheme"] = -1
+              tab.write
+            end
+
+            Settings.write "linuxbrewmigrated", true
+          end
+
+          begin
+            reporter = Reporter.new(tap)
+          rescue Reporter::ReporterRevisionUnsetError => e
+            onoe "#{e.message}\n#{Utils::Backtrace.clean(e)&.join("\n")}" if Homebrew::EnvConfig.developer?
+            next
+          end
           if reporter.updated?
             updated_taps << tap.name
             hub.add(reporter, auto_update: args.auto_update?)
           end
-        else
-          FileUtils.cp names_txt, names_before_txt
-        end
-      end
-    end
-
-    unless updated_taps.empty?
-      auto_update_header(args:)
-      puts "Updated #{Utils.pluralize("tap", updated_taps.count, include_count: true)} (#{updated_taps.to_sentence})."
-      updated = true
-    end
-
-    if updated
-      if hub.empty?
-        puts no_changes_message unless args.quiet?
-      else
-        if ENV.fetch("HOMEBREW_UPDATE_REPORT_ONLY_INSTALLED", false)
-          opoo "HOMEBREW_UPDATE_REPORT_ONLY_INSTALLED is now the default behaviour, " \
-               "so you can unset it from your environment."
         end
 
-        hub.dump(auto_update: args.auto_update?) unless args.quiet?
-        hub.reporters.each(&:migrate_tap_migration)
-        hub.reporters.each(&:migrate_cask_rename)
-        hub.reporters.each { |r| r.migrate_formula_rename(force: args.force?, verbose: args.verbose?) }
+        # If we're installing from the API: we cannot use Git to check for #
+        # differences in packages so instead use {formula,cask}_names.txt to do so.
+        # The first time this runs: we won't yet have a base state
+        # ({formula,cask}_names.before.txt) to compare against so we don't output a
+        # anything and just copy the files for next time.
+        unless Homebrew::EnvConfig.no_install_from_api?
+          api_cache = Homebrew::API::HOMEBREW_CACHE_API
+          core_tap = CoreTap.instance
+          cask_tap = CoreCaskTap.instance
+          [
+            [:formula, core_tap, core_tap.formula_dir],
+            [:cask,    cask_tap, cask_tap.cask_dir],
+          ].each do |type, tap, dir|
+            names_txt = api_cache/"#{type}_names.txt"
+            next unless names_txt.exist?
 
-        CacheStoreDatabase.use(:descriptions) do |db|
-          DescriptionCacheStore.new(db)
-                               .update_from_report!(hub)
-        end
-        CacheStoreDatabase.use(:cask_descriptions) do |db|
-          CaskDescriptionCacheStore.new(db)
-                                   .update_from_report!(hub)
-        end
-      end
-      puts if args.auto_update?
-    elsif !args.auto_update? && !ENV["HOMEBREW_UPDATE_FAILED"] && !ENV["HOMEBREW_MIGRATE_LINUXBREW_FORMULAE"]
-      puts "Already up-to-date." unless args.quiet?
-    end
-
-    Commands.rebuild_commands_completion_list
-    link_completions_manpages_and_docs
-    Tap.installed.each(&:link_completions_and_manpages)
-
-    failed_fetch_dirs = ENV["HOMEBREW_MISSING_REMOTE_REF_DIRS"]&.split("\n")
-    if failed_fetch_dirs.present?
-      failed_fetch_taps = failed_fetch_dirs.map { |dir| Tap.from_path(dir) }
-
-      ofail <<~EOS
-        Some taps failed to update!
-        The following taps can not read their remote branches:
-          #{failed_fetch_taps.join("\n  ")}
-        This is happening because the remote branch was renamed or deleted.
-        Reset taps to point to the correct remote branches by running `brew tap --repair`
-      EOS
-    end
-
-    return if new_tag.blank? || new_tag == old_tag || args.quiet?
-
-    puts
-
-    new_major_version, new_minor_version, new_patch_version = new_tag.split(".").map(&:to_i)
-    old_major_version, old_minor_version = (old_tag.split(".")[0, 2]).map(&:to_i) if old_tag.present?
-    if old_tag.blank? || new_major_version > old_major_version || new_minor_version > old_minor_version
-      puts <<~EOS
-        The #{new_major_version}.#{new_minor_version}.0 release notes are available on the Homebrew Blog:
-          #{Formatter.url("https://brew.sh/blog/#{new_major_version}.#{new_minor_version}.0")}
-      EOS
-    end
-
-    return if new_patch_version.zero?
-
-    puts <<~EOS
-      The #{new_tag} changelog can be found at:
-        #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_tag}")}
-    EOS
-  end
-
-  def no_changes_message
-    "No changes to formulae or casks."
-  end
-
-  def shorten_revision(revision)
-    Utils.popen_read("git", "-C", HOMEBREW_REPOSITORY, "rev-parse", "--short", revision).chomp
-  end
-
-  def tap_or_untap_core_taps_if_necessary
-    return if ENV["HOMEBREW_UPDATE_TEST"]
-
-    if Homebrew::EnvConfig.no_install_from_api?
-      return if Homebrew::EnvConfig.automatically_set_no_install_from_api?
-
-      core_tap = CoreTap.instance
-      return if core_tap.installed?
-
-      core_tap.ensure_installed!
-      revision = CoreTap.instance.git_head
-      ENV["HOMEBREW_UPDATE_BEFORE_HOMEBREW_HOMEBREW_CORE"] = revision
-      ENV["HOMEBREW_UPDATE_AFTER_HOMEBREW_HOMEBREW_CORE"] = revision
-    else
-      return if Homebrew::EnvConfig.developer? || ENV["HOMEBREW_DEV_CMD_RUN"]
-      return if ENV["HOMEBREW_GITHUB_HOSTED_RUNNER"] || ENV["GITHUB_ACTIONS_HOMEBREW_SELF_HOSTED"]
-      return if (HOMEBREW_PREFIX/".homebrewdocker").exist?
-
-      tap_output_header_printed = T.let(false, T::Boolean)
-      [CoreTap.instance, CoreCaskTap.instance].each do |tap|
-        next unless tap.installed?
-
-        if tap.git_branch == "master" &&
-           (Date.parse(T.must(tap.git_repo.last_commit_date)) <= Date.today.prev_month)
-          ohai "#{tap.name} is old and unneeded, untapping to save space..."
-          tap.uninstall
-        else
-          unless tap_output_header_printed
-            puts "Installing from the API is now the default behaviour!"
-            puts "You can save space and time by running:"
-            tap_output_header_printed = true
+            names_before_txt = api_cache/"#{type}_names.before.txt"
+            if names_before_txt.exist?
+              reporter = Reporter.new(
+                tap,
+                api_names_txt:        names_txt,
+                api_names_before_txt: names_before_txt,
+                api_dir_prefix:       dir,
+              )
+              if reporter.updated?
+                updated_taps << tap.name
+                hub.add(reporter, auto_update: args.auto_update?)
+              end
+            else
+              FileUtils.cp names_txt, names_before_txt
+            end
           end
-          puts "  brew untap #{tap.name}"
+        end
+
+        unless updated_taps.empty?
+          auto_update_header
+          puts "Updated #{Utils.pluralize("tap", updated_taps.count,
+                                          include_count: true)} (#{updated_taps.to_sentence})."
+          updated = true
+        end
+
+        if updated
+          if hub.empty?
+            puts no_changes_message unless args.quiet?
+          else
+            if ENV.fetch("HOMEBREW_UPDATE_REPORT_ONLY_INSTALLED", false)
+              opoo "HOMEBREW_UPDATE_REPORT_ONLY_INSTALLED is now the default behaviour, " \
+                   "so you can unset it from your environment."
+            end
+
+            hub.dump(auto_update: args.auto_update?) unless args.quiet?
+            hub.reporters.each(&:migrate_tap_migration)
+            hub.reporters.each(&:migrate_cask_rename)
+            hub.reporters.each { |r| r.migrate_formula_rename(force: args.force?, verbose: args.verbose?) }
+
+            CacheStoreDatabase.use(:descriptions) do |db|
+              DescriptionCacheStore.new(db)
+                                   .update_from_report!(hub)
+            end
+            CacheStoreDatabase.use(:cask_descriptions) do |db|
+              CaskDescriptionCacheStore.new(db)
+                                       .update_from_report!(hub)
+            end
+          end
+          puts if args.auto_update?
+        elsif !args.auto_update? && !ENV["HOMEBREW_UPDATE_FAILED"] && !ENV["HOMEBREW_MIGRATE_LINUXBREW_FORMULAE"]
+          puts "Already up-to-date." unless args.quiet?
+        end
+
+        Commands.rebuild_commands_completion_list
+        link_completions_manpages_and_docs
+        Tap.installed.each(&:link_completions_and_manpages)
+
+        failed_fetch_dirs = ENV["HOMEBREW_MISSING_REMOTE_REF_DIRS"]&.split("\n")
+        if failed_fetch_dirs.present?
+          failed_fetch_taps = failed_fetch_dirs.map { |dir| Tap.from_path(dir) }
+
+          ofail <<~EOS
+            Some taps failed to update!
+            The following taps can not read their remote branches:
+              #{failed_fetch_taps.join("\n  ")}
+            This is happening because the remote branch was renamed or deleted.
+            Reset taps to point to the correct remote branches by running `brew tap --repair`
+          EOS
+        end
+
+        return if new_tag.blank? || new_tag == old_tag || args.quiet?
+
+        puts
+
+        new_major_version, new_minor_version, new_patch_version = new_tag.split(".").map(&:to_i)
+        old_major_version, old_minor_version = (old_tag.split(".")[0, 2]).map(&:to_i) if old_tag.present?
+        if old_tag.blank? || new_major_version > old_major_version || new_minor_version > old_minor_version
+          puts <<~EOS
+            The #{new_major_version}.#{new_minor_version}.0 release notes are available on the Homebrew Blog:
+              #{Formatter.url("https://brew.sh/blog/#{new_major_version}.#{new_minor_version}.0")}
+          EOS
+        end
+
+        return if new_patch_version.zero?
+
+        puts <<~EOS
+          The #{new_tag} changelog can be found at:
+            #{Formatter.url("https://github.com/Homebrew/brew/releases/tag/#{new_tag}")}
+        EOS
+      end
+
+      def no_changes_message
+        "No changes to formulae or casks."
+      end
+
+      def shorten_revision(revision)
+        Utils.popen_read("git", "-C", HOMEBREW_REPOSITORY, "rev-parse", "--short", revision).chomp
+      end
+
+      def tap_or_untap_core_taps_if_necessary
+        return if ENV["HOMEBREW_UPDATE_TEST"]
+
+        if Homebrew::EnvConfig.no_install_from_api?
+          return if Homebrew::EnvConfig.automatically_set_no_install_from_api?
+
+          core_tap = CoreTap.instance
+          return if core_tap.installed?
+
+          core_tap.ensure_installed!
+          revision = CoreTap.instance.git_head
+          ENV["HOMEBREW_UPDATE_BEFORE_HOMEBREW_HOMEBREW_CORE"] = revision
+          ENV["HOMEBREW_UPDATE_AFTER_HOMEBREW_HOMEBREW_CORE"] = revision
+        else
+          return if Homebrew::EnvConfig.developer? || ENV["HOMEBREW_DEV_CMD_RUN"]
+          return if ENV["HOMEBREW_GITHUB_HOSTED_RUNNER"] || ENV["GITHUB_ACTIONS_HOMEBREW_SELF_HOSTED"]
+          return if (HOMEBREW_PREFIX/".homebrewdocker").exist?
+
+          tap_output_header_printed = T.let(false, T::Boolean)
+          [CoreTap.instance, CoreCaskTap.instance].each do |tap|
+            next unless tap.installed?
+
+            if tap.git_branch == "master" &&
+               (Date.parse(T.must(tap.git_repo.last_commit_date)) <= Date.today.prev_month)
+              ohai "#{tap.name} is old and unneeded, untapping to save space..."
+              tap.uninstall
+            else
+              unless tap_output_header_printed
+                puts "Installing from the API is now the default behaviour!"
+                puts "You can save space and time by running:"
+                tap_output_header_printed = true
+              end
+              puts "  brew untap #{tap.name}"
+            end
+          end
         end
       end
+
+      def link_completions_manpages_and_docs(repository = HOMEBREW_REPOSITORY)
+        command = "brew update"
+        Utils::Link.link_completions(repository, command)
+        Utils::Link.link_manpages(repository, command)
+        Utils::Link.link_docs(repository, command)
+      rescue => e
+        ofail <<~EOS
+          Failed to link all completions, docs and manpages:
+            #{e}
+        EOS
+      end
+
+      def migrate_gcc_dependents_if_needed
+        # do nothing
+      end
+
+      def analytics_message
+        return if Utils::Analytics.messages_displayed?
+        return if Utils::Analytics.no_message_output?
+
+        if Utils::Analytics.disabled? && !Utils::Analytics.influx_message_displayed?
+          ohai "Homebrew's analytics have entirely moved to our InfluxDB instance in the EU."
+          puts "We gather less data than before and have destroyed all Google Analytics data:"
+          puts "  #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}"
+          puts "Please reconsider re-enabling analytics to help our volunteer maintainers with:"
+          puts "  brew analytics on"
+        elsif !Utils::Analytics.disabled?
+          ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "1"
+          # Use the shell's audible bell.
+          print "\a"
+
+          # Use an extra newline and bold to avoid this being missed.
+          ohai "Homebrew collects anonymous analytics."
+          puts <<~EOS
+            #{Tty.bold}Read the analytics documentation (and how to opt-out) here:
+              #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}
+            No analytics have been recorded yet (nor will be during this `brew` run).
+
+          EOS
+        end
+
+        # Consider the messages possibly missed if not a TTY.
+        Utils::Analytics.messages_displayed! if $stdout.tty?
+      end
+
+      def donation_message
+        return if Settings.read("donationmessage") == "true"
+
+        ohai "Homebrew is run entirely by unpaid volunteers. Please consider donating:"
+        puts "  #{Formatter.url("https://github.com/Homebrew/brew#donations")}\n\n"
+
+        # Consider the message possibly missed if not a TTY.
+        Settings.write "donationmessage", true if $stdout.tty?
+      end
+
+      def install_from_api_message
+        return if Settings.read("installfromapimessage") == "true"
+
+        no_install_from_api_set = Homebrew::EnvConfig.no_install_from_api? &&
+                                  !Homebrew::EnvConfig.automatically_set_no_install_from_api?
+        return unless no_install_from_api_set
+
+        ohai "You have HOMEBREW_NO_INSTALL_FROM_API set"
+        puts "Homebrew >=4.1.0 is dramatically faster and less error-prone when installing"
+        puts "from the JSON API. Please consider unsetting HOMEBREW_NO_INSTALL_FROM_API."
+        puts "This message will only be printed once."
+        puts "\n\n"
+
+        # Consider the message possibly missed if not a TTY.
+        Settings.write "installfromapimessage", true if $stdout.tty?
+      end
     end
-  end
-
-  def link_completions_manpages_and_docs(repository = HOMEBREW_REPOSITORY)
-    command = "brew update"
-    Utils::Link.link_completions(repository, command)
-    Utils::Link.link_manpages(repository, command)
-    Utils::Link.link_docs(repository, command)
-  rescue => e
-    ofail <<~EOS
-      Failed to link all completions, docs and manpages:
-        #{e}
-    EOS
-  end
-
-  def migrate_gcc_dependents_if_needed
-    # do nothing
-  end
-
-  def analytics_message
-    return if Utils::Analytics.messages_displayed?
-    return if Utils::Analytics.no_message_output?
-
-    if Utils::Analytics.disabled? && !Utils::Analytics.influx_message_displayed?
-      ohai "Homebrew's analytics have entirely moved to our InfluxDB instance in the EU."
-      puts "We gather less data than before and have destroyed all Google Analytics data:"
-      puts "  #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}"
-      puts "Please reconsider re-enabling analytics to help our volunteer maintainers with:"
-      puts "  brew analytics on"
-    elsif !Utils::Analytics.disabled?
-      ENV["HOMEBREW_NO_ANALYTICS_THIS_RUN"] = "1"
-      # Use the shell's audible bell.
-      print "\a"
-
-      # Use an extra newline and bold to avoid this being missed.
-      ohai "Homebrew collects anonymous analytics."
-      puts <<~EOS
-        #{Tty.bold}Read the analytics documentation (and how to opt-out) here:
-          #{Formatter.url("https://docs.brew.sh/Analytics")}#{Tty.reset}
-        No analytics have been recorded yet (nor will be during this `brew` run).
-
-      EOS
-    end
-
-    # Consider the messages possibly missed if not a TTY.
-    Utils::Analytics.messages_displayed! if $stdout.tty?
-  end
-
-  def donation_message
-    return if Settings.read("donationmessage") == "true"
-
-    ohai "Homebrew is run entirely by unpaid volunteers. Please consider donating:"
-    puts "  #{Formatter.url("https://github.com/Homebrew/brew#donations")}\n\n"
-
-    # Consider the message possibly missed if not a TTY.
-    Settings.write "donationmessage", true if $stdout.tty?
-  end
-
-  def install_from_api_message
-    return if Settings.read("installfromapimessage") == "true"
-
-    no_install_from_api_set = Homebrew::EnvConfig.no_install_from_api? &&
-                              !Homebrew::EnvConfig.automatically_set_no_install_from_api?
-    return unless no_install_from_api_set
-
-    ohai "You have HOMEBREW_NO_INSTALL_FROM_API set"
-    puts "Homebrew >=4.1.0 is dramatically faster and less error-prone when installing"
-    puts "from the JSON API. Please consider unsetting HOMEBREW_NO_INSTALL_FROM_API."
-    puts "This message will only be printed once."
-    puts "\n\n"
-
-    # Consider the message possibly missed if not a TTY.
-    Settings.write "installfromapimessage", true if $stdout.tty?
   end
 end
 

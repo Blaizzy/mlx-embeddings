@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require "cmd/--prefix"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew --prefix" do
+RSpec.describe Homebrew::Cmd::Prefix do
   it_behaves_like "parseable arguments"
 
   it "prints Homebrew's prefix", :integration_test do

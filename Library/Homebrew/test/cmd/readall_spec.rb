@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require "cmd/readall"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew readall" do
+RSpec.describe Homebrew::Cmd::ReadallCmd do
   it_behaves_like "parseable arguments"
 
   it "imports all Formulae for a given Tap", :integration_test do

@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 require "cmd/shared_examples/args_parse"
+require "cmd/untap"
 
-RSpec.describe "brew untap" do
+RSpec.describe Homebrew::Cmd::UntapCmd do
   it_behaves_like "parseable arguments"
 
   it "untaps a given Tap", :integration_test do

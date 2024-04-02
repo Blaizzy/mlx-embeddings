@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require "cmd/--repository"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew --repository" do
+RSpec.describe Homebrew::Cmd::Repository do
   it_behaves_like "parseable arguments"
 
   it "prints Homebrew's repository", :integration_test do

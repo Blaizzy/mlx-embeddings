@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
+require "cmd/log"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew log" do
+RSpec.describe Homebrew::Cmd::Log do
   it_behaves_like "parseable arguments"
 
   it "shows the Git log for a given Formula", :integration_test do

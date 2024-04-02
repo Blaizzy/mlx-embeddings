@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
 require "cmd/uninstall"
-
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew uninstall" do
+RSpec.describe Homebrew::Cmd::UninstallCmd do
   it_behaves_like "parseable arguments"
 
   it "uninstalls a given Formula", :integration_test do

@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 require "cmd/shared_examples/args_parse"
+require "cmd/tap-info"
 
-RSpec.describe "brew tap-info" do
+RSpec.describe Homebrew::Cmd::TapInfo do
   it_behaves_like "parseable arguments"
 
   it "gets information for a given Tap", :integration_test, :needs_network do

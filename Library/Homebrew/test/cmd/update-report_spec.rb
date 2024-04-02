@@ -5,7 +5,7 @@ require "formula_versions"
 require "yaml"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew update-report" do
+RSpec.describe Homebrew::Cmd::UpdateReport do
   it_behaves_like "parseable arguments"
 
   describe Reporter do

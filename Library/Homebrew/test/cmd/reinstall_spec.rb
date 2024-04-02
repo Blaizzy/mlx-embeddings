@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 require "extend/ENV"
+require "cmd/reinstall"
 require "cmd/shared_examples/args_parse"
 
-RSpec.describe "brew reinstall" do
+RSpec.describe Homebrew::Cmd::Reinstall do
   it_behaves_like "parseable arguments"
 
   it "reinstalls a Formula", :integration_test do

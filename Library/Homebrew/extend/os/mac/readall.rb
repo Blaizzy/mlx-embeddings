@@ -3,6 +3,8 @@
 
 module Readall
   class << self
+    undef valid_casks?
+
     def valid_casks?(tap, os_name: nil, arch: Hardware::CPU.type)
       return true if os_name == :linux
 
