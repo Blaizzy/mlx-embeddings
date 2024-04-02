@@ -76,12 +76,14 @@
 **/vendor/bundle/ruby/*/gems/coderay-*/
 **/vendor/bundle/ruby/*/gems/colorize-*/
 **/vendor/bundle/ruby/*/gems/commander-*/
+**/vendor/bundle/ruby/*/gems/debug-*/
 **/vendor/bundle/ruby/*/gems/diff-lcs-*/
 **/vendor/bundle/ruby/*/gems/docile-*/
 **/vendor/bundle/ruby/*/gems/ecma-re-validator-*/
 **/vendor/bundle/ruby/*/gems/erubi-*/
 **/vendor/bundle/ruby/*/gems/hana-*/
 **/vendor/bundle/ruby/*/gems/highline-*/
+**/vendor/bundle/ruby/*/gems/irb-*/
 **/vendor/bundle/ruby/*/gems/jaro_winkler-*/
 **/vendor/bundle/ruby/*/gems/json-*/
 **/vendor/bundle/ruby/*/gems/json_schemer-*/
@@ -105,7 +107,9 @@
 **/vendor/bundle/ruby/*/gems/racc-*/
 **/vendor/bundle/ruby/*/gems/rainbow-*/
 **/vendor/bundle/ruby/*/gems/rbi-*/
+**/vendor/bundle/ruby/*/gems/rdoc-*/
 **/vendor/bundle/ruby/*/gems/regexp_parser-*/
+**/vendor/bundle/ruby/*/gems/reline-*/
 **/vendor/bundle/ruby/*/gems/rexml-*/
 **/vendor/bundle/ruby/*/gems/rspec-*/
 **/vendor/bundle/ruby/*/gems/rspec-core-*/
@@ -126,6 +130,7 @@
 !**/vendor/bundle/ruby/*/gems/sorbet-runtime-*/
 **/vendor/bundle/ruby/*/gems/spoom-*/
 **/vendor/bundle/ruby/*/gems/stackprof-*/
+**/vendor/bundle/ruby/*/gems/stringio-*/
 **/vendor/bundle/ruby/*/gems/strscan-*/
 **/vendor/bundle/ruby/*/gems/syntax_tree-*/
 **/vendor/bundle/ruby/*/gems/tapioca-*/

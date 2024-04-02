@@ -10,6 +10,9 @@ GEM
     coderay (1.1.3)
     commander (4.6.0)
       highline (~> 2.0.0)
+    debug (1.9.2)
+      irb (~> 1.10)
+      reline (>= 0.3.8)
     diff-lcs (1.5.1)
     docile (1.4.0)
     elftools (1.3.0)
@@ -17,6 +20,10 @@ GEM
     erubi (1.12.0)
     hana (1.3.7)
     highline (2.0.3)
+    io-console (0.7.2)
+    irb (1.12.0)
+      rdoc
+      reline (>= 0.4.2)
     json (2.7.2)
     json_schemer (2.1.1)
       hana (~> 1.3)
@@ -47,13 +54,19 @@ GEM
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
+    psych (4.0.6)
+      stringio
     public_suffix (5.0.5)
     racc (1.7.3)
     rainbow (3.1.1)
     rbi (0.1.10)
       prism (>= 0.18.0, < 0.25)
       sorbet-runtime (>= 0.5.9204)
+    rdoc (6.6.3.1)
+      psych (>= 4.0.0)
     regexp_parser (2.9.0)
+    reline (0.5.0)
+      io-console (~> 0.5)
     rexml (3.2.6)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
@@ -136,6 +149,7 @@ GEM
       sorbet-static-and-runtime (>= 0.5.10187)
       thor (>= 0.19.2)
     stackprof (0.2.26)
+    stringio (3.1.0)
     tapioca (0.13.3)
       bundler (>= 2.2.25)
       netrc (>= 0.11.0)
@@ -166,6 +180,7 @@ PLATFORMS
 DEPENDENCIES
   addressable
   bootsnap
+  debug
   json_schemer
   kramdown
   method_source
@@ -175,6 +190,7 @@ DEPENDENCIES
   patchelf
   plist
   pry
+  psych (< 5)
   rexml
   rspec
   rspec-github
