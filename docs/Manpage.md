@@ -3740,8 +3740,11 @@ command execution e.g. `$(cat file)`.
 `HOMEBREW_NO_AUTO_UPDATE`
 
 : If set, do not automatically update before running some commands, e.g. `brew
-  install`, `brew upgrade` and `brew tap`. Alternatively, run this less often by
-  setting `HOMEBREW_AUTO_UPDATE_SECS` to a value higher than the default.
+  install`, `brew upgrade` and `brew tap`. Preferably, run this less often by
+  setting `HOMEBREW_AUTO_UPDATE_SECS` to a value higher than the default. Note
+  that setting this and e.g. tapping new taps may result in a broken
+  configuration. Please ensure you always run `brew update` before reporting any
+  issues.
 
 `HOMEBREW_NO_BOOTSNAP`
 
