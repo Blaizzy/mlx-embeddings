@@ -6,7 +6,6 @@ gem:
     - json
     - msgpack
     # These aren't needed:
-    - byebug
     - coderay
     - commander
     - debug
@@ -19,6 +18,7 @@ gem:
     - language_server-protocol
     - netrc
     - parallel
+    - psych
     - public_suffix
     - racc
     - rdoc
