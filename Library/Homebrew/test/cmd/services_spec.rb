@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
-RSpec.describe "brew services", :integration_test, :needs_network do
-  it "allows controlling services" do
-    setup_remote_tap "homebrew/services"
+require "cmd/shared_examples/args_parse"
 
+RSpec.describe "Homebrew::Cmd::Services", :integration_test, :needs_network do
+  before { setup_remote_tap "homebrew/services" }
+
+  it_behaves_like "parseable arguments", command_name: "services"
+
+  it "allows controlling services" do
     expect { brew "services", "list" }
       .to not_to_output.to_stderr
       .and not_to_output.to_stdout
