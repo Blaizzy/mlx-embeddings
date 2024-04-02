@@ -2208,7 +2208,6 @@ _brew_tests() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --byebug
       --changed
       --coverage
       --debug

@@ -2650,10 +2650,6 @@ Run Homebrew's unit and integration tests.
 : Include tests that use the GitHub API and tests that use any of the taps for
   official external commands.
 
-`--byebug`
-
-: Enable debugging using byebug.
-
 `--changed`
 
 : Only runs tests on files that were changed from the master branch.

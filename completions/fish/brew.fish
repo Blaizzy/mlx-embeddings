@@ -1465,7 +1465,6 @@ __fish_brew_complete_arg 'test' -a '(__fish_brew_suggest_formulae_installed)'
 
 
 __fish_brew_complete_cmd 'tests' 'Run Homebrew\'s unit and integration tests'
-__fish_brew_complete_arg 'tests' -l byebug -d 'Enable debugging using byebug'
 __fish_brew_complete_arg 'tests' -l changed -d 'Only runs tests on files that were changed from the master branch'
 __fish_brew_complete_arg 'tests' -l coverage -d 'Generate code coverage reports'
 __fish_brew_complete_arg 'tests' -l debug -d 'Display any debugging information'

@@ -6,9 +6,6 @@
 
 class Homebrew::CLI::Args
   sig { returns(T::Boolean) }
-  def byebug?; end
-
-  sig { returns(T::Boolean) }
   def changed?; end
 
   sig { returns(T::Boolean) }

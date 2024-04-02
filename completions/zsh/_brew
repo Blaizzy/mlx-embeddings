@@ -1815,7 +1815,6 @@ _brew_test() {
 # brew tests
 _brew_tests() {
   _arguments \
-    '--byebug[Enable debugging using byebug]' \
     '(--only)--changed[Only runs tests on files that were changed from the master branch]' \
     '--coverage[Generate code coverage reports]' \
     '--debug[Display any debugging information]' \
