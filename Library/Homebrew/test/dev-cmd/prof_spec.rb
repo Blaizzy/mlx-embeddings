@@ -4,7 +4,7 @@ require "cmd/shared_examples/args_parse"
 require "dev-cmd/prof"
 
 RSpec.describe Homebrew::DevCmd::Prof do
-  it_behaves_like "parseable arguments", argv: ["--", "help"]
+  it_behaves_like "parseable arguments"
 
   describe "integration tests", :integration_test, :needs_network do
     after do
