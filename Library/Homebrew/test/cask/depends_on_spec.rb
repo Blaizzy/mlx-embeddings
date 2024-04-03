@@ -2,7 +2,9 @@
 
 # TODO: this test should be named after the corresponding class, once
 #       that class is abstracted from installer.rb
+# rubocop:disable RSpec/DescribeClass
 RSpec.describe "Satisfy Dependencies and Requirements", :cask do
+  # rubocop:enable RSpec/DescribeClass
   subject(:install) do
     Cask::Installer.new(cask).install
   end

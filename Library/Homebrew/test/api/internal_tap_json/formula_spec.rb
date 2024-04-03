@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "Internal Tap JSON -- Formula" do
+RSpec.describe "Internal Tap JSON -- Formula", type: :system do
   include FileUtils
 
   let(:internal_tap_json) { File.read(TEST_FIXTURE_DIR/"internal_tap_json/homebrew-core.json").chomp }
