@@ -492,7 +492,7 @@ module Cask
 
           next if result.success?
 
-          add_error <<~EOS, location: cask.url.location
+          add_error <<~EOS, location: cask.url.location, strict_only: true
             Signature verification failed:
             #{result.merged_output}
             macOS on ARM requires software to be signed.
