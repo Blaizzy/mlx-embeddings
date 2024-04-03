@@ -15,8 +15,7 @@ AllCops:
   TargetRubyVersion: 3.1
   NewCops: enable
   Include:
-    # FIXME: https://github.com/rubocop/rubocop/issues/12695
-    - "Homebrew/**/*.rbi"
+    - "**/*.rbi"
   Exclude:
     - "Homebrew/sorbet/rbi/{dsl,gems}/**/*.rbi"
     - "Homebrew/sorbet/rbi/parlour.rbi"
@@ -227,8 +226,6 @@ RSpec:
 
 # Intentionally disabled as it doesn't fit with our code style.
 RSpec/AnyInstance:
-  Enabled: false
-RSpec/DescribeClass:
   Enabled: false
 RSpec/SpecFilePathFormat:
   Enabled: false

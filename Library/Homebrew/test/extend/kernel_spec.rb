@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "globally-scoped helper methods" do
+RSpec.describe Kernel do
   let(:dir) { mktmpdir }
 
   def esc(code)

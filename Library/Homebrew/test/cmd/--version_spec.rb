@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require "cmd/shared_examples/args_parse"
-
-RSpec.describe "brew --version" do
+RSpec.describe "brew --version", type: :system do
   it "prints the Homebrew's version", :integration_test do
     expect { brew_sh "--version" }
       .to output(/^Homebrew #{Regexp.escape(HOMEBREW_VERSION)}\n/o).to_stdout
