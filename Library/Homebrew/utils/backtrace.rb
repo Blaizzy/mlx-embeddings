@@ -20,10 +20,12 @@ module Utils
                .tap { |new_backtrace| print_backtrace_message if old_backtrace_length > new_backtrace.length }
     end
 
+    sig { returns(String) }
     def self.sorbet_runtime_path
       @sorbet_runtime_path ||= "#{Gem.paths.home}/gems/sorbet-runtime"
     end
 
+    sig { void }
     def self.print_backtrace_message
       return if @print_backtrace_message
 
@@ -31,6 +33,20 @@ module Utils
       puts "Rerun with `--verbose` to see the original backtrace" unless Homebrew::EnvConfig.no_env_hints?
 
       @print_backtrace_message = true
+    end
+
+    sig { params(error: Exception).returns(T.nilable(String)) }
+    def self.tap_error_url(error)
+      backtrace = error.backtrace
+      return if backtrace.blank?
+
+      backtrace.each do |line|
+        if (tap = line.match(%r{/Library/Taps/([^/]+/[^/]+)/}))
+          return "https://github.com/#{tap[1]}/issues/new"
+        end
+      end
+
+      nil
     end
   end
 end

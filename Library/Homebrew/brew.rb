@@ -148,7 +148,9 @@ rescue BuildError => e
   Utils::Analytics.report_build_error(e)
   e.dump(verbose: args&.verbose?)
 
-  if e.formula.head? || e.formula.deprecated? || e.formula.disabled?
+  if OS.unsupported_configuration?
+    $stderr.puts "#{Tty.bold}Do not report this issue: you are running in an unsupported configuration.#{Tty.reset}"
+  elsif e.formula.head? || e.formula.deprecated? || e.formula.disabled?
     reason = if e.formula.head?
       "was built from an unstable upstream --HEAD"
     elsif e.formula.deprecated?
@@ -166,35 +168,35 @@ rescue BuildError => e
       Try to figure out the problem yourself and submit a fix as a pull request.
       We will review it but may or may not accept it.
     EOS
+
   end
 
-  exit 1
-rescue RuntimeError, SystemCallError => e
-  raise if e.message.empty?
-
-  onoe e
-  $stderr.puts Utils::Backtrace.clean(e) if args&.debug? || ARGV.include?("--debug")
-
-  exit 1
-rescue MethodDeprecatedError => e
-  onoe e
-  if e.issues_url
-    $stderr.puts "If reporting this issue please do so at (not Homebrew/brew or Homebrew/homebrew-core):"
-    $stderr.puts "  #{Formatter.url(e.issues_url)}"
-  end
-  $stderr.puts Utils::Backtrace.clean(e) if args&.debug? || ARGV.include?("--debug")
   exit 1
 rescue Exception => e # rubocop:disable Lint/RescueException
+  runtime_or_system_call_error = e.is_a?(RuntimeError) || e.is_a?(SystemCallError)
+  raise if runtime_or_system_call_error && e.message.empty?
+
   onoe e
-  if internal_cmd && !OS.unsupported_configuration?
-    if Homebrew::EnvConfig.no_auto_update?
-      $stderr.puts "#{Tty.bold}Do not report this issue until you've run `brew update` and tried again.#{Tty.reset}"
-    else
-      $stderr.puts "#{Tty.bold}Please report this issue:#{Tty.reset}"
-      $stderr.puts "  #{Formatter.url(OS::ISSUES_URL)}"
-    end
+
+  method_deprecated_error = e.is_a?(MethodDeprecatedError)
+  runtime_or_system_call_or_method_deprecated_error = runtime_or_system_call_error || method_deprecated_error
+  if args&.debug? || ARGV.include?("--debug") || !runtime_or_system_call_or_method_deprecated_error
+    $stderr.puts Utils::Backtrace.clean(e)
   end
-  $stderr.puts Utils::Backtrace.clean(e)
+
+  if OS.unsupported_configuration?
+    $stderr.puts "#{Tty.bold}Do not report this issue: you are running in an unsupported configuration.#{Tty.reset}"
+  elsif Homebrew::EnvConfig.no_auto_update?
+    $stderr.puts "#{Tty.bold}You have disabled automatic updates.#{Tty.reset}"
+    $stderr.puts "#{Tty.bold}Do not report this issue until you've run `brew update` and tried again.#{Tty.reset}"
+  elsif (issues_url = (method_deprecated_error && e.issues_url) || Utils::Backtrace.tap_error_url(e))
+    $stderr.puts "If reporting this issue please do so at (not Homebrew/brew or Homebrew/homebrew-core):"
+    $stderr.puts "  #{Formatter.url(issues_url)}"
+  elsif internal_cmd
+    $stderr.puts "#{Tty.bold}Please report this issue:#{Tty.reset}"
+    $stderr.puts "  #{Formatter.url(OS::ISSUES_URL)}"
+  end
+
   exit 1
 else
   exit 1 if Homebrew.failed?
