@@ -186,8 +186,10 @@ rescue Exception => e # rubocop:disable Lint/RescueException
 
   if OS.unsupported_configuration?
     $stderr.puts "#{Tty.bold}Do not report this issue: you are running in an unsupported configuration.#{Tty.reset}"
-  elsif Homebrew::EnvConfig.no_auto_update?
-    $stderr.puts "#{Tty.bold}You have disabled automatic updates.#{Tty.reset}"
+  elsif Homebrew::EnvConfig.no_auto_update? &&
+        (fetch_head = HOMEBREW_REPOSITORY/".git/FETCH_HEAD") &&
+        (!fetch_head.exist? || (fetch_head.mtime.to_date < Date.today))
+    $stderr.puts "#{Tty.bold}You have disabled automatic updates and have not updated today.#{Tty.reset}"
     $stderr.puts "#{Tty.bold}Do not report this issue until you've run `brew update` and tried again.#{Tty.reset}"
   elsif (issues_url = (method_deprecated_error && e.issues_url) || Utils::Backtrace.tap_error_url(e))
     $stderr.puts "If reporting this issue please do so at (not Homebrew/brew or Homebrew/homebrew-core):"
