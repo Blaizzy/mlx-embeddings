@@ -5,6 +5,7 @@ require "abstract_command"
 require "formulary"
 require "cask/cask_loader"
 
+# @!visibility private
 class String
   def f(*args)
     require "formula"

@@ -7,6 +7,9 @@ require "utils/tty"
 #
 # @api private
 module Formatter
+  COMMAND_DESC_WIDTH = 80
+  OPTION_DESC_WIDTH = 45
+
   def self.arrow(string, color: nil)
     prefix("==>", string, color)
   end

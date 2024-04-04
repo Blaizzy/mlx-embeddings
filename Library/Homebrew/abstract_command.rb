@@ -26,6 +26,9 @@ module Homebrew
       sig { params(name: String).returns(T.nilable(T.class_of(AbstractCommand))) }
       def command(name) = subclasses.find { _1.command_name == name }
 
+      sig { returns(T::Boolean) }
+      def dev_cmd? = T.must(name).start_with?("Homebrew::DevCmd")
+
       sig { returns(CLI::Parser) }
       def parser = CLI::Parser.new(self, &@parser_block)
 

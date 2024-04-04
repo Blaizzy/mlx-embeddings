@@ -136,9 +136,9 @@ begin
   end
 rescue UsageError => e
   require "help"
-  Homebrew::Help.help cmd, remaining_args: args.remaining, usage_error: e.message
+  Homebrew::Help.help cmd, remaining_args: T.must(args).remaining, usage_error: e.message
 rescue SystemExit => e
-  onoe "Kernel.exit" if args.debug? && !e.success?
+  onoe "Kernel.exit" if T.must(args).debug? && !e.success?
   $stderr.puts Utils::Backtrace.clean(e) if args&.debug? || ARGV.include?("--debug")
   raise
 rescue Interrupt
@@ -146,7 +146,7 @@ rescue Interrupt
   exit 130
 rescue BuildError => e
   Utils::Analytics.report_build_error(e)
-  e.dump(verbose: args&.verbose?)
+  e.dump(verbose: args&.verbose? || false)
 
   if OS.unsupported_configuration?
     $stderr.puts "#{Tty.bold}Do not report this issue: you are running in an unsupported configuration.#{Tty.reset}"
