@@ -109,10 +109,14 @@ module Homebrew
 
       private
 
-      sig { params(formula_or_cask: T.any(Formula, Cask::Cask)).returns(T::Boolean) }
-      def skip_repology?(formula_or_cask)
-        (ENV["CI"].present? && args.open_pr? && formula_or_cask.livecheckable?) ||
-          (formula_or_cask.is_a?(Formula) && formula_or_cask.versioned_formula?)
+      sig { params(_formula_or_cask: T.any(Formula, Cask::Cask)).returns(T::Boolean) }
+      def skip_repology?(_formula_or_cask)
+        # (ENV["CI"].present? && args.open_pr? && formula_or_cask.livecheckable?) ||
+        #   (formula_or_cask.is_a?(Formula) && formula_or_cask.versioned_formula?)
+
+        # Unconditionally skip Repology queries for now because we've been blocked.
+        # TODO: get unblocked and make this conditional on e.g. args.repology?
+        true
       end
 
       sig { params(formulae_and_casks: T::Array[T.any(Formula, Cask::Cask)]).void }
