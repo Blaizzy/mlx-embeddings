@@ -62,17 +62,14 @@ RSpec.describe Homebrew::AbstractCommand do
 
   describe "command paths" do
     it "match command name" do
-      # Ensure all commands are loaded
       ["cmd", "dev-cmd"].each do |dir|
-        Dir[File.join(__dir__, "../#{dir}", "*.rb")].each { require(_1) }
-      end
-      test_classes = ["TestCat", "Tac"]
-
-      described_class.subclasses.each do |klass|
-        next if test_classes.include?(klass.name)
-
-        dir = klass.name.start_with?("Homebrew::DevCmd") ? "dev-cmd" : "cmd"
-        expect(Pathname(File.join(__dir__, "../#{dir}/#{klass.command_name}.rb"))).to exist
+        Dir[File.join(__dir__, "../#{dir}", "*.rb")].each do |file|
+          filename = File.basename(file, ".rb")
+          require(file)
+          command = described_class.command(filename)
+          dir = command.name.start_with?("Homebrew::DevCmd") ? "dev-cmd" : "cmd"
+          expect(Pathname(File.join(__dir__, "../#{dir}/#{command.command_name}.rb"))).to exist
+        end
       end
     end
   end
