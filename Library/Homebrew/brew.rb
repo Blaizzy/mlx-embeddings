@@ -172,17 +172,18 @@ rescue BuildError => e
   end
 
   exit 1
-rescue Exception => e # rubocop:disable Lint/RescueException
-  runtime_or_system_call_error = e.is_a?(RuntimeError) || e.is_a?(SystemCallError)
-  raise if runtime_or_system_call_error && e.message.empty?
+rescue RuntimeError, SystemCallError => e
+  raise if e.message.empty?
 
+  onoe e
+  $stderr.puts Utils::Backtrace.clean(e) if args&.debug? || ARGV.include?("--debug")
+
+  exit 1
+rescue Exception => e # rubocop:disable Lint/RescueException
   onoe e
 
   method_deprecated_error = e.is_a?(MethodDeprecatedError)
-  runtime_or_system_call_or_method_deprecated_error = runtime_or_system_call_error || method_deprecated_error
-  if args&.debug? || ARGV.include?("--debug") || !runtime_or_system_call_or_method_deprecated_error
-    $stderr.puts Utils::Backtrace.clean(e)
-  end
+  $stderr.puts Utils::Backtrace.clean(e) if args&.debug? || ARGV.include?("--debug") || !method_deprecated_error
 
   if OS.unsupported_configuration?
     $stderr.puts "#{Tty.bold}Do not report this issue: you are running in an unsupported configuration.#{Tty.reset}"
