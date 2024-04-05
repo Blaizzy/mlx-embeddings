@@ -3,10 +3,6 @@
 
 require "cli/parser"
 require "erb"
-require "kramdown"
-require "manpages/parser/ronn"
-require "manpages/converter/kramdown"
-require "manpages/converter/roff"
 
 SOURCE_PATH = (HOMEBREW_LIBRARY_PATH/"manpages").freeze
 TARGET_MAN_PATH = (HOMEBREW_REPOSITORY/"manpages").freeze
@@ -33,6 +29,11 @@ module Homebrew
 
     def self.regenerate_man_pages(quiet:)
       Homebrew.install_bundler_gems!(groups: ["man"])
+
+      require "kramdown"
+      require "manpages/parser/ronn"
+      require "manpages/converter/kramdown"
+      require "manpages/converter/roff"
 
       markup = build_man_page(quiet:)
       root, warnings = Parser::Ronn.parse(markup)
