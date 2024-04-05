@@ -4,6 +4,6 @@
 
 require 'irb/completion'
 
-IRB.conf[:SAVE_HISTORY] = 100
 IRB.conf[:HISTORY_FILE] = "#{Dir.home}/.brew_irb_history"
 IRB.conf[:IRB_NAME] = "brew"
+H = Homebrew
