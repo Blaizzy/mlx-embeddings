@@ -23,14 +23,20 @@ module RuboCop
             next unless found
 
             uses_from_macos_nodes = find_every_method_call_by_name(body_node, :uses_from_macos)
-            uses_from_macos = uses_from_macos_nodes.map { |node| node.arguments.first.str_content }
-
             depends_on_nodes = find_every_method_call_by_name(body_node, :depends_on)
-            depends_on = depends_on_nodes.map { |node| node.arguments.first.str_content }
+            uses_from_macos_or_depends_on = (uses_from_macos_nodes + depends_on_nodes).filter_map do |node|
+              if (dep = node.arguments.first).hash_type?
+                dep_types = dep.values.first
+                dep_types = dep_types.array_type? ? dep_types.values.map(&:value) : [dep_types.value]
+                dep.keys.first.str_content if dep_types.include?(:build)
+              else
+                dep.str_content
+              end
+            end
 
             required_deps = case resource_name
             when "lxml"
-              kind = "uses_from_macos"
+              kind = depends_on?(:linux) ? "depends_on" : "uses_from_macos"
               ["libxml2", "libxslt"]
             when "pyyaml"
               kind = "depends_on"
@@ -38,7 +44,7 @@ module RuboCop
             else
               []
             end
-            next if required_deps.all? { |dep| uses_from_macos.include?(dep) || depends_on.include?(dep) }
+            next if required_deps.all? { |dep| uses_from_macos_or_depends_on.include?(dep) }
 
             offending_node(found)
             problem "Add `#{kind}` lines above for #{required_deps.map { |req| "`\"#{req}\"`" }.join(" and ")}."
