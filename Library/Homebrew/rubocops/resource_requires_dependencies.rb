@@ -27,8 +27,8 @@ module RuboCop
             uses_from_macos_or_depends_on = (uses_from_macos_nodes + depends_on_nodes).filter_map do |node|
               if (dep = node.arguments.first).hash_type?
                 dep_types = dep.values.first
-                dep_types = dep_types.array_type? ? dep_types.values.map(&:value) : [dep_types.value]
-                dep.keys.first.str_content if dep_types.include?(:build)
+                dep_types = dep_types.array_type? ? dep_types.values : [dep_types]
+                dep.keys.first.str_content if dep_types.select(&:sym_type?).map(&:value).include?(:build)
               else
                 dep.str_content
               end
