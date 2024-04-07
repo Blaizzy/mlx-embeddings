@@ -48,9 +48,7 @@ group :style, optional: true do
   gem "rubocop-sorbet", require: false
 end
 group :tests, optional: true do
-  gem "debug", require: false
   gem "parallel_tests", require: false
-  gem "psych", "< 5", require: false
   gem "rspec", require: false
   gem "rspec-github", require: false
   gem "rspec_junit_formatter", require: false

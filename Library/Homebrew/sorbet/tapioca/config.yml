@@ -8,21 +8,15 @@ gem:
     # These aren't needed:
     - coderay
     - commander
-    - debug
     - diff-lcs
     - docile
     - hana
     - highline
-    - io-console
-    - irb
     - language_server-protocol
     - netrc
     - parallel
-    - psych
     - public_suffix
     - racc
-    - rdoc
-    - reline
     - rexml
     - rspec-github
     - rspec-mocks
@@ -39,7 +33,6 @@ gem:
     - ruby-prof
     - simplecov_json_formatter
     - simpleidn
-    - stringio
     - unf
     - unf_ext
     - unicode-display_width

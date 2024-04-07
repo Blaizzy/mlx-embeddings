@@ -1817,7 +1817,7 @@ _brew_tests() {
   _arguments \
     '(--only)--changed[Only runs tests on files that were changed from the master branch]' \
     '--coverage[Generate code coverage reports]' \
-    '--debug[Display any debugging information]' \
+    '--debug[Enable debugging using ruby/debug, or surface the standard `odebug` output]' \
     '--fail-fast[Exit early on the first failing test]' \
     '--generic[Run only OS-agnostic tests]' \
     '--help[Show this message]' \

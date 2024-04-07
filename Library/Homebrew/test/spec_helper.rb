@@ -29,7 +29,6 @@ require "rspec/retry"
 require "rspec/sorbet"
 require "rubocop/rspec/support"
 require "find"
-require "debug"
 require "timeout"
 
 $LOAD_PATH.unshift(File.expand_path("#{ENV.fetch("HOMEBREW_LIBRARY")}/Homebrew/test/support/lib"))
