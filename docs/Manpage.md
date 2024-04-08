@@ -3647,10 +3647,35 @@ command execution e.g. `$(cat file)`.
   
   *Default:* `15`.
 
+`HOMEBREW_FORBIDDEN_CASKS`
+
+: A space-separated list of casks. Homebrew will refuse to install a cask if it
+  or any of its dependencies is on this list.
+
+`HOMEBREW_FORBIDDEN_FORMULAE`
+
+: A space-separated list of formulae. Homebrew will refuse to install a formula
+  or cask if it or any of its dependencies is on this list.
+
 `HOMEBREW_FORBIDDEN_LICENSES`
 
 : A space-separated list of licenses. Homebrew will refuse to install a formula
   if it or any of its dependencies has a license on this list.
+
+`HOMEBREW_FORBIDDEN_OWNER`
+
+: The person who has set any `HOMEBREW_FORBIDDEN_*` variables.
+  
+  *Default:* `you`.
+
+`HOMEBREW_FORBIDDEN_OWNER_CONTACT`
+
+: How to contact the `HOMEBREW_FORBIDDEN_OWNER`, if set and necessary.
+
+`HOMEBREW_FORBIDDEN_TAPS`
+
+: A space-separated list of taps. Homebrew will refuse to install a formula if
+  it or any of its dependencies is in a tap on this list.
 
 `HOMEBREW_FORCE_BREWED_CA_CERTIFICATES`
 

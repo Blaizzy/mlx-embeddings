@@ -2368,8 +2368,27 @@ Output this many lines of output on formula \fBsystem\fP failures\.
 \fIDefault:\fP \fB15\fP\&\.
 .RE
 .TP
+\fBHOMEBREW_FORBIDDEN_CASKS\fP
+A space\-separated list of casks\. Homebrew will refuse to install a cask if it or any of its dependencies is on this list\.
+.TP
+\fBHOMEBREW_FORBIDDEN_FORMULAE\fP
+A space\-separated list of formulae\. Homebrew will refuse to install a formula or cask if it or any of its dependencies is on this list\.
+.TP
 \fBHOMEBREW_FORBIDDEN_LICENSES\fP
 A space\-separated list of licenses\. Homebrew will refuse to install a formula if it or any of its dependencies has a license on this list\.
+.TP
+\fBHOMEBREW_FORBIDDEN_OWNER\fP
+The person who has set any \fBHOMEBREW_FORBIDDEN_*\fP variables\.
+.RS
+.P
+\fIDefault:\fP \fByou\fP\&\.
+.RE
+.TP
+\fBHOMEBREW_FORBIDDEN_OWNER_CONTACT\fP
+How to contact the \fBHOMEBREW_FORBIDDEN_OWNER\fP, if set and necessary\.
+.TP
+\fBHOMEBREW_FORBIDDEN_TAPS\fP
+A space\-separated list of taps\. Homebrew will refuse to install a formula if it or any of its dependencies is in a tap on this list\.
 .TP
 \fBHOMEBREW_FORCE_BREWED_CA_CERTIFICATES\fP
 If set, always use a Homebrew\-installed \fBca\-certificates\fP rather than the system version\. Automatically set if the system version is too old\.

@@ -185,9 +185,28 @@ module Homebrew
         description: "Output this many lines of output on formula `system` failures.",
         default:     15,
       },
+      HOMEBREW_FORBIDDEN_CASKS:                  {
+        description: "A space-separated list of casks. Homebrew will refuse to install a " \
+                     "cask if it or any of its dependencies is on this list.",
+      },
+      HOMEBREW_FORBIDDEN_FORMULAE:               {
+        description: "A space-separated list of formulae. Homebrew will refuse to install a " \
+                     "formula or cask if it or any of its dependencies is on this list.",
+      },
       HOMEBREW_FORBIDDEN_LICENSES:               {
         description: "A space-separated list of licenses. Homebrew will refuse to install a " \
                      "formula if it or any of its dependencies has a license on this list.",
+      },
+      HOMEBREW_FORBIDDEN_OWNER:                  {
+        description: "The person who has set any `HOMEBREW_FORBIDDEN_*` variables.",
+        default:     "you",
+      },
+      HOMEBREW_FORBIDDEN_OWNER_CONTACT:          {
+        description: "How to contact the `HOMEBREW_FORBIDDEN_OWNER`, if set and necessary.",
+      },
+      HOMEBREW_FORBIDDEN_TAPS:                   {
+        description: "A space-separated list of taps. Homebrew will refuse to install a " \
+                     "formula if it or any of its dependencies is in a tap on this list.",
       },
       HOMEBREW_FORCE_BREWED_CA_CERTIFICATES:     {
         description: "If set, always use a Homebrew-installed `ca-certificates` rather than the system version. " \
