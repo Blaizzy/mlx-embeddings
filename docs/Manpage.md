@@ -442,6 +442,11 @@ message if no logs are found.
 : The Gist will be marked private and will not appear in listings but will be
   accessible with its link.
 
+### `help` \[*`command`* ...\]
+
+Outputs the usage instructions for `brew` *`command`*. Equivalent to `brew
+--help` *`command`*.
+
 ### `home`, `homepage` \[`--formula`\] \[`--cask`\] \[*`formula`*\|*`cask`* ...\]
 
 Open a *`formula`* or *`cask`*'s homepage in a browser, or open Homebrew's own
@@ -1149,11 +1154,6 @@ transport protocol that `git`(1) handles. The one-argument form of `tap`
 simplifies but also limits. This two-argument command makes no assumptions, so
 taps can be cloned from places other than GitHub and using protocols other than
 HTTPS, e.g. SSH, git, HTTP, FTP(S), rsync.
-
-`--[no-]force-auto-update`
-
-: Auto-update tap even if it is not hosted on GitHub. By default, only taps
-  hosted on GitHub are auto-updated (for performance reasons).
 
 `--custom-remote`
 
@@ -2290,7 +2290,7 @@ from `HOMEBREW_LIVECHECK_WATCHLIST` or `~/.homebrew/livecheck_watchlist.txt`.
 
 `--extract-plist`
 
-: Include casks using the ExtractPlist livecheck strategy.
+: Enable checking multiple casks with ExtractPlist strategy.
 
 ### `pr-automerge` \[*`options`*\]
 
@@ -3266,6 +3266,10 @@ and Linux workers.
 `--skip-recursive-dependents`
 
 : Only test the direct dependents.
+
+`--skip-repository-audit`
+
+: Don't audit the repository.
 
 `--skip-checksum-only-audit`
 

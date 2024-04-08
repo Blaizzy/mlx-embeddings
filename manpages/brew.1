@@ -279,6 +279,8 @@ Automatically create a new issue in the appropriate GitHub repository after crea
 .TP
 \fB\-p\fP, \fB\-\-private\fP
 The Gist will be marked private and will not appear in listings but will be accessible with its link\.
+.SS "\fBhelp\fP \fR[\fIcommand\fP \.\.\.]"
+Outputs the usage instructions for \fBbrew\fP \fIcommand\fP\&\. Equivalent to \fBbrew \-\-help\fP \fIcommand\fP\&\.
 .SS "\fBhome\fP, \fBhomepage\fP \fR[\fB\-\-formula\fP] \fR[\fB\-\-cask\fP] \fR[\fIformula\fP|\fIcask\fP \.\.\.]"
 Open a \fIformula\fP or \fIcask\fP\[u2019]s homepage in a browser, or open Homebrew\[u2019]s own homepage if no argument is provided\.
 .TP
@@ -717,9 +719,6 @@ Tap a formula repository\. If no arguments are provided, list all installed taps
 With \fIURL\fP unspecified, tap a formula repository from GitHub using HTTPS\. Since so many taps are hosted on GitHub, this command is a shortcut for \fBbrew tap\fP \fIuser\fP\fB/\fP\fIrepo\fP \fBhttps://github\.com/\fP\fIuser\fP\fB/homebrew\-\fP\fIrepo\fP\&\.
 .P
 With \fIURL\fP specified, tap a formula repository from anywhere, using any transport protocol that \fBgit\fP(1) handles\. The one\-argument form of \fBtap\fP simplifies but also limits\. This two\-argument command makes no assumptions, so taps can be cloned from places other than GitHub and using protocols other than HTTPS, e\.g\. SSH, git, HTTP, FTP(S), rsync\.
-.TP
-\fB\-\-[no\-]force\-auto\-update\fP
-Auto\-update tap even if it is not hosted on GitHub\. By default, only taps hosted on GitHub are auto\-updated (for performance reasons)\.
 .TP
 \fB\-\-custom\-remote\fP
 Install or change a tap with a custom remote\. Useful for mirrors\.
@@ -1455,7 +1454,7 @@ Only check formulae\.
 Only check casks\.
 .TP
 \fB\-\-extract\-plist\fP
-Include casks using the ExtractPlist livecheck strategy\.
+Enable checking multiple casks with ExtractPlist strategy\.
 .SS "\fBpr\-automerge\fP \fR[\fIoptions\fP]"
 Find pull requests that can be automatically merged using \fBbrew pr\-publish\fP\&\.
 .TP
@@ -2086,6 +2085,9 @@ Don\[u2019]t test livecheck\.
 .TP
 \fB\-\-skip\-recursive\-dependents\fP
 Only test the direct dependents\.
+.TP
+\fB\-\-skip\-repository\-audit\fP
+Don\[u2019]t audit the repository\.
 .TP
 \fB\-\-skip\-checksum\-only\-audit\fP
 Don\[u2019]t audit checksum\-only changes\.
