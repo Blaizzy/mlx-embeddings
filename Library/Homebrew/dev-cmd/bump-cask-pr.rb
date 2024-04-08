@@ -215,7 +215,8 @@ module Homebrew
                                                             read_only_run: true,
                                                             silent:        true)
 
-            tmp_cask = Cask::CaskLoader.load(tmp_contents)
+            tmp_cask = Cask::CaskLoader::FromContentLoader.new(tmp_contents)
+                                                          .load(config: nil)
             old_hash = tmp_cask.sha256
             if tmp_cask.version.latest? || new_hash == :no_check
               opoo "Ignoring specified `--sha256=` argument." if new_hash.is_a?(String)
