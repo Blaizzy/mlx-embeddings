@@ -2107,9 +2107,7 @@ _brew_tap() {
       --debug
       --eval-all
       --force
-      --force-auto-update
       --help
-      --no-force-auto-update
       --quiet
       --repair
       --verbose

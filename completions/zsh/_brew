@@ -173,6 +173,7 @@ __brew_internal_commands() {
     'generate-formula-api:Generate `homebrew/core` API data files for https://formulae.brew.sh'
     'generate-man-completions:Generate Homebrew'\''s manpages and shell completions'
     'gist-logs:Upload logs for a failed build of formula to a new Gist'
+    'help:Outputs the usage instructions for `brew` command'
     'home:Open a formula or cask'\''s homepage in a browser, or open Homebrew'\''s own homepage if no argument is provided'
     'info:Display brief statistics for your Homebrew installation'
     'install:Install a formula or cask'
@@ -1168,7 +1169,7 @@ _brew_lc() {
   _arguments \
     '(--json)--debug[Display any debugging information]' \
     '(--tap --installed)--eval-all[Evaluate all available formulae and casks, whether installed or not, to check them]' \
-    '(--formula)--extract-plist[Include casks using the ExtractPlist livecheck strategy]' \
+    '(--formula)--extract-plist[Enable checking multiple casks with ExtractPlist strategy]' \
     '--full-name[Print formulae and casks with fully-qualified names]' \
     '--help[Show this message]' \
     '(--tap --eval-all)--installed[Check formulae and casks that are currently installed]' \
@@ -1255,7 +1256,7 @@ _brew_livecheck() {
   _arguments \
     '(--json)--debug[Display any debugging information]' \
     '(--tap --installed)--eval-all[Evaluate all available formulae and casks, whether installed or not, to check them]' \
-    '(--formula)--extract-plist[Include casks using the ExtractPlist livecheck strategy]' \
+    '(--formula)--extract-plist[Enable checking multiple casks with ExtractPlist strategy]' \
     '--full-name[Print formulae and casks with fully-qualified names]' \
     '--help[Show this message]' \
     '(--tap --eval-all)--installed[Check formulae and casks that are currently installed]' \
@@ -1744,9 +1745,7 @@ _brew_tap() {
     '--debug[Display any debugging information]' \
     '--eval-all[Evaluate all the formulae, casks and aliases in the new tap to check validity. Implied if `HOMEBREW_EVAL_ALL` is set]' \
     '--force[Force install core taps even under API mode]' \
-    '--force-auto-update[Auto-update tap even if it is not hosted on GitHub. By default, only taps hosted on GitHub are auto-updated (for performance reasons)]' \
     '--help[Show this message]' \
-    '--no-force-auto-update[Auto-update tap even if it is not hosted on GitHub. By default, only taps hosted on GitHub are auto-updated (for performance reasons)]' \
     '--quiet[Make some output more quiet]' \
     '--repair[Migrate tapped formulae from symlink-based to directory-based structure]' \
     '--verbose[Make some output more verbose]' \
