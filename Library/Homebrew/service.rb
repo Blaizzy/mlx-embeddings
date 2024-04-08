@@ -581,11 +581,11 @@ module Homebrew
         when String
           replace_placeholders(api_hash["run"])
         when Array
-          api_hash["run"].map(&method(:replace_placeholders))
+          api_hash["run"].map { replace_placeholders(_1) }
         when Hash
           api_hash["run"].to_h do |key, elem|
             run_cmd = if elem.is_a?(Array)
-              elem.map(&method(:replace_placeholders))
+              elem.map { replace_placeholders(_1) }
             else
               replace_placeholders(elem)
             end
