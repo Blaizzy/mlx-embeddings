@@ -8,10 +8,14 @@ require "exceptions"
 
 module Homebrew
   module Attestation
+    # @api private
     HOMEBREW_CORE_REPO = "Homebrew/homebrew-core"
+    # @api private
     HOMEBREW_CORE_CI_URI = "https://github.com/Homebrew/homebrew-core/.github/workflows/publish-commit-bottles.yml@refs/heads/master"
 
+    # @api private
     BACKFILL_REPO = "trailofbits/homebrew-brew-verify"
+    # @api private
     BACKFILL_REPO_CI_URI = "https://github.com/trailofbits/homebrew-brew-verify/.github/workflows/backfill_signatures.yml@refs/heads/main"
 
     # No backfill attestations after this date are considered valid.
@@ -28,7 +32,7 @@ module Homebrew
     # `https://github/OWNER/REPO/.github/workflows/WORKFLOW.yml@REF` format.
     #
     # @return [Hash] the JSON-decoded response.
-    # @raises [InvalidAttestationError] on any verification failures.
+    # @raise [InvalidAttestationError] on any verification failures
     #
     # @api private
     def self.check_attestation(bottle, signing_repo, signing_workflow = nil)
@@ -57,6 +61,11 @@ module Homebrew
     # from homebrew-core's CI, falling back on a "backfill" attestation for older bottles.
     #
     # This is a specialization of `check_attestation` for homebrew-core.
+    #
+    # @return [Hash] the JSON-decoded response
+    # @raise [InvalidAttestationError] on any verification failures
+    #
+    # @api private
     def self.check_core_attestation(bottle)
       begin
         attestation = check_attestation bottle, HOMEBREW_CORE_REPO
