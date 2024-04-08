@@ -16,7 +16,7 @@ module Homebrew
 
     # No backfill attestations after this date are considered valid.
     # @api private
-    BACKFILL_CUTOFF = DateTime.new(2024, 3, 14)
+    BACKFILL_CUTOFF = DateTime.new(2024, 3, 14).freeze
 
     # Verifies the given bottle against a cryptographic attestation of build provenance.
     #
@@ -34,9 +34,7 @@ module Homebrew
     def self.check_attestation(bottle, signing_repo, signing_workflow = nil)
       cmd = [HOMEBREW_GH, "attestation", "verify", bottle.cached_download, "--repo", signing_repo, "--format", "json"]
 
-      unless signing_workflow.nil?
-        cmd += ["--cert-identity", signing_workflow]
-      end
+      cmd += ["--cert-identity", signing_workflow] unless signing_workflow.nil?
 
       begin
         output = Utils.safe_popen_read(*cmd)
@@ -46,7 +44,7 @@ module Homebrew
 
       begin
         data = JSON.parse(output)
-      rescue JSON::ParserError => e
+      rescue JSON::ParserError
         raise InvalidAttestationError, "attestation verification returned malformed JSON"
       end
 
