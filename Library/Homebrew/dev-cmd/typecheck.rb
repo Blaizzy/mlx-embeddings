@@ -59,7 +59,7 @@ module Homebrew
             if args.suggest_typed?
               ohai "Bumping Sorbet `typed` sigils..."
               # --sorbet needed because of https://github.com/Shopify/spoom/issues/488
-              safe_system "bundle", "exec", "spoom", "bump", "--dry", "--sorbet",
+              safe_system "bundle", "exec", "spoom", "srb", "bump", "--dry", "--sorbet",
                           "#{Gem.bin_path("sorbet", "srb")} tc"
             end
 
