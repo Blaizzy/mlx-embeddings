@@ -170,6 +170,197 @@ RSpec.describe FormulaInstaller do
     end
   end
 
+  describe "#forbidden_license_check" do
+    it "raises on forbidden license on formula" do
+      ENV["HOMEBREW_FORBIDDEN_LICENSES"] = "AGPL-3.0"
+
+      f_name = "homebrew-forbidden-license"
+      f_path = CoreTap.instance.new_formula_path(f_name)
+      f_path.write <<~RUBY
+        class #{Formulary.class_s(f_name)} < Formula
+          url "foo"
+          version "0.1"
+          license "AGPL-3.0"
+        end
+      RUBY
+      Formulary.cache.delete(f_path)
+
+      f = Formulary.factory(f_name)
+      fi = described_class.new(f)
+
+      expect do
+        fi.forbidden_license_check
+      end.to raise_error(CannotInstallFormulaError, /#{f_name}'s licenses are all forbidden/)
+    end
+
+    it "raises on forbidden license on formula with contact instructions" do
+      ENV["HOMEBREW_FORBIDDEN_LICENSES"] = "AGPL-3.0"
+      ENV["HOMEBREW_FORBIDDEN_OWNER"] = owner = "your dog"
+      ENV["HOMEBREW_FORBIDDEN_OWNER_CONTACT"] = contact = "Woof loudly to get this unblocked."
+
+      f_name = "homebrew-forbidden-license"
+      f_path = CoreTap.instance.new_formula_path(f_name)
+      f_path.write <<~RUBY
+        class #{Formulary.class_s(f_name)} < Formula
+          url "foo"
+          version "0.1"
+          license "AGPL-3.0"
+        end
+      RUBY
+      Formulary.cache.delete(f_path)
+
+      f = Formulary.factory(f_name)
+      fi = described_class.new(f)
+
+      expect do
+        fi.forbidden_license_check
+      end.to raise_error(CannotInstallFormulaError, /#{owner}.+\n#{contact}/m)
+    end
+
+    it "raises on forbidden license on dependency" do
+      ENV["HOMEBREW_FORBIDDEN_LICENSES"] = "GPL-3.0"
+
+      dep_name = "homebrew-forbidden-dependency-license"
+      dep_path = CoreTap.instance.new_formula_path(dep_name)
+      dep_path.write <<~RUBY
+        class #{Formulary.class_s(dep_name)} < Formula
+          url "foo"
+          version "0.1"
+          license "GPL-3.0"
+        end
+      RUBY
+      Formulary.cache.delete(dep_path)
+
+      f_name = "homebrew-forbidden-dependent-license"
+      f_path = CoreTap.instance.new_formula_path(f_name)
+      f_path.write <<~RUBY
+        class #{Formulary.class_s(f_name)} < Formula
+          url "foo"
+          version "0.1"
+          depends_on "#{dep_name}"
+        end
+      RUBY
+      Formulary.cache.delete(f_path)
+
+      f = Formulary.factory(f_name)
+      fi = described_class.new(f)
+
+      expect do
+        fi.forbidden_license_check
+      end.to raise_error(CannotInstallFormulaError, /dependency on #{dep_name} where all/)
+    end
+  end
+
+  describe "#forbidden_tap_check" do
+    it "raises on forbidden tap on formula" do
+      ENV["HOMEBREW_FORBIDDEN_TAPS"] = f_tap = "homebrew/forbidden"
+      f_name = "homebrew-forbidden-tap"
+      f_path = Tap.fetch(f_tap).new_formula_path(f_name)
+      f_path.parent.mkpath
+      f_path.write <<~RUBY
+        class #{Formulary.class_s(f_name)} < Formula
+          url "foo"
+          version "0.1"
+        end
+      RUBY
+      Formulary.cache.delete(f_path)
+
+      f = Formulary.factory("#{f_tap}/#{f_name}")
+      fi = described_class.new(f)
+
+      expect do
+        fi.forbidden_tap_check
+      end.to raise_error(CannotInstallFormulaError, /has the tap #{f_tap}/)
+    ensure
+      f_path.parent.parent.rmtree
+    end
+
+    it "raises on forbidden tap on dependency" do
+      ENV["HOMEBREW_FORBIDDEN_TAPS"] = dep_tap = "homebrew/forbidden"
+      dep_name = "homebrew-forbidden-dependency-tap"
+      dep_path = Tap.fetch(dep_tap).new_formula_path(dep_name)
+      dep_path.parent.mkpath
+      dep_path.write <<~RUBY
+        class #{Formulary.class_s(dep_name)} < Formula
+          url "foo"
+          version "0.1"
+        end
+      RUBY
+      Formulary.cache.delete(dep_path)
+
+      f_name = "homebrew-forbidden-dependent-tap"
+      f_path = CoreTap.instance.new_formula_path(f_name)
+      f_path.write <<~RUBY
+        class #{Formulary.class_s(f_name)} < Formula
+          url "foo"
+          version "0.1"
+          depends_on "#{dep_name}"
+        end
+      RUBY
+      Formulary.cache.delete(f_path)
+
+      f = Formulary.factory(f_name)
+      fi = described_class.new(f)
+
+      expect do
+        fi.forbidden_tap_check
+      end.to raise_error(CannotInstallFormulaError, /but the #{dep_tap} tap was forbidden/)
+    ensure
+      dep_path.parent.parent.rmtree
+    end
+  end
+
+  describe "#forbidden_formula_check" do
+    it "raises on forbidden formula" do
+      ENV["HOMEBREW_FORBIDDEN_FORMULAE"] = f_name = "homebrew-forbidden-formula"
+      f_path = CoreTap.instance.new_formula_path(f_name)
+      f_path.write <<~RUBY
+        class #{Formulary.class_s(f_name)} < Formula
+          url "foo"
+          version "0.1"
+        end
+      RUBY
+      Formulary.cache.delete(f_path)
+
+      f = Formulary.factory(f_name)
+      fi = described_class.new(f)
+
+      expect do
+        fi.forbidden_formula_check
+      end.to raise_error(CannotInstallFormulaError, /#{f_name} was forbidden/)
+    end
+
+    it "raises on forbidden dependency" do
+      ENV["HOMEBREW_FORBIDDEN_FORMULAE"] = dep_name = "homebrew-forbidden-dependency-formula"
+      dep_path = CoreTap.instance.new_formula_path(dep_name)
+      dep_path.write <<~RUBY
+        class #{Formulary.class_s(dep_name)} < Formula
+          url "foo"
+          version "0.1"
+        end
+      RUBY
+      Formulary.cache.delete(dep_path)
+
+      f_name = "homebrew-forbidden-dependent-formula"
+      f_path = CoreTap.instance.new_formula_path(f_name)
+      f_path.write <<~RUBY
+        class #{Formulary.class_s(f_name)} < Formula
+          url "foo"
+          version "0.1"
+          depends_on "#{dep_name}"
+        end
+      RUBY
+      Formulary.cache.delete(f_path)
+
+      f = Formulary.factory(f_name)
+      fi = described_class.new(f)
+
+      expect do
+        fi.forbidden_formula_check
+      end.to raise_error(CannotInstallFormulaError, /#{dep_name} formula was forbidden/)
+    end
+  end
+
   specify "install fails with BuildError when a system() call fails" do
     ENV["HOMEBREW_TEST_NO_EXIT_CLEANUP"] = "1"
     ENV["FAILBALL_BUILD_ERROR"] = "1"

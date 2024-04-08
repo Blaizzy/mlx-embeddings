@@ -217,7 +217,10 @@ class FormulaInstaller
     Tab.clear_cache
 
     verify_deps_exist unless ignore_deps?
+
     forbidden_license_check
+    forbidden_tap_check
+    forbidden_formula_check
 
     check_install_sanity
     install_fetch_deps unless ignore_deps?
@@ -1315,6 +1318,134 @@ on_request: installed_on_request?, options:)
     @locked ||= []
   end
 
+  sig { void }
+  def forbidden_license_check
+    forbidden_licenses = Homebrew::EnvConfig.forbidden_licenses.to_s.dup
+    SPDX::ALLOWED_LICENSE_SYMBOLS.each do |s|
+      pattern = /#{s.to_s.tr("_", " ")}/i
+      forbidden_licenses.sub!(pattern, s.to_s)
+    end
+    forbidden_licenses = forbidden_licenses.split.to_h do |license|
+      [license, SPDX.license_version_info(license)]
+    end
+
+    return if forbidden_licenses.blank?
+
+    owner = Homebrew::EnvConfig.forbidden_owner
+    owner_contact = if (contact = Homebrew::EnvConfig.forbidden_owner_contact.presence)
+      "\n#{contact}"
+    end
+
+    unless ignore_deps?
+      compute_dependencies.each do |(dep, _options)|
+        dep_f = dep.to_formula
+        next unless SPDX.licenses_forbid_installation? dep_f.license, forbidden_licenses
+
+        raise CannotInstallFormulaError, <<~EOS
+          The installation of #{formula.name} has a dependency on #{dep.name} where all
+          its licenses were forbidden by #{owner} in `HOMEBREW_FORBIDDEN_LICENSES`:
+            #{SPDX.license_expression_to_string dep_f.license}.#{owner_contact}
+        EOS
+      end
+    end
+
+    return if only_deps?
+
+    return unless SPDX.licenses_forbid_installation? formula.license, forbidden_licenses
+
+    raise CannotInstallFormulaError, <<~EOS
+      #{formula.name}'s licenses are all forbidden by #{owner} in `HOMEBREW_FORBIDDEN_LICENSES`:
+        #{SPDX.license_expression_to_string formula.license}.#{owner_contact}
+    EOS
+  end
+
+  sig { void }
+  def forbidden_tap_check
+    forbidden_taps = Homebrew::EnvConfig.forbidden_taps
+    return if forbidden_taps.blank?
+
+    forbidden_taps_set = Set.new(forbidden_taps.split.filter_map do |tap|
+      Tap.fetch(tap)
+    rescue Tap::InvalidNameError
+      opoo "Invalid tap name in `HOMEBREW_FORBIDDEN_TAPS`: #{tap}"
+      nil
+    end)
+
+    owner = Homebrew::EnvConfig.forbidden_owner
+    owner_contact = if (contact = Homebrew::EnvConfig.forbidden_owner_contact.presence)
+      "\n#{contact}"
+    end
+
+    unless ignore_deps?
+      compute_dependencies.each do |(dep, _options)|
+        dep_tap = dep.tap
+        next if dep_tap.blank?
+        next unless forbidden_taps_set.include?(dep_tap)
+
+        raise CannotInstallFormulaError, <<~EOS
+          The installation of #{formula.name} has a dependency #{dep.name}
+          but the #{dep_tap} tap was forbidden by #{owner} in `HOMEBREW_FORBIDDEN_TAPS`.#{owner_contact}
+        EOS
+      end
+    end
+
+    return if only_deps?
+
+    formula_tap = formula.tap
+    return if formula_tap.blank?
+    return unless forbidden_taps_set.include?(formula_tap)
+
+    raise CannotInstallFormulaError, <<~EOS
+      The installation of #{formula.full_name} has the tap #{formula_tap}
+      which was forbidden by #{owner} in `HOMEBREW_FORBIDDEN_TAPS`.#{owner_contact}
+    EOS
+  end
+
+  sig { void }
+  def forbidden_formula_check
+    forbidden_formulae = Set.new(Homebrew::EnvConfig.forbidden_formulae.to_s.split)
+    return if forbidden_formulae.blank?
+
+    owner = Homebrew::EnvConfig.forbidden_owner
+    owner_contact = if (contact = Homebrew::EnvConfig.forbidden_owner_contact.presence)
+      "\n#{contact}"
+    end
+
+    unless ignore_deps?
+      compute_dependencies.each do |(dep, _options)|
+        dep_name = if forbidden_formulae.include?(dep.name)
+          dep.name
+        elsif dep.tap.present? &&
+              (dep_full_name = "#{dep.tap}/#{dep.name}") &&
+              forbidden_formulae.include?(dep_full_name)
+          dep_full_name
+        else
+          next
+        end
+
+        raise CannotInstallFormulaError, <<~EOS
+          The installation of #{formula.name} has a dependency #{dep_name}
+          but the #{dep_name} formula was forbidden by #{owner} in `HOMEBREW_FORBIDDEN_FORMULAE`.#{owner_contact}
+        EOS
+      end
+    end
+
+    return if only_deps?
+
+    formula_name = if forbidden_formulae.include?(formula.name)
+      formula.name
+    elsif forbidden_formulae.include?(formula.full_name)
+      formula.full_name
+    else
+      return
+    end
+
+    raise CannotInstallFormulaError, <<~EOS
+      The installation of #{formula_name} was forbidden by #{owner}
+      in `HOMEBREW_FORBIDDEN_FORMULAE`.#{owner_contact}
+    EOS
+  end
+
   private
 
   attr_predicate :hold_locks?
@@ -1348,40 +1479,5 @@ on_request: installed_on_request?, options:)
     return if @requirement_messages.empty?
 
     $stderr.puts @requirement_messages
-  end
-
-  sig { void }
-  def forbidden_license_check
-    forbidden_licenses = Homebrew::EnvConfig.forbidden_licenses.to_s.dup
-    SPDX::ALLOWED_LICENSE_SYMBOLS.each do |s|
-      pattern = /#{s.to_s.tr("_", " ")}/i
-      forbidden_licenses.sub!(pattern, s.to_s)
-    end
-    forbidden_licenses = forbidden_licenses.split.to_h do |license|
-      [license, SPDX.license_version_info(license)]
-    end
-
-    return if forbidden_licenses.blank?
-    return if ignore_deps?
-
-    compute_dependencies.each do |(dep, _options)|
-      dep_f = dep.to_formula
-      next unless SPDX.licenses_forbid_installation? dep_f.license, forbidden_licenses
-
-      raise CannotInstallFormulaError, <<~EOS
-        The installation of #{formula.name} has a dependency on #{dep.name} where all
-        its licenses are forbidden by HOMEBREW_FORBIDDEN_LICENSES:
-          #{SPDX.license_expression_to_string dep_f.license}.
-      EOS
-    end
-
-    return if only_deps?
-
-    return unless SPDX.licenses_forbid_installation? formula.license, forbidden_licenses
-
-    raise CannotInstallFormulaError, <<~EOS
-      #{formula.name}'s licenses are all forbidden by HOMEBREW_FORBIDDEN_LICENSES:
-        #{SPDX.license_expression_to_string formula.license}.
-    EOS
   end
 end

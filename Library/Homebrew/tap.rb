@@ -39,12 +39,14 @@ class Tap
     #{HOMEBREW_TAP_STYLE_EXCEPTIONS_DIR}/*.json
   ].freeze
 
+  class InvalidNameError < ArgumentError; end
+
   sig { params(user: String, repo: String).returns(Tap) }
   def self.fetch(user, repo = T.unsafe(nil))
     user, repo = user.split("/", 2) if repo.nil?
 
     if [user, repo].any? { |part| part.nil? || part.include?("/") }
-      raise ArgumentError, "Invalid tap name: '#{[*user, *repo].join("/")}'"
+      raise InvalidNameError, "Invalid tap name: '#{[*user, *repo].join("/")}'"
     end
 
     user = T.must(user)

@@ -324,4 +324,77 @@ RSpec.describe Cask::Installer, :cask do
       expect(Cask::CaskLoader.load(cask_path("local-caffeine"))).not_to be_installed
     end
   end
+
+  describe "#forbidden_tap_check" do
+    it "raises on forbidden tap on cask" do
+      ENV["HOMEBREW_FORBIDDEN_TAPS"] = tap = "homebrew/forbidden"
+
+      cask = Cask::Cask.new("homebrew-forbidden-tap", tap: Tap.fetch(tap)) do
+        url "file://#{TEST_FIXTURE_DIR}/cask/container.tar.gz"
+      end
+
+      expect do
+        described_class.new(cask).forbidden_tap_check
+      end.to raise_error(Cask::CaskCannotBeInstalledError, /has the tap #{tap}/)
+    end
+
+    it "raises on forbidden tap on dependency" do
+      ENV["HOMEBREW_FORBIDDEN_TAPS"] = dep_tap = "homebrew/forbidden"
+      dep_name = "homebrew-forbidden-dependency-tap"
+      dep_path = Tap.fetch(dep_tap).new_formula_path(dep_name)
+      dep_path.parent.mkpath
+      dep_path.write <<~RUBY
+        class #{Formulary.class_s(dep_name)} < Formula
+          url "foo"
+          version "0.1"
+        end
+      RUBY
+      Formulary.cache.delete(dep_path)
+
+      cask = Cask::Cask.new("homebrew-forbidden-dependent-tap") do
+        url "file://#{TEST_FIXTURE_DIR}/cask/container.tar.gz"
+        depends_on formula: dep_name
+      end
+
+      expect do
+        described_class.new(cask).forbidden_tap_check
+      end.to raise_error(Cask::CaskCannotBeInstalledError, /but the #{dep_tap} tap was forbidden/)
+    ensure
+      dep_path.parent.parent.rmtree
+    end
+  end
+
+  describe "#forbidden_cask_and_formula_check" do
+    it "raises on forbidden cask" do
+      ENV["HOMEBREW_FORBIDDEN_CASKS"] = cask_name = "homebrew-forbidden-cask"
+      cask = Cask::Cask.new(cask_name) do
+        url "file://#{TEST_FIXTURE_DIR}/cask/container.tar.gz"
+      end
+
+      expect do
+        described_class.new(cask).forbidden_cask_and_formula_check
+      end.to raise_error(Cask::CaskCannotBeInstalledError, /#{cask_name} was forbidden/)
+    end
+
+    it "raises on forbidden dependency" do
+      ENV["HOMEBREW_FORBIDDEN_FORMULAE"] = dep_name = "homebrew-forbidden-dependency-formula"
+      dep_path = CoreTap.instance.new_formula_path(dep_name)
+      dep_path.write <<~RUBY
+        class #{Formulary.class_s(dep_name)} < Formula
+          url "foo"
+          version "0.1"
+        end
+      RUBY
+      Formulary.cache.delete(dep_path)
+
+      cask = Cask::Cask.new("homebrew-forbidden-dependent-cask") do
+        url "file://#{TEST_FIXTURE_DIR}/cask/container.tar.gz"
+        depends_on formula: dep_name
+      end
+
+      expect do
+        described_class.new(cask).forbidden_cask_and_formula_check
+      end.to raise_error(Cask::CaskCannotBeInstalledError, /#{dep_name} formula was forbidden/)
+    end
+  end
 end

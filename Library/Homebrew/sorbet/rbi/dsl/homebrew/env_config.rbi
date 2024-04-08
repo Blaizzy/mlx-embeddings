@@ -106,7 +106,22 @@ module Homebrew::EnvConfig
     def fail_log_lines; end
 
     sig { returns(T.nilable(::String)) }
+    def forbidden_casks; end
+
+    sig { returns(T.nilable(::String)) }
+    def forbidden_formulae; end
+
+    sig { returns(T.nilable(::String)) }
     def forbidden_licenses; end
+
+    sig { returns(String) }
+    def forbidden_owner; end
+
+    sig { returns(T.nilable(::String)) }
+    def forbidden_owner_contact; end
+
+    sig { returns(T.nilable(::String)) }
+    def forbidden_taps; end
 
     sig { returns(T::Boolean) }
     def force_brewed_ca_certificates?; end
