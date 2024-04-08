@@ -66,6 +66,8 @@ HOMEBREW_PULL_OR_COMMIT_URL_REGEX =
   %r[https://github\.com/([\w-]+)/([\w-]+)?/(?:pull/(\d+)|commit/[0-9a-fA-F]{4,40})]
 HOMEBREW_BOTTLES_EXTNAME_REGEX = /\.([a-z0-9_]+)\.bottle\.(?:(\d+)\.)?tar\.gz$/
 
+HOMEBREW_GH = Pathname(ENV.fetch("HOMEBREW_GH")).freeze
+
 require "env_config"
 require "macos_version"
 require "os"

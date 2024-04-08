@@ -783,3 +783,6 @@ class CyclicDependencyError < RuntimeError
     EOS
   end
 end
+
+# Raised when attestation verification fails.
+class InvalidAttestationError < RuntimeError; end

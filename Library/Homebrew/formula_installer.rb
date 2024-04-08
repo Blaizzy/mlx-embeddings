@@ -22,6 +22,7 @@ require "utils/spdx"
 require "deprecate_disable"
 require "unlink"
 require "service"
+require "attestation"
 
 # Installer for a formula.
 #
@@ -1256,6 +1257,11 @@ on_request: installed_on_request?, options:)
 
   sig { void }
   def pour
+    if Homebrew::EnvConfig.verify_attestations? && formula.tap&.core_tap?
+      ohai "Verifying attestation for #{formula.name}"
+      Homebrew::Attestation.check_core_attestation formula.bottle
+    end
+
     HOMEBREW_CELLAR.cd do
       downloader.stage
     end
