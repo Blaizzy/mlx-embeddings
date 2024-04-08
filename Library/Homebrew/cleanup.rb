@@ -345,7 +345,7 @@ module Homebrew
 
     def cleanup_formula(formula, quiet: false, ds_store: true, cache_db: true)
       formula.eligible_kegs_for_cleanup(quiet:)
-             .each(&method(:cleanup_keg))
+             .each { cleanup_keg(_1) }
       cleanup_cache(Pathname.glob(cache/"#{formula.name}{_bottle_manifest,}--*").map { |path| { path:, type: nil } })
       rm_ds_store([formula.rack]) if ds_store
       cleanup_cache_db(formula.rack) if cache_db
@@ -687,7 +687,7 @@ module Homebrew
       formulae = Formula.installed
       # Remove formulae listed in HOMEBREW_NO_CLEANUP_FORMULAE and their dependencies.
       if Homebrew::EnvConfig.no_cleanup_formulae.present?
-        formulae -= formulae.select(&method(:skip_clean_formula?))
+        formulae -= formulae.select { skip_clean_formula?(_1) }
                             .flat_map { |f| [f, *f.runtime_formula_dependencies] }
       end
       casks = Cask::Caskroom.casks

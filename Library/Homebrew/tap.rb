@@ -624,7 +624,7 @@ class Tap
         formula_dir.children
       else
         formula_dir.find
-      end.select(&method(:formula_file?))
+      end.select { formula_file?(_1) }
     else
       []
     end
@@ -647,7 +647,7 @@ class Tap
   sig { returns(T::Array[Pathname]) }
   def cask_files
     @cask_files ||= if cask_dir.directory?
-      cask_dir.find.select(&method(:ruby_file?))
+      cask_dir.find.select { ruby_file?(_1) }
     else
       []
     end
@@ -701,7 +701,7 @@ class Tap
   # An array of all {Formula} names of this {Tap}.
   sig { returns(T::Array[String]) }
   def formula_names
-    @formula_names ||= formula_files.map(&method(:formula_file_to_name))
+    @formula_names ||= formula_files.map { formula_file_to_name(_1) }
   end
 
   # A hash of all {Formula} name prefixes to versioned {Formula} in this {Tap}.
@@ -718,7 +718,7 @@ class Tap
   # An array of all {Cask} tokens of this {Tap}.
   sig { returns(T::Array[String]) }
   def cask_tokens
-    @cask_tokens ||= cask_files.map(&method(:formula_file_to_name))
+    @cask_tokens ||= cask_files.map { formula_file_to_name(_1) }
   end
 
   # path to the directory of all alias files for this {Tap}.
@@ -946,7 +946,7 @@ class Tap
   sig { returns(T::Array[Tap]) }
   def self.installed
     cache[:installed] ||= if TAP_DIRECTORY.directory?
-      TAP_DIRECTORY.subdirs.flat_map(&:subdirs).map(&method(:from_path))
+      TAP_DIRECTORY.subdirs.flat_map(&:subdirs).map { from_path(_1) }
     else
       []
     end

@@ -76,7 +76,7 @@ module Cask
 
     sig { returns(T::Array[Pathname]) }
     def pkgutil_bom_specials
-      @pkgutil_bom_specials ||= pkgutil_bom_all.select(&method(:special?))
+      @pkgutil_bom_specials ||= pkgutil_bom_all.select { special?(_1) }
     end
 
     sig { returns(T::Array[Pathname]) }
