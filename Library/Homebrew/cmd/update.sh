@@ -420,7 +420,7 @@ EOS
   then
     # we cannot install `gh` if homebrew/core is unavailable.
     # we don't enable attestations on `gh` itself, to prevent a bootstrap cycle.
-    if [[ -z "${HOMEBREW_CORE_AVAILABLE}" ]] || ! HOMEBREW_VERIFY_ATTESTATIONS='' brew install gh
+    if [[ -z "${HOMEBREW_CORE_AVAILABLE}" ]] || ! env -u HOMEBREW_VERIFY_ATTESTATIONS brew install gh
     then
       odie "'gh' must be installed and in your PATH!"
     fi
