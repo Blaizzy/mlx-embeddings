@@ -510,7 +510,7 @@ module Cask
           end
 
           # Directory counts as empty if it only contains a `.DS_Store`.
-          if children.include?(ds_store = resolved_path/".DS_Store")
+          if children.include?((ds_store = resolved_path/".DS_Store"))
             Utils.gain_permissions_remove(ds_store, command:)
             children.delete(ds_store)
           end
