@@ -1259,7 +1259,21 @@ on_request: installed_on_request?, options:)
   def pour
     if Homebrew::EnvConfig.verify_attestations? && formula.tap&.core_tap?
       ohai "Verifying attestation for #{formula.name}"
-      Homebrew::Attestation.check_core_attestation formula.bottle
+      begin
+        Homebrew::Attestation.check_core_attestation formula.bottle
+      rescue InvalidAttestationError => e
+        raise CannotInstallFormulaError, <<~EOS
+          The bottle for #{formula.name} has an invalid build provenance attestation.
+
+          This may indicate that the bottle was not produced by the expected
+          tap, or was maliciously inserted into the expected tap's bottle
+          storage.
+
+          Additional context:
+
+          #{e}
+        EOS
+      end
     end
 
     HOMEBREW_CELLAR.cd do

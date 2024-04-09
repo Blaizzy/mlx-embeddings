@@ -454,23 +454,8 @@ setup_git() {
   fi
 }
 
-setup_gh() {
-  # This is set by the user environment.
-  # shellcheck disable=SC2154
-  if [[ -n "${HOMEBREW_VERIFY_ATTESTATIONS}" && -x "${HOMEBREW_PREFIX}/opt/gh/bin/gh" ]]
-  then
-    HOMEBREW_GH="${HOMEBREW_PREFIX}/opt/gh/bin/gh"
-  elif [[ -n "${HOMEBREW_GH_PATH}" ]]
-  then
-    HOMEBREW_GH="${HOMEBREW_GH_PATH}"
-  else
-    HOMEBREW_GH="gh"
-  fi
-}
-
 setup_curl
 setup_git
-setup_gh
 
 HOMEBREW_VERSION="$("${HOMEBREW_GIT}" -C "${HOMEBREW_REPOSITORY}" describe --tags --dirty --abbrev=7 2>/dev/null)"
 HOMEBREW_USER_AGENT_VERSION="${HOMEBREW_VERSION}"
@@ -736,7 +721,6 @@ export HOMEBREW_API_DEFAULT_DOMAIN
 export HOMEBREW_BOTTLE_DEFAULT_DOMAIN
 export HOMEBREW_CURL_SPEED_LIMIT
 export HOMEBREW_CURL_SPEED_TIME
-export HOMEBREW_GH
 
 if [[ -n "${HOMEBREW_MACOS}" && -x "/usr/bin/xcode-select" ]]
 then

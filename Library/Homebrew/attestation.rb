@@ -22,6 +22,12 @@ module Homebrew
     # @api private
     BACKFILL_CUTOFF = DateTime.new(2024, 3, 14).freeze
 
+    def self.gh_executable
+      @gh_executable ||= with_env("HOMEBREW_VERIFY_ATTESTATIONS" => nil) do
+        ensure_executable!("gh")
+      end
+    end
+
     # Verifies the given bottle against a cryptographic attestation of build provenance.
     #
     # The provenance is verified as originating from `signing_repo`, which is a `String`
@@ -36,7 +42,8 @@ module Homebrew
     #
     # @api private
     def self.check_attestation(bottle, signing_repo, signing_workflow = nil)
-      cmd = [HOMEBREW_GH, "attestation", "verify", bottle.cached_download, "--repo", signing_repo, "--format", "json"]
+      cmd = [gh_executable, "attestation", "verify", bottle.cached_download, "--repo", signing_repo, "--format",
+             "json"]
 
       cmd += ["--cert-identity", signing_workflow] if signing_workflow.present?
 

@@ -15,7 +15,7 @@
 # HOMEBREW_LIBRARY, HOMEBREW_PREFIX, HOMEBREW_REPOSITORY are set by bin/brew
 # HOMEBREW_BREW_DEFAULT_GIT_REMOTE, HOMEBREW_BREW_GIT_REMOTE, HOMEBREW_CACHE, HOMEBREW_CELLAR, HOMEBREW_CURL
 # HOMEBREW_DEV_CMD_RUN, HOMEBREW_FORCE_BREWED_CURL, HOMEBREW_FORCE_BREWED_GIT, HOMEBREW_SYSTEM_CURL_TOO_OLD
-# HOMEBREW_USER_AGENT_CURL, HOMEBREW_GH are set by brew.sh
+# HOMEBREW_USER_AGENT_CURL are set by brew.sh
 # shellcheck disable=SC2154
 source "${HOMEBREW_LIBRARY}/Homebrew/utils/lock.sh"
 
@@ -413,17 +413,6 @@ ownership and permissions of ${HOMEBREW_REPOSITORY} back to your
 user account:
   sudo chown -R ${USER-\$(whoami)} ${HOMEBREW_REPOSITORY}
 EOS
-  fi
-
-  # we need `gh` if the user enables attestation verification
-  if [[ -n "${HOMEBREW_VERIFY_ATTESTATIONS}" && ! -x "${HOMEBREW_GH}" ]]
-  then
-    # we cannot install `gh` if homebrew/core is unavailable.
-    # we don't enable attestations on `gh` itself, to prevent a bootstrap cycle.
-    if [[ -z "${HOMEBREW_CORE_AVAILABLE}" ]] || ! env -u HOMEBREW_VERIFY_ATTESTATIONS brew install gh
-    then
-      odie "'gh' must be installed and in your PATH!"
-    fi
   fi
 
   # we may want to use Homebrew CA certificates
