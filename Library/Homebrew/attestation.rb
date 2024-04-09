@@ -22,7 +22,13 @@ module Homebrew
     # @api private
     BACKFILL_CUTOFF = DateTime.new(2024, 3, 14).freeze
 
+    # Returns a path to a suitable `gh` executable for attestation verification.
+    #
+    # @api private
     def self.gh_executable
+      # NOTE: We disable HOMEBREW_VERIFY_ATTESTATIONS when installing `gh` itself,
+      # to prevent a cycle during bootstrapping. This can eventually be resolved
+      # by vendoring a pure-Ruby Sigstore verifier client.
       @gh_executable ||= with_env("HOMEBREW_VERIFY_ATTESTATIONS" => nil) do
         ensure_executable!("gh")
       end
