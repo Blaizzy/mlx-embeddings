@@ -338,6 +338,9 @@ Unless \fBHOMEBREW_NO_INSTALL_UPGRADE\fP is set, \fBbrew install\fP \fIformula\f
 \fB\-d\fP, \fB\-\-debug\fP
 If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory\.
 .TP
+\fB\-\-display\-times\fP
+Print install times for each package at the end of the run\.
+.TP
 \fB\-f\fP, \fB\-\-force\fP
 Install formulae without checking for previously installed keg\-only or non\-migrated versions\. When installing casks, overwrite existing files (binaries and symlinks are excluded, unless originally from the same cask)\.
 .TP
@@ -388,9 +391,6 @@ Install but skip any post\-install steps\.
 .TP
 \fB\-\-bottle\-arch\fP
 Optimise bottles for the specified architecture rather than the oldest architecture supported by the version of macOS the bottles are built on\.
-.TP
-\fB\-\-display\-times\fP
-Print install times for each package at the end of the run\.
 .TP
 \fB\-i\fP, \fB\-\-interactive\fP
 Download and patch \fIformula\fP, then open a shell\. This allows the user to run \fB\&\./configure \-\-help\fP and otherwise determine how to turn the software package into a Homebrew package\.
@@ -608,6 +608,9 @@ Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fP is set, \fBbrew cleanup\fP will then be
 \fB\-d\fP, \fB\-\-debug\fP
 If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory\.
 .TP
+\fB\-\-display\-times\fP
+Print install times for each package at the end of the run\.
+.TP
 \fB\-f\fP, \fB\-\-force\fP
 Install without checking for previously installed keg\-only or non\-migrated versions\.
 .TP
@@ -631,9 +634,6 @@ Retain the temporary files created during installation\.
 .TP
 \fB\-\-debug\-symbols\fP
 Generate debug symbols on build\. Source will be retained in a cache directory\.
-.TP
-\fB\-\-display\-times\fP
-Print install times for each formula at the end of the run\.
 .TP
 \fB\-g\fP, \fB\-\-git\fP
 Create a Git repository, useful for creating patches to the software\.
@@ -795,6 +795,9 @@ Unless \fBHOMEBREW_NO_INSTALL_CLEANUP\fP is set, \fBbrew cleanup\fP will then be
 \fB\-d\fP, \fB\-\-debug\fP
 If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory\.
 .TP
+\fB\-\-display\-times\fP
+Print install times for each package at the end of the run\.
+.TP
 \fB\-f\fP, \fB\-\-force\fP
 Install formulae without checking for previously installed keg\-only or non\-migrated versions\. When installing casks, overwrite existing files (binaries and symlinks are excluded, unless originally from the same cask)\.
 .TP
@@ -824,9 +827,6 @@ Retain the temporary files created during installation\.
 .TP
 \fB\-\-debug\-symbols\fP
 Generate debug symbols on build\. Source will be retained in a cache directory\.
-.TP
-\fB\-\-display\-times\fP
-Print install times for each package at the end of the run\.
 .TP
 \fB\-\-overwrite\fP
 Delete files that already exist in the prefix while linking\.

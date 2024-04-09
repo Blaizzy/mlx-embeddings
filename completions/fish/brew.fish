@@ -1279,7 +1279,7 @@ __fish_brew_complete_arg 'reinstall' -l colorpickerdir -d 'Target location for C
 __fish_brew_complete_arg 'reinstall' -l debug -d 'If brewing fails, open an interactive debugging session with access to IRB or a shell inside the temporary build directory'
 __fish_brew_complete_arg 'reinstall' -l debug-symbols -d 'Generate debug symbols on build. Source will be retained in a cache directory'
 __fish_brew_complete_arg 'reinstall' -l dictionarydir -d 'Target location for Dictionaries (default: `~/Library/Dictionaries`)'
-__fish_brew_complete_arg 'reinstall' -l display-times -d 'Print install times for each formula at the end of the run'
+__fish_brew_complete_arg 'reinstall' -l display-times -d 'Print install times for each package at the end of the run'
 __fish_brew_complete_arg 'reinstall' -l fontdir -d 'Target location for Fonts (default: `~/Library/Fonts`)'
 __fish_brew_complete_arg 'reinstall' -l force -d 'Install without checking for previously installed keg-only or non-migrated versions'
 __fish_brew_complete_arg 'reinstall' -l force-bottle -d 'Install from a bottle if it exists for the current or newest version of macOS, even if it would not normally be used for installation'
