@@ -538,6 +538,10 @@ upgrade *`formula`* if it is already installed but outdated.
 : If brewing fails, open an interactive debugging session with access to IRB or
   a shell inside the temporary build directory.
 
+`--display-times`
+
+: Print install times for each package at the end of the run.
+
 `-f`, `--force`
 
 : Install formulae without checking for previously installed keg-only or
@@ -623,10 +627,6 @@ upgrade *`formula`* if it is already installed but outdated.
 
 : Optimise bottles for the specified architecture rather than the oldest
   architecture supported by the version of macOS the bottles are built on.
-
-`--display-times`
-
-: Print install times for each package at the end of the run.
 
 `-i`, `--interactive`
 
@@ -980,6 +980,10 @@ the reinstalled formulae or, every 30 days, for all formulae.
 : If brewing fails, open an interactive debugging session with access to IRB or
   a shell inside the temporary build directory.
 
+`--display-times`
+
+: Print install times for each package at the end of the run.
+
 `-f`, `--force`
 
 : Install without checking for previously installed keg-only or non-migrated
@@ -1015,10 +1019,6 @@ the reinstalled formulae or, every 30 days, for all formulae.
 `--debug-symbols`
 
 : Generate debug symbols on build. Source will be retained in a cache directory.
-
-`--display-times`
-
-: Print install times for each formula at the end of the run.
 
 `-g`, `--git`
 
@@ -1281,6 +1281,10 @@ the upgraded formulae or, every 30 days, for all formulae.
 : If brewing fails, open an interactive debugging session with access to IRB or
   a shell inside the temporary build directory.
 
+`--display-times`
+
+: Print install times for each package at the end of the run.
+
 `-f`, `--force`
 
 : Install formulae without checking for previously installed keg-only or
@@ -1328,10 +1332,6 @@ the upgraded formulae or, every 30 days, for all formulae.
 `--debug-symbols`
 
 : Generate debug symbols on build. Source will be retained in a cache directory.
-
-`--display-times`
-
-: Print install times for each package at the end of the run.
 
 `--overwrite`
 
