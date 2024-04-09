@@ -42,16 +42,17 @@ module Homebrew
         ENV["PATH"] = PATH.new(ORIGINAL_PATHS).to_s
 
         if args.no_named?
-          git_log(HOMEBREW_REPOSITORY, args:)
+          git_log(HOMEBREW_REPOSITORY)
         else
-          path = args.named.to_paths.first
+          path = T.must(args.named.to_paths.first)
           tap = Tap.from_path(path)
-          git_log T.must(path).dirname, path, tap
+          git_log path.dirname, path, tap
         end
       end
 
       private
 
+      sig { params(cd_dir: Pathname, path: T.nilable(Pathname), tap: T.nilable(Tap)).void }
       def git_log(cd_dir, path = nil, tap = nil)
         cd cd_dir do
           repo = Utils.popen_read("git", "rev-parse", "--show-toplevel").chomp
@@ -79,7 +80,7 @@ module Homebrew
           git_args << "--oneline" if args.oneline?
           git_args << "-1" if args.public_send(:"1?")
           git_args << "--max-count" << args.max_count if args.max_count
-          git_args += ["--follow", "--", path] if path.present?
+          git_args += ["--follow", "--", path] if path&.file?
           system "git", "log", *git_args
         end
       end
