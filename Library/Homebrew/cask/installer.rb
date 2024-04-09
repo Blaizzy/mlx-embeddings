@@ -341,7 +341,7 @@ on_request: true)
       missing_formulae_and_casks = missing_cask_and_formula_dependencies
 
       if missing_formulae_and_casks.empty?
-        puts "All formula dependencies satisfied."
+        puts "All dependencies satisfied."
         return
       end
 

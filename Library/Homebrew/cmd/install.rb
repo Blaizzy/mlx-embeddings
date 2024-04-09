@@ -290,7 +290,7 @@ module Homebrew
           )
         end
 
-        return if installed_formulae.empty?
+        return if formulae.any? && installed_formulae.empty?
 
         Install.perform_preinstall_checks(cc: args.cc)
 
