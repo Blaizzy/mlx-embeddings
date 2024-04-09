@@ -38,7 +38,7 @@ module Homebrew
     def self.check_attestation(bottle, signing_repo, signing_workflow = nil)
       cmd = [HOMEBREW_GH, "attestation", "verify", bottle.cached_download, "--repo", signing_repo, "--format", "json"]
 
-      cmd += ["--cert-identity", signing_workflow] unless signing_workflow.nil?
+      cmd += ["--cert-identity", signing_workflow] if signing_workflow.present?
 
       begin
         output = Utils.safe_popen_read(*cmd)
@@ -52,7 +52,7 @@ module Homebrew
         raise InvalidAttestationError, "attestation verification returned malformed JSON"
       end
 
-      raise InvalidAttestationError, "attestation output is empty" if data.empty?
+      raise InvalidAttestationError, "attestation output is empty" if data.blank?
 
       data
     end
@@ -71,7 +71,7 @@ module Homebrew
         attestation = check_attestation bottle, HOMEBREW_CORE_REPO
         return attestation
       rescue InvalidAttestationError
-        odebug "falling back on backfilled attestation"
+        odebug "falling back on backfilled attestation for #{bottle}"
         backfill_attestation = check_attestation bottle, BACKFILL_REPO, BACKFILL_REPO_CI_URI
         timestamp = backfill_attestation.dig(0, "verificationResult", "verifiedTimestamps",
                                              0, "timestamp")
