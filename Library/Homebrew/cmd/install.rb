@@ -32,6 +32,9 @@ module Homebrew
         switch "-d", "--debug",
                description: "If brewing fails, open an interactive debugging session with access to IRB " \
                             "or a shell inside the temporary build directory."
+        switch "--display-times",
+               env:         :display_install_times,
+               description: "Print install times for each package at the end of the run."
         switch "-f", "--force",
                description: "Install formulae without checking for previously installed keg-only or " \
                             "non-migrated versions. When installing casks, overwrite existing files " \
@@ -102,10 +105,6 @@ module Homebrew
             depends_on:  "--build-bottle",
             description: "Optimise bottles for the specified architecture rather than the oldest " \
                          "architecture supported by the version of macOS the bottles are built on.",
-          }],
-          [:switch, "--display-times", {
-            env:         :display_install_times,
-            description: "Print install times for each package at the end of the run.",
           }],
           [:switch, "-i", "--interactive", {
             description: "Download and patch <formula>, then open a shell. This allows the user to " \
@@ -291,7 +290,7 @@ module Homebrew
           )
         end
 
-        return if installed_formulae.empty?
+        return if formulae.any? && installed_formulae.empty?
 
         Install.perform_preinstall_checks(cc: args.cc)
 

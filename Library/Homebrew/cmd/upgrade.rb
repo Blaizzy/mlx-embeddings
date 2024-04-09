@@ -28,6 +28,9 @@ module Homebrew
         switch "-d", "--debug",
                description: "If brewing fails, open an interactive debugging session with access to IRB " \
                             "or a shell inside the temporary build directory."
+        switch "--display-times",
+               env:         :display_install_times,
+               description: "Print install times for each package at the end of the run."
         switch "-f", "--force",
                description: "Install formulae without checking for previously installed keg-only or " \
                             "non-migrated versions. When installing casks, overwrite existing files " \
@@ -68,10 +71,6 @@ module Homebrew
           [:switch, "--debug-symbols", {
             depends_on:  "--build-from-source",
             description: "Generate debug symbols on build. Source will be retained in a cache directory.",
-          }],
-          [:switch, "--display-times", {
-            env:         :display_install_times,
-            description: "Print install times for each package at the end of the run.",
           }],
           [:switch, "--overwrite", {
             description: "Delete files that already exist in the prefix while linking.",
