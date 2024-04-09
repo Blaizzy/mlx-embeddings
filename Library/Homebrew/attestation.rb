@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "date"
@@ -28,7 +28,7 @@ module Homebrew
     # malicious backfilled signatures.
     #
     # @api private
-    BACKFILL_CUTOFF = DateTime.new(2024, 3, 14).freeze
+    BACKFILL_CUTOFF = T.let(DateTime.new(2024, 3, 14).freeze, DateTime)
 
     # Raised when attestation verification fails.
     #
@@ -38,13 +38,14 @@ module Homebrew
     # Returns a path to a suitable `gh` executable for attestation verification.
     #
     # @api private
+    sig { returns(Pathname) }
     def self.gh_executable
       # NOTE: We disable HOMEBREW_VERIFY_ATTESTATIONS when installing `gh` itself,
       # to prevent a cycle during bootstrapping. This can eventually be resolved
       # by vendoring a pure-Ruby Sigstore verifier client.
-      @gh_executable ||= with_env("HOMEBREW_VERIFY_ATTESTATIONS" => nil) do
+      @gh_executable ||= T.let(with_env("HOMEBREW_VERIFY_ATTESTATIONS" => nil) do
         ensure_executable!("gh")
-      end
+      end, T.nilable(Pathname))
     end
 
     # Verifies the given bottle against a cryptographic attestation of build provenance.
@@ -60,6 +61,10 @@ module Homebrew
     # @raise [InvalidAttestationError] on any verification failures
     #
     # @api private
+    sig {
+      params(bottle: Bottle, signing_repo: String,
+             signing_workflow: T.nilable(String)).returns(T::Hash[T.untyped, T.untyped])
+    }
     def self.check_attestation(bottle, signing_repo, signing_workflow = nil)
       cmd = [gh_executable, "attestation", "verify", bottle.cached_download, "--repo", signing_repo, "--format",
              "json"]
@@ -92,6 +97,7 @@ module Homebrew
     # @raise [InvalidAttestationError] on any verification failures
     #
     # @api private
+    sig { params(bottle: Bottle).returns(T::Hash[T.untyped, T.untyped]) }
     def self.check_core_attestation(bottle)
       begin
         attestation = check_attestation bottle, HOMEBREW_CORE_REPO
