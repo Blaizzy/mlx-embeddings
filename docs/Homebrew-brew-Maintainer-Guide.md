@@ -2,16 +2,6 @@
 
 This document describes a few components of the `Homebrew/brew` repository that are useful for maintainers to be aware of, but don't necessarily need to appear in documentation for most users and contributors.
 
-## Reviewing PRs
-
-Using `gh pr checkout NUMBER` is a super easy way to check out a PR branch using the GitHub CLI.
-
-When reviewing a PR, use "comment", "approve", or "request changes" when submitting based on the following guidelines:
-
-- Comment: if the PR isn't quite ready to be merged
-- Approve: if you feel that the PR is in a good state to be merged, even if there are non-blocking changes you'd like to be made
-- Request changes: if you feel strongly that the PR is likely to cause a problem for users or have another reason to oppose the PR.
-
 ## Merging PRs
 
 Merging is done using the standard "Merge" button in the `Homebrew/brew` repository to preserve history and GPG commit signing. The "Squash and Merge" and "Rebase and Merge" buttons are disabled.

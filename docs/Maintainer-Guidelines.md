@@ -15,6 +15,34 @@ All Homebrew maintainers are encouraged to contribute to all parts of the projec
 
 These documents are meant to serve as guiding principles. As a maintainer, you can make a call to either request changes from a contributor or help them out based on their comfort and previous contributions. Remember, as a team we [Prioritise Maintainers Over Users](Maintainers-Avoiding-Burnout.md) to avoid burnout. If you wish to change or discuss any of the guidelines: open a PR to suggest a change.
 
+## Reviewing PRs
+
+When reviewing a PR, use "approve", "approve with comments", "comment" or "request changes" when submitting based on the following guidelines:
+
+- ✅ Approve: if you feel that the PR looks good as is, you can ✅ approve it as-is.
+- ✅ Approve with comments: if you have a few questions or comments to be answered and the PR can be merged after they are addressed, you can ✅ approve with comments.
+  - Please trust that other maintainers will not merge the PR until the comments are addressed rather than e.g. making them wait another 24h to get another review.
+  - If auto-merge is enabled: you can disable it (add `automerge-skip` on homebrew-core/cask) if you want to ensure the PR is not merged until your comments are at least read.
+- 🗣️ Comment: if you need to ask questions before you can provide a ✅ approval but are fine with someone else providing a ✅ approval before you, provide a comment review and ask questions.
+- 🚫 Request changes: a last resort.
+  - When reviewing non-maintainers' PRs: this means "these changes must be made before this PR should be merged by anyone".
+    Other maintainers can dismiss this review when these changes have been made.
+  - When reviewing others maintainers' PRs: this is to be avoided whenever possible.
+    - Save it for "if this PR is merged before I personally have had a chance to ✅ approve it: it seems very likely to cause user-visible problems".
+    - It may be used by the Project Leader for "this functionality is not acceptable in Homebrew".
+      In that case: additional code changes should be held off until there's agreement that the functionality is acceptable.
+
+Relatedly:
+
+- The default option should be to ✅ approve, with or without comments.
+- Whenever possible, you should try to use the GitHub "suggestion" feature to edit the code how you would like it to be.
+  If you don't have time or can't be bothered: you probably don't have the time to review the PR properly.
+- We're a globally distributed team and this helps us move faster.
+- The PR review process is primarily a security measure, not a way to get consensus on the perfect code style before merging.
+- It is easy to make changes on a PR after approval, make follow-up PRs to address comments or revert PRs before a tag.
+- It is (nearly) impossible to merge a PR without approval.
+- Using `gh pr checkout <URL>` is a super easy way to check out a PR branch using the GitHub CLI.
+
 ## Mission
 
 Homebrew aims to be the missing package manager for macOS (and Linux). Its primary goal is to be useful to as many people as possible, while remaining maintainable to a professional, high standard by a small group of volunteers. Where possible and sensible, it should seek to use features of macOS to blend in with the macOS and Apple ecosystems. On Linux and Windows, it should seek to be as self-contained as possible.
