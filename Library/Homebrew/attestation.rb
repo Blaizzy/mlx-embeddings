@@ -30,6 +30,11 @@ module Homebrew
     # @api private
     BACKFILL_CUTOFF = DateTime.new(2024, 3, 14).freeze
 
+    # Raised when attestation verification fails.
+    #
+    # @api private
+    class InvalidAttestationError < RuntimeError; end
+
     # Returns a path to a suitable `gh` executable for attestation verification.
     #
     # @api private

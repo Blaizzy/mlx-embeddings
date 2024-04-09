@@ -1261,7 +1261,7 @@ on_request: installed_on_request?, options:)
       ohai "Verifying attestation for #{formula.name}"
       begin
         Homebrew::Attestation.check_core_attestation formula.bottle
-      rescue InvalidAttestationError => e
+      rescue Homebrew::Attestation::InvalidAttestationError => e
         raise CannotInstallFormulaError, <<~EOS
           The bottle for #{formula.name} has an invalid build provenance attestation.
 
