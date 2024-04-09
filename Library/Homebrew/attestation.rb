@@ -19,6 +19,14 @@ module Homebrew
     BACKFILL_REPO_CI_URI = "https://github.com/trailofbits/homebrew-brew-verify/.github/workflows/backfill_signatures.yml@refs/heads/main"
 
     # No backfill attestations after this date are considered valid.
+    #
+    # This date is shortly after the backfill operation for homebrew-core
+    # completed, as can be seen here: <https://github.com/trailofbits/homebrew-brew-verify/attestations>.
+    #
+    # In effect, this means that, even if an attacker is able to compromise the backfill
+    # signing workflow, they will be unable to convince a verifier to accept their newer,
+    # malicious backfilled signatures.
+    #
     # @api private
     BACKFILL_CUTOFF = DateTime.new(2024, 3, 14).freeze
 
