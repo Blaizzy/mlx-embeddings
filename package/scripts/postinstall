@@ -21,35 +21,15 @@ fi
 # add Git to path
 export PATH="/Library/Developer/CommandLineTools/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:${PATH}"
 
-# helpers for setting/unsetting Git's safe directory setting
-set_git_safe_directory() {
-  if git config --global --get-all safe.directory | grep -q "${1}"
-  then
-    return
-  fi
-  SET_GIT_SAFE_DIRECTORY="${1}"
-  git config --global --add safe.directory "${1}"
-}
-unset_git_safe_directory() {
-  if [[ -z "${SET_GIT_SAFE_DIRECTORY-}" ]]
-  then
-    return
-  fi
-
-  git config --global --unset safe.directory "${1}" || git config --global --unset-all safe.directory
-  if [[ ${SET_GIT_SAFE_DIRECTORY-} == "${1}" ]]
-  then
-    unset SET_GIT_SAFE_DIRECTORY
-  fi
-}
+# use `git -c key=value` to avoid writing to Git's global config
+# https://github.com/Homebrew/brew/issues/17067
+git=(git -c "safe.directory=${homebrew_directory}")
 
 # reset Git repository
 cd "${homebrew_directory}"
-set_git_safe_directory "${homebrew_directory}"
-git reset --hard
-git checkout --force master
-git branch | grep -v '\*' | xargs -n 1 git branch --delete --force || true
-unset_git_safe_directory "${homebrew_directory}"
+"${git[@]}" reset --hard
+"${git[@]}" checkout --force master
+"${git[@]}" branch | grep -v '\*' | xargs -n 1 "${git[@]}" branch --delete --force || true
 
 # move to /usr/local if on x86_64
 if [[ $(uname -m) == "x86_64" ]]
@@ -59,10 +39,8 @@ then
     cp -pRL "${homebrew_directory}/.git" "/usr/local/Homebrew/"
     mv "${homebrew_directory}/cache_api" "/usr/local/Homebrew/"
 
-    set_git_safe_directory /usr/local/Homebrew
-    git -C /usr/local/Homebrew reset --hard
-    git -C /usr/local/Homebrew checkout --force master
-    unset_git_safe_directory /usr/local/Homebrew
+    "${git[@]}" -C /usr/local/Homebrew reset --hard
+    "${git[@]}" -C /usr/local/Homebrew checkout --force master
   else
     mkdir -vp /usr/local/bin
     mv "${homebrew_directory}" "/usr/local/Homebrew/"
