@@ -100,7 +100,7 @@ module Homebrew
     sig { params(bottle: Bottle).returns(T::Hash[T.untyped, T.untyped]) }
     def self.check_core_attestation(bottle)
       begin
-        attestation = check_attestation bottle, HOMEBREW_CORE_REPO
+        attestation = check_attestation bottle, HOMEBREW_CORE_REPO, HOMEBREW_CORE_CI_URI
         return attestation
       rescue InvalidAttestationError
         odebug "falling back on backfilled attestation for #{bottle}"
