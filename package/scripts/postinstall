@@ -21,15 +21,17 @@ fi
 # add Git to path
 export PATH="/Library/Developer/CommandLineTools/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:${PATH}"
 
-# use `git -c key=value` to avoid writing to Git's global config
-# https://github.com/Homebrew/brew/issues/17067
-git=(git -c "safe.directory=${homebrew_directory}")
-
 # reset Git repository
 cd "${homebrew_directory}"
+# avoid writing user's global config file by making
+# "${homebrew_directory}/.gitconfig" the "global" config
+# https://git-scm.com/docs/git-config#SCOPES
+git=(env XDG_CONFIG_HOME="" HOME="${homebrew_directory}" git)
+"${git[@]}" config --global --add safe.directory "${homebrew_directory}"
 "${git[@]}" reset --hard
 "${git[@]}" checkout --force master
 "${git[@]}" branch | grep -v '\*' | xargs -n 1 "${git[@]}" branch --delete --force || true
+rm "${homebrew_directory}/.gitconfig"
 
 # move to /usr/local if on x86_64
 if [[ $(uname -m) == "x86_64" ]]
@@ -39,9 +41,11 @@ then
     cp -pRL "${homebrew_directory}/.git" "/usr/local/Homebrew/"
     mv "${homebrew_directory}/cache_api" "/usr/local/Homebrew/"
 
-    git=(git -c safe.directory="/usr/local/Homebrew")
+    git=(env XDG_CONFIG_HOME="" HOME="/usr/local/Homebrew" git)
+    "${git[@]}" config --global --add safe.directory /usr/local/Homebrew
     "${git[@]}" -C /usr/local/Homebrew reset --hard
     "${git[@]}" -C /usr/local/Homebrew checkout --force master
+    rm /usr/local/Homebrew/.gitconfig
   else
     mkdir -vp /usr/local/bin
     mv "${homebrew_directory}" "/usr/local/Homebrew/"
