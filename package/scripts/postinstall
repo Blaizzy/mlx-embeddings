@@ -39,6 +39,7 @@ then
     cp -pRL "${homebrew_directory}/.git" "/usr/local/Homebrew/"
     mv "${homebrew_directory}/cache_api" "/usr/local/Homebrew/"
 
+    git=(git -c safe.directory="/usr/local/Homebrew")
     "${git[@]}" -C /usr/local/Homebrew reset --hard
     "${git[@]}" -C /usr/local/Homebrew checkout --force master
   else
