@@ -11,13 +11,12 @@ RSpec.describe Homebrew::Attestation do
   let(:fake_bottle) { instance_double(Bottle, cached_download:) }
 
   describe "::gh_executable" do
-    before do
-      allow(attestation).to receive(:ensure_executable!)
+    it "calls ensure_executable" do
+      expect(attestation).to receive(:ensure_executable!)
+        .with("gh")
         .and_return(fake_gh)
-    end
 
-    it "returns a path to a gh executable" do
-      attestation.gh_executable == fake_gh
+      attestation.gh_executable
     end
   end
 
