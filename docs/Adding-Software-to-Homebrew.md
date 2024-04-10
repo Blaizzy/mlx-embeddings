@@ -314,10 +314,10 @@ For cask commits in the Homebrew Cask project, we like to include the applicatio
 
 Examples of good, clear commit summaries:
 
-* `Add Transmission.app v1.0`
-* `Upgrade Transmission.app to v2.82`
-* `Fix checksum in Transmission.app cask`
-* `Add CodeBox Latest`
+* `transmission 1.0 (new cask)`
+* `transmission 2.82`
+* `transmission: fix checksum`
+* `codebox latest (new cask)`
 
 Examples of difficult, unclear commit summaries:
 
