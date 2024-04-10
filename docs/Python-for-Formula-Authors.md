@@ -181,7 +181,7 @@ Remember: there are very limited cases for libraries (e.g. significant amounts o
 
 * `cryptography`: builds with `rust`
 
-* `certifi`: patched formula to allow any Python-based formulae to leverage the brewed CA certs (see https://github.com/orgs/Homebrew/discussions/4691).
+* `certifi`: patched formula to allow any Python-based formulae to leverage the brewed CA certs (see <https://github.com/orgs/Homebrew/discussions/4691>).
 
 ### Python declarations for libraries
 
