@@ -72,7 +72,7 @@ module Homebrew
       def html_template(title)
         <<~EOS
           ---
-          title: #{title}
+          title: '#{title}'
           layout: cask
           ---
           {{ content }}
