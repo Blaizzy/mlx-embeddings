@@ -423,6 +423,11 @@ class Bottle
     github_packages_manifest_resource_tab(github_packages_manifest_resource)
   end
 
+  sig { returns(Filename) }
+  def filename
+    Filename.create(resource.owner, @tag, @spec.rebuild)
+  end
+
   private
 
   def github_packages_manifest_resource_tab(github_packages_manifest_resource)

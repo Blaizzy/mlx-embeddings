@@ -78,14 +78,22 @@ module Homebrew
       end
 
       begin
-        data = JSON.parse(output)
+        attestations = JSON.parse(output)
       rescue JSON::ParserError
         raise InvalidAttestationError, "attestation verification returned malformed JSON"
       end
 
-      raise InvalidAttestationError, "attestation output is empty" if data.blank?
+      # `gh attestation verify` returns a JSON array of one or more results,
+      # for all attestations that match the input's digest. We want to additionally
+      # filter these down to just the attestation whose subject matches the bottle's name.
+      bottle_name = bottle.filename.to_s
+      attestation = attestations.find do |a|
+        a.dig("verificationResult", "statement", "subject", 0, "name") == bottle_name
+      end
 
-      data
+      raise InvalidAttestationError, "no attestation matches subject" if attestation.blank?
+
+      attestation
     end
 
     # Verifies the given bottle against a cryptographic attestation of build provenance
@@ -105,7 +113,7 @@ module Homebrew
       rescue InvalidAttestationError
         odebug "falling back on backfilled attestation for #{bottle}"
         backfill_attestation = check_attestation bottle, BACKFILL_REPO, BACKFILL_REPO_CI_URI
-        timestamp = backfill_attestation.dig(0, "verificationResult", "verifiedTimestamps",
+        timestamp = backfill_attestation.dig("verificationResult", "verifiedTimestamps",
                                              0, "timestamp")
 
         raise InvalidAttestationError, "backfill attestation is missing verified timestamp" if timestamp.nil?
