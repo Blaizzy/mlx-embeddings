@@ -427,7 +427,7 @@ class Keg
     link_dir("sbin", verbose:, dry_run:, overwrite:) { :skip_dir }
     link_dir("include", verbose:, dry_run:, overwrite:) do |relative_path|
       case relative_path.to_s
-      when %r{^postgresql@\d+/}
+      when /^postgresql@\d+/
         :mkpath
       else
         :link
@@ -446,7 +446,7 @@ class Keg
            /^fish/,
            %r{^lua/}, #  Lua, Lua51, Lua53 all need the same handling.
            %r{^guile/},
-           %r{^postgresql@\d+/},
+           /^postgresql@\d+/,
            *SHARE_PATHS
         :mkpath
       else
@@ -470,7 +470,7 @@ class Keg
            /^ocaml/,
            /^perl5/,
            "php",
-           %r{^postgresql@\d+/},
+           /^postgresql@\d+/,
            /^python[23]\.\d+/,
            /^R/,
            /^ruby/
