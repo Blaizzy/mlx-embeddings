@@ -11,6 +11,12 @@ module Homebrew
     module_function
 
     ENVS = {
+      HOMEBREW_API_AUTO_UPDATE_SECS:             {
+        description: "Check Homebrew's API for new formulae or cask data every " \
+                     "`HOMEBREW_API_AUTO_UPDATE_SECS` seconds. Alternatively, disable API auto-update " \
+                     "checks entirely with `HOMEBREW_NO_AUTO_UPDATE`.",
+        default:     450,
+      },
       HOMEBREW_API_DOMAIN:                       {
         description:  "Use this URL as the download mirror for Homebrew JSON API. " \
                       "If metadata files at that URL are temporarily unavailable, " \
@@ -33,11 +39,11 @@ module Homebrew
                      "to instead be downloaded from " \
                      "`http://localhost:8080/v2/homebrew/core/gettext/manifests/0.21`",
       },
-      HOMEBREW_API_AUTO_UPDATE_SECS:             {
-        description: "Check Homebrew's API for new formulae or cask data every " \
-                     "`HOMEBREW_API_AUTO_UPDATE_SECS` seconds. Alternatively, disable API auto-update " \
-                     "checks entirely with `HOMEBREW_NO_AUTO_UPDATE`.",
-        default:     450,
+      HOMEBREW_AUTOREMOVE:                       {
+        description: "If set, calls to `brew cleanup` and `brew uninstall` will automatically " \
+                     "remove unused formula dependents and if `HOMEBREW_NO_INSTALL_CLEANUP` is not set, " \
+                     "`brew cleanup` will start running `brew autoremove` periodically.",
+        boolean:     true,
       },
       HOMEBREW_AUTO_UPDATE_SECS:                 {
         description:  "Run `brew update` once every `HOMEBREW_AUTO_UPDATE_SECS` seconds before some commands, " \
@@ -45,12 +51,6 @@ module Homebrew
                       "disable auto-update entirely with `HOMEBREW_NO_AUTO_UPDATE`.",
         default_text: "`86400` (24 hours), `3600` (1 hour) if a developer command has been run " \
                       "or `300` (5 minutes) if `HOMEBREW_NO_INSTALL_FROM_API` is set.",
-      },
-      HOMEBREW_AUTOREMOVE:                       {
-        description: "If set, calls to `brew cleanup` and `brew uninstall` will automatically " \
-                     "remove unused formula dependents and if `HOMEBREW_NO_INSTALL_CLEANUP` is not set, " \
-                     "`brew cleanup` will start running `brew autoremove` periodically.",
-        boolean:     true,
       },
       HOMEBREW_BAT:                              {
         description: "If set, use `bat` for the `brew cat` command.",
@@ -119,6 +119,12 @@ module Homebrew
         default_text: "`https://github.com/Homebrew/homebrew-core`.",
         default:      HOMEBREW_CORE_DEFAULT_GIT_REMOTE,
       },
+      HOMEBREW_CURLRC:                           {
+        description: "If set to an absolute path (i.e. beginning with `/`), pass it with `--config` when invoking " \
+                     "`curl`(1). " \
+                     "If set but _not_ a valid path, do not pass `--disable`, which disables the " \
+                     "use of `.curlrc`.",
+      },
       HOMEBREW_CURL_PATH:                        {
         description: "Linux only: Set this value to a new enough `curl` executable for Homebrew to use.",
         default:     "curl",
@@ -130,12 +136,6 @@ module Homebrew
       HOMEBREW_CURL_VERBOSE:                     {
         description: "If set, pass `--verbose` when invoking `curl`(1).",
         boolean:     true,
-      },
-      HOMEBREW_CURLRC:                           {
-        description: "If set to an absolute path (i.e. beginning with `/`), pass it with `--config` when invoking " \
-                     "`curl`(1). " \
-                     "If set but _not_ a valid path, do not pass `--disable`, which disables the " \
-                     "use of `.curlrc`.",
       },
       HOMEBREW_DEBUG:                            {
         description: "If set, always assume `--debug` when running commands.",
@@ -228,16 +228,6 @@ module Homebrew
                      "of Ruby is new enough.",
         boolean:     true,
       },
-      HOMEBREW_GIT_EMAIL:                        {
-        description: "Set the Git author and committer email to this value.",
-      },
-      HOMEBREW_GIT_NAME:                         {
-        description: "Set the Git author and committer name to this value.",
-      },
-      HOMEBREW_GIT_PATH:                         {
-        description: "Linux only: Set this value to a new enough `git` executable for Homebrew to use.",
-        default:     "git",
-      },
       HOMEBREW_GITHUB_API_TOKEN:                 {
         description: "Use this personal access token for the GitHub API, for features such as " \
                      "`brew search`. You can create one at <https://github.com/settings/tokens>. If set, " \
@@ -252,6 +242,16 @@ module Homebrew
       },
       HOMEBREW_GITHUB_PACKAGES_USER:             {
         description: "Use this username when accessing the GitHub Packages Registry (where bottles may be stored).",
+      },
+      HOMEBREW_GIT_EMAIL:                        {
+        description: "Set the Git author and committer email to this value.",
+      },
+      HOMEBREW_GIT_NAME:                         {
+        description: "Set the Git author and committer name to this value.",
+      },
+      HOMEBREW_GIT_PATH:                         {
+        description: "Linux only: Set this value to a new enough `git` executable for Homebrew to use.",
+        default:     "git",
       },
       HOMEBREW_INSTALL_BADGE:                    {
         description:  "Print this text before the installation summary of each successful build.",
@@ -325,6 +325,13 @@ module Homebrew
                      "from-source SourceForge, some GNU & GNOME-hosted formulae to fail to download.",
         boolean:     true,
       },
+      HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK:    {
+        description: "If set, do not check for broken linkage of dependents or outdated dependents after " \
+                     "installing, upgrading or reinstalling formulae. This will result in fewer dependents " \
+                     "(and their dependencies) being upgraded or reinstalled but may result in more breakage " \
+                     "from running `brew install` <formula> or `brew upgrade` <formula>.",
+        boolean:     true,
+      },
       HOMEBREW_NO_INSTALL_CLEANUP:               {
         description: "If set, `brew install`, `brew upgrade` and `brew reinstall` will never automatically " \
                      "cleanup installed/upgraded/reinstalled formulae or all formulae every " \
@@ -342,13 +349,6 @@ module Homebrew
                      "outdated.",
         boolean:     true,
       },
-      HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK:    {
-        description: "If set, do not check for broken linkage of dependents or outdated dependents after " \
-                     "installing, upgrading or reinstalling formulae. This will result in fewer dependents " \
-                     "(and their dependencies) being upgraded or reinstalled but may result in more breakage " \
-                     "from running `brew install` <formula> or `brew upgrade` <formula>.",
-        boolean:     true,
-      },
       HOMEBREW_NO_UPDATE_REPORT_NEW:             {
         description: "If set, `brew update` will not show the list of newly added formulae/casks.",
         boolean:     true,
@@ -359,10 +359,6 @@ module Homebrew
       },
       HOMEBREW_PRY:                              {
         description: "If set, use Pry for the `brew irb` command.",
-        boolean:     true,
-      },
-      HOMEBREW_UPGRADE_GREEDY:                   {
-        description: "If set, pass `--greedy` to all cask upgrade commands.",
         boolean:     true,
       },
       HOMEBREW_SIMULATE_MACOS_ON_LINUX:          {
@@ -385,6 +381,11 @@ module Homebrew
                       "Git repositories over SSH.",
         default_text: "`$HOME/.ssh/config`",
       },
+      HOMEBREW_SUDO_THROUGH_SUDO_USER:           {
+        description: "If set, Homebrew will use the `SUDO_USER` environment variable to define the user to " \
+                     "`sudo`(8) through when running `sudo`(8).",
+        boolean:     true,
+      },
       HOMEBREW_SVN:                              {
         description:  "Use this as the `svn`(1) binary.",
         default_text: "A Homebrew-built Subversion (if installed), or the system-provided binary.",
@@ -392,11 +393,6 @@ module Homebrew
       HOMEBREW_SYSTEM_ENV_TAKES_PRIORITY:        {
         description: "If set in Homebrew's system-wide environment file (`/etc/homebrew/brew.env`), " \
                      "the system-wide environment file will be loaded last to override any prefix or user settings.",
-        boolean:     true,
-      },
-      HOMEBREW_SUDO_THROUGH_SUDO_USER:           {
-        description: "If set, Homebrew will use the `SUDO_USER` environment variable to define the user to " \
-                     "`sudo`(8) through when running `sudo`(8).",
         boolean:     true,
       },
       HOMEBREW_TEMP:                             {
@@ -411,6 +407,10 @@ module Homebrew
       HOMEBREW_UPDATE_TO_TAG:                    {
         description: "If set, always use the latest stable tag (even if developer commands " \
                      "have been run).",
+        boolean:     true,
+      },
+      HOMEBREW_UPGRADE_GREEDY:                   {
+        description: "If set, pass `--greedy` to all cask upgrade commands.",
         boolean:     true,
       },
       HOMEBREW_VERBOSE:                          {

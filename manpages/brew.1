@@ -2191,6 +2191,13 @@ User\-specific environment files take precedence over prefix\-specific files and
 .P
 Note that these files do not support shell variable expansion e\.g\. \fB$HOME\fP or command execution e\.g\. \fB$(cat file)\fP\&\.
 .TP
+\fBHOMEBREW_API_AUTO_UPDATE_SECS\fP
+Check Homebrew\[u2019]s API for new formulae or cask data every \fBHOMEBREW_API_AUTO_UPDATE_SECS\fP seconds\. Alternatively, disable API auto\-update checks entirely with \fBHOMEBREW_NO_AUTO_UPDATE\fP\&\.
+.RS
+.P
+\fIDefault:\fP \fB450\fP\&\.
+.RE
+.TP
 \fBHOMEBREW_API_DOMAIN\fP
 Use this URL as the download mirror for Homebrew JSON API\. If metadata files at that URL are temporarily unavailable, the default API domain will be used as a fallback mirror\.
 .RS
@@ -2208,12 +2215,8 @@ Linux only: Pass this value to a type name representing the compiler\[u2019]s \f
 \fBHOMEBREW_ARTIFACT_DOMAIN\fP
 Prefix all download URLs, including those for bottles, with this value\. For example, \fBHOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080\fP will cause a formula with the URL \fBhttps://example\.com/foo\.tar\.gz\fP to instead download from \fBhttp://localhost:8080/https://example\.com/foo\.tar\.gz\fP\&\. Bottle URLs however, have their domain replaced with this prefix\. This results in e\.g\. \fBhttps://ghcr\.io/v2/homebrew/core/gettext/manifests/0\.21\fP to instead be downloaded from \fBhttp://localhost:8080/v2/homebrew/core/gettext/manifests/0\.21\fP
 .TP
-\fBHOMEBREW_API_AUTO_UPDATE_SECS\fP
-Check Homebrew\[u2019]s API for new formulae or cask data every \fBHOMEBREW_API_AUTO_UPDATE_SECS\fP seconds\. Alternatively, disable API auto\-update checks entirely with \fBHOMEBREW_NO_AUTO_UPDATE\fP\&\.
-.RS
-.P
-\fIDefault:\fP \fB450\fP\&\.
-.RE
+\fBHOMEBREW_AUTOREMOVE\fP
+If set, calls to \fBbrew cleanup\fP and \fBbrew uninstall\fP will automatically remove unused formula dependents and if \fBHOMEBREW_NO_INSTALL_CLEANUP\fP is not set, \fBbrew cleanup\fP will start running \fBbrew autoremove\fP periodically\.
 .TP
 \fBHOMEBREW_AUTO_UPDATE_SECS\fP
 Run \fBbrew update\fP once every \fBHOMEBREW_AUTO_UPDATE_SECS\fP seconds before some commands, e\.g\. \fBbrew install\fP, \fBbrew upgrade\fP and \fBbrew tap\fP\&\. Alternatively, disable auto\-update entirely with \fBHOMEBREW_NO_AUTO_UPDATE\fP\&\.
@@ -2221,9 +2224,6 @@ Run \fBbrew update\fP once every \fBHOMEBREW_AUTO_UPDATE_SECS\fP seconds before 
 .P
 \fIDefault:\fP \fB86400\fP (24 hours), \fB3600\fP (1 hour) if a developer command has been run or \fB300\fP (5 minutes) if \fBHOMEBREW_NO_INSTALL_FROM_API\fP is set\.
 .RE
-.TP
-\fBHOMEBREW_AUTOREMOVE\fP
-If set, calls to \fBbrew cleanup\fP and \fBbrew uninstall\fP will automatically remove unused formula dependents and if \fBHOMEBREW_NO_INSTALL_CLEANUP\fP is not set, \fBbrew cleanup\fP will start running \fBbrew autoremove\fP periodically\.
 .TP
 \fBHOMEBREW_BAT\fP
 If set, use \fBbat\fP for the \fBbrew cat\fP command\.
@@ -2304,6 +2304,9 @@ Use this URL as the Homebrew/homebrew\-core \fBgit\fP(1) remote\.
 \fIDefault:\fP \fBhttps://github\.com/Homebrew/homebrew\-core\fP\&\.
 .RE
 .TP
+\fBHOMEBREW_CURLRC\fP
+If set to an absolute path (i\.e\. beginning with \fB/\fP), pass it with \fB\-\-config\fP when invoking \fBcurl\fP(1)\. If set but \fInot\fP a valid path, do not pass \fB\-\-disable\fP, which disables the use of \fB\&\.curlrc\fP\&\.
+.TP
 \fBHOMEBREW_CURL_PATH\fP
 Linux only: Set this value to a new enough \fBcurl\fP executable for Homebrew to use\.
 .RS
@@ -2320,9 +2323,6 @@ Pass the given retry count to \fB\-\-retry\fP when invoking \fBcurl\fP(1)\.
 .TP
 \fBHOMEBREW_CURL_VERBOSE\fP
 If set, pass \fB\-\-verbose\fP when invoking \fBcurl\fP(1)\.
-.TP
-\fBHOMEBREW_CURLRC\fP
-If set to an absolute path (i\.e\. beginning with \fB/\fP), pass it with \fB\-\-config\fP when invoking \fBcurl\fP(1)\. If set but \fInot\fP a valid path, do not pass \fB\-\-disable\fP, which disables the use of \fB\&\.curlrc\fP\&\.
 .TP
 \fBHOMEBREW_DEBUG\fP
 If set, always assume \fB\-\-debug\fP when running commands\.
@@ -2402,19 +2402,6 @@ If set, always use a Homebrew\-installed \fBgit\fP(1) rather than the system ver
 \fBHOMEBREW_FORCE_VENDOR_RUBY\fP
 If set, always use Homebrew\[u2019]s vendored, relocatable Ruby version even if the system version of Ruby is new enough\.
 .TP
-\fBHOMEBREW_GIT_EMAIL\fP
-Set the Git author and committer email to this value\.
-.TP
-\fBHOMEBREW_GIT_NAME\fP
-Set the Git author and committer name to this value\.
-.TP
-\fBHOMEBREW_GIT_PATH\fP
-Linux only: Set this value to a new enough \fBgit\fP executable for Homebrew to use\.
-.RS
-.P
-\fIDefault:\fP \fBgit\fP\&\.
-.RE
-.TP
 \fBHOMEBREW_GITHUB_API_TOKEN\fP
 Use this personal access token for the GitHub API, for features such as \fBbrew search\fP\&\. You can create one at 
 .UR https://github\.com/settings/tokens
@@ -2431,6 +2418,19 @@ Use this GitHub personal access token when accessing the GitHub Packages Registr
 .TP
 \fBHOMEBREW_GITHUB_PACKAGES_USER\fP
 Use this username when accessing the GitHub Packages Registry (where bottles may be stored)\.
+.TP
+\fBHOMEBREW_GIT_EMAIL\fP
+Set the Git author and committer email to this value\.
+.TP
+\fBHOMEBREW_GIT_NAME\fP
+Set the Git author and committer name to this value\.
+.TP
+\fBHOMEBREW_GIT_PATH\fP
+Linux only: Set this value to a new enough \fBgit\fP executable for Homebrew to use\.
+.RS
+.P
+\fIDefault:\fP \fBgit\fP\&\.
+.RE
 .TP
 \fBHOMEBREW_INSTALL_BADGE\fP
 Print this text before the installation summary of each successful build\.
@@ -2497,6 +2497,9 @@ If set, forbid redirects from secure HTTPS to insecure HTTP\.
 \fINote:\fP while ensuring your downloads are fully secure, this is likely to cause from\-source SourceForge, some GNU & GNOME\-hosted formulae to fail to download\.
 .RE
 .TP
+\fBHOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK\fP
+If set, do not check for broken linkage of dependents or outdated dependents after installing, upgrading or reinstalling formulae\. This will result in fewer dependents (and their dependencies) being upgraded or reinstalled but may result in more breakage from running \fBbrew install\fP \fIformula\fP or \fBbrew upgrade\fP \fIformula\fP\&\.
+.TP
 \fBHOMEBREW_NO_INSTALL_CLEANUP\fP
 If set, \fBbrew install\fP, \fBbrew upgrade\fP and \fBbrew reinstall\fP will never automatically cleanup installed/upgraded/reinstalled formulae or all formulae every \fBHOMEBREW_CLEANUP_PERIODIC_FULL_DAYS\fP days\. Alternatively, \fBHOMEBREW_NO_CLEANUP_FORMULAE\fP allows specifying specific formulae to not clean up\.
 .TP
@@ -2505,9 +2508,6 @@ If set, do not install formulae and casks in homebrew/core and homebrew/cask tap
 .TP
 \fBHOMEBREW_NO_INSTALL_UPGRADE\fP
 If set, \fBbrew install\fP \fIformula|cask\fP will not upgrade \fIformula|cask\fP if it is installed but outdated\.
-.TP
-\fBHOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK\fP
-If set, do not check for broken linkage of dependents or outdated dependents after installing, upgrading or reinstalling formulae\. This will result in fewer dependents (and their dependencies) being upgraded or reinstalled but may result in more breakage from running \fBbrew install\fP \fIformula\fP or \fBbrew upgrade\fP \fIformula\fP\&\.
 .TP
 \fBHOMEBREW_NO_UPDATE_REPORT_NEW\fP
 If set, \fBbrew update\fP will not show the list of newly added formulae/casks\.
@@ -2521,9 +2521,6 @@ If set, \fBbrew install\fP \fIformula\fP will use this URL to download PyPI pack
 .TP
 \fBHOMEBREW_PRY\fP
 If set, use Pry for the \fBbrew irb\fP command\.
-.TP
-\fBHOMEBREW_UPGRADE_GREEDY\fP
-If set, pass \fB\-\-greedy\fP to all cask upgrade commands\.
 .TP
 \fBHOMEBREW_SIMULATE_MACOS_ON_LINUX\fP
 If set, running Homebrew on Linux will simulate certain macOS code paths\. This is useful when auditing macOS formulae while on Linux\.
@@ -2541,6 +2538,9 @@ If set, Homebrew will use the given config file instead of \fB~/\.ssh/config\fP 
 \fIDefault:\fP \fB$HOME/\.ssh/config\fP
 .RE
 .TP
+\fBHOMEBREW_SUDO_THROUGH_SUDO_USER\fP
+If set, Homebrew will use the \fBSUDO_USER\fP environment variable to define the user to \fBsudo\fP(8) through when running \fBsudo\fP(8)\.
+.TP
 \fBHOMEBREW_SVN\fP
 Use this as the \fBsvn\fP(1) binary\.
 .RS
@@ -2551,9 +2551,6 @@ Use this as the \fBsvn\fP(1) binary\.
 \fBHOMEBREW_SYSTEM_ENV_TAKES_PRIORITY\fP
 If set in Homebrew\[u2019]s system\-wide environment file (\fB/etc/homebrew/brew\.env\fP), the system\-wide environment file will be loaded last to override any prefix or user settings\.
 .TP
-\fBHOMEBREW_SUDO_THROUGH_SUDO_USER\fP
-If set, Homebrew will use the \fBSUDO_USER\fP environment variable to define the user to \fBsudo\fP(8) through when running \fBsudo\fP(8)\.
-.TP
 \fBHOMEBREW_TEMP\fP
 Use this path as the temporary directory for building packages\. Changing this may be needed if your system temporary directory and Homebrew prefix are on different volumes, as macOS has trouble moving symlinks across volumes when the target does not yet exist\. This issue typically occurs when using FileVault or custom SSD configurations\.
 .RS
@@ -2563,6 +2560,9 @@ Use this path as the temporary directory for building packages\. Changing this m
 .TP
 \fBHOMEBREW_UPDATE_TO_TAG\fP
 If set, always use the latest stable tag (even if developer commands have been run)\.
+.TP
+\fBHOMEBREW_UPGRADE_GREEDY\fP
+If set, pass \fB\-\-greedy\fP to all cask upgrade commands\.
 .TP
 \fBHOMEBREW_VERBOSE\fP
 If set, always assume \fB\-\-verbose\fP when running commands\.
