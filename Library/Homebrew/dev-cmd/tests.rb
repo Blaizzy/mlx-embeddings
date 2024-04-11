@@ -144,6 +144,10 @@ module Homebrew
             ohai "Running tests with BuildPulse-friendly settings"
           end
 
+          # Workaround for:
+          # ruby: no -r allowed while running setuid (SecurityError)
+          Process::UID.change_privilege(Process.euid) if Process.euid != Process.uid
+
           if parallel
             system "bundle", "exec", "parallel_rspec", *parallel_args, "--", *bundle_args, "--", *files
           else
