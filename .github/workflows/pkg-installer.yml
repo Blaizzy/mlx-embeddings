@@ -146,6 +146,9 @@ jobs:
         with:
           name: "${{ needs.build.outputs.installer_path }}"
 
+      - name: Unset global Git safe directory setting
+        run: git config --global --unset-all safe.directory
+
       - name: Remove existing Homebrew installations
         run: |
           sudo rm -rf brew /{usr/local,opt/homebrew}/{Cellar,Caskroom,Homebrew/Library/Taps}
