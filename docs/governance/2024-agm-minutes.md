@@ -40,7 +40,7 @@ Attendance:
 ## Election Results
 
 * 10:00 PL Voting Results (5 min, Issy for the PLC)
-  *  Mike McQuaid reelected with 48 votes
+  * Mike McQuaid reelected with 48 votes
 * 10:05 PLC Voting Results (5 min, Issy for the PLC)
   * Patrick and Vanessa candidates, 2 seats, 46 voters
   * Both elected.
