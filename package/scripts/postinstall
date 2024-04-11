@@ -21,16 +21,17 @@ fi
 # add Git to path
 export PATH="/Library/Developer/CommandLineTools/usr/bin:/Applications/Xcode.app/Contents/Developer/usr/bin:${PATH}"
 
+# avoid writing to user's global config file by overriding HOME
+# https://git-scm.com/docs/git-config#SCOPES
+unset XDG_CONFIG_HOME
+export HOME="${homebrew_directory}"
+
 # reset Git repository
 cd "${homebrew_directory}"
-# avoid writing user's global config file by making
-# "${homebrew_directory}/.gitconfig" the "global" config
-# https://git-scm.com/docs/git-config#SCOPES
-git=(env XDG_CONFIG_HOME="" HOME="${homebrew_directory}" git)
-"${git[@]}" config --global --add safe.directory "${homebrew_directory}"
-"${git[@]}" reset --hard
-"${git[@]}" checkout --force master
-"${git[@]}" branch | grep -v '\*' | xargs -n 1 "${git[@]}" branch --delete --force || true
+git config --global --add safe.directory "${homebrew_directory}"
+git reset --hard
+git checkout --force master
+git branch | grep -v '\*' | xargs -n 1 git branch --delete --force || true
 rm "${homebrew_directory}/.gitconfig"
 
 # move to /usr/local if on x86_64
@@ -41,10 +42,10 @@ then
     cp -pRL "${homebrew_directory}/.git" "/usr/local/Homebrew/"
     mv "${homebrew_directory}/cache_api" "/usr/local/Homebrew/"
 
-    git=(env XDG_CONFIG_HOME="" HOME="/usr/local/Homebrew" git)
-    "${git[@]}" config --global --add safe.directory /usr/local/Homebrew
-    "${git[@]}" -C /usr/local/Homebrew reset --hard
-    "${git[@]}" -C /usr/local/Homebrew checkout --force master
+    export HOME="/usr/local/Homebrew"
+    git config --global --add safe.directory /usr/local/Homebrew
+    git -C /usr/local/Homebrew reset --hard
+    git -C /usr/local/Homebrew checkout --force master
     rm /usr/local/Homebrew/.gitconfig
   else
     mkdir -vp /usr/local/bin
