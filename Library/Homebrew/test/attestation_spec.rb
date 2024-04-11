@@ -6,12 +6,25 @@ RSpec.describe Homebrew::Attestation do
   let(:fake_gh) { Pathname.new("/extremely/fake/gh") }
   let(:cached_download) { "/fake/cached/download" }
   let(:fake_bottle_filename) { instance_double(Bottle::Filename, to_s: "fakebottle--1.0.faketag.bottle.tar.gz") }
-  let(:fake_bottle) { instance_double(Bottle, cached_download:, filename: fake_bottle_filename) }
+  let(:fake_bottle_url) { "https://example.com/#{fake_bottle_filename}" }
+  let(:fake_bottle) do
+    instance_double(Bottle, cached_download:, filename: fake_bottle_filename, url: fake_bottle_url)
+  end
   let(:fake_json_resp) do
     JSON.dump([
       { verificationResult: {
         verifiedTimestamps: [{ timestamp: "2024-03-13T00:00:00Z" }],
         statement:          { subject: [{ name: fake_bottle_filename.to_s }] },
+      } },
+    ])
+  end
+  let(:fake_json_resp_backfill) do
+    JSON.dump([
+      { verificationResult: {
+        verifiedTimestamps: [{ timestamp: "2024-03-13T00:00:00Z" }],
+        statement:          {
+          subject: [{ name: "#{Digest::SHA256.hexdigest(fake_bottle_url)}--#{fake_bottle_filename}" }],
+        },
       } },
     ])
   end
@@ -113,7 +126,7 @@ RSpec.describe Homebrew::Attestation do
         .with(fake_gh, "attestation", "verify", cached_download, "--repo",
               described_class::BACKFILL_REPO, "--format", "json", "--cert-identity",
               described_class::BACKFILL_REPO_CI_URI)
-        .and_return(fake_json_resp)
+        .and_return(fake_json_resp_backfill)
 
       described_class.check_core_attestation fake_bottle
     end

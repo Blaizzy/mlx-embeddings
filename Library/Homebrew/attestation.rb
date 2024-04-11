@@ -63,9 +63,9 @@ module Homebrew
     # @api private
     sig {
       params(bottle: Bottle, signing_repo: String,
-             signing_workflow: T.nilable(String)).returns(T::Hash[T.untyped, T.untyped])
+             signing_workflow: T.nilable(String), subject: T.nilable(String)).returns(T::Hash[T.untyped, T.untyped])
     }
-    def self.check_attestation(bottle, signing_repo, signing_workflow = nil)
+    def self.check_attestation(bottle, signing_repo, signing_workflow = nil, subject = nil)
       cmd = [gh_executable, "attestation", "verify", bottle.cached_download, "--repo", signing_repo, "--format",
              "json"]
 
@@ -86,9 +86,9 @@ module Homebrew
       # `gh attestation verify` returns a JSON array of one or more results,
       # for all attestations that match the input's digest. We want to additionally
       # filter these down to just the attestation whose subject matches the bottle's name.
-      bottle_name = bottle.filename.to_s
+      subject = bottle.filename.to_s if subject.blank?
       attestation = attestations.find do |a|
-        a.dig("verificationResult", "statement", "subject", 0, "name") == bottle_name
+        a.dig("verificationResult", "statement", "subject", 0, "name") == subject
       end
 
       raise InvalidAttestationError, "no attestation matches subject" if attestation.blank?
@@ -112,7 +112,16 @@ module Homebrew
         return attestation
       rescue InvalidAttestationError
         odebug "falling back on backfilled attestation for #{bottle}"
-        backfill_attestation = check_attestation bottle, BACKFILL_REPO, BACKFILL_REPO_CI_URI
+
+        # Our backfilled attestation is a little unique: the subject is not just the bottle
+        # filename, but also has the bottle's hosted URL hash prepended to it.
+        # This was originally unintentional, but has a virtuous side effect of further
+        # limiting domain separation on the backfilled signatures (by committing them to
+        # their original bottle URLs).
+        url_sha256 = Digest::SHA256.hexdigest(bottle.url)
+        subject = "#{url_sha256}--#{bottle.filename}"
+
+        backfill_attestation = check_attestation bottle, BACKFILL_REPO, BACKFILL_REPO_CI_URI, subject
         timestamp = backfill_attestation.dig("verificationResult", "verifiedTimestamps",
                                              0, "timestamp")
 
