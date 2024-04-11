@@ -64,6 +64,7 @@ module Homebrew
             puts unless i.zero?
             info = "#{tap}: "
             if tap.installed?
+              info += "Installed"
               info += if (contents = tap.contents).blank?
                 "no commands/casks/formulae"
               else
