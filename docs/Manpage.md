@@ -3433,6 +3433,14 @@ prefix-specific files take precedence over system-wide files (unless
 Note that these files do not support shell variable expansion e.g. `$HOME` or
 command execution e.g. `$(cat file)`.
 
+`HOMEBREW_API_AUTO_UPDATE_SECS`
+
+: Check Homebrew's API for new formulae or cask data every
+  `HOMEBREW_API_AUTO_UPDATE_SECS` seconds. Alternatively, disable API
+  auto-update checks entirely with `HOMEBREW_NO_AUTO_UPDATE`.
+  
+  *Default:* `450`.
+
 `HOMEBREW_API_DOMAIN`
 
 : Use this URL as the download mirror for Homebrew JSON API. If metadata files
@@ -3459,13 +3467,11 @@ command execution e.g. `$(cat file)`.
   downloaded from
   `http://localhost:8080/v2/homebrew/core/gettext/manifests/0.21`
 
-`HOMEBREW_API_AUTO_UPDATE_SECS`
+`HOMEBREW_AUTOREMOVE`
 
-: Check Homebrew's API for new formulae or cask data every
-  `HOMEBREW_API_AUTO_UPDATE_SECS` seconds. Alternatively, disable API
-  auto-update checks entirely with `HOMEBREW_NO_AUTO_UPDATE`.
-  
-  *Default:* `450`.
+: If set, calls to `brew cleanup` and `brew uninstall` will automatically remove
+  unused formula dependents and if `HOMEBREW_NO_INSTALL_CLEANUP` is not set,
+  `brew cleanup` will start running `brew autoremove` periodically.
 
 `HOMEBREW_AUTO_UPDATE_SECS`
 
@@ -3475,12 +3481,6 @@ command execution e.g. `$(cat file)`.
   
   *Default:* `86400` (24 hours), `3600` (1 hour) if a developer command has been
   run or `300` (5 minutes) if `HOMEBREW_NO_INSTALL_FROM_API` is set.
-
-`HOMEBREW_AUTOREMOVE`
-
-: If set, calls to `brew cleanup` and `brew uninstall` will automatically remove
-  unused formula dependents and if `HOMEBREW_NO_INSTALL_CLEANUP` is not set,
-  `brew cleanup` will start running `brew autoremove` periodically.
 
 `HOMEBREW_BAT`
 
@@ -3565,6 +3565,12 @@ command execution e.g. `$(cat file)`.
   
   *Default:* `https://github.com/Homebrew/homebrew-core`.
 
+`HOMEBREW_CURLRC`
+
+: If set to an absolute path (i.e. beginning with `/`), pass it with `--config`
+  when invoking `curl`(1). If set but *not* a valid path, do not pass
+  `--disable`, which disables the use of `.curlrc`.
+
 `HOMEBREW_CURL_PATH`
 
 : Linux only: Set this value to a new enough `curl` executable for Homebrew to
@@ -3581,12 +3587,6 @@ command execution e.g. `$(cat file)`.
 `HOMEBREW_CURL_VERBOSE`
 
 : If set, pass `--verbose` when invoking `curl`(1).
-
-`HOMEBREW_CURLRC`
-
-: If set to an absolute path (i.e. beginning with `/`), pass it with `--config`
-  when invoking `curl`(1). If set but *not* a valid path, do not pass
-  `--disable`, which disables the use of `.curlrc`.
 
 `HOMEBREW_DEBUG`
 
@@ -3697,21 +3697,6 @@ command execution e.g. `$(cat file)`.
 : If set, always use Homebrew's vendored, relocatable Ruby version even if the
   system version of Ruby is new enough.
 
-`HOMEBREW_GIT_EMAIL`
-
-: Set the Git author and committer email to this value.
-
-`HOMEBREW_GIT_NAME`
-
-: Set the Git author and committer name to this value.
-
-`HOMEBREW_GIT_PATH`
-
-: Linux only: Set this value to a new enough `git` executable for Homebrew to
-  use.
-  
-  *Default:* `git`.
-
 `HOMEBREW_GITHUB_API_TOKEN`
 
 : Use this personal access token for the GitHub API, for features such as `brew
@@ -3731,6 +3716,21 @@ command execution e.g. `$(cat file)`.
 
 : Use this username when accessing the GitHub Packages Registry (where bottles
   may be stored).
+
+`HOMEBREW_GIT_EMAIL`
+
+: Set the Git author and committer email to this value.
+
+`HOMEBREW_GIT_NAME`
+
+: Set the Git author and committer name to this value.
+
+`HOMEBREW_GIT_PATH`
+
+: Linux only: Set this value to a new enough `git` executable for Homebrew to
+  use.
+  
+  *Default:* `git`.
 
 `HOMEBREW_INSTALL_BADGE`
 
@@ -3812,6 +3812,14 @@ command execution e.g. `$(cat file)`.
   cause from-source SourceForge, some GNU & GNOME-hosted formulae to fail to
   download.
 
+`HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK`
+
+: If set, do not check for broken linkage of dependents or outdated dependents
+  after installing, upgrading or reinstalling formulae. This will result in
+  fewer dependents (and their dependencies) being upgraded or reinstalled but
+  may result in more breakage from running `brew install` *`formula`* or `brew
+  upgrade` *`formula`*.
+
 `HOMEBREW_NO_INSTALL_CLEANUP`
 
 : If set, `brew install`, `brew upgrade` and `brew reinstall` will never
@@ -3831,14 +3839,6 @@ command execution e.g. `$(cat file)`.
 : If set, `brew install` *`formula|cask`* will not upgrade *`formula|cask`* if
   it is installed but outdated.
 
-`HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK`
-
-: If set, do not check for broken linkage of dependents or outdated dependents
-  after installing, upgrading or reinstalling formulae. This will result in
-  fewer dependents (and their dependencies) being upgraded or reinstalled but
-  may result in more breakage from running `brew install` *`formula`* or `brew
-  upgrade` *`formula`*.
-
 `HOMEBREW_NO_UPDATE_REPORT_NEW`
 
 : If set, `brew update` will not show the list of newly added formulae/casks.
@@ -3853,10 +3853,6 @@ command execution e.g. `$(cat file)`.
 `HOMEBREW_PRY`
 
 : If set, use Pry for the `brew irb` command.
-
-`HOMEBREW_UPGRADE_GREEDY`
-
-: If set, pass `--greedy` to all cask upgrade commands.
 
 `HOMEBREW_SIMULATE_MACOS_ON_LINUX`
 
@@ -3880,6 +3876,11 @@ command execution e.g. `$(cat file)`.
   
   *Default:* `$HOME/.ssh/config`
 
+`HOMEBREW_SUDO_THROUGH_SUDO_USER`
+
+: If set, Homebrew will use the `SUDO_USER` environment variable to define the
+  user to `sudo`(8) through when running `sudo`(8).
+
 `HOMEBREW_SVN`
 
 : Use this as the `svn`(1) binary.
@@ -3892,11 +3893,6 @@ command execution e.g. `$(cat file)`.
 : If set in Homebrew's system-wide environment file (`/etc/homebrew/brew.env`),
   the system-wide environment file will be loaded last to override any prefix or
   user settings.
-
-`HOMEBREW_SUDO_THROUGH_SUDO_USER`
-
-: If set, Homebrew will use the `SUDO_USER` environment variable to define the
-  user to `sudo`(8) through when running `sudo`(8).
 
 `HOMEBREW_TEMP`
 
@@ -3912,6 +3908,10 @@ command execution e.g. `$(cat file)`.
 
 : If set, always use the latest stable tag (even if developer commands have been
   run).
+
+`HOMEBREW_UPGRADE_GREEDY`
+
+: If set, pass `--greedy` to all cask upgrade commands.
 
 `HOMEBREW_VERBOSE`
 
