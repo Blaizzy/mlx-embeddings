@@ -66,7 +66,7 @@ module Homebrew
             if tap.installed?
               info += "Installed"
               info += if (contents = tap.contents).blank?
-                "no commands/casks/formulae"
+                "\nNo commands/casks/formulae"
               else
                 contents.join(", ")
               end
