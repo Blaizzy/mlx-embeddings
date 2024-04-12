@@ -64,12 +64,13 @@ module Homebrew
             puts unless i.zero?
             info = "#{tap}: "
             if tap.installed?
+              info += "Installed"
               info += if (contents = tap.contents).blank?
-                "no commands/casks/formulae"
+                "\nNo commands/casks/formulae"
               else
-                contents.join(", ")
+                "\n#{contents.join(", ")}"
               end
-              info += ", private" if tap.private?
+              info += "\nPrivate" if tap.private?
               info += "\n#{tap.path} (#{tap.path.abv})"
               info += "\nFrom: #{tap.remote.presence || "N/A"}"
             else

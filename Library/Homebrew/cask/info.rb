@@ -48,7 +48,7 @@ module Cask
         Formatter.error("does not exist")
       end
 
-      "#{versioned_staged_path} (#{path_details})\n"
+      "Installed\n#{versioned_staged_path} (#{path_details})\n"
     end
 
     def self.name_info(cask)

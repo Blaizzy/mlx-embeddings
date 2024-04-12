@@ -301,6 +301,7 @@ module Homebrew
         if kegs.empty?
           puts "Not installed"
         else
+          puts "Installed"
           kegs.each do |keg|
             puts "#{keg} (#{keg.abv})#{" *" if keg.linked?}"
             tab = Tab.for_keg(keg).to_s
