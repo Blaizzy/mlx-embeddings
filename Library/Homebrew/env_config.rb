@@ -422,6 +422,11 @@ module Homebrew
                      "useful to avoid long-running Homebrew commands being killed due to no output.",
         boolean:     true,
       },
+      HOMEBREW_VERIFY_ATTESTATIONS:              {
+        description: "If set, Homebrew will use the `gh` tool to verify cryptographic attestations " \
+                     "of build provenance for bottles from homebrew-core.",
+        boolean:     true,
+      },
       SUDO_ASKPASS:                              {
         description: "If set, pass the `-A` option when calling `sudo`(8).",
       },

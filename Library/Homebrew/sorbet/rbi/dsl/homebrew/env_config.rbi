@@ -260,5 +260,8 @@ module Homebrew::EnvConfig
 
     sig { returns(T::Boolean) }
     def verbose_using_dots?; end
+
+    sig { returns(T::Boolean) }
+    def verify_attestations?; end
   end
 end
