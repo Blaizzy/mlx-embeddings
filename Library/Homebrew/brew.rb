@@ -136,9 +136,9 @@ begin
   end
 rescue UsageError => e
   require "help"
-  Homebrew::Help.help cmd, remaining_args: T.must(args).remaining, usage_error: e.message
+  Homebrew::Help.help cmd, remaining_args: args&.remaining, usage_error: e.message
 rescue SystemExit => e
-  onoe "Kernel.exit" if T.must(args).debug? && !e.success?
+  onoe "Kernel.exit" if args&.debug? && !e.success?
   $stderr.puts Utils::Backtrace.clean(e) if args&.debug? || ARGV.include?("--debug")
   raise
 rescue Interrupt

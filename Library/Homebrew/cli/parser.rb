@@ -250,7 +250,7 @@ module Homebrew
       end
 
       sig {
-        params(names: String, description: T.nilable(String), replacement: T.untyped, depends_on: T.nilable(String),
+        params(names: String, description: T.nilable(String), replacement: T.any(Symbol, String, NilClass), depends_on: T.nilable(String),
                hidden: T::Boolean).void
       }
       def flag(*names, description: nil, replacement: nil, depends_on: nil, hidden: false)
