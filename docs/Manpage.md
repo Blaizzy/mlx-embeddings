@@ -3923,6 +3923,11 @@ command execution e.g. `$(cat file)`.
   be useful to avoid long-running Homebrew commands being killed due to no
   output.
 
+`HOMEBREW_VERIFY_ATTESTATIONS`
+
+: If set, Homebrew will use the `gh` tool to verify cryptographic attestations
+  of build provenance for bottles from homebrew-core.
+
 `SUDO_ASKPASS`
 
 : If set, pass the `-A` option when calling `sudo`(8).
