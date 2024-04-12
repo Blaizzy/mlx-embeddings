@@ -68,9 +68,9 @@ module Homebrew
               info += if (contents = tap.contents).blank?
                 "\nNo commands/casks/formulae"
               else
-                contents.join(", ")
+                "\n#{contents.join(", ")}"
               end
-              info += ", private" if tap.private?
+              info += "\nPrivate" if tap.private?
               info += "\n#{tap.path} (#{tap.path.abv})"
               info += "\nFrom: #{tap.remote.presence || "N/A"}"
             else
