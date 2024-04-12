@@ -1657,6 +1657,7 @@ class Formula
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_FIND_FRAMEWORK=#{find_framework}
       -DCMAKE_VERBOSE_MAKEFILE=ON
+      -DFETCHCONTENT_FULLY_DISCONNECTED=ON
       -Wno-dev
       -DBUILD_TESTING=OFF
     ]
