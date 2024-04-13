@@ -80,7 +80,7 @@ module Homebrew
 
             exec_args << "--HEAD" if f.head?
 
-            Utils.safe_fork do
+            Utils.safe_fork do |error_pipe|
               if Sandbox.available?
                 sandbox = Sandbox.new
                 f.logs.mkpath
@@ -92,6 +92,7 @@ module Homebrew
                 sandbox.allow_write_path(HOMEBREW_PREFIX/"var/homebrew/locks")
                 sandbox.allow_write_path(HOMEBREW_PREFIX/"var/log")
                 sandbox.allow_write_path(HOMEBREW_PREFIX/"var/run")
+                sandbox.deny_all_network_except_pipe(error_pipe) unless f.class.network_access_allowed?(:test)
                 sandbox.exec(*exec_args)
               else
                 exec(*exec_args)
