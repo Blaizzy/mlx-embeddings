@@ -925,7 +925,7 @@ on_request: installed_on_request?, options:)
       formula.specified_path,
     ].concat(build_argv)
 
-    Utils.safe_fork do
+    Utils.safe_fork do |error_pipe|
       if Sandbox.available?
         sandbox = Sandbox.new
         formula.logs.mkpath
@@ -937,6 +937,7 @@ on_request: installed_on_request?, options:)
         sandbox.allow_fossil
         sandbox.allow_write_xcode
         sandbox.allow_write_cellar(formula)
+        sandbox.deny_all_network_except_pipe(error_pipe) unless formula.network_access_allowed?(:build)
         sandbox.exec(*args)
       else
         exec(*args)
@@ -1151,7 +1152,7 @@ on_request: installed_on_request?, options:)
 
     args << post_install_formula_path
 
-    Utils.safe_fork do
+    Utils.safe_fork do |error_pipe|
       if Sandbox.available?
         sandbox = Sandbox.new
         formula.logs.mkpath
@@ -1161,6 +1162,7 @@ on_request: installed_on_request?, options:)
         sandbox.allow_write_xcode
         sandbox.deny_write_homebrew_repository
         sandbox.allow_write_cellar(formula)
+        sandbox.deny_all_network_except_pipe(error_pipe) unless formula.network_access_allowed?(:postinstall)
         Keg::KEG_LINK_DIRECTORIES.each do |dir|
           sandbox.allow_write_path "#{HOMEBREW_PREFIX}/#{dir}"
         end

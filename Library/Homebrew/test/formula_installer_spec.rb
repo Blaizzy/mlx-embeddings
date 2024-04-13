@@ -3,11 +3,13 @@
 require "formula"
 require "formula_installer"
 require "keg"
+require "sandbox"
 require "tab"
 require "cmd/install"
 require "test/support/fixtures/testball"
 require "test/support/fixtures/testball_bottle"
 require "test/support/fixtures/failball"
+require "test/support/fixtures/failball_offline_install"
 
 RSpec.describe FormulaInstaller do
   matcher :be_poured_from_bottle do
@@ -68,6 +70,10 @@ RSpec.describe FormulaInstaller do
       expect(bin.children.count).to eq(3)
       expect(f.prefix/".brew/testball.rb").to be_readable
     end
+  end
+
+  specify "offline installation" do
+    expect { temporary_install(FailballOfflineInstall.new) }.to raise_error(BuildError) if Sandbox.available?
   end
 
   specify "Formula is not poured from bottle when compiler specified" do
