@@ -144,6 +144,8 @@ class GitHubRunnerMatrix
         ["#{version}#{ephemeral_suffix}", runner_timeout]
       end
 
+      # macOS 12-x86_64 is usually slower.
+      timeout += 30 if !(use_github_runner && github_runner_available) && macos_version <= :monterey
       spec = MacOSRunnerSpec.new(
         name:    "macOS #{version}-x86_64",
         runner:,
