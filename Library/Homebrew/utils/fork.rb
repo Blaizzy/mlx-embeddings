@@ -37,15 +37,15 @@ module Utils
         pid = fork do
           # bootsnap doesn't like these forked processes
           ENV["HOMEBREW_NO_BOOTSNAP"] = "1"
-
-          ENV["HOMEBREW_ERROR_PIPE"] = server.path
+          error_pipe = server.path
+          ENV["HOMEBREW_ERROR_PIPE"] = error_pipe
           server.close
           read.close
           write.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
 
           Process::UID.change_privilege(Process.euid) if Process.euid != Process.uid
 
-          yield
+          yield(error_pipe)
         rescue Exception => e # rubocop:disable Lint/RescueException
           error_hash = JSON.parse e.to_json
 
