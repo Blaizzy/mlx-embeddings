@@ -362,11 +362,13 @@ class Keg
   end
 
   def python_site_packages_installed?
+    # odeprecated "Keg#python_site_packages_installed?"
     (path/"lib/python2.7/site-packages").directory?
   end
 
   sig { returns(T::Boolean) }
   def python_pth_files_installed?
+    # odeprecated "Keg#python_pth_files_installed?"
     !Dir["#{path}/lib/python2.7/site-packages/*.pth"].empty?
   end
 
