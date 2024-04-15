@@ -26,7 +26,7 @@ If you have issues connecting to GitHub.com, you can use Git mirrors for Homebre
 ```bash
 export HOMEBREW_BREW_GIT_REMOTE="..."  # put your Git mirror of Homebrew/brew here
 export HOMEBREW_CORE_GIT_REMOTE="..."  # put your Git mirror of Homebrew/homebrew-core here
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
 The default Git remote will be used if the corresponding environment variable is unset and works best for most users.
@@ -39,7 +39,7 @@ You can instruct Homebrew to return to pre-4.0.0 behaviour by cloning the Homebr
 
 ```bash
 export HOMEBREW_NO_INSTALL_FROM_API=1
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
 This will make Homebrew install formulae and casks from the `homebrew/core` and `homebrew/cask` taps using local checkouts of these repositories instead of Homebrew’s API. Unless you are a Homebrew maintainer or contributor, you should probably not globally enable this setting. It can easily be enabled later after installation should it be necessary.
