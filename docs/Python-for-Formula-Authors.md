@@ -4,9 +4,9 @@ This document explains how to successfully use Python in a Homebrew formula.
 
 Homebrew draws a distinction between Python **applications** and Python **libraries**. The difference is that users generally do not care that applications are written in Python; it is unusual that a user would expect to be able to `import foo` after installing an application. Examples of applications are [`ansible`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/a/ansible.rb) and [`jrnl`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/j/jrnl.rb).
 
-Python libraries exist to be imported by other Python modules; they are often dependencies of Python applications. They are usually no more than incidentally useful in a terminal. An example of a library is the bindings that are installed by [`protobuf`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/p/protobuf.rb).
+Python libraries exist to be imported by other Python modules; they are often dependencies of Python applications. They are usually no more than incidentally useful in a terminal. Examples of libraries are [`certifi`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/c/certifi.rb) and [`numpy`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/n/numpy.rb).
 
-Bindings are a special case of libraries that allow Python code to interact with a library or application implemented in another language.
+Bindings are a special case of libraries that allow Python code to interact with a library or application implemented in another language. An example is the Python bindings installed by [`libxml2`](https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/lib/libxml2.rb).
 
 Homebrew is happy to accept applications that are built in Python, whether the apps are available from PyPI or not. Homebrew generally won't accept libraries that can be installed correctly with `pip install foo`. Bindings may be installed for packages that provide them, especially if equivalent functionality isn't available through pip. Similarly, libraries that have non-trivial amounts of native code and have a long compilation as a result can be good candidates. If in doubt, though: do not package libraries.
 
@@ -20,13 +20,13 @@ Formulae for apps that require Python 3 **must** declare an unconditional depend
 
 ### Installing applications
 
-Starting with Python@3.12, Homebrew follows [PEP 668](https://peps.python.org/pep-0668/#marking-an-interpreter-as-using-an-external-package-manager). Applications must be installed into a Python [virtualenv](https://virtualenv.pypa.io/en/stable/) environment rooted in `libexec`. This prevents the app's Python modules from contaminating the system `site-packages` and vice versa.
+Starting with Python@3.12, Homebrew follows [PEP 668](https://peps.python.org/pep-0668/#marking-an-interpreter-as-using-an-external-package-manager). Applications must be installed into a Python [virtual environment](https://docs.python.org/3/library/venv.html) rooted in `libexec`. This prevents the app's Python modules from contaminating the system `site-packages` and vice versa.
 
-All the Python module dependencies of the application (and their dependencies, recursively) should be declared as [`resource`](https://rubydoc.brew.sh/Formula#resource-class_method)s in the formula and installed into the virtualenv as well. Each dependency should be explicitly specified; please do not rely on `setup.py` or `pip` to perform automatic dependency resolution, for the [reasons described here](Acceptable-Formulae.md#we-dont-like-install-scripts-that-download-unversioned-things).
+All the Python module dependencies of the application (and their dependencies, recursively) should be declared as [`resource`](https://rubydoc.brew.sh/Formula#resource-class_method)s in the formula and installed into the virtual environment as well. Each dependency should be explicitly specified; please do not rely on `setup.py` or `pip` to perform automatic dependency resolution, for the [reasons described here](Acceptable-Formulae.md#we-dont-like-install-scripts-that-download-unversioned-things).
 
 You can use `brew update-python-resources` to help you write resource stanzas. To use it, simply run `brew update-python-resources <formula>`. Sometimes, `brew update-python-resources` won't be able to automatically update the resources. If this happens, try running `brew update-python-resources --print-only <formula>` to print the resource stanzas instead of applying the changes directly to the file. You can then copy and paste resources as needed.
 
-If using `brew update-python-resources` doesn't work, you can use [homebrew-pypi-poet](https://github.com/tdsmith/homebrew-pypi-poet) to help you write resource stanzas. To use it, set up a virtualenv and install your package and all its dependencies. Then, `pip install homebrew-pypi-poet` into the same virtualenv. Running `poet some_package` will generate the necessary resource stanzas. You can do this like:
+If using `brew update-python-resources` doesn't work, you can use [homebrew-pypi-poet](https://github.com/tdsmith/homebrew-pypi-poet) to help you write resource stanzas. To use it, set up a virtual environment and install your package and all its dependencies. Then, `pip install homebrew-pypi-poet` into the same virtual environment. Running `poet some_package` will generate the necessary resource stanzas. You can do this like:
 
 ```sh
 # Use a temporary directory for the virtual environment
@@ -45,7 +45,7 @@ deactivate
 rm -rf venv
 ```
 
-Homebrew provides helper methods for instantiating and populating virtualenvs. You can use them by putting `include Language::Python::Virtualenv` at the top of the `Formula` class definition.
+Homebrew provides helper methods for instantiating and populating virtual environments. You can use them by putting `include Language::Python::Virtualenv` at the top of the `Formula` class definition.
 
 For most applications, all you will need to write is:
 
@@ -53,10 +53,11 @@ For most applications, all you will need to write is:
 class Foo < Formula
   include Language::Python::Virtualenv
 
-  name "foo"
   # ...
-  url "..."
+  url "https://example.com/foo-1.0.tar.gz"
   sha256 "abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc1"
+
+  depends_on "python@3.y"
 
   def install
     virtualenv_install_with_resources
@@ -70,15 +71,15 @@ This is exactly the same as writing:
 class Foo < Formula
   include Language::Python::Virtualenv
 
-  name "foo"
   # ...
   url "https://example.com/foo-1.0.tar.gz"
   sha256 "abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc1"
 
+  depends_on "python@3.y"
+
   def install
-    # Create a virtualenv in `libexec`. If your app needs Python 3, make sure that
-    # `depends_on "python"` is declared, and use `virtualenv_create(libexec, "python3")`.
-    venv = virtualenv_create(libexec)
+    # Create a virtualenv in `libexec`.
+    venv = virtualenv_create(libexec, "python3.y")
     # Install all of the resources declared on the formula into the virtualenv.
     venv.pip_install resources
     # `pip_install_and_link` takes a look at the virtualenv's bin directory
@@ -154,20 +155,33 @@ Bindings should follow the same advice for Python module dependencies as librari
 If the bindings are installed by invoking a `setup.py`, do something like:
 
 ```ruby
-cd "source/python" do
-  system Formula["python@3.y"].opt_bin/"python3", *Language::Python.setup_install_args(prefix)
-end
+system "python3.y", "-m", "pip", "install", *std_pip_args(build_isolation: true), "./source/python"
 ```
 
-If the configure script takes a `--with-python` flag, it usually will not need extra help finding Python.
+#### Autotools
+
+If the configure script takes a `--with-python` flag, it usually will not need extra help finding Python. However, if there are multiple Python formulae in the dependency tree, it may need help finding the correct one.
 
 If the `configure` and `make` scripts do not want to install into the Cellar, sometimes you can:
 
 1. call `./configure --without-python` (or a similar named option)
-2. `cd` into the directory containing the Python bindings
-3. call `setup.py` with `system` and `Language::Python.setup_install_args` (as described above)
+1. call `pip` on the directory containing the Python bindings (as described above)
 
 Sometimes we have to edit a `Makefile` on-the-fly to use our prefix for the Python bindings using Homebrew's [`inreplace`](Formula-Cookbook.md#inreplace) helper method.
+
+#### CMake
+
+If `cmake` finds a different Python than the direct dependency, sometimes you can help it find the correct Python by setting one of the following variables with the `-D` option:
+
+* `Python3_EXECUTABLE` for the [`FindPython3`](https://cmake.org/cmake/help/latest/module/FindPython3.html) module
+* `Python_EXECUTABLE` for the [`FindPython`](https://cmake.org/cmake/help/latest/module/FindPython.html) module
+* `PYTHON_EXECUTABLE` for the [`FindPythonInterp`](https://cmake.org/cmake/help/latest/module/FindPythonInterp.html) module
+
+#### Meson
+
+As a side effect of Homebrew's symlink installation and the Python sysconfig patch, `meson` may be unable to automatically detect the Cellar directories to install Python bindings into. If the formula's `meson` build definition uses [`install_sources()`](https://mesonbuild.com/Python-module.html#install_sources) or similar methods, you can set `python.purelibdir` and/or `python.platlibdir` to override the default paths.
+
+If `meson` finds a different Python than the direct dependency and the formula's `meson` option definition file does not provide a user-settable option, then you will need to check how the Python executable is being detected. A common approach is the [`find_installation()`](https://mesonbuild.com/Python-module.html#find_installation) method which will behave differently based on what the `name_or_path` argument is set to.
 
 ## Libraries
 
@@ -175,7 +189,7 @@ Remember: there are very limited cases for libraries (e.g. significant amounts o
 
 **We do not use the `python-` prefix for these kinds of formulae!**
 
-### Examples of allowed libaries in homebrew-core
+### Examples of allowed libraries in homebrew-core
 
 * `numpy`, `scipy`: long build time, complex build process
 
@@ -191,11 +205,13 @@ Libraries built for Python 3 must include `depends_on "python@3.y"`, which will 
 
 Libraries may be installed to `libexec` and added to `sys.path` by writing a `.pth` file (named like "homebrew-foo.pth") to the `prefix` site-packages. This simplifies the ensuing drama if pip is accidentally used to upgrade a Homebrew-installed package and prevents the accumulation of stale `.pyc` files in Homebrew's site-packages.
 
-Most formulae presently just install to `prefix`.
+Most formulae presently just install to `prefix`. Any stale `.pyc` files are handled by `brew cleanup`.
 
 ### Dependencies for libraries
 
 Library dependencies must be installed so that they are importable. To minimise the potential for linking conflicts, dependencies should be installed to `libexec/<vendor>` and added to `sys.path` by writing a second `.pth` file (named like "homebrew-foo-dependencies.pth") to the `prefix` site-packages.
+
+Formulae with general Python library dependencies (e.g. `setuptools`, `six`) should not use this approach as it will contaminate the system `site-packages` with all libraries installed inside `libexec/<vendor>`.
 
 ## Further down the rabbit hole
 
@@ -203,9 +219,9 @@ Additional commentary that explains why Homebrew does some of the things it does
 
 ### Setuptools vs. Distutils vs. pip
 
-Distutils is a module in the Python standard library that provides developers a basic package management API. Setuptools is a module distributed outside the standard library that extends Distutils. It is a convention that Python packages provide a `setup.py` that calls the `setup()` function from either Distutils or Setuptools.
+Distutils was a module in the Python standard library that provided developers a basic package management API until its removal in Python 3.12. Setuptools is a module distributed outside the standard library that extends and replaces Distutils. It is a convention that Python packages provide a `setup.py` that calls the `setup()` function from either Distutils or Setuptools.
 
-Setuptools provides the `easy_install` command, which is an end-user package management tool that fetches and installs packages from PyPI, the Python Package Index. `pip` is another, newer end-user package management tool, which is also provided outside the standard library. While pip supplants `easy_install`, it does not replace the other functionality of the Setuptools module.
+Setuptools used to provide the `easy_install` command, which was an end-user package management tool that fetched and installed packages from PyPI, the Python Package Index. The `easy_install` console script was removed in Setuptools v52.0.0 and direct usage has been deprecated since v58.3.0. `pip` is another, newer end-user package management tool, which is also provided outside the standard library. While `pip` supplants `easy_install`, it does not replace the other functionality of the Setuptools module.
 
 Distutils and pip use a "flat" installation hierarchy that installs modules as individual files under `site-packages` while `easy_install` installs zipped eggs to `site-packages` instead.
 
@@ -216,7 +232,7 @@ Distribute (not to be confused with Distutils) is an obsolete fork of Setuptools
 For when a formula needs to interact with `setup.py` instead of calling `pip`, Homebrew provides the helper method `Language::Python.setup_install_args` which returns useful arguments for invoking `setup.py`. Your formula should use this instead of invoking `setup.py` explicitly. The syntax is:
 
 ```ruby
-system Formula["python@3.y"].opt_bin/"python3", *Language::Python.setup_install_args(prefix)
+system Formula["python@3.y"].opt_bin/"python3.y", *Language::Python.setup_install_args(prefix)
 ```
 
 where `prefix` is the destination prefix (usually `libexec` or `prefix`).
@@ -245,4 +261,4 @@ It is probably safe to use `--prefix` with `--root=/`, which should work with ei
 
 ### `pip` vs. `setup.py`
 
-[PEP 453](https://legacy.python.org/dev/peps/pep-0453/#recommendations-for-downstream-distributors) makes a recommendation to downstream distributors (us) that sdist tarballs should be installed with `pip` instead of by invoking `setup.py` directly. For historical reasons we did not follow PEP 453, so some formulae still use `setup.py` installs. Nowadays, most of the formulae use `pip` as we have migrated them to this better way of installation.
+[PEP 453](https://legacy.python.org/dev/peps/pep-0453/#recommendations-for-downstream-distributors) makes a recommendation to downstream distributors (us) that sdist tarballs should be installed with `pip` instead of by invoking `setup.py` directly. For historical reasons we did not follow PEP 453, so some formulae still use `setup.py` installs. Nowadays, most core formulae use `pip` as we have migrated them to this preferred method of installation.
