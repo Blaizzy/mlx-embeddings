@@ -361,15 +361,6 @@ class Keg
     !Dir["#{path}/*.plist"].empty?
   end
 
-  def python_site_packages_installed?
-    (path/"lib/python2.7/site-packages").directory?
-  end
-
-  sig { returns(T::Boolean) }
-  def python_pth_files_installed?
-    !Dir["#{path}/lib/python2.7/site-packages/*.pth"].empty?
-  end
-
   sig { returns(T::Array[Pathname]) }
   def apps
     app_prefix = optlinked? ? opt_record : path
