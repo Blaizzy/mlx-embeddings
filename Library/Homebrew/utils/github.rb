@@ -357,9 +357,11 @@ module GitHub
     run_id = check_suite.last["workflowRun"]["databaseId"]
     artifacts = API.open_rest("#{API_URL}/repos/#{user}/#{repo}/actions/runs/#{run_id}/artifacts", scopes:)
 
-    matching_artifacts = artifacts["artifacts"].select do |art|
-      File.fnmatch?(artifact_pattern, art["name"], File::FNM_EXTGLOB)
-    end
+    matching_artifacts =
+      artifacts["artifacts"]
+      .group_by { |art| art["name"] }
+      .select { |name| File.fnmatch?(artifact_pattern, name, File::FNM_EXTGLOB) }
+      .map { |_, arts| arts.last }
 
     if matching_artifacts.empty?
       raise API::Error, <<~EOS
