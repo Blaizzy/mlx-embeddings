@@ -2938,7 +2938,7 @@ class RuboCop::Cop::Base
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#267
+  # source://rubocop//lib/rubocop/cop/base.rb#269
   def active_support_extensions_enabled?; end
 
   # Adds an offense that has no particular location.
@@ -2952,25 +2952,25 @@ class RuboCop::Cop::Base
   # to provide the cop the opportunity to autocorrect the offense.
   # If message is not specified, the method `message` will be called.
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#196
+  # source://rubocop//lib/rubocop/cop/base.rb#198
   def add_offense(node_or_range, message: T.unsafe(nil), severity: T.unsafe(nil), &block); end
 
   # @api private
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#338
+  # source://rubocop//lib/rubocop/cop/base.rb#340
   def always_autocorrect?; end
 
   # Called before any investigation
   #
   # @api private
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#324
+  # source://rubocop//lib/rubocop/cop/base.rb#326
   def begin_investigation(processed_source, offset: T.unsafe(nil), original: T.unsafe(nil)); end
 
   # @api private
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#309
+  # source://rubocop//lib/rubocop/cop/base.rb#311
   def callbacks_needed; end
 
   # Returns the value of attribute config.
@@ -2978,29 +2978,29 @@ class RuboCop::Cop::Base
   # source://rubocop//lib/rubocop/cop/base.rb#43
   def config; end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#247
+  # source://rubocop//lib/rubocop/cop/base.rb#249
   def config_to_allow_offenses; end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#251
+  # source://rubocop//lib/rubocop/cop/base.rb#253
   def config_to_allow_offenses=(hash); end
 
   # @api private
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#344
+  # source://rubocop//lib/rubocop/cop/base.rb#346
   def contextual_autocorrect?; end
 
   # Configuration Helpers
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#241
+  # source://rubocop//lib/rubocop/cop/base.rb#243
   def cop_config; end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#233
+  # source://rubocop//lib/rubocop/cop/base.rb#235
   def cop_name; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#280
+  # source://rubocop//lib/rubocop/cop/base.rb#282
   def excluded_file?(file); end
 
   # This method should be overridden when a cop's behavior depends
@@ -3019,10 +3019,10 @@ class RuboCop::Cop::Base
   # ResultCache system when those external dependencies change,
   # ie when the ResultCache should be invalidated.
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#229
+  # source://rubocop//lib/rubocop/cop/base.rb#231
   def external_dependency_checksum; end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#348
+  # source://rubocop//lib/rubocop/cop/base.rb#350
   def inspect; end
 
   # Gets called if no message is specified when calling `add_offense` or
@@ -3032,12 +3032,12 @@ class RuboCop::Cop::Base
   # source://rubocop//lib/rubocop/cop/base.rb#180
   def message(_range = T.unsafe(nil)); end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#233
+  # source://rubocop//lib/rubocop/cop/base.rb#235
   def name; end
 
   # @deprecated Make potential errors with previous API more obvious
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#300
+  # source://rubocop//lib/rubocop/cop/base.rb#302
   def offenses; end
 
   # Called after all on_... have been called
@@ -3060,10 +3060,10 @@ class RuboCop::Cop::Base
 
   # There should be very limited reasons for a Cop to do it's own parsing
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#285
+  # source://rubocop//lib/rubocop/cop/base.rb#287
   def parse(source, path = T.unsafe(nil)); end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#259
+  # source://rubocop//lib/rubocop/cop/base.rb#261
   def parser_engine; end
 
   # Returns the value of attribute processed_source.
@@ -3075,104 +3075,104 @@ class RuboCop::Cop::Base
   #
   # @api private
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#291
+  # source://rubocop//lib/rubocop/cop/base.rb#293
   def ready; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#271
+  # source://rubocop//lib/rubocop/cop/base.rb#273
   def relevant_file?(file); end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#263
+  # source://rubocop//lib/rubocop/cop/base.rb#265
   def target_rails_version; end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#255
+  # source://rubocop//lib/rubocop/cop/base.rb#257
   def target_ruby_version; end
 
   private
 
-  # source://rubocop//lib/rubocop/cop/base.rb#476
+  # source://rubocop//lib/rubocop/cop/base.rb#478
   def annotate(message); end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#360
+  # source://rubocop//lib/rubocop/cop/base.rb#362
   def apply_correction(corrector); end
 
   # @return [Symbol] offense status
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#440
+  # source://rubocop//lib/rubocop/cop/base.rb#442
   def attempt_correction(range, corrector); end
 
   # Reserved for Cop::Cop
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#356
+  # source://rubocop//lib/rubocop/cop/base.rb#358
   def callback_argument(range); end
 
   # Called to complete an investigation
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#389
+  # source://rubocop//lib/rubocop/cop/base.rb#391
   def complete_investigation; end
 
   # @return [Symbol, Corrector] offense status
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#414
+  # source://rubocop//lib/rubocop/cop/base.rb#416
   def correct(range); end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#374
+  # source://rubocop//lib/rubocop/cop/base.rb#376
   def current_corrector; end
 
   # Reserved for Commissioner:
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#366
+  # source://rubocop//lib/rubocop/cop/base.rb#368
   def current_offense_locations; end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#378
+  # source://rubocop//lib/rubocop/cop/base.rb#380
   def current_offenses; end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#370
+  # source://rubocop//lib/rubocop/cop/base.rb#372
   def currently_disabled_lines; end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#504
+  # source://rubocop//lib/rubocop/cop/base.rb#506
   def custom_severity; end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#500
+  # source://rubocop//lib/rubocop/cop/base.rb#502
   def default_severity; end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#454
+  # source://rubocop//lib/rubocop/cop/base.rb#456
   def disable_uncorrectable(range); end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#490
+  # source://rubocop//lib/rubocop/cop/base.rb#492
   def enabled_line?(line_number); end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#482
+  # source://rubocop//lib/rubocop/cop/base.rb#484
   def file_name_matches_any?(file, parameter, default_result); end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#472
+  # source://rubocop//lib/rubocop/cop/base.rb#474
   def find_message(range, message); end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#496
+  # source://rubocop//lib/rubocop/cop/base.rb#498
   def find_severity(_range, severity); end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#517
+  # source://rubocop//lib/rubocop/cop/base.rb#519
   def range_for_original(range); end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#461
+  # source://rubocop//lib/rubocop/cop/base.rb#463
   def range_from_node_or_range(node_or_range); end
 
-  # source://rubocop//lib/rubocop/cop/base.rb#409
+  # source://rubocop//lib/rubocop/cop/base.rb#411
   def reset_investigation; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#525
+  # source://rubocop//lib/rubocop/cop/base.rb#527
   def target_satisfies_all_gem_version_requirements?; end
 
   # @return [Symbol] offense status
   #
-  # source://rubocop//lib/rubocop/cop/base.rb#429
+  # source://rubocop//lib/rubocop/cop/base.rb#431
   def use_corrector(range, corrector); end
 
   class << self
@@ -3192,7 +3192,7 @@ class RuboCop::Cop::Base
 
     # @api private
     #
-    # source://rubocop//lib/rubocop/cop/base.rb#314
+    # source://rubocop//lib/rubocop/cop/base.rb#316
     def callbacks_needed; end
 
     # source://rubocop//lib/rubocop/cop/base.rb#94
@@ -3282,15 +3282,15 @@ class RuboCop::Cop::Base
 
     # @return [Boolean]
     #
-    # source://rubocop//lib/rubocop/cop/base.rb#400
+    # source://rubocop//lib/rubocop/cop/base.rb#402
     def builtin?; end
 
-    # source://rubocop//lib/rubocop/cop/base.rb#382
+    # source://rubocop//lib/rubocop/cop/base.rb#384
     def restrict_on_send; end
   end
 end
 
-# source://rubocop//lib/rubocop/cop/base.rb#386
+# source://rubocop//lib/rubocop/cop/base.rb#388
 RuboCop::Cop::Base::EMPTY_OFFENSES = T.let(T.unsafe(nil), Array)
 
 # Reports of an investigation.
@@ -20516,7 +20516,7 @@ class RuboCop::Cop::Lint::MixedCaseRange < ::RuboCop::Cop::Base
   include ::RuboCop::Cop::RangeHelp
   extend ::RuboCop::Cop::AutoCorrector
 
-  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#56
+  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#58
   def each_unsafe_regexp_range(node); end
 
   # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#37
@@ -20530,31 +20530,31 @@ class RuboCop::Cop::Lint::MixedCaseRange < ::RuboCop::Cop::Base
 
   private
 
-  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#72
+  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#74
   def build_source_range(range_start, range_end); end
 
-  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#76
+  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#78
   def range_for(char); end
 
-  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#82
+  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#84
   def range_pairs(expr); end
 
-  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#102
-  def rewrite_regexp_range(source); end
+  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#104
+  def regexp_range(source); end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#92
+  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#94
   def skip_expression?(expr); end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#96
+  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#98
   def skip_range?(range_start, range_end); end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#86
+  # source://rubocop//lib/rubocop/cop/lint/mixed_case_range.rb#88
   def unsafe_range?(range_start, range_end); end
 end
 
@@ -24564,7 +24564,7 @@ class RuboCop::Cop::Lint::UnreachableLoop < ::RuboCop::Cop::Base
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/lint/unreachable_loop.rb#194
+  # source://rubocop//lib/rubocop/cop/lint/unreachable_loop.rb#200
   def conditional_continue_keyword?(break_statement); end
 
   # @return [Boolean]
@@ -24574,7 +24574,7 @@ class RuboCop::Cop::Lint::UnreachableLoop < ::RuboCop::Cop::Base
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/lint/unreachable_loop.rb#184
+  # source://rubocop//lib/rubocop/cop/lint/unreachable_loop.rb#190
   def preceded_by_continue_statement?(break_statement); end
 
   # source://rubocop//lib/rubocop/cop/lint/unreachable_loop.rb#130
@@ -29869,7 +29869,7 @@ class RuboCop::Cop::Registry
   # @raise [AmbiguousCopName] if a bare identifier with two possible namespaces is provided
   # @return [String] Qualified cop name
   #
-  # source://rubocop//lib/rubocop/cop/registry.rb#133
+  # source://rubocop-rspec_rails/2.28.3/lib/rubocop-rspec_rails.rb#26
   def qualified_cop_name(name, path, warn: T.unsafe(nil)); end
 
   # source://rubocop//lib/rubocop/cop/registry.rb#166
@@ -31185,7 +31185,7 @@ class RuboCop::Cop::Style::ArgumentsForwarding < ::RuboCop::Cop::Base
   # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#185
   def add_forward_all_offenses(node, send_classifications, forwardable_args); end
 
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#350
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#351
   def add_parens_if_missing(node, corrector); end
 
   # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#212
@@ -31193,10 +31193,10 @@ class RuboCop::Cop::Style::ArgumentsForwarding < ::RuboCop::Cop::Base
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#342
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#343
   def allow_only_rest_arguments?; end
 
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#334
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#335
   def arguments_range(node, first_node); end
 
   # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#263
@@ -31207,7 +31207,7 @@ class RuboCop::Cop::Style::ArgumentsForwarding < ::RuboCop::Cop::Base
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#494
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#495
   def explicit_block_name?; end
 
   # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#168
@@ -31232,7 +31232,7 @@ class RuboCop::Cop::Style::ArgumentsForwarding < ::RuboCop::Cop::Base
   # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#282
   def redundant_named_arg(arg, config_name, keyword); end
 
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#324
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#325
   def register_forward_all_offense(def_or_send, send_or_arguments, rest_or_splat); end
 
   # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#298
@@ -31246,7 +31246,7 @@ class RuboCop::Cop::Style::ArgumentsForwarding < ::RuboCop::Cop::Base
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#346
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#347
   def use_anonymous_forwarding?; end
 
   class << self
@@ -31275,115 +31275,115 @@ RuboCop::Cop::Style::ArgumentsForwarding::KWARGS_MSG = T.let(T.unsafe(nil), Stri
 
 # Classifies send nodes for possible rest/kwrest/all (including block) forwarding.
 #
-# source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#357
+# source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#358
 class RuboCop::Cop::Style::ArgumentsForwarding::SendNodeClassifier
   extend ::RuboCop::AST::NodePattern::Macros
 
   # @return [SendNodeClassifier] a new instance of SendNodeClassifier
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#369
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#370
   def initialize(def_node, send_node, referenced_lvars, forwardable_args, **config); end
 
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#397
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#398
   def classification; end
 
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#364
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#365
   def extract_forwarded_kwrest_arg(param0 = T.unsafe(nil), param1); end
 
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#391
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#392
   def forwarded_block_arg; end
 
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#367
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#368
   def forwarded_block_arg?(param0 = T.unsafe(nil), param1); end
 
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#385
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#386
   def forwarded_kwrest_arg; end
 
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#379
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#380
   def forwarded_rest_arg; end
 
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#361
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#362
   def forwarded_rest_arg?(param0 = T.unsafe(nil), param1); end
 
   private
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#465
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#466
   def additional_kwargs?; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#461
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#462
   def additional_kwargs_or_forwarded_kwargs?; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#475
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#476
   def allow_offense_for_no_block?; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#446
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#447
   def any_arg_referenced?; end
 
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#430
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#431
   def arguments; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#409
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#410
   def can_forward_all?; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#469
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#470
   def forward_additional_kwargs?; end
 
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#426
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#427
   def forwarded_rest_and_kwrest_args; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#488
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#489
   def missing_rest_arg_or_kwrest_arg?; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#479
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#480
   def no_additional_args?; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#454
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#455
   def no_post_splat_args?; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#422
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#423
   def offensive_block_forwarding?; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#442
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#443
   def referenced_block_arg?; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#438
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#439
   def referenced_kwrest_arg?; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#434
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#435
   def referenced_rest_arg?; end
 
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#418
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#419
   def ruby_32_missing_rest_or_kwest?; end
 
-  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#450
+  # source://rubocop//lib/rubocop/cop/style/arguments_forwarding.rb#451
   def target_ruby_version; end
 end
 
@@ -39793,7 +39793,8 @@ RuboCop::Cop::Style::MapCompactWithConditionalBlock::MSG = T.let(T.unsafe(nil), 
 #
 # [source,ruby]
 # ----
-# src.each { |e| @dest << e * 2 } # `src` method may mutate `@dest`
+# ret = []
+# src.each { |e| ret << e * 2 } # `<<` method may mutate `ret`
 #
 # dest = []
 # src.each { |e| dest << transform(e, dest) } # `transform` method may mutate `dest`
@@ -55866,13 +55867,13 @@ RuboCop::LSP::Severity::SEVERITIES = T.let(T.unsafe(nil), Hash)
 #
 # @api private
 #
-# source://rubocop//lib/rubocop/lockfile.rb#13
+# source://rubocop//lib/rubocop/lockfile.rb#7
 class RuboCop::Lockfile
   # @api private
   # @param lockfile_path [String, Pathname, nil]
   # @return [Lockfile] a new instance of Lockfile
   #
-  # source://rubocop//lib/rubocop/lockfile.rb#15
+  # source://rubocop//lib/rubocop/lockfile.rb#9
   def initialize(lockfile_path = T.unsafe(nil)); end
 
   # Gems that the bundle directly depends on.
@@ -55880,7 +55881,7 @@ class RuboCop::Lockfile
   # @api private
   # @return [Array<Bundler::Dependency>, nil]
   #
-  # source://rubocop//lib/rubocop/lockfile.rb#23
+  # source://rubocop//lib/rubocop/lockfile.rb#17
   def dependencies; end
 
   # Returns the locked versions of gems from this lockfile.
@@ -55889,7 +55890,7 @@ class RuboCop::Lockfile
   # @param include_transitive_dependencies: [Boolean] When false, only direct dependencies
   #   are returned, i.e. those listed explicitly in the `Gemfile`.
   #
-  # source://rubocop//lib/rubocop/lockfile.rb#43
+  # source://rubocop//lib/rubocop/lockfile.rb#37
   def gem_versions(include_transitive_dependencies: T.unsafe(nil)); end
 
   # All activated gems, including transitive dependencies.
@@ -55897,7 +55898,7 @@ class RuboCop::Lockfile
   # @api private
   # @return [Array<Bundler::Dependency>, nil]
   #
-  # source://rubocop//lib/rubocop/lockfile.rb#31
+  # source://rubocop//lib/rubocop/lockfile.rb#25
   def gems; end
 
   # Whether this lockfile includes the named gem, directly or indirectly.
@@ -55906,15 +55907,21 @@ class RuboCop::Lockfile
   # @param name [String]
   # @return [Boolean]
   #
-  # source://rubocop//lib/rubocop/lockfile.rb#59
+  # source://rubocop//lib/rubocop/lockfile.rb#53
   def includes_gem?(name); end
 
   private
 
   # @api private
+  # @return [Boolean]
+  #
+  # source://rubocop//lib/rubocop/lockfile.rb#73
+  def bundler_lock_parser_defined?; end
+
+  # @api private
   # @return [Bundler::LockfileParser, nil]
   #
-  # source://rubocop//lib/rubocop/lockfile.rb#66
+  # source://rubocop//lib/rubocop/lockfile.rb#60
   def parser; end
 end
 
