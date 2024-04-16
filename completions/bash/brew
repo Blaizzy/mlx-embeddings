@@ -1760,7 +1760,7 @@ _brew_pr_pull() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --artifact
+      --artifact-pattern
       --autosquash
       --branch-okay
       --clean

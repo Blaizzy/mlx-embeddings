@@ -1482,7 +1482,7 @@ _brew_pr_publish() {
 # brew pr-pull
 _brew_pr_pull() {
   _arguments \
-    '--artifact[Download artifacts with the specified name (default: `bottles`)]' \
+    '--artifact-pattern[Download artifacts with the specified pattern (default: `bottles{,-*}`)]' \
     '(--clean)--autosquash[Automatically reformat and reword commits in the pull request to our preferred format]' \
     '--branch-okay[Do not warn if pulling to a branch besides the repository default (useful for testing)]' \
     '(--autosquash)--clean[Do not amend the commits from pull requests]' \
