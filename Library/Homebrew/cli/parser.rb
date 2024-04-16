@@ -12,6 +12,7 @@ require "utils/tty"
 module Homebrew
   module CLI
     class Parser
+      # FIXME: Enable cop again when https://github.com/sorbet/sorbet/issues/3532 is fixed.
       # rubocop:disable Style/MutableConstant
       ArgType = T.type_alias { T.any(NilClass, Symbol, T::Array[String], T::Array[Symbol]) }
       OptionsType = T.type_alias { T::Array[[String, T.nilable(String), T.nilable(String), String, T::Boolean]] }
