@@ -157,9 +157,7 @@ module Homebrew
                 ohai "Downloading bottles for workflow: #{workflow}"
 
                 urls = GitHub.get_artifact_urls(workflow_run)
-                urls.each do |url|
-                  GitHub.download_artifact(url, pr)
-                end
+                urls.each { |url| GitHub.download_artifact(url, pr) }
               end
 
               next if args.no_upload?
