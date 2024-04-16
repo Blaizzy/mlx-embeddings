@@ -3295,6 +3295,10 @@ and Linux workers.
 
 : Only run the tap syntax check step.
 
+`--stable`
+
+: Only run the tap syntax checks needed on stable brew.
+
 `--only-formulae`
 
 : Only run the formulae steps.
