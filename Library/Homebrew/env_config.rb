@@ -228,6 +228,21 @@ module Homebrew
                      "of Ruby is new enough.",
         boolean:     true,
       },
+      HOMEBREW_FORMULA_BUILD_NETWORK:            {
+        description: "If set, controls network access to the sandbox for formulae builds. Overrides any " \
+                     "controls set through DSL usage inside formulae. Must be `allow` or `deny`. If no value is " \
+                     "set through this environment variable or DSL usage, the default behavior is `allow`.",
+      },
+      HOMEBREW_FORMULA_POSTINSTALL_NETWORK:      {
+        description: "If set, controls network access to the sandbox for formulae postinstall. Overrides any " \
+                     "controls set through DSL usage inside formulae. Must be `allow` or `deny`. If no value is " \
+                     "set through this environment variable or DSL usage, the default behavior is `allow`.",
+      },
+      HOMEBREW_FORMULA_TEST_NETWORK:             {
+        description: "If set, controls network access to the sandbox for formulae test. Overrides any " \
+                     "controls set through DSL usage inside formulae. Must be `allow` or `deny`. If no value is " \
+                     "set through this environment variable or DSL usage, the default behavior is `allow`.",
+      },
       HOMEBREW_GITHUB_API_TOKEN:                 {
         description: "Use this personal access token for the GitHub API, for features such as " \
                      "`brew search`. You can create one at <https://github.com/settings/tokens>. If set, " \
