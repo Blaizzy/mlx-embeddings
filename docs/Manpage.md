@@ -2425,7 +2425,7 @@ repository.
 
 `--artifact-pattern`
 
-: Download artifacts with the specified pattern (default: `bottles{,-*}`).
+: Download artifacts with the specified pattern (default: `bottles{,_*}`).
 
 `--tap`
 
