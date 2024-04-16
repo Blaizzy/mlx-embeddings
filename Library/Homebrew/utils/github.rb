@@ -283,7 +283,7 @@ module GitHub
     API.open_rest(url, data_binary_path: local_file, request_method: :POST, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
-  def self.get_workflow_run(user, repo, pull_request, workflow_id: "tests.yml", artifact_pattern: "bottles{,-*}")
+  def self.get_workflow_run(user, repo, pull_request, workflow_id: "tests.yml", artifact_pattern: "bottles{,_*}")
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
 
     # GraphQL unfortunately has no way to get the workflow yml name, so we need an extra REST call.
