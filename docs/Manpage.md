@@ -3999,7 +3999,7 @@ Vincent, Caleb Xu, Carlo Cabrera, David Baumgold, Douglas Eichelberger, Dustin
 Rodrigues, Eric Knibbe, FX Coudert, Issy Long, Justin Krehel, Markus Reiter,
 Miccal Matthews, Michael Cho, Michka Popoff, Mike McQuaid, Nanda H Krishna,
 Patrick Linnane, Razvan Azamfirei, Rui Chen, Ruoyu Zhong, Rylan Polster, Sam
-Ford, Sean Molenaar, Thierry Moisan and Timothy Sutton.
+Ford, Sean Molenaar, Thierry Moisan, Timothy Sutton and William Woodruff.
 
 Former maintainers with significant contributions include Misty De Méo, Shaun
 Jackman, Vítor Galvão, Claudia Pellegrino, Seeker, William Woodruff, Jan
