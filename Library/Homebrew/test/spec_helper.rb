@@ -37,6 +37,8 @@ require_relative "support/extend/cachable"
 
 require_relative "../global"
 
+require "debug" if ENV["HOMEBREW_DEBUG"]
+
 require "test/support/quiet_progress_formatter"
 require "test/support/helper/cask"
 require "test/support/helper/files"

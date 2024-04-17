@@ -69,8 +69,6 @@ RSpec.describe Migrator do
       tab.source["tap"] = "homebrew/core"
       tab.write
 
-      binding.b
-
       expect do
         described_class.new(new_formula, "oldname")
       end.to raise_error(Migrator::MigratorDifferentTapsError)

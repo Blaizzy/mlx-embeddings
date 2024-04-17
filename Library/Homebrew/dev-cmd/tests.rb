@@ -45,8 +45,6 @@ module Homebrew
         # Given we might be testing various commands, we probably want everything (except sorbet-static)
         Homebrew.install_bundler_gems!(groups: Homebrew.valid_gem_groups - ["sorbet"])
 
-        require "debug" if args.debug?
-
         HOMEBREW_LIBRARY_PATH.cd do
           setup_environment!
 
@@ -136,6 +134,8 @@ module Homebrew
           end
 
           puts "Randomized with seed #{seed}"
+
+          ENV["HOMEBREW_DEBUG"] = "1" if args.debug? # Used in spec_helper.rb to require the "debug" gem.
 
           # Submit test flakiness information using BuildPulse
           # BUILDPULSE used in spec_helper.rb
