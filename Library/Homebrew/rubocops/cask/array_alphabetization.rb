@@ -37,6 +37,7 @@ module RuboCop
         def sort_array(source)
           # Combine each comment with the line(s) below so that they remain in the same relative location
           combined_source = source.each_with_index.filter_map do |line, index|
+            next if line.blank?
             next if line.strip.start_with?("#")
 
             next recursively_find_comments(source, index, line)
