@@ -3999,15 +3999,14 @@ Vincent, Caleb Xu, Carlo Cabrera, David Baumgold, Douglas Eichelberger, Dustin
 Rodrigues, Eric Knibbe, FX Coudert, Issy Long, Justin Krehel, Markus Reiter,
 Miccal Matthews, Michael Cho, Michka Popoff, Mike McQuaid, Nanda H Krishna,
 Patrick Linnane, Razvan Azamfirei, Rui Chen, Ruoyu Zhong, Rylan Polster, Sam
-Ford, Sean Molenaar, Thierry Moisan and Timothy Sutton.
+Ford, Sean Molenaar, Thierry Moisan, Timothy Sutton and William Woodruff.
 
 Former maintainers with significant contributions include Misty De Méo, Shaun
-Jackman, Vítor Galvão, Claudia Pellegrino, Seeker, William Woodruff, Jan
-Viljanen, JCount, commitay, Dominyk Tiller, Tim Smith, Baptiste Fontaine, Xu
-Cheng, Martin Afanasjew, Brett Koonce, Charlie Sharpsteen, Jack Nagel, Adam
-Vandenberg, Andrew Janke, Alex Dunn, neutric, Tomasz Pajor, Uladzislau
-Shablinski, Alyssa Ross, ilovezfs, Chongyu Zhu and Homebrew's creator: Max
-Howell.
+Jackman, Vítor Galvão, Claudia Pellegrino, Seeker, Jan Viljanen, JCount,
+commitay, Dominyk Tiller, Tim Smith, Baptiste Fontaine, Xu Cheng, Martin
+Afanasjew, Brett Koonce, Charlie Sharpsteen, Jack Nagel, Adam Vandenberg, Andrew
+Janke, Alex Dunn, neutric, Tomasz Pajor, Uladzislau Shablinski, Alyssa Ross,
+ilovezfs, Chongyu Zhu and Homebrew's creator: Max Howell.
 
 ## BUGS
 
