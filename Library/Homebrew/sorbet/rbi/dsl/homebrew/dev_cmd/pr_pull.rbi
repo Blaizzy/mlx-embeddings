@@ -8,6 +8,9 @@ class Homebrew::CLI::Args
   sig { returns(T.nilable(String)) }
   def artifact; end
 
+  sig { returns(T.nilable(String)) }
+  def artifact_pattern; end
+
   sig { returns(T::Boolean) }
   def autosquash?; end
 

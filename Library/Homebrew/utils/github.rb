@@ -283,7 +283,7 @@ module GitHub
     API.open_rest(url, data_binary_path: local_file, request_method: :POST, scopes: CREATE_ISSUE_FORK_OR_PR_SCOPES)
   end
 
-  def self.get_workflow_run(user, repo, pull_request, workflow_id: "tests.yml", artifact_name: "bottles")
+  def self.get_workflow_run(user, repo, pull_request, workflow_id: "tests.yml", artifact_pattern: "bottles{,_*}")
     scopes = CREATE_ISSUE_FORK_OR_PR_SCOPES
 
     # GraphQL unfortunately has no way to get the workflow yml name, so we need an extra REST call.
@@ -333,11 +333,11 @@ module GitHub
       []
     end
 
-    [check_suite, user, repo, pull_request, workflow_id, scopes, artifact_name]
+    [check_suite, user, repo, pull_request, workflow_id, scopes, artifact_pattern]
   end
 
-  def self.get_artifact_url(workflow_array)
-    check_suite, user, repo, pr, workflow_id, scopes, artifact_name = *workflow_array
+  def self.get_artifact_urls(workflow_array)
+    check_suite, user, repo, pr, workflow_id, scopes, artifact_pattern = *workflow_array
     if check_suite.empty?
       raise API::Error, <<~EOS
         No matching check suite found for these criteria!
@@ -357,18 +357,20 @@ module GitHub
     run_id = check_suite.last["workflowRun"]["databaseId"]
     artifacts = API.open_rest("#{API_URL}/repos/#{user}/#{repo}/actions/runs/#{run_id}/artifacts", scopes:)
 
-    artifact = artifacts["artifacts"].select do |art|
-      art["name"] == artifact_name
-    end
+    matching_artifacts =
+      artifacts["artifacts"]
+      .group_by { |art| art["name"] }
+      .select { |name| File.fnmatch?(artifact_pattern, name, File::FNM_EXTGLOB) }
+      .map { |_, arts| arts.last }
 
-    if artifact.empty?
+    if matching_artifacts.empty?
       raise API::Error, <<~EOS
-        No artifact with the name `#{artifact_name}` was found!
+        No artifacts with the pattern `#{artifact_pattern}` were found!
           #{Formatter.url check_suite.last["workflowRun"]["url"]}
       EOS
     end
 
-    artifact.last["archive_download_url"]
+    matching_artifacts.map { |art| art["archive_download_url"] }
   end
 
   def self.public_member_usernames(org, per_page: 100)

@@ -2423,9 +2423,9 @@ repository.
 
 : Message to include when autosquashing revision bumps, deletions and rebuilds.
 
-`--artifact`
+`--artifact-pattern`
 
-: Download artifacts with the specified name (default: `bottles`).
+: Download artifacts with the specified pattern (default: `bottles{,_*}`).
 
 `--tap`
 

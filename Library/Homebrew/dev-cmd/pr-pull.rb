@@ -55,8 +55,8 @@ module Homebrew
         flag   "--message=",
                depends_on:  "--autosquash",
                description: "Message to include when autosquashing revision bumps, deletions and rebuilds."
-        flag   "--artifact=",
-               description: "Download artifacts with the specified name (default: `bottles`)."
+        flag   "--artifact-pattern=", "--artifact=",
+               description: "Download artifacts with the specified pattern (default: `bottles{,_*}`)."
         flag   "--tap=",
                description: "Target tap repository (default: `homebrew/core`)."
         flag   "--root-url=",
@@ -81,7 +81,7 @@ module Homebrew
         ensure_executable!("unzip", reason: "extracting CI artifacts")
 
         workflows = args.workflows.presence || ["tests.yml"]
-        artifact = args.artifact || "bottles"
+        artifact_pattern = args.artifact_pattern || "bottles{,_*}"
         tap = Tap.fetch(args.tap || CoreTap.instance.name)
         raise TapUnavailableError, tap.name unless tap.installed?
 
@@ -143,7 +143,7 @@ module Homebrew
 
               workflows.each do |workflow|
                 workflow_run = GitHub.get_workflow_run(
-                  user, repo, pr, workflow_id: workflow, artifact_name: artifact
+                  user, repo, pr, workflow_id: workflow, artifact_pattern:
                 )
                 if args.ignore_missing_artifacts.present? &&
                    T.must(args.ignore_missing_artifacts).include?(workflow) &&
@@ -155,8 +155,9 @@ module Homebrew
                 end
 
                 ohai "Downloading bottles for workflow: #{workflow}"
-                url = GitHub.get_artifact_url(workflow_run)
-                GitHub.download_artifact(url, pr)
+
+                urls = GitHub.get_artifact_urls(workflow_run)
+                urls.each { |url| GitHub.download_artifact(url, pr) }
               end
 
               next if args.no_upload?
