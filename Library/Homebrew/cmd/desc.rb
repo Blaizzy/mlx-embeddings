@@ -38,10 +38,6 @@ module Homebrew
 
       sig { override.void }
       def run
-        if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
-          raise UsageError, "`brew desc` needs `--eval-all` passed or `HOMEBREW_EVAL_ALL` set!"
-        end
-
         search_type = if args.search?
           :either
         elsif args.name?
@@ -50,25 +46,29 @@ module Homebrew
           :desc
         end
 
-        if search_type.blank?
-          desc = {}
-          args.named.to_formulae_and_casks.each do |formula_or_cask|
-            case formula_or_cask
-            when Formula
-              desc[formula_or_cask.full_name] = formula_or_cask.desc
-            when Cask::Cask
-              description = formula_or_cask.desc.presence || Formatter.warning("[no description]")
-              desc[formula_or_cask.full_name] = "(#{formula_or_cask.name.join(", ")}) #{description}"
-            else
-              raise TypeError, "Unsupported formula_or_cask type: #{formula_or_cask.class}"
-            end
+        if search_type.present?
+          if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
+            raise UsageError, "`brew desc --search` needs `--eval-all` passed or `HOMEBREW_EVAL_ALL` set!"
           end
-          Descriptions.new(desc).print
-        else
+
           query = args.named.join(" ")
           string_or_regex = Search.query_regexp(query)
-          Search.search_descriptions(string_or_regex, args, search_type:)
+          return Search.search_descriptions(string_or_regex, args, search_type:)
         end
+
+        desc = {}
+        args.named.to_formulae_and_casks.each do |formula_or_cask|
+          case formula_or_cask
+          when Formula
+            desc[formula_or_cask.full_name] = formula_or_cask.desc
+          when Cask::Cask
+            description = formula_or_cask.desc.presence || Formatter.warning("[no description]")
+            desc[formula_or_cask.full_name] = "(#{formula_or_cask.name.join(", ")}) #{description}"
+          else
+            raise TypeError, "Unsupported formula_or_cask type: #{formula_or_cask.class}"
+          end
+        end
+        Descriptions.new(desc).print
       end
     end
   end
