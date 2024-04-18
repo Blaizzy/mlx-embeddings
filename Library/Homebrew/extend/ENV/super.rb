@@ -229,7 +229,9 @@ module Superenv
       end
     end
 
-    paths << keg_only_deps.map(&:opt_lib)
+    # Don't add `llvm` to library paths; this leads to undesired linkage to LLVM's `libunwind`
+    paths << keg_only_deps.reject { |dep| dep.name.match?(/^llvm(@\d+)?$/) }
+                          .map(&:opt_lib)
     paths << (HOMEBREW_PREFIX/"lib")
 
     paths += homebrew_extra_library_paths
