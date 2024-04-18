@@ -21,6 +21,7 @@
 /Library/Taps
 /Library/PinnedTaps
 /Library/Homebrew/.byebug_history
+/Library/Homebrew/test/.rdbg_history
 
 # Ignore Bundler files
 **/.bundle/bin
@@ -105,6 +106,7 @@
 **/vendor/bundle/ruby/*/gems/racc-*/
 **/vendor/bundle/ruby/*/gems/rainbow-*/
 **/vendor/bundle/ruby/*/gems/rbi-*/
+**/vendor/bundle/ruby/*/gems/rdoc-*/
 **/vendor/bundle/ruby/*/gems/regexp_parser-*/
 **/vendor/bundle/ruby/*/gems/rexml-*/
 **/vendor/bundle/ruby/*/gems/rspec-*/

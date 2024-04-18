@@ -21,8 +21,8 @@ module Homebrew
         switch "--online",
                description: "Include tests that use the GitHub API and tests that use any of the taps for " \
                             "official external commands."
-        switch "--byebug",
-               description: "Enable debugging using byebug."
+        switch "--debug",
+               description: "Enable debugging using ruby/debug, or surface the standard `odebug` output."
         switch "--changed",
                description: "Only runs tests on files that were changed from the master branch."
         switch "--fail-fast",
@@ -44,8 +44,6 @@ module Homebrew
       def run
         # Given we might be testing various commands, we probably want everything (except sorbet-static)
         Homebrew.install_bundler_gems!(groups: Homebrew.valid_gem_groups - ["sorbet"])
-
-        require "byebug" if args.byebug?
 
         HOMEBREW_LIBRARY_PATH.cd do
           setup_environment!
@@ -136,6 +134,8 @@ module Homebrew
           end
 
           puts "Randomized with seed #{seed}"
+
+          ENV["HOMEBREW_DEBUG"] = "1" if args.debug? # Used in spec_helper.rb to require the "debug" gem.
 
           # Submit test flakiness information using BuildPulse
           # BUILDPULSE used in spec_helper.rb

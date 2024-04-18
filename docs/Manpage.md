@@ -2650,9 +2650,9 @@ Run Homebrew's unit and integration tests.
 : Include tests that use the GitHub API and tests that use any of the taps for
   official external commands.
 
-`--byebug`
+`--debug`
 
-: Enable debugging using byebug.
+: Enable debugging using ruby/debug, or surface the standard `odebug` output.
 
 `--changed`
 

@@ -29,7 +29,6 @@ require "rspec/retry"
 require "rspec/sorbet"
 require "rubocop/rspec/support"
 require "find"
-require "byebug"
 require "timeout"
 
 $LOAD_PATH.unshift(File.expand_path("#{ENV.fetch("HOMEBREW_LIBRARY")}/Homebrew/test/support/lib"))
@@ -37,6 +36,8 @@ $LOAD_PATH.unshift(File.expand_path("#{ENV.fetch("HOMEBREW_LIBRARY")}/Homebrew/t
 require_relative "support/extend/cachable"
 
 require_relative "../global"
+
+require "debug" if ENV["HOMEBREW_DEBUG"]
 
 require "test/support/quiet_progress_formatter"
 require "test/support/helper/cask"
@@ -230,14 +231,14 @@ RSpec.configure do |config|
     @__stdin = $stdin.clone
 
     begin
-      if !example.metadata.keys.intersect?([:focus, :byebug]) && !ENV.key?("HOMEBREW_VERBOSE_TESTS")
+      if example.metadata.keys.exclude?(:focus) && !ENV.key?("HOMEBREW_VERBOSE_TESTS")
         $stdout.reopen(File::NULL)
         $stderr.reopen(File::NULL)
+        $stdin.reopen(File::NULL)
       else
-        # don't retry when focusing/debugging
+        # don't retry when focusing
         config.default_retry_count = 0
       end
-      $stdin.reopen(File::NULL)
 
       begin
         timeout = example.metadata.fetch(:timeout, 60)
