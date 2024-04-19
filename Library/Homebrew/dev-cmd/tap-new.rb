@@ -129,7 +129,7 @@ module Homebrew
                   env:
                     HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
                     HOMEBREW_GITHUB_PACKAGES_TOKEN: ${{ github.token }}
-                    HOMEBREW_GITHUB_PACKAGES_USER: ${{ github.actor }}
+                    HOMEBREW_GITHUB_PACKAGES_USER: ${{ github.repository_owner }}
                     PULL_REQUEST: ${{ github.event.pull_request.number }}
                   run: brew pr-pull --debug --tap=$GITHUB_REPOSITORY $PULL_REQUEST
 
