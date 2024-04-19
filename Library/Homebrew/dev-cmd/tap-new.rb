@@ -63,11 +63,13 @@ module Homebrew
 
         actions_main = <<~YAML
           name: brew test-bot
+
           on:
             push:
               branches:
                 - #{branch}
             pull_request:
+
           jobs:
             test-bot:
               strategy:
@@ -80,8 +82,7 @@ module Homebrew
                   uses: Homebrew/actions/setup-homebrew@master
 
                 - name: Cache Homebrew Bundler RubyGems
-                  id: cache
-                  uses: actions/cache@v3
+                  uses: actions/cache@v4
                   with:
                     path: ${{ steps.set-up-homebrew.outputs.gems-path }}
                     key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
@@ -93,7 +94,7 @@ module Homebrew
 
                 - run: brew test-bot --only-tap-syntax
 
-                - run: brew test-bot --only-formulae#{" --root-url=#{root_url}" if root_url}
+                - run: brew test-bot --only-formulae#{" --root-url='#{root_url}'" if root_url}
                   if: github.event_name == 'pull_request'
 
                 - name: Upload bottles as artifact
@@ -106,10 +107,12 @@ module Homebrew
 
         actions_publish = <<~YAML
           name: brew pr-pull
+
           on:
             pull_request_target:
               types:
                 - labeled
+
           jobs:
             pr-pull:
               if: contains(github.event.pull_request.labels.*.name, '#{label}')
@@ -128,10 +131,10 @@ module Homebrew
                 - name: Pull bottles
                   env:
                     HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
-                    HOMEBREW_GITHUB_PACKAGES_TOKEN: ${{ github.token }}
-                    HOMEBREW_GITHUB_PACKAGES_USER: ${{ github.repository_owner }}
+                    HOMEBREW_GITHUB_PACKAGES_TOKEN: #{args.github_packages? ? "${{ github.token }}" : "null"}
+                    HOMEBREW_GITHUB_PACKAGES_USER: #{args.github_packages? ? "${{ github.repository_owner }}" : "null"}
                     PULL_REQUEST: ${{ github.event.pull_request.number }}
-                  run: brew pr-pull --debug --tap=$GITHUB_REPOSITORY $PULL_REQUEST
+                  run: brew pr-pull --debug --tap="$GITHUB_REPOSITORY" "$PULL_REQUEST"
 
                 - name: Push commits
                   uses: Homebrew/actions/git-try-push@master
@@ -143,7 +146,7 @@ module Homebrew
                   if: github.event.pull_request.head.repo.fork == false
                   env:
                     BRANCH: ${{ github.event.pull_request.head.ref }}
-                  run: git push --delete origin $BRANCH
+                  run: git push --delete origin "$BRANCH"
         YAML
 
         (tap.path/".github/workflows").mkpath
