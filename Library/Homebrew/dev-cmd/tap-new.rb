@@ -98,9 +98,9 @@ module Homebrew
 
                 - name: Upload bottles as artifact
                   if: always() && github.event_name == 'pull_request'
-                  uses: actions/upload-artifact@v3
+                  uses: actions/upload-artifact@v4
                   with:
-                    name: bottles
+                    name: bottles_${{ matrix.os }}
                     path: '*.bottle.*'
         YAML
 
