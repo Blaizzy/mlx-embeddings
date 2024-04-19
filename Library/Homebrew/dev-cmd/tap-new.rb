@@ -105,6 +105,18 @@ module Homebrew
                     path: '*.bottle.*'
         YAML
 
+        pr_pull_permissions = {
+          "contents"      => "write",
+          "pull-requests" => "write",
+        }
+        pr_pull_env = {
+          "HOMEBREW_GITHUB_API_TOKEN" => "${{ github.token }}",
+        }
+        if args.github_packages?
+          pr_pull_permissions["packages"] = "write"
+          pr_pull_env["HOMEBREW_GITHUB_PACKAGES_TOKEN"] = "${{ github.token }}"
+          pr_pull_env["HOMEBREW_GITHUB_PACKAGES_USER"] = "${{ github.repository_owner }}"
+        end
         actions_publish = <<~YAML
           name: brew pr-pull
 
@@ -118,9 +130,7 @@ module Homebrew
               if: contains(github.event.pull_request.labels.*.name, '#{label}')
               runs-on: ubuntu-22.04
               permissions:
-                contents: write
-                packages: #{args.github_packages? ? "write" : "none"}
-                pull-requests: write
+          #{pr_pull_permissions.sort.map { |k, v| "      #{k}: #{v}" }.join("\n")}
               steps:
                 - name: Set up Homebrew
                   uses: Homebrew/actions/setup-homebrew@master
@@ -130,9 +140,7 @@ module Homebrew
 
                 - name: Pull bottles
                   env:
-                    HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
-                    HOMEBREW_GITHUB_PACKAGES_TOKEN: #{args.github_packages? ? "${{ github.token }}" : "null"}
-                    HOMEBREW_GITHUB_PACKAGES_USER: #{args.github_packages? ? "${{ github.repository_owner }}" : "null"}
+          #{pr_pull_env.sort.map { |k, v| "          #{k}: #{v}" }.join("\n")}
                     PULL_REQUEST: ${{ github.event.pull_request.number }}
                   run: brew pr-pull --debug --tap="$GITHUB_REPOSITORY" "$PULL_REQUEST"
 
