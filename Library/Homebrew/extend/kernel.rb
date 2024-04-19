@@ -401,6 +401,9 @@ module Kernel
     executable = [
       which(name),
       which(name, ORIGINAL_PATHS),
+      # We prefer the opt_bin path to a formula's executable over the prefix
+      # path where available, since the former is stable during upgrades.
+      HOMEBREW_PREFIX/"opt/#{formula_name}/bin/#{name}",
       HOMEBREW_PREFIX/"bin/#{name}",
     ].compact.first
     return executable if executable.exist?
