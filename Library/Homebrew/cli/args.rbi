@@ -14,6 +14,9 @@ class Homebrew::CLI::Args
   sig { returns(T::Boolean) }
   def quiet?; end
 
+  sig { returns(T::Array[String]) }
+  def remaining; end
+
   sig { returns(T::Boolean) }
   def verbose?; end
 end

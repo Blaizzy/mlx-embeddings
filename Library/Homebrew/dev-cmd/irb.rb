@@ -6,21 +6,25 @@ require "formulary"
 require "cask/cask_loader"
 
 class String
+  # @!visibility private
   def f(*args)
     require "formula"
     Formulary.factory(self, *args)
   end
 
+  # @!visibility private
   def c(config: nil)
     Cask::CaskLoader.load(self, config:)
   end
 end
 
 class Symbol
+  # @!visibility private
   def f(*args)
     to_s.f(*args)
   end
 
+  # @!visibility private
   def c(config: nil)
     to_s.c(config:)
   end

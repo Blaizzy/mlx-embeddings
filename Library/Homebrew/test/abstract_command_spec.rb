@@ -67,7 +67,6 @@ RSpec.describe Homebrew::AbstractCommand do
           filename = File.basename(file, ".rb")
           require(file)
           command = described_class.command(filename)
-          dir = command.name.start_with?("Homebrew::DevCmd") ? "dev-cmd" : "cmd"
           expect(Pathname(File.join(__dir__, "../#{dir}/#{command.command_name}.rb"))).to exist
         end
       end
