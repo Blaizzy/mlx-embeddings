@@ -36,6 +36,7 @@ module Homebrew
 
         tap = args.named.to_taps.fetch(0)
         odie "Invalid tap name '#{tap}'" unless tap.path.to_s.match?(HOMEBREW_TAP_PATH_REGEX)
+        odie "Tap is already installed!" if tap.installed?
 
         titleized_user = tap.user.dup
         titleized_repo = tap.repo.dup
@@ -62,11 +63,13 @@ module Homebrew
 
         actions_main = <<~YAML
           name: brew test-bot
+
           on:
             push:
               branches:
                 - #{branch}
             pull_request:
+
           jobs:
             test-bot:
               strategy:
@@ -79,8 +82,7 @@ module Homebrew
                   uses: Homebrew/actions/setup-homebrew@master
 
                 - name: Cache Homebrew Bundler RubyGems
-                  id: cache
-                  uses: actions/cache@v3
+                  uses: actions/cache@v4
                   with:
                     path: ${{ steps.set-up-homebrew.outputs.gems-path }}
                     key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
@@ -92,31 +94,43 @@ module Homebrew
 
                 - run: brew test-bot --only-tap-syntax
 
-                - run: brew test-bot --only-formulae#{" --root-url=#{root_url}" if root_url}
+                - run: brew test-bot --only-formulae#{" --root-url='#{root_url}'" if root_url}
                   if: github.event_name == 'pull_request'
 
                 - name: Upload bottles as artifact
                   if: always() && github.event_name == 'pull_request'
-                  uses: actions/upload-artifact@v3
+                  uses: actions/upload-artifact@v4
                   with:
-                    name: bottles
+                    name: bottles_${{ matrix.os }}
                     path: '*.bottle.*'
         YAML
 
+        pr_pull_permissions = {
+          "contents"      => "write",
+          "pull-requests" => "write",
+        }
+        pr_pull_env = {
+          "HOMEBREW_GITHUB_API_TOKEN" => "${{ github.token }}",
+        }
+        if args.github_packages?
+          pr_pull_permissions["packages"] = "write"
+          pr_pull_env["HOMEBREW_GITHUB_PACKAGES_TOKEN"] = "${{ github.token }}"
+          pr_pull_env["HOMEBREW_GITHUB_PACKAGES_USER"] = "${{ github.repository_owner }}"
+        end
         actions_publish = <<~YAML
           name: brew pr-pull
+
           on:
             pull_request_target:
               types:
                 - labeled
+
           jobs:
             pr-pull:
               if: contains(github.event.pull_request.labels.*.name, '#{label}')
               runs-on: ubuntu-22.04
               permissions:
-                contents: write
-                packages: #{args.github_packages? ? "write" : "none"}
-                pull-requests: write
+          #{pr_pull_permissions.sort.map { |k, v| "      #{k}: #{v}" }.join("\n")}
               steps:
                 - name: Set up Homebrew
                   uses: Homebrew/actions/setup-homebrew@master
@@ -126,11 +140,9 @@ module Homebrew
 
                 - name: Pull bottles
                   env:
-                    HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
-                    HOMEBREW_GITHUB_PACKAGES_TOKEN: ${{ github.token }}
-                    HOMEBREW_GITHUB_PACKAGES_USER: ${{ github.actor }}
+          #{pr_pull_env.sort.map { |k, v| "          #{k}: #{v}" }.join("\n")}
                     PULL_REQUEST: ${{ github.event.pull_request.number }}
-                  run: brew pr-pull --debug --tap=$GITHUB_REPOSITORY $PULL_REQUEST
+                  run: brew pr-pull --debug --tap="$GITHUB_REPOSITORY" "$PULL_REQUEST"
 
                 - name: Push commits
                   uses: Homebrew/actions/git-try-push@master
@@ -142,7 +154,7 @@ module Homebrew
                   if: github.event.pull_request.head.repo.fork == false
                   env:
                     BRANCH: ${{ github.event.pull_request.head.ref }}
-                  run: git push --delete origin $BRANCH
+                  run: git push --delete origin "$BRANCH"
         YAML
 
         (tap.path/".github/workflows").mkpath
