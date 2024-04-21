@@ -2673,6 +2673,8 @@ class Formula
   def setup_home(home)
     # Don't let bazel write to tmp directories we don't control or clean.
     (home/".bazelrc").write "startup --output_user_root=#{home}/_bazel"
+    # Don't dirty the git tree for git clones.
+    (home/".gitignore").write "*"
   end
 
   # Returns a list of Dependency objects that are declared in the formula.
