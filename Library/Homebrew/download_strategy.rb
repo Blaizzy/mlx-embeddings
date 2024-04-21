@@ -1468,7 +1468,8 @@ class DownloadStrategyDetector
       GitHubGitDownloadStrategy
     when %r{^https?://.+\.git$},
          %r{^git://},
-         %r{^https?://git\.sr\.ht/[^/]+/[^/]+$}
+         %r{^https?://git\.sr\.ht/[^/]+/[^/]+$},
+         %r{^ssh://git}
       GitDownloadStrategy
     when %r{^https?://www\.apache\.org/dyn/closer\.cgi},
          %r{^https?://www\.apache\.org/dyn/closer\.lua}

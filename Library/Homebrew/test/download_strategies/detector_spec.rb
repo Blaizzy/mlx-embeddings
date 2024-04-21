@@ -15,6 +15,12 @@ RSpec.describe DownloadStrategyDetector do
       it { is_expected.to eq(GitDownloadStrategy) }
     end
 
+    context "when given SSH Git URL" do
+      let(:url) { "ssh://git@example.com/foo.git" }
+
+      it { is_expected.to eq(GitDownloadStrategy) }
+    end
+
     context "when given a GitHub Git URL" do
       let(:url) { "https://github.com/homebrew/brew.git" }
 
