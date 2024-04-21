@@ -251,8 +251,8 @@ module Homebrew
       end
 
       sig {
-        params(names: String, description: T.nilable(String), replacement: T.any(Symbol, String, NilClass), depends_on: T.nilable(String),
-               hidden: T::Boolean).void
+        params(names: String, description: T.nilable(String), replacement: T.any(Symbol, String, NilClass),
+               depends_on: T.nilable(String), hidden: T::Boolean).void
       }
       def flag(*names, description: nil, replacement: nil, depends_on: nil, hidden: false)
         required, flag_type = if names.any? { |name| name.end_with? "=" }
