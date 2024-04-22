@@ -721,6 +721,7 @@ _brew_deps() {
   _arguments \
     '--HEAD[Show dependencies for HEAD version instead of stable version]' \
     '--annotate[Mark any build, test, implicit, optional, or recommended dependencies as such in the output]' \
+    '--arch[Show dependencies for the given CPU architecture]' \
     '--debug[Display any debugging information]' \
     '--direct[Show only the direct dependencies declared in the formula]' \
     '--dot[Show text-based graph description in DOT format]' \
@@ -735,6 +736,7 @@ _brew_deps() {
     '--include-test[Include `:test` dependencies for formula (non-recursive)]' \
     '(--missing --eval-all)--installed[List dependencies for formulae that are currently installed. If formula is specified, list only its dependencies that are currently installed]' \
     '(--installed)--missing[Show only missing dependencies]' \
+    '--os[Show dependencies for the given operating system]' \
     '--quiet[Make some output more quiet]' \
     '--skip-recommended[Skip `:recommended` dependencies for formula]' \
     '--topological[Sort dependencies in topological order]' \
