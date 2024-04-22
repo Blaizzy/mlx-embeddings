@@ -19,8 +19,10 @@ RSpec.describe Tapioca::Compilers::Args do
   describe "#args_table" do
     it "returns a mapping of list args to default values" do
       expect(compiler.args_table(list_parser).keys).to contain_exactly(
-        :"1?", :cask?, :casks?, :d?, :debug?, :formula?, :formulae?, :full_name?, :h?, :help?, :l?, :multiple?,
-        :pinned?, :q?, :quiet?, :r?, :t?, :v?, :verbose?, :versions?
+        :"1?", :auto?, :cask?, :casks?, :d?, :debug?, :formula?, :formulae?,
+        :full_name?, :h?, :help?, :installed_as_dependency?,
+        :installed_on_request?, :l?, :manual?, :multiple?, :pinned?,
+        :q?, :quiet?, :r?, :t?, :v?, :verbose?, :versions?
       )
     end
 
