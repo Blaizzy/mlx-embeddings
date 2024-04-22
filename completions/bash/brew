@@ -741,6 +741,7 @@ _brew_deps() {
       __brewcomp "
       --HEAD
       --annotate
+      --arch
       --cask
       --debug
       --direct
@@ -757,6 +758,7 @@ _brew_deps() {
       --include-test
       --installed
       --missing
+      --os
       --quiet
       --skip-recommended
       --topological

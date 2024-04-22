@@ -275,6 +275,14 @@ if the installed versions are outdated.
 
 : Show dependencies for HEAD version instead of stable version.
 
+`--os`
+
+: Show dependencies for the given operating system.
+
+`--arch`
+
+: Show dependencies for the given CPU architecture.
+
 `--formula`
 
 : Treat all named arguments as formulae.
