@@ -144,6 +144,10 @@ module Hardware
         ppc? && is_64_bit? && big_endian?
       end
 
+      # Check whether the CPU architecture is ARM.
+      #
+      # @api internal
+      sig { returns(T::Boolean) }
       def arm?
         type == :arm
       end

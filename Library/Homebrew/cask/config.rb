@@ -10,7 +10,7 @@ require "extend/hash/keys"
 module Cask
   # Configuration for installing casks.
   #
-  # @api private
+  # @api internal
   class Config
     DEFAULT_DIRS = {
       appdir:               "/Applications",
@@ -88,6 +88,9 @@ module Cask
       end
     end
 
+    # Get the explicit configuration.
+    #
+    # @api internal
     sig { returns(T::Hash[Symbol, T.any(String, Pathname, T::Array[String])]) }
     attr_accessor :explicit
 
@@ -184,6 +187,11 @@ module Cask
       self.class.new(explicit: other.explicit.merge(explicit))
     end
 
+    # Get explicit configuration as a string.
+    #
+    # @api internal
+    #
+    # TODO: This is only used by `homebrew/bundle`, so move it there.
     sig { returns(String) }
     def explicit_s
       explicit.map do |key, value|

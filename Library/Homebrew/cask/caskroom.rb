@@ -6,7 +6,7 @@ require "utils/user"
 module Cask
   # Helper functions for interacting with the `Caskroom` directory.
   #
-  # @api private
+  # @api internal
   module Caskroom
     sig { returns(Pathname) }
     def self.path
@@ -50,6 +50,9 @@ module Cask
       SystemCommand.run("/usr/bin/chgrp", args: ["admin", path], sudo:)
     end
 
+    # Get all installed casks.
+    #
+    # @api internal
     sig { params(config: T.nilable(Config)).returns(T::Array[Cask]) }
     def self.casks(config: nil)
       tokens.sort.filter_map do |token|

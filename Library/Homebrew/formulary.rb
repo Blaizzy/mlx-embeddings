@@ -24,6 +24,9 @@ module Formulary
   # :codesign and custom requirement classes are not supported
   API_SUPPORTED_REQUIREMENTS = [:arch, :linux, :macos, :maximum_macos, :xcode].freeze
 
+  # Enable the factory cache.
+  #
+  # @api internal
   sig { void }
   def self.enable_factory_cache!
     @factory_cache = true
@@ -927,6 +930,8 @@ module Formulary
   # * a formula pathname
   # * a formula URL
   # * a local bottle reference
+  #
+  # @api internal
   sig {
     params(
       ref:           T.any(Pathname, String),

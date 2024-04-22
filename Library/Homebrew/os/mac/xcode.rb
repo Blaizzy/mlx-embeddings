@@ -172,6 +172,9 @@ module OS
         end
       end
 
+      # Get the Xcode version.
+      #
+      # @api internal
       sig { returns(::Version) }
       def self.version
         odeprecated "`MacOS::Xcode.version` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
@@ -406,6 +409,8 @@ module OS
       # Version string (a pretty long one) of the CLT package.
       # Note that the different ways of installing the CLTs lead to different
       # version numbers.
+      #
+      # @api internal
       sig { returns(::Version) }
       def self.version
         odeprecated "`MacOS::CLT.version` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?

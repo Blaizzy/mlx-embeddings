@@ -6,10 +6,12 @@ require "tab"
 module Utils
   # Helper functions for bottles.
   #
-  # @api private
+  # @api internal
   module Bottles
     class << self
       # Gets the tag for the running OS.
+      #
+      # @api internal
       sig { params(tag: T.nilable(T.any(Symbol, Tag))).returns(Tag) }
       def tag(tag = nil)
         case tag

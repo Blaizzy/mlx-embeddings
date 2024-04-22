@@ -20,7 +20,17 @@ module Cask
     extend APIHashable
     include Metadata
 
-    attr_reader :token, :sourcefile_path, :source, :config, :default_config, :loader
+    # The token of this {Cask}.
+    #
+    # @api public
+    attr_reader :token
+
+    # The configuration of this {Cask}.
+    #
+    # @api internal
+    attr_reader :config
+
+    attr_reader :sourcefile_path, :source, :default_config, :loader
     attr_accessor :download, :allow_reassignment
 
     attr_predicate :loaded_from_api?
@@ -124,12 +134,20 @@ module Cask
        .map { |p| p.split.map(&:to_s) }
     end
 
-    def full_name
+    # The fully-qualified token of this {Cask}.
+    #
+    # @api public
+    def full_token
       return token if tap.nil?
       return token if tap.core_cask_tap?
 
       "#{tap.name}/#{token}"
     end
+
+    # Alias for {#full_token}.
+    #
+    # @api internal
+    def full_name = full_token
 
     sig { returns(T::Boolean) }
     def installed?
@@ -226,6 +244,9 @@ module Cask
       @caskroom_path ||= Caskroom.path.join(token)
     end
 
+    # Check if the installed cask is outdated.
+    #
+    # @api internal
     def outdated?(greedy: false, greedy_latest: false, greedy_auto_updates: false)
       !outdated_version(greedy:, greedy_latest:,
                         greedy_auto_updates:).nil?
@@ -304,9 +325,10 @@ module Cask
       @ruby_source_checksum = { sha256: ruby_source_sha256 }
     end
 
-    def to_s
-      @token
-    end
+    # Alias for {#token}.
+    #
+    # @api public
+    def to_s = token
 
     def inspect
       "#<Cask #{token}#{sourcefile_path&.to_s&.prepend(" ")}>"

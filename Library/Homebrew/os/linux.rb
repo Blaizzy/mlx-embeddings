@@ -6,6 +6,9 @@ require "utils"
 module OS
   # Helper module for querying system information on Linux.
   module Linux
+    # Get the OS version.
+    #
+    # @api internal
     sig { returns(String) }
     def self.os_version
       if which("lsb_release")

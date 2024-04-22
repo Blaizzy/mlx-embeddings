@@ -5,7 +5,7 @@ require "utils/tty"
 
 # Helper module for formatting output.
 #
-# @api private
+# @api internal
 module Formatter
   def self.arrow(string, color: nil)
     prefix("==>", string, color)
@@ -23,14 +23,23 @@ module Formatter
     "#{Tty.bold}#{string}#{Tty.reset}"
   end
 
+  # Format a string as success, with an optional label.
+  #
+  # @api internal
   def self.success(string, label: nil)
     label(label, string, :green)
   end
 
+  # Format a string as warning, with an optional label.
+  #
+  # @api internal
   def self.warning(string, label: nil)
     label(label, string, :yellow)
   end
 
+  # Format a string as error, with an optional label.
+  #
+  # @api internal
   def self.error(string, label: nil)
     label(label, string, :red)
   end
@@ -81,6 +90,9 @@ module Formatter
   end
   private_class_method :prefix
 
+  # Layout objects in columns that fit the current terminal width.
+  #
+  # @api internal
   def self.columns(*objects, gap_size: 2)
     objects = objects.flatten.map(&:to_s)
 
