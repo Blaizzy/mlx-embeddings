@@ -22,7 +22,7 @@ module Cask
 
     # The token of this {Cask}.
     #
-    # @api public
+    # @api internal
     attr_reader :token
 
     # The configuration of this {Cask}.
@@ -136,7 +136,7 @@ module Cask
 
     # The fully-qualified token of this {Cask}.
     #
-    # @api public
+    # @api internal
     def full_token
       return token if tap.nil?
       return token if tap.core_cask_tap?
@@ -327,7 +327,7 @@ module Cask
 
     # Alias for {#token}.
     #
-    # @api public
+    # @api internal
     def to_s = token
 
     def inspect
