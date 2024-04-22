@@ -7,6 +7,7 @@ require "formula"
 require "cli/parser"
 require "cask/list"
 require "system_command"
+require "tab"
 
 module Homebrew
   module Cmd
@@ -36,6 +37,11 @@ module Homebrew
         switch "--pinned",
                description: "List only pinned formulae, or only the specified (pinned) " \
                             "formulae if <formula> are provided. See also `pin`, `unpin`."
+        switch "--manual", "--installed-on-request",
+               description: "List the formulae installed on request."
+        switch "--auto", "--installed-as-dependency",
+               description: "List the formulae installed automatically."
+
         # passed through to ls
         switch "-1",
                description: "Force output to be one entry per line. " \
@@ -54,11 +60,17 @@ module Homebrew
         conflicts "--pinned", "--cask"
         conflicts "--multiple", "--cask"
         conflicts "--pinned", "--multiple"
+        ["--manual", "--auto"].each do |flag|
+          conflicts "--cask", flag
+          conflicts "--versions", flag
+          conflicts "--pinned", flag
+        end
         ["-1", "-l", "-r", "-t"].each do |flag|
           conflicts "--versions", flag
           conflicts "--pinned", flag
         end
-        ["--versions", "--pinned", "-l", "-r", "-t"].each do |flag|
+        ["--versions", "--pinned", "--manual", "--auto",
+         "-l", "-r", "-t"].each do |flag|
           conflicts "--full-name", flag
         end
 
@@ -91,6 +103,23 @@ module Homebrew
         elsif args.versions?
           filtered_list unless args.cask?
           list_casks if args.cask? || (!args.formula? && !args.multiple? && args.no_named?)
+        elsif args.manual? || args.auto?
+          unless args.no_named?
+            raise UsageError,
+                  "Cannot use `--manual` or `--auto` with formula arguments."
+          end
+
+          Formula.installed.sort.each do |formula|
+            tab = Tab.for_formula(formula)
+
+            if args.manual? && args.auto?
+              status = tab.installed_on_request ? "manual" : "auto"
+              puts "#{formula.name}: #{status}"
+            elsif (args.manual? && tab.installed_on_request) ||
+                  (args.auto? && !tab.installed_on_request)
+              puts formula.name
+            end
+          end
         elsif args.no_named?
           ENV["CLICOLOR"] = nil
 
