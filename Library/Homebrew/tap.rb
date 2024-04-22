@@ -75,7 +75,7 @@ class Tap
     cache.fetch(cache_key) { |key| cache[key] = new(user, repo) }
   end
 
-  # Get a {Tap} from it's path or a path inside of it.
+  # Get a {Tap} from its path or a path inside of it.
   #
   # @api public
   def self.from_path(path)
