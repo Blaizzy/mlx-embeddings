@@ -11,6 +11,9 @@ class Homebrew::CLI::Args
   sig { returns(T::Boolean) }
   def annotate?; end
 
+  sig { returns(T.nilable(String)) }
+  def arch; end
+
   sig { returns(T::Boolean) }
   def cask?; end
 
@@ -64,6 +67,9 @@ class Homebrew::CLI::Args
 
   sig { returns(T::Boolean) }
   def n?; end
+
+  sig { returns(T.nilable(String)) }
+  def os; end
 
   sig { returns(T::Boolean) }
   def skip_recommended?; end

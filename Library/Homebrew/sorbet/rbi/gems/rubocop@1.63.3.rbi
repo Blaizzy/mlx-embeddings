@@ -746,6 +746,11 @@ class RuboCop::CachedData
 
   # @api private
   #
+  # source://rubocop//lib/rubocop/cached_data.rb#56
+  def location_from_source_buffer(offense, source_buffer); end
+
+  # @api private
+  #
   # source://rubocop//lib/rubocop/cached_data.rb#40
   def message(offense); end
 
@@ -48283,12 +48288,12 @@ RuboCop::Cop::Style::Semicolon::MSG = T.let(T.unsafe(nil), String)
 #
 # @example
 #   # bad
-#   Foo.send(:bar)
-#   quuz.send(:fred)
+#   Foo.send(bar)
+#   quuz.send(fred)
 #
 #   # good
-#   Foo.__send__(:bar)
-#   quuz.public_send(:fred)
+#   Foo.__send__(bar)
+#   quuz.public_send(fred)
 #
 # source://rubocop//lib/rubocop/cop/style/send.rb#16
 class RuboCop::Cop::Style::Send < ::RuboCop::Cop::Base
@@ -55814,32 +55819,32 @@ class RuboCop::LSP::Server
 
   # @api private
   #
-  # source://rubocop//lib/rubocop/lsp/server.rb#59
+  # source://rubocop//lib/rubocop/lsp/server.rb#61
   def configure(options); end
 
   # @api private
   #
-  # source://rubocop//lib/rubocop/lsp/server.rb#51
+  # source://rubocop//lib/rubocop/lsp/server.rb#53
   def format(path, text, command:); end
 
   # @api private
   #
-  # source://rubocop//lib/rubocop/lsp/server.rb#55
+  # source://rubocop//lib/rubocop/lsp/server.rb#57
   def offenses(path, text); end
 
   # @api private
   #
-  # source://rubocop//lib/rubocop/lsp/server.rb#32
+  # source://rubocop//lib/rubocop/lsp/server.rb#34
   def start; end
 
   # @api private
   #
-  # source://rubocop//lib/rubocop/lsp/server.rb#65
+  # source://rubocop//lib/rubocop/lsp/server.rb#67
   def stop(&block); end
 
   # @api private
   #
-  # source://rubocop//lib/rubocop/lsp/server.rb#47
+  # source://rubocop//lib/rubocop/lsp/server.rb#49
   def write(response); end
 end
 
