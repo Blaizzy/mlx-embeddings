@@ -7,6 +7,7 @@ require "formula"
 require "cli/parser"
 require "cask/list"
 require "system_command"
+require "tab"
 
 module Homebrew
   module Cmd
@@ -36,6 +37,11 @@ module Homebrew
         switch "--pinned",
                description: "List only pinned formulae, or only the specified (pinned) " \
                             "formulae if <formula> are provided. See also `pin`, `unpin`."
+        switch "--installed-on-request",
+               description: "List the formulae installed on request."
+        switch "--installed-as-dependency",
+               description: "List the formulae installed as dependencies."
+
         # passed through to ls
         switch "-1",
                description: "Force output to be one entry per line. " \
@@ -54,11 +60,18 @@ module Homebrew
         conflicts "--pinned", "--cask"
         conflicts "--multiple", "--cask"
         conflicts "--pinned", "--multiple"
+        ["--installed-on-request", "--installed-as-dependency"].each do |flag|
+          conflicts "--cask", flag
+          conflicts "--versions", flag
+          conflicts "--pinned", flag
+        end
         ["-1", "-l", "-r", "-t"].each do |flag|
           conflicts "--versions", flag
           conflicts "--pinned", flag
         end
-        ["--versions", "--pinned", "-l", "-r", "-t"].each do |flag|
+        ["--versions", "--pinned",
+         "---installed-on-request", "--installed-as-dependency",
+         "-l", "-r", "-t"].each do |flag|
           conflicts "--full-name", flag
         end
 
@@ -91,6 +104,28 @@ module Homebrew
         elsif args.versions?
           filtered_list unless args.cask?
           list_casks if args.cask? || (!args.formula? && !args.multiple? && args.no_named?)
+        elsif args.installed_on_request? || args.installed_as_dependency?
+          unless args.no_named?
+            raise UsageError,
+                  "Cannot use `--installed-on-request` or " \
+                  "`--installed-as-dependency` with formula arguments."
+          end
+
+          Formula.installed.sort.each do |formula|
+            tab = Tab.for_formula(formula)
+
+            if args.installed_on_request? && args.installed_as_dependency?
+              statuses = []
+              statuses << "installed on request" if tab.installed_on_request
+              statuses << "installed as dependency" if tab.installed_as_dependency
+              next if statuses.empty?
+
+              puts "#{formula.name}: #{statuses.join(", ")}"
+            elsif (args.installed_on_request? && tab.installed_on_request) ||
+                  (args.installed_as_dependency? && tab.installed_as_dependency)
+              puts formula.name
+            end
+          end
         elsif args.no_named?
           ENV["CLICOLOR"] = nil
 
