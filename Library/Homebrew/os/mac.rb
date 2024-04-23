@@ -22,6 +22,8 @@ module OS
 
     # This can be compared to numerics, strings, or symbols
     # using the standard Ruby Comparable methods.
+    #
+    # @api internal
     sig { returns(MacOSVersion) }
     def self.version
       odeprecated "`MacOS.version` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
@@ -30,6 +32,8 @@ module OS
 
     # This can be compared to numerics, strings, or symbols
     # using the standard Ruby Comparable methods.
+    #
+    # @api internal
     sig { returns(MacOSVersion) }
     def self.full_version
       odeprecated "`MacOS.full_version` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?

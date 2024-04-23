@@ -61,13 +61,14 @@ jobs:
       - name: Check RuboCop filepaths
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/Library/Homebrew
         run: |
-          public_apis=$(git grep -l "@api public" -- :^sorbet/ :^vendor/ | wc -l | tr -d ' ')
-          rubocop_docs=$(yq '.Style/Documentation.Include' .rubocop.yml | wc -l | tr -d ' ')
-          if [[ public_apis -ne rubocop_docs ]]
-          then
-            echo "All public Homebrew APIs should be included in the Style/Documentation RuboCop."
-            echo "There were ${public_apis} '@api public' lines but ${rubocop_docs} filepaths for the 'Style/Documentation' RuboCop."
-            echo "Add or remove the filepaths from Library/Homebrew/.rubocop.yml as appropriate."
+          public_apis="$(git grep -l "@api public" -- :^sorbet/ :^vendor/ | sort)"
+          rubocop_docs="$(yq '.Style/Documentation.Include[]' .rubocop.yml | sort)"
+
+          if [[ "${public_apis}" != "${rubocop_docs}" ]]; then
+            echo "All public Homebrew APIs should be included in the \`Style/Documentation\` RuboCop."
+            echo "Add/remove the following paths from \`Library/Homebrew/.rubocop.yml\` as appropriate:"
+            echo "${public_apis} ${rubocop_docs}" | tr ' ' '\n' | sort | uniq -u
+
             exit 1
           fi
 

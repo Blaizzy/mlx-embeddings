@@ -58,31 +58,42 @@ module Kernel
     puts oh1_title(title, truncate:)
   end
 
-  # Print a message prefixed with "Warning" (do this rarely).
+  # Print a warning message.
+  #
+  # @api public
   def opoo(message)
     Tty.with($stderr) do |stderr|
       stderr.puts Formatter.warning(message, label: "Warning")
     end
   end
 
-  # Print a message prefixed with "Error".
+  # Print an error message.
+  #
+  # @api public
   def onoe(message)
     Tty.with($stderr) do |stderr|
       stderr.puts Formatter.error(message, label: "Error")
     end
   end
 
+  # Print an error message and fail at the end of the program.
+  #
+  # @api public
   def ofail(error)
     onoe error
     Homebrew.failed = true
   end
 
+  # Print an error message and fail immediately.
+  #
+  # @api public
   sig { params(error: T.any(String, Exception)).returns(T.noreturn) }
   def odie(error)
     onoe error
     exit 1
   end
 
+  # Output a deprecation warning/error message.
   def odeprecated(method, replacement = nil,
                   disable:                false,
                   disable_on:             nil,
@@ -254,6 +265,9 @@ module Kernel
     end
   end
 
+  # Find a command.
+  #
+  # @api public
   def which(cmd, path = ENV.fetch("PATH"))
     PATH.new(path).each do |p|
       begin

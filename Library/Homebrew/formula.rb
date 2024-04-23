@@ -72,6 +72,8 @@ class Formula
 
   # The name of this {Formula}.
   # e.g. `this-formula`
+  #
+  # @api public
   sig { returns(String) }
   attr_reader :name
 
@@ -88,6 +90,8 @@ class Formula
   # The fully-qualified name of this {Formula}.
   # For core formulae it's the same as {#name}.
   # e.g. `homebrew/tap-name/this-formula`
+  #
+  # @api public
   sig { returns(String) }
   attr_reader :full_name
 
@@ -99,19 +103,23 @@ class Formula
 
   # The full path to this {Formula}.
   # e.g. `/usr/local/Library/Taps/homebrew/homebrew-core/Formula/t/this-formula.rb`
+  #
+  # @api public
   sig { returns(Pathname) }
   attr_reader :path
 
   # The {Tap} instance associated with this {Formula}.
   # If it's `nil`, then this formula is loaded from a path or URL.
-  # @private
+  #
+  # @api internal
   sig { returns(T.nilable(Tap)) }
   attr_reader :tap
 
   # The stable (and default) {SoftwareSpec} for this {Formula}.
   # This contains all the attributes (e.g. URL, checksum) that apply to the
   # stable version of this formula.
-  # @private
+  #
+  # @api internal
   sig { returns(T.nilable(SoftwareSpec)) }
   attr_reader :stable
 
@@ -120,8 +128,10 @@ class Formula
   # This is always installed with the version `HEAD` and taken from the latest
   # commit in the version control system.
   # `nil` if there is no HEAD version.
+  #
   # @see #stable
-  # @private
+  #
+  # @api private
   sig { returns(T.nilable(SoftwareSpec)) }
   attr_reader :head
 
@@ -549,6 +559,8 @@ class Formula
   end
 
   # Old names for the formula.
+  #
+  # @api internal
   sig { returns(T::Array[String]) }
   def oldnames
     @oldnames ||= if (tap = self.tap)
@@ -560,6 +572,8 @@ class Formula
   end
 
   # All aliases for the formula.
+  #
+  # @api internal
   sig { returns(T::Array[String]) }
   def aliases
     @aliases ||= tap&.alias_reverse_table&.dig(full_name)&.map { _1.split("/").last } || []
@@ -570,6 +584,8 @@ class Formula
   def_delegator :"active_spec.resources", :values, :resources
 
   # The {Dependency}s for the currently active {SoftwareSpec}.
+  #
+  # @api internal
   delegate deps: :active_spec
 
   # The declared {Dependency}s for the currently active {SoftwareSpec} (i.e. including those provided by macOS)
@@ -627,9 +643,10 @@ class Formula
     installed_prefixes.any? { |keg| (keg/Tab::FILENAME).file? }
   end
 
-  # @private
   # The link status symlink directory for this {Formula}.
   # You probably want {#opt_prefix} instead.
+  #
+  # @api internal
   def linked_keg
     linked_keg = possible_names.map { |name| HOMEBREW_LINKED_KEGS/name }
                                .find(&:directory?)
@@ -696,6 +713,8 @@ class Formula
   end
 
   # Is the formula linked?
+  #
+  # @api internal
   sig { returns(T::Boolean) }
   def linked?
     linked_keg.symlink?
@@ -754,6 +773,8 @@ class Formula
   #
   # No `make install` available?
   # <pre>bin.install "binary1"</pre>
+  #
+  # @api public
   sig { returns(Pathname) }
   def bin
     prefix/"bin"
@@ -762,6 +783,8 @@ class Formula
   # The directory where the formula's documentation should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  #
+  # @api public
   sig { returns(Pathname) }
   def doc
     share/"doc"/name
@@ -773,6 +796,8 @@ class Formula
   #
   # No `make install` available?
   # <pre>include.install "example.h"</pre>
+  #
+  # @api public
   sig { returns(Pathname) }
   def include
     prefix/"include"
@@ -781,6 +806,8 @@ class Formula
   # The directory where the formula's info files should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  #
+  # @api public
   sig { returns(Pathname) }
   def info
     share/"info"
@@ -792,6 +819,8 @@ class Formula
   #
   # No `make install` available?
   # <pre>lib.install "example.dylib"</pre>
+  #
+  # @api public
   sig { returns(Pathname) }
   def lib
     prefix/"lib"
@@ -805,6 +834,8 @@ class Formula
   # <pre>libexec.install "foo.jar"
   # bin.write_jar_script libexec/"foo.jar", "foo"
   # </pre>
+  #
+  # @api public
   sig { returns(Pathname) }
   def libexec
     prefix/"libexec"
@@ -815,6 +846,8 @@ class Formula
   # `brew link` for formulae that are not keg-only.
   # Often one of the more specific `man` functions should be used instead,
   # e.g. {#man1}.
+  #
+  # @api public
   sig { returns(Pathname) }
   def man
     share/"man"
@@ -826,6 +859,8 @@ class Formula
   #
   # No `make install` available?
   # <pre>man1.install "example.1"</pre>
+  #
+  # @api public
   sig { returns(Pathname) }
   def man1
     man/"man1"
@@ -834,6 +869,8 @@ class Formula
   # The directory where the formula's man2 pages should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  #
+  # @api public
   sig { returns(Pathname) }
   def man2
     man/"man2"
@@ -845,6 +882,8 @@ class Formula
   #
   # No `make install` available?
   # <pre>man3.install "man.3"</pre>
+  #
+  # @api public
   sig { returns(Pathname) }
   def man3
     man/"man3"
@@ -853,6 +892,8 @@ class Formula
   # The directory where the formula's man4 pages should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  #
+  # @api public
   sig { returns(Pathname) }
   def man4
     man/"man4"
@@ -861,6 +902,8 @@ class Formula
   # The directory where the formula's man5 pages should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  #
+  # @api public
   sig { returns(Pathname) }
   def man5
     man/"man5"
@@ -869,6 +912,8 @@ class Formula
   # The directory where the formula's man6 pages should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  #
+  # @api public
   sig { returns(Pathname) }
   def man6
     man/"man6"
@@ -877,6 +922,8 @@ class Formula
   # The directory where the formula's man7 pages should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  #
+  # @api public
   sig { returns(Pathname) }
   def man7
     man/"man7"
@@ -885,6 +932,8 @@ class Formula
   # The directory where the formula's man8 pages should be installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  #
+  # @api public
   sig { returns(Pathname) }
   def man8
     man/"man8"
@@ -894,6 +943,8 @@ class Formula
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
   # Generally we try to migrate these to {#bin} instead.
+  #
+  # @api public
   sig { returns(Pathname) }
   def sbin
     prefix/"sbin"
@@ -914,6 +965,8 @@ class Formula
   #
   # Install `./example_code/simple/ones` to `share/demos/examples`:
   # <pre>(share/"demos").install "example_code/simple/ones" => "examples"</pre>
+  #
+  # @api public
   sig { returns(Pathname) }
   def share
     prefix/"share"
@@ -926,6 +979,8 @@ class Formula
   #
   # No `make install` available?
   # <pre>pkgshare.install "examples"</pre>
+  #
+  # @api public
   sig { returns(Pathname) }
   def pkgshare
     prefix/"share"/name
@@ -936,6 +991,8 @@ class Formula
   #
   # To install an Emacs mode included with a software package:
   # <pre>elisp.install "contrib/emacs/example-mode.el"</pre>
+  #
+  # @api public
   sig { returns(Pathname) }
   def elisp
     prefix/"share/emacs/site-lisp"/name
@@ -945,6 +1002,8 @@ class Formula
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
   # This is not symlinked into `HOMEBREW_PREFIX`.
+  #
+  # @api public
   sig { returns(Pathname) }
   def frameworks
     prefix/"Frameworks"
@@ -954,6 +1013,8 @@ class Formula
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
   # This is not symlinked into `HOMEBREW_PREFIX`.
+  #
+  # @api public
   sig { returns(Pathname) }
   def kext_prefix
     prefix/"Library/Extensions"
@@ -964,6 +1025,8 @@ class Formula
   # but will write a new file named `*.default`.
   # This directory is not inside the `HOMEBREW_CELLAR` so it persists
   # across upgrades.
+  #
+  # @api public
   sig { returns(Pathname) }
   def etc
     (HOMEBREW_PREFIX/"etc").extend(InstallRenamed)
@@ -973,6 +1036,8 @@ class Formula
   # e.g. `$HOMEBREW_PREFIX/etc/openssl@1.1`
   # Anything using `pkgetc.install` will not overwrite other files on
   # e.g. upgrades but will write a new file named `*.default`.
+  #
+  # @api public
   sig { returns(Pathname) }
   def pkgetc
     (HOMEBREW_PREFIX/"etc"/name).extend(InstallRenamed)
@@ -981,6 +1046,8 @@ class Formula
   # The directory where the formula's variable files should be installed.
   # This directory is not inside the `HOMEBREW_CELLAR` so it persists
   # across upgrades.
+  #
+  # @api public
   sig { returns(Pathname) }
   def var
     HOMEBREW_PREFIX/"var"
@@ -990,6 +1057,8 @@ class Formula
   # installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  #
+  # @api public
   sig { returns(Pathname) }
   def zsh_function
     share/"zsh/site-functions"
@@ -999,6 +1068,8 @@ class Formula
   # installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  #
+  # @api public
   sig { returns(Pathname) }
   def fish_function
     share/"fish/vendor_functions.d"
@@ -1008,6 +1079,8 @@ class Formula
   # installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  #
+  # @api public
   sig { returns(Pathname) }
   def bash_completion
     prefix/"etc/bash_completion.d"
@@ -1017,6 +1090,8 @@ class Formula
   # installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  #
+  # @api public
   sig { returns(Pathname) }
   def zsh_completion
     share/"zsh/site-functions"
@@ -1026,6 +1101,8 @@ class Formula
   # installed.
   # This is symlinked into `HOMEBREW_PREFIX` after installation or with
   # `brew link` for formulae that are not keg-only.
+  #
+  # @api public
   sig { returns(Pathname) }
   def fish_completion
     share/"fish/vendor_completions.d"
@@ -1141,51 +1218,80 @@ class Formula
   # This is the preferred way to refer to a formula in plists or from another
   # formula, as the path is stable even when the software is updated.
   # <pre>args << "--with-readline=#{Formula["readline"].opt_prefix}" if build.with? "readline"</pre>
+  #
+  # @api public
   sig { returns(Pathname) }
   def opt_prefix
     HOMEBREW_PREFIX/"opt"/name
   end
 
+  # Same as {#bin}, but relative to {#opt_prefix} instead of {#prefix}.
+  #
+  # @api public
   sig { returns(Pathname) }
   def opt_bin
     opt_prefix/"bin"
   end
 
+  # Same as {#include}, but relative to {#opt_prefix} instead of {#prefix}.
+  #
+  # @api public
   sig { returns(Pathname) }
   def opt_include
     opt_prefix/"include"
   end
 
+  # Same as {#lib}, but relative to {#opt_prefix} instead of {#prefix}.
+  #
+  # @api public
   sig { returns(Pathname) }
   def opt_lib
     opt_prefix/"lib"
   end
 
+  # Same as {#libexec}, but relative to {#opt_prefix} instead of {#prefix}.
+  #
+  # @api public
   sig { returns(Pathname) }
   def opt_libexec
     opt_prefix/"libexec"
   end
 
+  # Same as {#sbin}, but relative to {#opt_prefix} instead of {#prefix}.
+  #
+  # @api public
   sig { returns(Pathname) }
   def opt_sbin
     opt_prefix/"sbin"
   end
 
+  # Same as {#share}, but relative to {#opt_prefix} instead of {#prefix}.
+  #
+  # @api public
   sig { returns(Pathname) }
   def opt_share
     opt_prefix/"share"
   end
 
+  # Same as {#pkgshare}, but relative to {#opt_prefix} instead of {#prefix}.
+  #
+  # @api public
   sig { returns(Pathname) }
   def opt_pkgshare
     opt_prefix/"share"/name
   end
 
+  # Same as {#elisp}, but relative to {#opt_prefix} instead of {#prefix}.
+  #
+  # @api public
   sig { returns(Pathname) }
   def opt_elisp
     opt_prefix/"share/emacs/site-lisp"/name
   end
 
+  # Same as {#frameworks}, but relative to {#opt_prefix} instead of {#prefix}.
+  #
+  # @api public
   sig { returns(Pathname) }
   def opt_frameworks
     opt_prefix/"Frameworks"
@@ -1285,6 +1391,8 @@ class Formula
   # Rarely, you don't want your library symlinked into the main prefix.
   # See `gettext.rb` for an example.
   # @see .keg_only
+  #
+  # @api internal
   sig { returns(T::Boolean) }
   def keg_only?
     return false unless keg_only_reason
@@ -1560,7 +1668,9 @@ class Formula
     self.class.installed_with_alias_path(alias_path).reject { |f| f.name == name }
   end
 
-  # @private
+  # Check whether the installed formula is outdated.
+  #
+  # @api internal
   sig { params(fetch_head: T::Boolean).returns(T::Boolean) }
   def outdated?(fetch_head: false)
     !outdated_kegs(fetch_head:).empty?
@@ -1571,7 +1681,7 @@ class Formula
   # @private
   delegate pinnable?: :@pin
 
-  # @private
+  # @api internal
   delegate pinned?: :@pin
 
   # @private
@@ -2069,19 +2179,21 @@ class Formula
   # @private
   delegate env: :"self.class"
 
-  # @private
+  # @api internal
   delegate conflicts: :"self.class"
 
   # Returns a list of Dependency objects in an installable order, which
   # means if a depends on b then b will be ordered before a in this list
-  # @private
+  #
+  # @api internal
   def recursive_dependencies(&block)
     cache_key = "Formula#recursive_dependencies" unless block
     Dependency.expand(self, cache_key:, &block)
   end
 
   # The full set of Requirements for this formula's dependency tree.
-  # @private
+  #
+  # @api internal
   def recursive_requirements(&block)
     cache_key = "Formula#recursive_requirements" unless block
     Requirement.expand(self, cache_key:, &block)
@@ -2097,6 +2209,10 @@ class Formula
     end
   end
 
+  # Get the path of any installed prefix.
+  #
+  # @api internal
+  sig { returns(T.nilable(Pathname)) }
   def any_installed_prefix
     if optlinked? && opt_prefix.exist?
       opt_prefix
@@ -2112,7 +2228,8 @@ class Formula
   end
 
   # Returns a list of Dependency objects that are required at runtime.
-  # @private
+  #
+  # @api internal
   def runtime_dependencies(read_from_tab: true, undeclared: true)
     deps = if read_from_tab && undeclared &&
               (tab_deps = any_installed_keg&.runtime_dependencies)
@@ -3071,6 +3188,8 @@ class Formula
     # Shows when running `brew info`.
     #
     # <pre>desc "Example formula"</pre>
+    #
+    # @api public
     attr_rw :desc
 
     # @!attribute [w] license
@@ -3096,6 +3215,8 @@ class Formula
     #   all_of: ["0BSD", "Zlib", "Artistic-1.0+"],
     #   "Apache-2.0" => { with: "LLVM-exception" },
     # ]</pre>
+    #
+    # @api public
     def license(args = nil)
       if args.nil?
         @licenses
@@ -3111,6 +3232,8 @@ class Formula
     # Can be opened with running `brew home`.
     #
     # <pre>homepage "https://www.example.com"</pre>
+    #
+    # @api public
     attr_rw :homepage
 
     # Whether a livecheck specification is defined or not.
@@ -3151,6 +3274,8 @@ class Formula
     # `0` if unset.
     #
     # <pre>revision 1</pre>
+    #
+    # @api public
     attr_rw :revision
 
     # @!attribute [w] version_scheme
@@ -3163,6 +3288,8 @@ class Formula
     # `0` if unset.
     #
     # <pre>version_scheme 1</pre>
+    #
+    # @api public
     attr_rw :version_scheme
 
     # @private
@@ -3193,6 +3320,8 @@ class Formula
     #     using:    :git,
     #     tag:      "1.2.3",
     #     revision: "db8e4de5b2d6653f66aea53094624468caad15d2"</pre>
+    #
+    # @api public
     def url(val, specs = {})
       stable.url(val, specs)
     end
@@ -3203,6 +3332,8 @@ class Formula
     # declared if it cannot be autodetected correctly.
     #
     # <pre>version "1.2-final"</pre>
+    #
+    # @api public
     def version(val = nil)
       stable.version(val)
     end
@@ -3216,6 +3347,8 @@ class Formula
     #
     # <pre>mirror "https://in.case.the.host.is.down.example.com"
     # mirror "https://in.case.the.mirror.is.down.example.com</pre>
+    #
+    # @api public
     def mirror(val)
       stable.mirror(val)
     end
@@ -3228,6 +3361,8 @@ class Formula
     # tell you the currently valid value.
     #
     # <pre>sha256 "2a2ba417eebaadcb4418ee7b12fe2998f26d6e6f7fda7983412ff66a741ab6f7"</pre>
+    #
+    # @api public
     def sha256(val)
       stable.sha256(val)
     end
@@ -3253,6 +3388,8 @@ class Formula
     # end</pre>
     #
     # Homebrew maintainers aim to bottle all formulae.
+    #
+    # @api public
     sig { params(block: T.proc.bind(BottleSpecification).void).void }
     def bottle(&block)
       stable.bottle(&block)
@@ -3285,6 +3422,8 @@ class Formula
     #   depends_on "libxml2"
     #   depends_on "libffi"
     # end</pre>
+    #
+    # @api public
     def stable(&block)
       return @stable unless block
 
@@ -3320,12 +3459,15 @@ class Formula
     #   url "https://example.com/additional-stuff.tar.gz"
     #   sha256 "c6bc3f48ce8e797854c4b865f6a8ff969867bbcaebd648ae6fd825683e59fef2"
     # end</pre>
+    #
+    # @api public
     def resource(name, klass = Resource, &block)
       specs.each do |spec|
         spec.resource(name, klass, &block) unless spec.resource_defined?(name)
       end
     end
 
+    # @api public
     def go_resource(name, &block)
       # odeprecated "Formula#go_resource", "Go modules"
       specs.each { |spec| spec.go_resource(name, &block) }
@@ -3367,6 +3509,8 @@ class Formula
     # It is possible to only depend on something if
     # `build.with?` or `build.without? "another_formula"`:
     # <pre>depends_on "postgresql" if build.without? "sqlite"</pre>
+    #
+    # @api public
     def depends_on(dep)
       specs.each { |spec| spec.depends_on(dep) }
     end
@@ -3375,6 +3519,8 @@ class Formula
     # On macOS this is a no-op (as we use the provided system libraries) unless
     # `:since` specifies a minimum macOS version.
     # On Linux this will act as {.depends_on}.
+    #
+    # @api public
     sig {
       params(
         dep:    T.any(String, T::Hash[T.any(String, Symbol), T.any(Symbol, T::Array[Symbol])]),
@@ -3399,6 +3545,8 @@ class Formula
     # <pre>option "with-spam", "The description goes here without a dot at the end"</pre>
     # <pre>option "with-qt", "Text here overwrites what's autogenerated by 'depends_on "qt" => :optional'"</pre>
     # <pre>option :universal</pre>
+    #
+    # @api public
     def option(name, description = "")
       specs.each { |spec| spec.option(name, description) }
     end
@@ -3408,6 +3556,8 @@ class Formula
     # them to newer ones. They are mostly used for migrating non-`with` options
     # (e.g. `enable-debug`) to `with` options (e.g. `with-debug`).
     # <pre>deprecated_option "enable-debug" => "with-debug"</pre>
+    #
+    # @api public
     def deprecated_option(hash)
       specs.each { |spec| spec.deprecated_option(hash) }
     end
@@ -3443,12 +3593,16 @@ class Formula
     # conditional.
     # <pre>patch :p0, "..."</pre>
     # @see https://docs.brew.sh/Formula-Cookbook#patches Patches
+    #
+    # @api public
     def patch(strip = :p1, src = nil, &block)
       specs.each { |spec| spec.patch(strip, src, &block) }
     end
 
     # One or more formulae that conflict with this one and why.
     # <pre>conflicts_with "imagemagick", because: "both install `convert` binaries"</pre>
+    #
+    # @api public
     def conflicts_with(*names)
       opts = names.last.is_a?(Hash) ? names.pop : {}
       names.each { |name| conflicts << FormulaConflict.new(name, opts[:because]) }
@@ -3461,6 +3615,8 @@ class Formula
     # <pre>skip_clean "bin/foo", "lib/bar"</pre>
     # Keep .la files with:
     # <pre>skip_clean :la</pre>
+    #
+    # @api public
     def skip_clean(*paths)
       paths.flatten!
       # Specifying :all is deprecated and will become an error
@@ -3478,11 +3634,15 @@ class Formula
     # <pre>keg_only :provided_by_macos</pre>
     # <pre>keg_only :versioned_formulae</pre>
     # <pre>keg_only "because I want it so"</pre>
+    #
+    # @api public
     def keg_only(reason, explanation = "")
       @keg_only_reason = KegOnlyReason.new(reason, explanation)
     end
 
     # Pass `:skip` to this method to disable post-install stdlib checking.
+    #
+    # @api public
     def cxxstdlib_check(check_type)
       define_method(:skip_cxxstdlib_check?) { true } if check_type == :skip
     end
@@ -3508,6 +3668,8 @@ class Formula
     # <pre>fails_with :gcc => '7' do
     #   version '7.1'
     # end</pre>
+    #
+    # @api public
     def fails_with(compiler, &block)
       specs.each { |spec| spec.fails_with(compiler, &block) }
     end
@@ -3521,6 +3683,8 @@ class Formula
     # rather than implicitly finding a suitable compiler with `needs`.
     #
     # @see .fails_with
+    #
+    # @api public
     def needs(*standards)
       specs.each { |spec| spec.needs(*standards) }
     end
@@ -3553,6 +3717,8 @@ class Formula
     #
     # The test will fail if it returns false, or if an exception is raised.
     # Failed assertions and failed `system` commands will raise exceptions.
+    #
+    # @api public
     def test(&block)
       define_method(:test, &block)
     end
@@ -3569,6 +3735,8 @@ class Formula
     #   url "https://example.com/foo/releases"
     #   regex /foo-(\d+(?:\.\d+)+)\.tar/
     # end</pre>
+    #
+    # @api public
     def livecheck(&block)
       return @livecheck unless block
 
@@ -3585,6 +3753,8 @@ class Formula
     # <pre>service do
     #   run [opt_bin/"foo"]
     # end</pre>
+    #
+    # @api public
     def service(&block)
       return @service_block unless block
 
@@ -3606,6 +3776,8 @@ class Formula
     #
     # Alternatively, a preset reason can be passed as a symbol:
     # <pre>pour_bottle? only_if: :clt_installed</pre>
+    #
+    # @api public
     def pour_bottle?(only_if: nil, &block)
       @pour_bottle_check = PourBottleCheck.new(self)
       @pour_bottle_only_if = only_if
@@ -3652,6 +3824,8 @@ class Formula
     # <pre>deprecate! date: "2020-08-27", because: "has been replaced by foo"</pre>
     # @see https://docs.brew.sh/Deprecating-Disabling-and-Removing-Formulae
     # @see DeprecateDisable::FORMULA_DEPRECATE_DISABLE_REASONS
+    #
+    # @api public
     def deprecate!(date:, because:)
       @deprecation_date = Date.parse(date)
       return if @deprecation_date > Date.today
@@ -3687,6 +3861,8 @@ class Formula
     # <pre>disable! date: "2020-08-27", because: "has been replaced by foo"</pre>
     # @see https://docs.brew.sh/Deprecating-Disabling-and-Removing-Formulae
     # @see DeprecateDisable::FORMULA_DEPRECATE_DISABLE_REASONS
+    #
+    # @api public
     def disable!(date:, because:)
       @disable_date = Date.parse(date)
 

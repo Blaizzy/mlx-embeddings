@@ -64,6 +64,7 @@ Style/Documentation:
     - utils/shebang.rb
     - utils/string_inreplace_extension.rb
     - version.rb
+    - tap.rb
 
 Style/DocumentationMethod:
   Include:

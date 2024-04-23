@@ -83,6 +83,9 @@ class DevelopmentTools
       end
     end
 
+    # Get the GCC version.
+    #
+    # @api internal
     sig { params(cc: String).returns(Version) }
     def gcc_version(cc)
       (@gcc_version ||= {}).fetch(cc) do

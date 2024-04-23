@@ -5,6 +5,8 @@ require "shellwords"
 require "utils"
 
 # Raised when a command is used wrong.
+#
+# @api internal
 class UsageError < RuntimeError
   attr_reader :reason
 
@@ -133,6 +135,8 @@ class TapFormulaOrCaskUnavailableError < FormulaOrCaskUnavailableError
 end
 
 # Raised when a formula is not available.
+#
+# @api internal
 class FormulaUnavailableError < FormulaOrCaskUnavailableError
   attr_accessor :dependent
 

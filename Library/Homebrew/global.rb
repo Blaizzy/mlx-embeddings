@@ -84,6 +84,10 @@ module Homebrew
   class << self
     attr_writer :failed, :raise_deprecation_exceptions, :auditing
 
+    # Check whether Homebrew is using the default prefix.
+    #
+    # @api internal
+    sig { params(prefix: T.any(Pathname, String)).returns(T::Boolean) }
     def default_prefix?(prefix = HOMEBREW_PREFIX)
       prefix.to_s == DEFAULT_PREFIX
     end
