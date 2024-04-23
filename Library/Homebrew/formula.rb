@@ -70,6 +70,11 @@ class Formula
   extend Attrable
   extend APIHashable
 
+  SUPPORTED_NETWORK_ACCESS_PHASES = [:build, :test, :postinstall].freeze
+  DEFAULT_NETWORK_ACCESS_ALLOWED = true
+  private_constant :SUPPORTED_NETWORK_ACCESS_PHASES
+  private_constant :DEFAULT_NETWORK_ACCESS_ALLOWED
+
   # The name of this {Formula}.
   # e.g. `this-formula`
   #
@@ -410,6 +415,7 @@ class Formula
     !!head && !stable
   end
 
+  # Stop RuboCop from erroneously indenting hash target
   delegate [ # rubocop:disable Layout/HashAlignment
     :bottle_defined?,
     :bottle_tag?,
@@ -468,6 +474,13 @@ class Formula
   # @!method version
   # @see .version
   delegate version: :active_spec
+
+  # Stop RuboCop from erroneously indenting hash target
+  delegate [ # rubocop:disable Layout/HashAlignment
+    :allow_network_access!,
+    :deny_network_access!,
+    :network_access_allowed?,
+  ] => :"self.class"
 
   # Whether this formula was loaded using the formulae.brew.sh API
   # @!method loaded_from_api?
@@ -3145,6 +3158,9 @@ class Formula
         @skip_clean_paths = Set.new
         @link_overwrite_paths = Set.new
         @loaded_from_api = false
+        @network_access_allowed = SUPPORTED_NETWORK_ACCESS_PHASES.to_h do |phase|
+          [phase, DEFAULT_NETWORK_ACCESS_ALLOWED]
+        end
       end
     end
 
@@ -3223,6 +3239,59 @@ class Formula
       else
         @licenses = args
       end
+    end
+
+    # @!attribute [w] allow_network_access!
+    # The phases for which network access is allowed. By default, network
+    # access is allowed for all phases. Valid phases are `:build`, `:test`,
+    # and `:postinstall`. When no argument is passed, network access will be
+    # allowed for all phases.
+    # <pre>allow_network_access!</pre>
+    # <pre>allow_network_access! :build</pre>
+    # <pre>allow_network_access! [:build, :test]</pre>
+    sig { params(phases: T.any(Symbol, T::Array[Symbol])).void }
+    def allow_network_access!(phases = [])
+      phases_array = Array(phases)
+      if phases_array.empty?
+        @network_access_allowed.each_key { |phase| @network_access_allowed[phase] = true }
+      else
+        phases_array.each do |phase|
+          raise ArgumentError, "Unknown phase: #{phase}" unless SUPPORTED_NETWORK_ACCESS_PHASES.include?(phase)
+
+          @network_access_allowed[phase] = true
+        end
+      end
+    end
+
+    # @!attribute [w] deny_network_access!
+    # The phases for which network access is denied. By default, network
+    # access is allowed for all phases. Valid phases are `:build`, `:test`,
+    # and `:postinstall`. When no argument is passed, network access will be
+    # denied for all phases.
+    # <pre>deny_network_access!</pre>
+    # <pre>deny_network_access! :build</pre>
+    # <pre>deny_network_access! [:build, :test]</pre>
+    sig { params(phases: T.any(Symbol, T::Array[Symbol])).void }
+    def deny_network_access!(phases = [])
+      phases_array = Array(phases)
+      if phases_array.empty?
+        @network_access_allowed.each_key { |phase| @network_access_allowed[phase] = false }
+      else
+        phases_array.each do |phase|
+          raise ArgumentError, "Unknown phase: #{phase}" unless SUPPORTED_NETWORK_ACCESS_PHASES.include?(phase)
+
+          @network_access_allowed[phase] = false
+        end
+      end
+    end
+
+    # Whether the specified phase should be forced offline.
+    sig { params(phase: Symbol).returns(T::Boolean) }
+    def network_access_allowed?(phase)
+      raise ArgumentError, "Unknown phase: #{phase}" unless SUPPORTED_NETWORK_ACCESS_PHASES.include?(phase)
+
+      env_var = Homebrew::EnvConfig.send(:"formula_#{phase}_network")
+      env_var.nil? ? @network_access_allowed[phase] : env_var == "allow"
     end
 
     # @!attribute [w] homepage

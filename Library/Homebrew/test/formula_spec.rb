@@ -42,6 +42,7 @@ RSpec.describe Formula do
       expect(f.alias_name).to be_nil
       expect(f.full_alias_name).to be_nil
       expect(f.specified_path).to eq(path)
+      [:build, :test, :postinstall].each { |phase| expect(f.network_access_allowed?(phase)).to be(true) }
       expect { klass.new }.to raise_error(ArgumentError)
     end
 
@@ -55,6 +56,7 @@ RSpec.describe Formula do
       expect(f_alias.specified_path).to eq(Pathname(alias_path))
       expect(f_alias.full_alias_name).to eq(alias_name)
       expect(f_alias.full_specified_name).to eq(alias_name)
+      [:build, :test, :postinstall].each { |phase| expect(f_alias.network_access_allowed?(phase)).to be(true) }
       expect { klass.new }.to raise_error(ArgumentError)
     end
 
@@ -1893,6 +1895,41 @@ RSpec.describe Formula do
       expect(f.bash_completion/"testball").to be_a_file
       expect(f.zsh_completion/"_testball").to be_a_file
       expect(f.fish_completion/"testball.fish").to be_a_file
+    end
+  end
+
+  describe "{allow,deny}_network_access" do
+    phases = [:build, :postinstall, :test].freeze
+    actions = %w[allow deny].freeze
+    phases.each do |phase|
+      actions.each do |action|
+        it "can #{action} network access for #{phase}" do
+          f = Class.new(Testball) do
+            send(:"#{action}_network_access!", phase)
+          end
+
+          expect(f.network_access_allowed?(phase)).to be(action == "allow")
+        end
+      end
+    end
+
+    actions.each do |action|
+      it "can #{action} network access for all phases" do
+        f = Class.new(Testball) do
+          send(:"#{action}_network_access!")
+        end
+
+        phases.each do |phase|
+          expect(f.network_access_allowed?(phase)).to be(action == "allow")
+        end
+      end
+    end
+  end
+
+  describe "#network_access_allowed?" do
+    it "throws an error when passed an invalid symbol" do
+      f = Testball.new
+      expect { f.network_access_allowed?(:foo) }.to raise_error(ArgumentError)
     end
   end
 end

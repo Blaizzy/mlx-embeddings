@@ -44,6 +44,8 @@ FORMULA_COMPONENT_PRECEDENCE_LIST = T.let([
   [{ name: :go_resource, type: :block_call }, { name: :resource, type: :block_call }],
   [{ name: :patch, type: :method_call }, { name: :patch, type: :block_call }],
   [{ name: :needs, type: :method_call }],
+  [{ name: :allow_network_access!, type: :method_call }],
+  [{ name: :deny_network_access!, type: :method_call }],
   [{ name: :install, type: :method_definition }],
   [{ name: :post_install, type: :method_definition }],
   [{ name: :caveats, type: :method_definition }],
