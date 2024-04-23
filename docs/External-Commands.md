@@ -56,35 +56,37 @@ External commands can be hosted in a [tap](Taps.md) to allow users to easily ins
 
 External commands should be added to a `cmd` directory in the tap. An external command `extcmd` implemented as a Ruby command should live in `cmd/extcmd.rb` (don't forget to `chmod +x`).
 
-To easily use Homebrew's argument parser, replicate the following Ruby template for external commands (replacing all instances of `foo` with the name of the command):
+To easily use Homebrew's argument parser, replicate the Ruby template below for external commands. Your implementation must include the following:
+
+- The class name should be the command name in CamelCase (e.g. `my-cmd` should be named `MyCmd`).
+- Provide a `cmd_args` block that describes the command and its arguments.
+- Implement the `run` method, which will be invoked when the command is executed. Within the `run` method, the parsed arguments are available asusing `args`.
 
 ```ruby
 # frozen_string_literal: true
 
 module Homebrew
-  module_function
+  module Cmd
+    class Foo < AbstractCommand
+      cmd_args do
+        description <<~EOS
+          Do something. Place a description here.
+        EOS
+        switch "-f", "--force",
+              description: "Force doing something in the command."
+        flag   "--file=",
+              description: "Specify a file to do something with in the command."
+        comma_array "--names",
+                    description: "Add a list of names to the command."
 
-  def foo_args
-    Homebrew::CLI::Parser.new do
-      description <<~EOS
-        Do something. Place a description here.
-      EOS
-      switch "-f", "--force",
-             description: "Force doing something in the command."
-      flag   "--file=",
-             description: "Specify a file to do something with in the command."
-      comma_array "--names",
-                  description: "Add a list of names to the command."
+        named_args [:formula, :cask], min: 1
+      end
 
-      named_args [:formula, :cask], min: 1
+      def run
+        something if args.force?
+        something_else if args.file == "file.txt"
+      end
     end
-  end
-
-  def foo
-    args = foo_args.parse
-
-    something if args.force?
-    something_else if args.file == "file.txt"
   end
 end
 ```
