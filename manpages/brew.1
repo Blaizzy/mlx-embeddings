@@ -2411,6 +2411,15 @@ If set, always use a Homebrew\-installed \fBgit\fP(1) rather than the system ver
 \fBHOMEBREW_FORCE_VENDOR_RUBY\fP
 If set, always use Homebrew\[u2019]s vendored, relocatable Ruby version even if the system version of Ruby is new enough\.
 .TP
+\fBHOMEBREW_FORMULA_BUILD_NETWORK\fP
+If set, controls network access to the sandbox for formulae builds\. Overrides any controls set through DSL usage inside formulae\. Must be \fBallow\fP or \fBdeny\fP\&\. If no value is set through this environment variable or DSL usage, the default behavior is \fBallow\fP\&\.
+.TP
+\fBHOMEBREW_FORMULA_POSTINSTALL_NETWORK\fP
+If set, controls network access to the sandbox for formulae postinstall\. Overrides any controls set through DSL usage inside formulae\. Must be \fBallow\fP or \fBdeny\fP\&\. If no value is set through this environment variable or DSL usage, the default behavior is \fBallow\fP\&\.
+.TP
+\fBHOMEBREW_FORMULA_TEST_NETWORK\fP
+If set, controls network access to the sandbox for formulae test\. Overrides any controls set through DSL usage inside formulae\. Must be \fBallow\fP or \fBdeny\fP\&\. If no value is set through this environment variable or DSL usage, the default behavior is \fBallow\fP\&\.
+.TP
 \fBHOMEBREW_GITHUB_API_TOKEN\fP
 Use this personal access token for the GitHub API, for features such as \fBbrew search\fP\&\. You can create one at 
 .UR https://github\.com/settings/tokens
