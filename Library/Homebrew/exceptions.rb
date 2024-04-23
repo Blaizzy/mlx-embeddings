@@ -49,6 +49,9 @@ class UnsupportedInstallationMethod < RuntimeError; end
 
 class MultipleVersionsInstalledError < RuntimeError; end
 
+# Raised when a path is not a keg.
+#
+# @api internal
 class NotAKegError < RuntimeError; end
 
 # Raised when a keg doesn't exist.
