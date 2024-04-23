@@ -37,9 +37,9 @@ module Homebrew
         switch "--pinned",
                description: "List only pinned formulae, or only the specified (pinned) " \
                             "formulae if <formula> are provided. See also `pin`, `unpin`."
-        switch "--manual", "--installed-on-request",
+        switch "--installed-on-request",
                description: "List the formulae installed on request."
-        switch "--auto", "--installed-as-dependency",
+        switch "--installed-as-dependency",
                description: "List the formulae installed automatically."
 
         # passed through to ls
