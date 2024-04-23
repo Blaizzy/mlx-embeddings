@@ -136,6 +136,15 @@ module Homebrew::EnvConfig
     def force_vendor_ruby?; end
 
     sig { returns(T.nilable(::String)) }
+    def formula_build_network; end
+
+    sig { returns(T.nilable(::String)) }
+    def formula_postinstall_network; end
+
+    sig { returns(T.nilable(::String)) }
+    def formula_test_network; end
+
+    sig { returns(T.nilable(::String)) }
     def ftp_proxy; end
 
     sig { returns(T.nilable(::String)) }
