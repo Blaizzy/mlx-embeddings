@@ -38,6 +38,7 @@ module Cask
 
     sig { params(args: Homebrew::CLI::Args).returns(T.attached_class) }
     def self.from_args(args)
+      args = T.unsafe(args)
       new(explicit: {
         appdir:               args.appdir,
         keyboard_layoutdir:   args.keyboard_layoutdir,

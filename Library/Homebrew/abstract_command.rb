@@ -19,6 +19,9 @@ module Homebrew
     abstract!
 
     class << self
+      sig { returns(T.nilable(T.class_of(CLI::Args))) }
+      attr_reader :args_class
+
       sig { returns(String) }
       def command_name = Utils.underscore(T.must(name).split("::").fetch(-1)).tr("_", "-").delete_suffix("-cmd")
 
@@ -37,6 +40,7 @@ module Homebrew
       sig { params(block: T.proc.bind(CLI::Parser).void).void }
       def cmd_args(&block)
         @parser_block = T.let(block, T.nilable(T.proc.void))
+        @args_class = T.let(const_set(:Args, Class.new(CLI::Args)), T.nilable(T.class_of(CLI::Args)))
       end
     end
 

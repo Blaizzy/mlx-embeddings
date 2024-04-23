@@ -38,9 +38,13 @@ module Tapioca
             end
           end
         else
-          root.create_path(Homebrew::CLI::Args) do |klass|
-            parser = T.cast(constant, T.class_of(Homebrew::AbstractCommand)).parser
-            create_args_methods(klass, parser)
+          cmd = T.cast(constant, T.class_of(Homebrew::AbstractCommand))
+          args_class_name = T.must(T.must(cmd.args_class).name)
+          root.create_class(args_class_name, superclass_name: "Homebrew::CLI::Args") do |klass|
+            create_args_methods(klass, cmd.parser)
+          end
+          root.create_path(constant) do |klass|
+            klass.create_method("args", return_type: args_class_name)
           end
         end
       end
