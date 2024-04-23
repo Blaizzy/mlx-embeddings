@@ -60,7 +60,7 @@ module Homebrew
         conflicts "--pinned", "--cask"
         conflicts "--multiple", "--cask"
         conflicts "--pinned", "--multiple"
-        ["--manual", "--auto"].each do |flag|
+        ["--installed-on-request", "--installed-as-dependency"].each do |flag|
           conflicts "--cask", flag
           conflicts "--versions", flag
           conflicts "--pinned", flag
@@ -69,7 +69,8 @@ module Homebrew
           conflicts "--versions", flag
           conflicts "--pinned", flag
         end
-        ["--versions", "--pinned", "--manual", "--auto",
+        ["--versions", "--pinned",
+         "---installed-on-request", "--installed-as-dependency",
          "-l", "-r", "-t"].each do |flag|
           conflicts "--full-name", flag
         end
@@ -103,20 +104,25 @@ module Homebrew
         elsif args.versions?
           filtered_list unless args.cask?
           list_casks if args.cask? || (!args.formula? && !args.multiple? && args.no_named?)
-        elsif args.manual? || args.auto?
+        elsif args.installed_on_request? || args.installed_as_dependency?
           unless args.no_named?
             raise UsageError,
-                  "Cannot use `--manual` or `--auto` with formula arguments."
+                  "Cannot use `--installed-on-request` or " \
+                  "`--installed-as-dependency` with formula arguments."
           end
 
           Formula.installed.sort.each do |formula|
             tab = Tab.for_formula(formula)
 
-            if args.manual? && args.auto?
-              status = tab.installed_on_request ? "manual" : "auto"
-              puts "#{formula.name}: #{status}"
-            elsif (args.manual? && tab.installed_on_request) ||
-                  (args.auto? && !tab.installed_on_request)
+            if args.installed_on_request? && args.installed_as_dependency?
+              statuses = []
+              statuses << "installed on request" if tab.installed_on_request
+              statuses << "installed as dependency" if tab.installed_as_dependency
+              next if statuses.empty?
+
+              puts "#{formula.name}: #{statuses.join(", ")}"
+            elsif (args.installed_on_request? && tab.installed_on_request) ||
+                  (args.installed_as_dependency? && tab.installed_as_dependency)
               puts formula.name
             end
           end
