@@ -1415,13 +1415,13 @@ _brew_list() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --auto
       --cask
       --debug
       --formula
       --full-name
       --help
-      --manual
+      --installed-as-dependency
+      --installed-on-request
       --multiple
       --pinned
       --quiet
@@ -1519,13 +1519,13 @@ _brew_ls() {
   case "${cur}" in
     -*)
       __brewcomp "
-      --auto
       --cask
       --debug
       --formula
       --full-name
       --help
-      --manual
+      --installed-as-dependency
+      --installed-on-request
       --multiple
       --pinned
       --quiet

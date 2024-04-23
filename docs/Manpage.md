@@ -741,13 +741,13 @@ paths within its current keg. If *`cask`* is provided, list its artifacts.
 : List only pinned formulae, or only the specified (pinned) formulae if
   *`formula`* are provided. See also `pin`, `unpin`.
 
-`--manual`
+`--installed-on-request`
 
 : List the formulae installed on request.
 
-`--auto`
+`--installed-as-dependency`
 
-: List the formulae installed automatically.
+: List the formulae installed as dependencies.
 
 `-1`
 
