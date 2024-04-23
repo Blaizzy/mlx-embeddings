@@ -3709,6 +3709,27 @@ command execution e.g. `$(cat file)`.
 : If set, always use Homebrew's vendored, relocatable Ruby version even if the
   system version of Ruby is new enough.
 
+`HOMEBREW_FORMULA_BUILD_NETWORK`
+
+: If set, controls network access to the sandbox for formulae builds. Overrides
+  any controls set through DSL usage inside formulae. Must be `allow` or `deny`.
+  If no value is set through this environment variable or DSL usage, the default
+  behavior is `allow`.
+
+`HOMEBREW_FORMULA_POSTINSTALL_NETWORK`
+
+: If set, controls network access to the sandbox for formulae postinstall.
+  Overrides any controls set through DSL usage inside formulae. Must be `allow`
+  or `deny`. If no value is set through this environment variable or DSL usage,
+  the default behavior is `allow`.
+
+`HOMEBREW_FORMULA_TEST_NETWORK`
+
+: If set, controls network access to the sandbox for formulae test. Overrides
+  any controls set through DSL usage inside formulae. Must be `allow` or `deny`.
+  If no value is set through this environment variable or DSL usage, the default
+  behavior is `allow`.
+
 `HOMEBREW_GITHUB_API_TOKEN`
 
 : Use this personal access token for the GitHub API, for features such as `brew
