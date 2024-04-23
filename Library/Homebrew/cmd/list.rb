@@ -40,7 +40,7 @@ module Homebrew
         switch "--installed-on-request",
                description: "List the formulae installed on request."
         switch "--installed-as-dependency",
-               description: "List the formulae only installed indirectly as dependencies."
+               description: "List the formulae installed as dependencies."
 
         # passed through to ls
         switch "-1",
