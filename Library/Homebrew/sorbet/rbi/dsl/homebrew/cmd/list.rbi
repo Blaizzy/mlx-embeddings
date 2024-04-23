@@ -6,9 +6,6 @@
 
 class Homebrew::CLI::Args
   sig { returns(T::Boolean) }
-  def auto?; end
-
-  sig { returns(T::Boolean) }
   def cask?; end
 
   sig { returns(T::Boolean) }
@@ -31,9 +28,6 @@ class Homebrew::CLI::Args
 
   sig { returns(T::Boolean) }
   def l?; end
-
-  sig { returns(T::Boolean) }
-  def manual?; end
 
   sig { returns(T::Boolean) }
   def multiple?; end
