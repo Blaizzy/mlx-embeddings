@@ -284,11 +284,11 @@ module GitHub
       end
     end
 
-    def self.paginate_rest(url, additional_query_params: nil, per_page: 100)
+    def self.paginate_rest(url, additional_query_params: nil, per_page: 100, scopes: [].freeze)
       (1..API_MAX_PAGES).each do |page|
         retry_count = 1
         result = begin
-          API.open_rest("#{url}?per_page=#{per_page}&page=#{page}&#{additional_query_params}")
+          API.open_rest("#{url}?per_page=#{per_page}&page=#{page}&#{additional_query_params}", scopes:)
         rescue Error
           if retry_count < PAGINATE_RETRY_COUNT
             retry_count += 1
