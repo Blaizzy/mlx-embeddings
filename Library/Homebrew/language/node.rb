@@ -55,6 +55,9 @@ module Language
     sig { params(libexec: Pathname).returns(T::Array[String]) }
     def self.std_npm_install_args(libexec)
       setup_npm_environment
+      # tell npm to not install .brew_home by adding it to the .npmignore file
+      # (or creating a new one if no .npmignore file already exists)
+      open(".npmignore", "a") { |f| f.write("\n.brew_home\n") }
 
       pack = pack_for_installation
 
