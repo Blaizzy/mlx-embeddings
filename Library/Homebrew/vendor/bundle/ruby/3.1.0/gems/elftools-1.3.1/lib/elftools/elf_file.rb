@@ -290,7 +290,7 @@ module ELFTools
     #   elf = ELFTools::ELFFile.new(File.open('/bin/cat'))
     #   elf.offset_from_vma(0x401337)
     #   #=> 4919 # 0x1337
-    def offset_from_vma(vma, size = 0)
+    def offset_from_vma(vma, size = 1)
       segments_by_type(:load) do |seg|
         return seg.vma_to_offset(vma) if seg.vma_in?(vma, size)
       end
