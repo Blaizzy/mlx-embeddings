@@ -255,7 +255,9 @@ module Kernel
     raise ErrorDuringExecution.new([cmd, *args], status: $CHILD_STATUS)
   end
 
-  # Prints no output.
+  # Run a system comand without any output.
+  #
+  # @api internal
   def quiet_system(cmd, *args)
     Homebrew._system(cmd, *args) do
       # Redirect output streams to `/dev/null` instead of closing as some programs

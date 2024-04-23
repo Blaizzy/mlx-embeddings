@@ -12,14 +12,22 @@ require "utils/timer"
 
 # Class for running sub-processes and capturing their output and exit status.
 #
-# @api private
+# @api internal
 class SystemCommand
   # Helper functions for calling {SystemCommand.run}.
+  #
+  # @api internal
   module Mixin
+    # Run a fallible system command.
+    #
+    # @api internal
     def system_command(executable, **options)
       SystemCommand.run(executable, **options)
     end
 
+    # Run an infallible system command.
+    #
+    # @api internal
     def system_command!(command, **options)
       SystemCommand.run!(command, **options)
     end

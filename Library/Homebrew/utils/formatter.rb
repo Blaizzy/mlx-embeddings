@@ -14,6 +14,9 @@ module Formatter
     prefix("==>", string, color)
   end
 
+  # Format a string as headline.
+  #
+  # @api internal
   def self.headline(string, color: nil)
     arrow("#{Tty.bold}#{string}#{Tty.reset}", color:)
   end
