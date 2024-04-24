@@ -3123,6 +3123,8 @@ class Formula
       end
 
       setup_home env_home
+      # Don't dirty the git tree for git clones.
+      (env_home/".gitignore").write "*"
 
       ENV.clear_sensitive_environment!
 
