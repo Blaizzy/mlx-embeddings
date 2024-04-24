@@ -60,7 +60,7 @@ To easily use Homebrew's argument parser, replicate the Ruby template below for 
 
 - The class name should be the command name in CamelCase (e.g. `my-cmd` should be named `MyCmd`).
 - Provide a `cmd_args` block that describes the command and its arguments.
-- Implement the `run` method, which will be invoked when the command is executed. Within the `run` method, the parsed arguments are available asusing `args`.
+- Implement the `run` method, which will be invoked when the command is executed. Within the `run` method, the parsed arguments are available using `args`.
 
 ```ruby
 # frozen_string_literal: true
