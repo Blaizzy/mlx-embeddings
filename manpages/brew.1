@@ -2089,6 +2089,12 @@ Publish the uploaded bottles\.
 \fB\-\-skip\-online\-checks\fP
 Don\[u2019]t pass \fB\-\-online\fP to \fBbrew audit\fP and skip \fBbrew livecheck\fP\&\.
 .TP
+\fB\-\-skip\-new\fP
+Don\[u2019]t pass \fB\-\-new\fP to \fBbrew audit\fP for new formulae\.
+.TP
+\fB\-\-skip\-new\-strict\fP
+Don\[u2019]t pass \fB\-\-strict\fP to \fBbrew audit\fP for new formulae\.
+.TP
 \fB\-\-skip\-dependents\fP
 Don\[u2019]t test any dependents\.
 .TP
@@ -2097,9 +2103,6 @@ Don\[u2019]t test livecheck\.
 .TP
 \fB\-\-skip\-recursive\-dependents\fP
 Only test the direct dependents\.
-.TP
-\fB\-\-skip\-repository\-audit\fP
-Don\[u2019]t audit the repository\.
 .TP
 \fB\-\-skip\-checksum\-only\-audit\fP
 Don\[u2019]t audit checksum\-only changes\.

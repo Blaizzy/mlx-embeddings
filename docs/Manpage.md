@@ -3271,6 +3271,14 @@ and Linux workers.
 
 : Don't pass `--online` to `brew audit` and skip `brew livecheck`.
 
+`--skip-new`
+
+: Don't pass `--new` to `brew audit` for new formulae.
+
+`--skip-new-strict`
+
+: Don't pass `--strict` to `brew audit` for new formulae.
+
 `--skip-dependents`
 
 : Don't test any dependents.
@@ -3282,10 +3290,6 @@ and Linux workers.
 `--skip-recursive-dependents`
 
 : Only test the direct dependents.
-
-`--skip-repository-audit`
-
-: Don't audit the repository.
 
 `--skip-checksum-only-audit`
 
