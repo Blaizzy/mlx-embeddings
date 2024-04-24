@@ -451,10 +451,10 @@ module PatchELF
 
           begin
             new_index = new_section_idx(old_shndx)
-            next unless new_index
           rescue ArgumentError
             Logger.warn "entry #{entry} in symbol table refers to a non existing section, skipping"
           end
+          next unless new_index
 
           sym[pack[:st_shndx]] = new_index
 
@@ -561,11 +561,12 @@ module PatchELF
       if needed_space > start_offset
         needed_space += seg_num_bytes # new load segment is required
 
-        needed_pages = Helper.alignup(needed_space - start_offset, page_size) / page_size
+        extra_bytes = needed_space - start_offset
+        needed_pages = Helper.alignup(extra_bytes, page_size) / page_size
         Logger.debug "needed pages is #{needed_pages}"
         raise PatchError, 'virtual address space underrun' if needed_pages * page_size > first_page
 
-        shift_file(needed_pages, start_offset)
+        shift_file(needed_pages, start_offset, extra_bytes)
 
         first_page -= needed_pages * page_size
         start_offset += needed_pages * page_size
@@ -776,7 +777,7 @@ module PatchELF
     end
     # rubocop:enable Metrics/PerceivedComplexity
 
-    def shift_file(extra_pages, start_offset)
+    def shift_file(extra_pages, start_offset, extra_bytes)
       raise PatchError, "start_offset(#{start_offset}) < ehdr.num_bytes" if start_offset < ehdr.num_bytes
 
       oldsz = @buffer.size
@@ -799,8 +800,8 @@ module PatchELF
         p_offset: split_phdr.p_offset - split_shift - shift,
         p_vaddr: split_phdr.p_vaddr - split_shift - shift,
         p_paddr: split_phdr.p_paddr - split_shift - shift,
-        p_filesz: split_shift + shift,
-        p_memsz: split_shift + shift,
+        p_filesz: split_shift + extra_bytes,
+        p_memsz: split_shift + extra_bytes,
         p_flags: ELFTools::Constants::PF_R | ELFTools::Constants::PF_W,
         p_align: page_size
       )
