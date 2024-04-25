@@ -414,6 +414,8 @@ jobs:
             runs-on: macos-13
           - name: test default formula (macOS 14 arm64)
             runs-on: macos-14
+    env:
+      HOMEBREW_TEST_BOT_ANALYTICS: 1
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
