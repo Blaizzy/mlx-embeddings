@@ -15,7 +15,7 @@ RSpec.describe Sandbox, :needs_macos do
   end
 
   specify "#allow_write" do
-    sandbox.allow_write file
+    sandbox.allow_write path: file
     sandbox.exec "touch", file
 
     expect(file).to exist
