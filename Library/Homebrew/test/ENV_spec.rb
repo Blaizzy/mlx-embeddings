@@ -164,12 +164,6 @@ RSpec.describe "ENV" do
         expect(subject["FOO"]).to eq "bar"
       end
     end
-
-    describe "#compiler_any_clang?" do
-      it "returns true for llvm_clang" do
-        expect(subject.compiler_any_clang?(:llvm_clang)).to be true
-      end
-    end
   end
 
   describe Stdenv do

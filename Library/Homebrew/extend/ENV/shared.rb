@@ -316,12 +316,6 @@ module SharedEnvExtension
   sig { void }
   def permit_arch_flags; end
 
-  # @private
-  sig { params(cc: T.any(Symbol, String)).returns(T::Boolean) }
-  def compiler_any_clang?(cc = compiler)
-    %w[clang llvm_clang].include?(cc.to_s)
-  end
-
   private
 
   sig { params(_flags: T::Array[String], _map: T::Hash[Symbol, String]).void }
