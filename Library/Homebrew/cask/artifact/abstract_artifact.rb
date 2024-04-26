@@ -149,6 +149,7 @@ module Cask
         cask.config
       end
 
+      # @!visibility private
       sig { returns(String) }
       def to_s
         "#{summarize} (#{self.class.english_name})"

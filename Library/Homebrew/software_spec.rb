@@ -314,10 +314,13 @@ class Bottle
     end
 
     sig { returns(String) }
-    def to_s
+    def to_str
       "#{name}--#{version}#{extname}"
     end
-    alias to_str to_s
+
+    # @!visibility private
+    sig { returns(String) }
+    def to_s = to_str
 
     sig { returns(String) }
     def json

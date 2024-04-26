@@ -29,9 +29,9 @@ module Cask
         pairs.to_yaml
       end
 
-      def to_s
-        pairs.inspect
-      end
+      # @!visibility private
+      sig { returns(String) }
+      def to_s = pairs.inspect
     end
   end
 end

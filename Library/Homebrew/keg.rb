@@ -50,6 +50,7 @@ class Keg
       EOS
     end
 
+    # @!visibility private
     sig { returns(String) }
     def to_s
       s = []
@@ -68,6 +69,7 @@ class Keg
 
   # Error for when a directory is not writable.
   class DirectoryNotWritableError < LinkError
+    # @!visibility private
     sig { returns(String) }
     def to_s
       <<~EOS
@@ -155,7 +157,7 @@ class Keg
   extend Forwardable
 
   def_delegators :path,
-                 :to_s, :hash, :abv, :disk_usage, :file_count, :directory?, :exist?, :/,
+                 :to_path, :hash, :abv, :disk_usage, :file_count, :directory?, :exist?, :/,
                  :join, :rename, :find
 
   def initialize(path)
@@ -175,7 +177,9 @@ class Keg
     path.parent
   end
 
-  alias to_path to_s
+  # @!visibility private
+  sig { returns(String) }
+  def to_s = path.to_s
 
   # @!visibility private
   sig { returns(String) }

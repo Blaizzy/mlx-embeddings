@@ -85,6 +85,7 @@ module PyPI
       ]
     end
 
+    # @!visibility private
     sig { returns(String) }
     def to_s
       if valid_pypi_package?

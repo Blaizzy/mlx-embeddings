@@ -1731,9 +1731,10 @@ class Formula
     [name, *oldnames, *aliases].compact
   end
 
-  def to_s
-    name
-  end
+  # @api public
+  # @!visibility private
+  sig { returns(String) }
+  def to_s = name
 
   # @!visibility private
   sig { returns(String) }

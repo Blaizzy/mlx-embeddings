@@ -13,9 +13,9 @@ class Option
     @description = description
   end
 
-  def to_s
-    flag
-  end
+  # @!visibility private
+  sig { returns(String) }
+  def to_s = flag
 
   def <=>(other)
     return unless other.is_a?(Option)
@@ -140,6 +140,7 @@ class Options
 
   alias to_ary to_a
 
+  # @!visibility private
   sig { returns(String) }
   def to_s
     @options.map(&:to_s).join(" ")

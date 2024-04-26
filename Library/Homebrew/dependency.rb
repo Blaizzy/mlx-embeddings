@@ -24,9 +24,9 @@ class Dependency
     @tap, = tap_with_name
   end
 
-  def to_s
-    name
-  end
+  # @!visibility private
+  sig { returns(String) }
+  def to_s = name
 
   def ==(other)
     instance_of?(other.class) && name == other.name && tags == other.tags

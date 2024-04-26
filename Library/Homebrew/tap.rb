@@ -155,9 +155,9 @@ class Tap
   # @api public
   attr_reader :name
 
-  # Alias for {#name}.
-  #
   # @api public
+  # @!visibility private
+  sig { returns(String) }
   def to_s = name
 
   # The full name of this {Tap}, including the `homebrew-` prefix.
