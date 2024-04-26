@@ -144,23 +144,13 @@ module Utils
           os:     HOMEBREW_SYSTEM,
         }
 
-        command_and_package, options =
-          step_command_short.split
-                            .partition { |arg| !arg.start_with?("-") }
-
         # Strip out any flag values to reduce cardinality and preserve privacy.
         # Sort options to ensure consistent ordering and improve readability.
-        options = options.join(" ")
-                         .split
-                         .join(" ")
-                         .split(/(-+)/)
-                         .map { |a| a.sub(/[ =].+/, " ") }
-                         .join(" ")
-                         .strip
-                         .split
-                         .sort
-
-        command = (command_and_package + options).join(" ")
+        command_and_package, options =
+          step_command_short.split
+                            .map { |arg| arg.sub(/=.*/, "=") }
+                            .partition { |arg| !arg.start_with?("-") }
+        command = (command_and_package + options.sort).join(" ")
 
         # Fields can have high cardinality.
         fields = { command: }
