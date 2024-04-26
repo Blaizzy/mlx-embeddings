@@ -39,9 +39,11 @@ module Homebrew
         ) do
           extend Forwardable
 
+          # @!attribute [r] version
           # @api public
           delegate version: :bundle_version
 
+          # @!attribute [r] short_version
           # @api public
           delegate short_version: :bundle_version
         end

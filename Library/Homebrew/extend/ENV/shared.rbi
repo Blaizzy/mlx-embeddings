@@ -4,6 +4,7 @@ module SharedEnvExtension
   include EnvMethods
 end
 
+# @!visibility private
 class Sorbet
   module Private
     module Static

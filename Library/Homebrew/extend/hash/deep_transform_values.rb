@@ -6,11 +6,14 @@ class Hash
   # This includes the values from the root hash and from all
   # nested hashes and arrays.
   #
-  # @example
-  #  hash = { person: { name: 'Rob', age: '28' } }
+  # ### Example
   #
-  #  hash.deep_transform_values{ |value| value.to_s.upcase }
-  #  # => {person: {name: "ROB", age: "28"}}
+  # ```ruby
+  # hash = { person: { name: 'Rob', age: '28' } }
+  #
+  # hash.deep_transform_values{ |value| value.to_s.upcase }
+  # # => {person: {name: "ROB", age: "28"}}
+  # ```
   def deep_transform_values(&block) = _deep_transform_values_in_object(self, &block)
 
   # Destructively converts all values by using the block operation.

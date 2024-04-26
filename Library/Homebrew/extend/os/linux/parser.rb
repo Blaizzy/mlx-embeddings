@@ -16,7 +16,7 @@ module Homebrew
         return unless @args.cask?
 
         # NOTE: We don't raise an error here because we don't want
-        # to print the help page or a stack trace.
+        #       to print the help page or a stack trace.
         odie "Invalid `--cask` usage: Casks do not work on Linux"
       end
     end

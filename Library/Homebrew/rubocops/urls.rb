@@ -207,7 +207,7 @@ module RuboCop
             problem "Use versioned rather than branch tarballs for stable checksums."
           end
 
-          # Use new-style archive downloads
+          # Use new-style archive downloads.
           archive_gh_pattern = %r{https://.*github.*/(?:tar|zip)ball/}
           audit_urls(urls, archive_gh_pattern) do |_, url|
             next if url.end_with?(".git")

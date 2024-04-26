@@ -265,7 +265,7 @@ EOS
   fi
 }
 
-# NOTE: the members of the array in the second arg must not have spaces!
+# NOTE: The members of the array in the second arg must not have spaces!
 check-array-membership() {
   local item=$1
   shift

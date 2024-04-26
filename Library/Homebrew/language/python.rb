@@ -150,8 +150,8 @@ module Language
       #
       # @param venv_root [Pathname, String] the path to the root of the virtualenv
       #   (often `libexec/"venv"`)
-      # @param python [String, Pathname] which interpreter to use (e.g. "python3"
-      #   or "python3.x")
+      # @param python [String, Pathname] which interpreter to use (e.g. `"python3"`
+      #   or `"python3.x"`)
       # @param formula [Formula] the active {Formula}
       # @return [Virtualenv] a {Virtualenv} instance
       sig {
@@ -166,7 +166,7 @@ module Language
       def virtualenv_create(venv_root, python = "python", formula = T.cast(self, Formula),
                             system_site_packages: true, without_pip: true)
         # Limit deprecation to 3.12+ for now (or if we can't determine the version).
-        # Some used this argument for setuptools, which we no longer bundle since 3.12.
+        # Some used this argument for `setuptools`, which we no longer bundle since 3.12.
         unless without_pip
           python_version = Language::Python.major_minor_version(python)
           if python_version.nil? || python_version.null? || python_version >= "3.12"
@@ -198,8 +198,8 @@ module Language
 
       # Returns true if a formula option for the specified python is currently
       # active or if the specified python is required by the formula. Valid
-      # inputs are "python", "python2", and :python3. Note that
-      # "with-python", "without-python", "with-python@2", and "without-python@2"
+      # inputs are `"python"`, `"python2"` and `:python3`. Note that
+      # `"with-python"`, `"without-python"`, `"with-python@2"` and `"without-python@2"`
       # formula options are handled correctly even if not associated with any
       # corresponding depends_on statement.
       sig { params(python: String).returns(T::Boolean) }

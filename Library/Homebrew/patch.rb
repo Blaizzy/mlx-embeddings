@@ -51,7 +51,6 @@ class EmbeddedPatch
     Utils.safe_popen_write("patch", *args) { |p| p.write(data) }
   end
 
-  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{strip.inspect}>"
@@ -151,7 +150,6 @@ class ExternalPatch
     raise BuildError.new(f, cmd, args, ENV.to_hash)
   end
 
-  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{strip.inspect} #{url.inspect}>"

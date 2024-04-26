@@ -6,16 +6,17 @@ module RuboCop
     module Cask
       # This cop checks that a cask's `url` stanza is formatted correctly.
       #
-      # @example
-      #   # bad
-      #   url "https://example.com/download/foo.dmg",
-      #       verified: "https://example.com/download"
+      # ### Example
       #
+      # ```ruby
+      # # bad
+      # url "https://example.com/download/foo.dmg",
+      #     verified: "https://example.com/download"
       #
-      #   # good
-      #   url "https://example.com/download/foo.dmg",
-      #       verified: "example.com/download/"
-      #
+      # # good
+      # url "https://example.com/download/foo.dmg",
+      #     verified: "example.com/download/"
+      # ```
       class Url < Base
         extend AutoCorrector
         extend Forwardable

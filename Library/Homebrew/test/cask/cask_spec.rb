@@ -332,8 +332,8 @@ RSpec.describe Cask::Cask, :cask do
       expect(JSON.pretty_generate(h["variations"])).to eq expected_sha256_variations.strip
     end
 
-    # @note The calls to `Cask.generating_hash!` and `Cask.generated_hash!`
-    #   are not idempotent so they can only be used in one test.
+    # NOTE: The calls to `Cask.generating_hash!` and `Cask.generated_hash!`
+    #       are not idempotent so they can only be used in one test.
     it "returns the correct hash placeholders" do
       described_class.generating_hash!
       expect(described_class).to be_generating_hash

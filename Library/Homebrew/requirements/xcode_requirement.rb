@@ -48,7 +48,6 @@ class XcodeRequirement < Requirement
     end
   end
 
-  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: version>=#{@version.inspect} #{tags.inspect}>"

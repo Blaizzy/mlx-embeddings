@@ -65,7 +65,6 @@ class CompilerFailure
     type == compiler.type && version_matched
   end
 
-  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{type} #{version}>"

@@ -9,20 +9,23 @@ module RuboCop
     module Cask
       # This cop makes sure that OS conditionals are consistent.
       #
-      # @example
-      #   # bad
-      #   cask 'foo' do
-      #     if MacOS.version == :high_sierra
-      #       sha256 "..."
-      #     end
-      #   end
+      # ### Example
       #
-      #   # good
-      #   cask 'foo' do
-      #     on_high_sierra do
-      #       sha256 "..."
-      #     end
+      # ```ruby
+      # # bad
+      # cask 'foo' do
+      #   if MacOS.version == :high_sierra
+      #     sha256 "..."
       #   end
+      # end
+      #
+      # # good
+      # cask 'foo' do
+      #   on_high_sierra do
+      #     sha256 "..."
+      #   end
+      # end
+      # ```
       class OnSystemConditionals < Base
         extend Forwardable
         extend AutoCorrector

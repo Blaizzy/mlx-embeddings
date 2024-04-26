@@ -127,9 +127,9 @@ RSpec.describe Homebrew::Livecheck::Strategy::Yaml do
       end).to eq(find_versions_cached_return_hash)
 
       # NOTE: A regex should be provided using the `#regex` method in a
-      # `livecheck` block but we're using a regex literal in the `strategy`
-      # block here simply to ensure this method works as expected when a
-      # regex isn't provided.
+      #       `livecheck` block but we're using a regex literal in the `strategy`
+      #       block here simply to ensure this method works as expected when a
+      #       regex isn't provided.
       expect(yaml.find_versions(url: http_url, provided_content: content) do |yaml|
         regex = /^v?(\d+(?:\.\d+)+)$/i
         yaml["versions"].select { |item| item["version"]&.match?(regex) }

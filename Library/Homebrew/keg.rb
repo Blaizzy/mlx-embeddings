@@ -48,7 +48,6 @@ class Keg
       EOS
     end
 
-    # @!visibility private
     sig { returns(String) }
     def to_s
       s = []
@@ -67,7 +66,6 @@ class Keg
 
   # Error for when a directory is not writable.
   class DirectoryNotWritableError < LinkError
-    # @!visibility private
     sig { returns(String) }
     def to_s
       <<~EOS
@@ -176,11 +174,9 @@ class Keg
     path.parent
   end
 
-  # @!visibility private
   sig { returns(String) }
   def to_s = path.to_s
 
-  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}:#{path}>"

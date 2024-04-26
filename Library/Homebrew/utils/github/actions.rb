@@ -73,7 +73,6 @@ module GitHub
         @end_column = Integer(end_column) if end_column
       end
 
-      # @!visibility private
       sig { returns(String) }
       def to_s
         metadata = @type.to_s

@@ -4,27 +4,26 @@
 module RuboCop
   module Cop
     module Homebrew
-      # Checks for code that can be written with simpler conditionals
-      # using `Object#blank?`.
+      # Checks for code that can be simplified using `Object#blank?`.
       #
-      # @note
-      #   This cop is unsafe autocorrection, because `' '.empty?` returns false,
-      #   but `' '.blank?` returns true. Therefore, autocorrection is not compatible
-      #   if the receiver is a non-empty blank string, tab, or newline meta characters.
+      # NOTE: Auto-correction for this cop is unsafe because `' '.empty?` returns `false`,
+      #       but `' '.blank?` returns `true`. Therefore, auto-correction is not compatible
+      #       if the receiver is a non-empty blank string.
       #
-      # @example
-      #   # Converts usages of `nil? || empty?` to `blank?`
+      # ### Example
       #
-      #   # bad
-      #   foo.nil? || foo.empty?
-      #   foo == nil || foo.empty?
+      # ```ruby
+      # # bad
+      # foo.nil? || foo.empty?
+      # foo == nil || foo.empty?
       #
-      #   # good
-      #   foo.blank?
+      # # good
+      # foo.blank?
+      # ```
       class Blank < Base
         extend AutoCorrector
 
-        MSG_NIL_OR_EMPTY = "Use `%<prefer>s` instead of `%<current>s`."
+        MSG = "Use `%<prefer>s` instead of `%<current>s`."
 
         # `(send nil $_)` is not actually a valid match for an offense. Nodes
         # that have a single method call on the left hand side
@@ -49,7 +48,7 @@ module RuboCop
           nil_or_empty?(node) do |var1, var2|
             return if var1 != var2
 
-            message = format(MSG_NIL_OR_EMPTY, prefer: replacement(var1), current: node.source)
+            message = format(MSG, prefer: replacement(var1), current: node.source)
             add_offense(node, message:) do |corrector|
               autocorrect(corrector, node)
             end

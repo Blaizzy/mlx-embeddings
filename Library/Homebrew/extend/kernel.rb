@@ -493,14 +493,20 @@ module Kernel
   end
 
   # Calls the given block with the passed environment variables
-  # added to ENV, then restores ENV afterwards.
-  # <pre>with_env(PATH: "/bin") do
-  #   system "echo $PATH"
-  # end</pre>
+  # added to `ENV`, then restores `ENV` afterwards.
   #
-  # @note This method is *not* thread-safe - other threads
-  #   which happen to be scheduled during the block will also
-  #   see these environment variables.
+  # NOTE: This method is **not** thread-safe – other threads
+  #       which happen to be scheduled during the block will also
+  #       see these environment variables.
+  #
+  # ### Example
+  #
+  # ```ruby
+  # with_env(PATH: "/bin") do
+  #   system "echo $PATH"
+  # end
+  # ```
+  #
   # @api public
   def with_env(hash)
     old_values = {}

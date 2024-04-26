@@ -37,7 +37,6 @@ class KegOnlyReason
     !by_macos?
   end
 
-  # @!visibility private
   sig { returns(String) }
   def to_s
     return @explanation unless @explanation.empty?

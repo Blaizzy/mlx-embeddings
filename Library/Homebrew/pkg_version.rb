@@ -39,7 +39,6 @@ class PkgVersion
     end
   end
 
-  # @!visibility private
   sig { returns(String) }
   def to_s = to_str
 

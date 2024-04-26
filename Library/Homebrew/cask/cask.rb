@@ -78,7 +78,8 @@ module Cask
       @allow_reassignment = allow_reassignment
       @loaded_from_api = loaded_from_api
       @loader = loader
-      # Sorbet has trouble with bound procs assigned to ivars: https://github.com/sorbet/sorbet/issues/6843
+      # Sorbet has trouble with bound procs assigned to instance variables:
+      # https://github.com/sorbet/sorbet/issues/6843
       instance_variable_set(:@block, block)
 
       @default_config = config || Config.new
@@ -323,11 +324,9 @@ module Cask
     end
 
     # @api public
-    # @!visibility private
     sig { returns(String) }
     def to_s = token
 
-    # @!visibility private
     sig { returns(String) }
     def inspect
       "#<Cask #{token}#{sourcefile_path&.to_s&.prepend(" ")}>"

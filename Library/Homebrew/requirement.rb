@@ -140,7 +140,6 @@ class Requirement
     [self.class, name, tags].hash
   end
 
-  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{tags.inspect}>"

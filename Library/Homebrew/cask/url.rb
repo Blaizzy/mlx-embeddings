@@ -17,22 +17,32 @@ module Cask
       extend Forwardable
       def_delegators :uri, :path, :scheme, :to_s
 
-      # @api public
       sig {
         params(
           uri:        T.any(URI::Generic, String),
+          # @api public
           verified:   T.nilable(String),
+          # @api public
           using:      T.any(Class, Symbol, NilClass),
+          # @api public
           tag:        T.nilable(String),
+          # @api public
           branch:     T.nilable(String),
+          # @api public
           revisions:  T.nilable(T::Array[String]),
+          # @api public
           revision:   T.nilable(String),
+          # @api public
           trust_cert: T.nilable(T::Boolean),
+          # @api public
           cookies:    T.nilable(T::Hash[String, String]),
           referer:    T.nilable(T.any(URI::Generic, String)),
+          # @api public
           header:     T.nilable(T.any(String, T::Array[String])),
           user_agent: T.nilable(T.any(Symbol, String)),
+          # @api public
           data:       T.nilable(T::Hash[String, String]),
+          # @api public
           only_path:  T.nilable(String),
         ).void
       }
@@ -77,8 +87,19 @@ module Cask
     end
 
     class BlockDSL
-      # To access URL associated with page contents.
+      # Allow accessing the URL associated with page contents.
       module PageWithURL
+        # Get the URL of the fetched page.
+        #
+        # ### Example
+        #
+        # ```ruby
+        # url "https://example.org/download" do |page|
+        #   file = page[/href="([^"]+.dmg)"/, 1]
+        #   URL.join(page.url, file)
+        # end
+        # ```
+        #
         # @api public
         sig { returns(URI::Generic) }
         attr_accessor :url
@@ -87,12 +108,12 @@ module Cask
       sig {
         params(
           uri:   T.nilable(T.any(URI::Generic, String)),
-          dsl:   T.nilable(::Cask::DSL),
+          dsl:   ::Cask::DSL,
           block: T.proc.params(arg0: T.all(String, PageWithURL))
                        .returns(T.any(T.any(URI::Generic, String), [T.any(URI::Generic, String), Hash])),
         ).void
       }
-      def initialize(uri, dsl: nil, &block)
+      def initialize(uri, dsl:, &block)
         @uri = uri
         @dsl = dsl
         @block = block
@@ -114,6 +135,8 @@ module Cask
         end
       end
 
+      # Allows calling a nested `url` stanza in a `url do` block.
+      #
       # @api public
       sig {
         params(
@@ -123,10 +146,12 @@ module Cask
         ).returns(T.any(T.any(URI::Generic, String), [T.any(URI::Generic, String), Hash]))
       }
       def url(uri, &block)
-        self.class.new(uri, &block).call
+        self.class.new(uri, dsl: @dsl, &block).call
       end
       private :url
 
+      # This allows calling DSL methods from inside a `url` block.
+      #
       # @api public
       def method_missing(method, *args, &block)
         if @dsl.respond_to?(method)
@@ -135,10 +160,12 @@ module Cask
           super
         end
       end
+      private :method_missing
 
       def respond_to_missing?(method, include_all)
         @dsl.respond_to?(method, include_all) || super
       end
+      private :respond_to_missing?
     end
 
     sig {
@@ -187,7 +214,7 @@ module Cask
       super(
         if block
           LazyObject.new do
-            uri2, options = *BlockDSL.new(uri, dsl:, &block).call
+            uri2, options = *BlockDSL.new(uri, dsl: T.must(dsl), &block).call
             options ||= {}
             DSL.new(uri2, **options)
           end

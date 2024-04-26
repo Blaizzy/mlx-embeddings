@@ -87,7 +87,7 @@ RSpec.describe Caveats do
         expect(caveats).to include("tmux")
       end
 
-      # @todo This should get deprecated and the service block `plist_name` method should get used instead.
+      # TODO: This should get deprecated and the service block `plist_name` method should get used instead.
       it "prints info when there are custom service files" do
         f = formula do
           url "foo-1.0"

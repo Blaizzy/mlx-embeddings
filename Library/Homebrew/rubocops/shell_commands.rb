@@ -40,9 +40,11 @@ module RuboCop
         until
         while
       ].freeze
+      private_constant :SHELL_BUILTINS
 
       # https://github.com/ruby/ruby/blob/v2_6_3/process.c#L2495
       SHELL_METACHARACTERS = %W[* ? { } [ ] < > ( ) ~ & | \\ $ ; ' ` " \n #].freeze
+      private_constant :SHELL_METACHARACTERS
 
       # This cop makes sure that shell command arguments are separated.
       class ShellCommands < Base
@@ -60,6 +62,8 @@ module RuboCop
           [:Utils, :popen_write],
           [:Utils, :safe_popen_write],
         ].freeze
+        private_constant :TARGET_METHODS
+
         RESTRICT_ON_SEND = TARGET_METHODS.map(&:second).uniq.freeze
 
         def on_send(node)

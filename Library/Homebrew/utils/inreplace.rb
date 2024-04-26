@@ -23,13 +23,21 @@ module Utils
     # defined by the formula, as only `HOMEBREW_PREFIX` is available
     # in the {DATAPatch embedded patch}.
     #
-    # @example `inreplace` supports regular expressions:
-    #   inreplace "somefile.cfg", /look[for]what?/, "replace by #{bin}/tool"
+    # ### Examples
     #
-    # @example `inreplace` supports blocks:
-    #   inreplace "Makefile" do |s|
-    #     s.gsub! "/usr/local", HOMEBREW_PREFIX.to_s
-    #   end
+    # `inreplace` supports regular expressions:
+    #
+    # ```ruby
+    # inreplace "somefile.cfg", /look[for]what?/, "replace by #{bin}/tool"
+    # ```
+    #
+    # `inreplace` supports blocks:
+    #
+    # ```ruby
+    # inreplace "Makefile" do |s|
+    #   s.gsub! "/usr/local", HOMEBREW_PREFIX.to_s
+    # end
+    # ```
     #
     # @see StringInreplaceExtension
     # @api public

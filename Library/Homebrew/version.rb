@@ -57,7 +57,6 @@ class Version
     sig { abstract.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other); end
 
-    # @!visibility private
     sig { returns(String) }
     def inspect
       "#<#{self.class.name} #{value.inspect}>"
@@ -83,7 +82,6 @@ class Version
       value.to_s
     end
 
-    # @!visibility private
     sig { returns(String) }
     def to_s = to_str
 
@@ -135,7 +133,6 @@ class Version
     sig { returns(T::Boolean) }
     def blank? = true
 
-    # @!visibility private
     sig { returns(String) }
     def inspect
       "#<#{self.class.name}>"
@@ -350,7 +347,7 @@ class Version
 
   sig { params(val: String).returns(Version) }
   def self.create(val)
-    odisabled "Version.create", "Version.new"
+    odisabled "`Version.create`", "`Version.new`"
     new(val)
   end
 
@@ -516,12 +513,16 @@ class Version
   private_constant :HEAD_VERSION_REGEX
 
   # Check if this is a HEAD version.
+  #
+  # @api public
   sig { returns(T::Boolean) }
   def head?
     version&.match?(HEAD_VERSION_REGEX) || false
   end
 
   # Return the commit for a HEAD version.
+  #
+  # @api public
   sig { returns(T.nilable(String)) }
   def commit
     version&.match(HEAD_VERSION_REGEX)&.[](:commit)
@@ -646,6 +647,8 @@ class Version
   end
   alias eql? ==
 
+  # The major version.
+  #
   # @api public
   sig { returns(T.nilable(Token)) }
   def major
@@ -654,6 +657,8 @@ class Version
     tokens.first
   end
 
+  # The minor version.
+  #
   # @api public
   sig { returns(T.nilable(Token)) }
   def minor
@@ -662,6 +667,8 @@ class Version
     tokens.second
   end
 
+  # The patch version.
+  #
   # @api public
   sig { returns(T.nilable(Token)) }
   def patch
@@ -670,6 +677,8 @@ class Version
     tokens.third
   end
 
+  # The major and minor version.
+  #
   # @api public
   sig { returns(T.self_type) }
   def major_minor
@@ -679,6 +688,8 @@ class Version
     major_minor.empty? ? NULL : self.class.new(major_minor.join("."))
   end
 
+  # The major, minor and patch version.
+  #
   # @api public
   sig { returns(T.self_type) }
   def major_minor_patch
@@ -693,6 +704,9 @@ class Version
     version.hash
   end
 
+  # Convert the version to a floating-point number.
+  #
+  # @api public
   sig { returns(Float) }
   def to_f
     return Float::NAN if null?
@@ -700,11 +714,15 @@ class Version
     version.to_f
   end
 
+  # Convert the version to an integer.
+  #
+  # @api public
   sig { returns(Integer) }
   def to_i
     version.to_i
   end
 
+  # @api public
   sig { returns(String) }
   def to_str
     raise NoMethodError, "undefined method `to_str' for #{self.class}:NULL" if null?
@@ -712,7 +730,7 @@ class Version
     T.must(version).to_str
   end
 
-  # @!visibility private
+  # @api public
   sig { returns(String) }
   def to_s = version.to_s
 
@@ -728,7 +746,6 @@ class Version
     super
   end
 
-  # @!visibility private
   sig { returns(String) }
   def inspect
     return "#<Version::NULL>" if null?
@@ -760,6 +777,7 @@ class Version
   end
 
   # Represents the absence of a version.
+  #
   # NOTE: Constructor needs to called with an arbitrary non-empty version which is then set to `nil`.
   NULL = Version.new("NULL").tap { |v| v.instance_variable_set(:@version, nil) }.freeze
 end

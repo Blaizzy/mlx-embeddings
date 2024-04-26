@@ -239,7 +239,7 @@ module Homebrew
 
     install_bundler!
 
-    # Combine the passed groups with the ones stored in settings
+    # Combine the passed groups with the ones stored in settings.
     groups |= (user_gem_groups & valid_gem_groups)
     groups.sort!
 

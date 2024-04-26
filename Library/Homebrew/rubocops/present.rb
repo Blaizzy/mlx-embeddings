@@ -4,24 +4,24 @@
 module RuboCop
   module Cop
     module Homebrew
-      # Checks for code that can be written with simpler conditionals
-      # using `Object#present?`.
+      # Checks for code that can be simplified using `Object#present?`.
       #
-      # @example
-      #   # Converts usages of `!nil? && !empty?` to `present?`
+      # ### Example
       #
-      #   # bad
-      #   !foo.nil? && !foo.empty?
+      # ```ruby
+      # # bad
+      # !foo.nil? && !foo.empty?
       #
-      #   # bad
-      #   foo != nil && !foo.empty?
+      # # bad
+      # foo != nil && !foo.empty?
       #
-      #   # good
-      #   foo.present?
+      # # good
+      # foo.present?
+      # ```
       class Present < Base
         extend AutoCorrector
 
-        MSG_EXISTS_AND_NOT_EMPTY = "Use `%<prefer>s` instead of `%<current>s`."
+        MSG = "Use `%<prefer>s` instead of `%<current>s`."
 
         def_node_matcher :exists_and_not_empty?, <<~PATTERN
           (and
@@ -41,7 +41,7 @@ module RuboCop
           exists_and_not_empty?(node) do |var1, var2|
             return if var1 != var2
 
-            message = format(MSG_EXISTS_AND_NOT_EMPTY, prefer: replacement(var1), current: node.source)
+            message = format(MSG, prefer: replacement(var1), current: node.source)
 
             add_offense(node, message:) do |corrector|
               autocorrect(corrector, node)
@@ -53,7 +53,7 @@ module RuboCop
           exists_and_not_empty?(node) do |var1, var2|
             return if var1 != var2
 
-            add_offense(node, message: MSG_EXISTS_AND_NOT_EMPTY) do |corrector|
+            add_offense(node, message: MSG) do |corrector|
               autocorrect(corrector, node)
             end
           end

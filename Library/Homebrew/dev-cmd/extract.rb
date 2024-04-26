@@ -98,7 +98,7 @@ module Homebrew
           end
           odie "Could not find #{name}! The formula or version may not have existed." if test_formula.nil?
         else
-          # Search in the root directory of <repo> as well as recursively in all of its subdirectories
+          # Search in the root directory of `repo` as well as recursively in all of its subdirectories.
           files = Dir[repo/"{,**/}"].filter_map do |dir|
             Pathname.glob("#{dir}/#{name}.rb").find(&:file?)
           end

@@ -98,7 +98,6 @@ module Tty
       end
     end
 
-    # @!visibility private
     sig { returns(String) }
     def to_s
       return "" unless color?

@@ -154,7 +154,6 @@ class Tap
   attr_reader :name
 
   # @api public
-  # @!visibility private
   sig { returns(String) }
   def to_s = name
 

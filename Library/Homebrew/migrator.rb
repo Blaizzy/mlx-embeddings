@@ -287,17 +287,18 @@ class Migrator
   def repin
     return unless pinned?
 
-    # old_pin_record is a relative symlink and when we try to to read it
+    # `old_pin_record` is a relative symlink and when we try to to read it
     # from <dir> we actually try to find file
     # <dir>/../<...>/../Cellar/name/version.
     # To repin formula we need to update the link thus that it points to
     # the right directory.
-    # NOTE: old_pin_record.realpath.sub(oldname, newname) is unacceptable
-    # here, because it resolves every symlink for old_pin_record and then
+    #
+    # NOTE: `old_pin_record.realpath.sub(oldname, newname)` is unacceptable
+    # here, because it resolves every symlink for `old_pin_record` and then
     # substitutes oldname with newname. It breaks things like
-    # Pathname#make_relative_symlink, where Pathname#relative_path_from
-    # is used to find relative path from source to destination parent and
-    # it assumes no symlinks.
+    # `Pathname#make_relative_symlink`, where `Pathname#relative_path_from`
+    # is used to find the relative path from source to destination parent
+    # and it assumes no symlinks.
     src_oldname = (old_pin_record.dirname/old_pin_link_record).expand_path
     new_pin_record.make_relative_symlink(src_oldname.sub(oldname, newname))
     old_pin_record.delete

@@ -96,7 +96,6 @@ class MacOSRequirement < Requirement
     [super, comparator, version].hash
   end
 
-  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: version#{@comparator}#{@version.to_s.inspect} #{tags.inspect}>"

@@ -60,7 +60,6 @@ class PATH
     @paths.join(File::PATH_SEPARATOR)
   end
 
-  # @!visibility private
   sig { returns(String) }
   def to_s = to_str
 
