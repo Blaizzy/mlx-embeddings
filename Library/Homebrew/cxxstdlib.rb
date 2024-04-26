@@ -22,6 +22,7 @@ class CxxStdlib
     type.to_s.gsub(/cxx$/, "c++")
   end
 
+  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{compiler} #{type}>"

@@ -330,6 +330,8 @@ module Cask
     # @api internal
     def to_s = token
 
+    # @!visibility private
+    sig { returns(String) }
     def inspect
       "#<Cask #{token}#{sourcefile_path&.to_s&.prepend(" ")}>"
     end

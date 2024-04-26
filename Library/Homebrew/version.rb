@@ -59,6 +59,7 @@ class Version
     sig { abstract.params(other: T.untyped).returns(T.nilable(Integer)) }
     def <=>(other); end
 
+    # @!visibility private
     sig { returns(String) }
     def inspect
       "#<#{self.class.name} #{value.inspect}>"
@@ -133,7 +134,8 @@ class Version
     sig { returns(T::Boolean) }
     def blank? = true
 
-    sig { override.returns(String) }
+    # @!visibility private
+    sig { returns(String) }
     def inspect
       "#<#{self.class.name}>"
     end
@@ -726,6 +728,7 @@ class Version
     super
   end
 
+  # @!visibility private
   sig { returns(String) }
   def inspect
     return "#<Version::NULL>" if null?

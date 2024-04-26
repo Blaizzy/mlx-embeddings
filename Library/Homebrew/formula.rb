@@ -1735,7 +1735,7 @@ class Formula
     name
   end
 
-  # @private
+  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<Formula #{name} (#{active_spec_sym}) #{path}>"

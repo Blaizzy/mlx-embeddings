@@ -96,6 +96,7 @@ class Dependency
     false
   end
 
+  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{name.inspect} #{tags.inspect}>"
@@ -279,6 +280,7 @@ class UsesFromMacOSDependency < Dependency
     self.class.new(formula.full_name.to_s, tags, bounds:)
   end
 
+  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{name.inspect} #{tags.inspect} #{bounds.inspect}>"

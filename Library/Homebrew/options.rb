@@ -32,6 +32,7 @@ class Option
     name.hash
   end
 
+  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{flag.inspect}>"
@@ -144,6 +145,7 @@ class Options
     @options.map(&:to_s).join(" ")
   end
 
+  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{to_a.inspect}>"

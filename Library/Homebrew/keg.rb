@@ -177,6 +177,7 @@ class Keg
 
   alias to_path to_s
 
+  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}:#{path}>"
