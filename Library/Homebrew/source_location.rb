@@ -18,6 +18,7 @@ module Homebrew
       @column = column
     end
 
+    # @!visibility private
     sig { returns(String) }
     def to_s
       "#{line}#{column&.to_s&.prepend(":")}"

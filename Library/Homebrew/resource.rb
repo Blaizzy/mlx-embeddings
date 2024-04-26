@@ -294,6 +294,7 @@ class ResourceStageContext
 
   # The {Resource} that is being staged.
   attr_reader :resource
+
   # The {Mktemp} in which {#resource} is staged.
   attr_reader :staging
 
@@ -305,6 +306,7 @@ class ResourceStageContext
     @staging = staging
   end
 
+  # @!visibility private
   sig { returns(String) }
   def to_s
     "<#{self.class}: resource=#{resource} staging=#{staging}>"

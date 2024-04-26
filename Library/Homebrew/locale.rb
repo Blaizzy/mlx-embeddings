@@ -108,6 +108,7 @@ class Locale
       locale_groups.find { |locales| locales.any? { |locale| include?(locale) } }
   end
 
+  # @!visibility private
   sig { returns(String) }
   def to_s
     [@language, @script, @region].compact.join("-")

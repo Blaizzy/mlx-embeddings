@@ -1731,11 +1731,12 @@ class Formula
     [name, *oldnames, *aliases].compact
   end
 
-  def to_s
-    name
-  end
+  # @api public
+  # @!visibility private
+  sig { returns(String) }
+  def to_s = name
 
-  # @private
+  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<Formula #{name} (#{active_spec_sym}) #{path}>"

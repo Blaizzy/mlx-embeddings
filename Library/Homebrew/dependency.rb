@@ -11,7 +11,11 @@ class Dependency
   include Dependable
   extend Cachable
 
-  attr_reader :name, :tap
+  sig { returns(String) }
+  attr_reader :name
+
+  sig { returns(T.nilable(Tap)) }
+  attr_reader :tap
 
   def initialize(name, tags = [])
     raise ArgumentError, "Dependency must have a name!" unless name
@@ -24,9 +28,9 @@ class Dependency
     @tap, = tap_with_name
   end
 
-  def to_s
-    name
-  end
+  # @!visibility private
+  sig { returns(String) }
+  def to_s = name
 
   def ==(other)
     instance_of?(other.class) && name == other.name && tags == other.tags
@@ -96,6 +100,7 @@ class Dependency
     false
   end
 
+  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{name.inspect} #{tags.inspect}>"
@@ -279,6 +284,7 @@ class UsesFromMacOSDependency < Dependency
     self.class.new(formula.full_name.to_s, tags, bounds:)
   end
 
+  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{name.inspect} #{tags.inspect} #{bounds.inspect}>"

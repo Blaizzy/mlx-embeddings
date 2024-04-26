@@ -403,6 +403,7 @@ class Tab
     tabfile.atomic_write(to_json)
   end
 
+  # @!visibility private
   sig { returns(String) }
   def to_s
     s = []

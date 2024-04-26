@@ -24,6 +24,7 @@ Style/Documentation:
   AllowedConstants:
     - Homebrew
   Include:
+    - cask/cask.rb
     - cask/dsl.rb
     - cask/dsl/version.rb
     - cask/url.rb

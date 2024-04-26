@@ -38,6 +38,7 @@ class Mktemp
     @quiet = true
   end
 
+  # @!visibility private
   sig { returns(String) }
   def to_s
     "[Mktemp: #{tmpdir} retain=#{@retain} quiet=#{@quiet}]"

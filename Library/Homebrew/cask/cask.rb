@@ -325,11 +325,13 @@ module Cask
       @ruby_source_checksum = { sha256: ruby_source_sha256 }
     end
 
-    # Alias for {#token}.
-    #
-    # @api internal
+    # @api public
+    # @!visibility private
+    sig { returns(String) }
     def to_s = token
 
+    # @!visibility private
+    sig { returns(String) }
     def inspect
       "#<Cask #{token}#{sourcefile_path&.to_s&.prepend(" ")}>"
     end

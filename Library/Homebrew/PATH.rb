@@ -61,7 +61,10 @@ class PATH
   def to_str
     @paths.join(File::PATH_SEPARATOR)
   end
-  alias to_s to_str
+
+  # @!visibility private
+  sig { returns(String) }
+  def to_s = to_str
 
   sig { params(other: T.untyped).returns(T::Boolean) }
   def ==(other)
