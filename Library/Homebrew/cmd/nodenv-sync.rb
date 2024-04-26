@@ -58,6 +58,8 @@ module Homebrew
         (0..minor_version).each do |minor|
           (0..patch_version).each do |patch|
             link_path = nodenv_versions/"#{major_version}.#{minor}.#{patch}"
+            # Don't clobber existing user installations.
+            next if link_path.exist? && !link_path.symlink?
 
             FileUtils.rm_f link_path
             FileUtils.ln_sf path, link_path
