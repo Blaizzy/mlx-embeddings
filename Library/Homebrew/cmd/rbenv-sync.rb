@@ -57,6 +57,8 @@ module Homebrew
 
         (0..patch_version).each do |patch|
           link_path = rbenv_versions/"#{major_version}.#{minor_version}.#{patch}"
+          # Don't clobber existing user installations.
+          next if link_path.exist? && !link_path.symlink?
 
           FileUtils.rm_f link_path
           FileUtils.ln_sf path, link_path
