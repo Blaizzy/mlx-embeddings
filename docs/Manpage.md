@@ -2554,6 +2554,18 @@ Run e.g. `brew ruby -- --version` to pass arbitrary arguments to `ruby`.
 
 : Execute the given text string as a script.
 
+### `rubydoc` \[`--only-public`\] \[`--open`\]
+
+Generate Homebrew's RubyDoc documentation.
+
+`--only-public`
+
+: Only generate public API documentation.
+
+`--open`
+
+: Open generated documentation in a browser.
+
 ### `sh` \[`--env=`\] \[`--cmd=`\] \[*`file`*\]
 
 Enter an interactive shell for Homebrew's build environment. Use
