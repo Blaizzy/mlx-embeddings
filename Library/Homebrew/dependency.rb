@@ -11,7 +11,11 @@ class Dependency
   include Dependable
   extend Cachable
 
-  attr_reader :name, :tap
+  sig { returns(String) }
+  attr_reader :name
+
+  sig { returns(T.nilable(Tap)) }
+  attr_reader :tap
 
   def initialize(name, tags = [])
     raise ArgumentError, "Dependency must have a name!" unless name
