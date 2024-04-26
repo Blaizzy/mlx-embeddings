@@ -85,6 +85,7 @@ remove
 rm
 rubocop
 ruby
+rubydoc
 search
 setup-ruby
 sh

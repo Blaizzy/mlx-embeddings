@@ -1627,6 +1627,14 @@ Load a library using \fBrequire\fP\&\.
 .TP
 \fB\-e\fP
 Execute the given text string as a script\.
+.SS "\fBrubydoc\fP \fR[\fB\-\-only\-public\fP] \fR[\fB\-\-open\fP]"
+Generate Homebrew\[u2019]s RubyDoc documentation\.
+.TP
+\fB\-\-only\-public\fP
+Only generate public API documentation\.
+.TP
+\fB\-\-open\fP
+Open generated documentation in a browser\.
 .SS "\fBsh\fP \fR[\fB\-\-env=\fP] \fR[\fB\-\-cmd=\fP] \fR[\fIfile\fP]"
 Enter an interactive shell for Homebrew\[u2019]s build environment\. Use years\-battle\-hardened build logic to help your \fB\&\./configure && make && make install\fP and even your \fBgem install\fP succeed\. Especially handy if you run Homebrew in an Xcode\-only configuration since it adds tools like \fBmake\fP to your \fBPATH\fP which build systems would not find otherwise\.
 .TP

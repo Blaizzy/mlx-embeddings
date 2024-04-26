@@ -2028,6 +2028,24 @@ _brew_ruby() {
   __brew_complete_files
 }
 
+_brew_rubydoc() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "${cur}" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --only-public
+      --open
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+    *) ;;
+  esac
+}
+
 _brew_search() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "${cur}" in
@@ -2759,6 +2777,7 @@ _brew() {
     remove) _brew_remove ;;
     rm) _brew_rm ;;
     ruby) _brew_ruby ;;
+    rubydoc) _brew_rubydoc ;;
     search) _brew_search ;;
     sh) _brew_sh ;;
     style) _brew_style ;;

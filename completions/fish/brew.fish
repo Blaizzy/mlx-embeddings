@@ -1363,6 +1363,15 @@ __fish_brew_complete_arg 'ruby' -l e -d 'Execute the given text string as a scri
 __fish_brew_complete_arg 'ruby' -l r -d 'Load a library using `require`'
 
 
+__fish_brew_complete_cmd 'rubydoc' 'Generate Homebrew\'s RubyDoc documentation'
+__fish_brew_complete_arg 'rubydoc' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'rubydoc' -l help -d 'Show this message'
+__fish_brew_complete_arg 'rubydoc' -l only-public -d 'Only generate public API documentation'
+__fish_brew_complete_arg 'rubydoc' -l open -d 'Open generated documentation in a browser'
+__fish_brew_complete_arg 'rubydoc' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'rubydoc' -l verbose -d 'Make some output more verbose'
+
+
 __fish_brew_complete_cmd 'search' 'Perform a substring search of cask tokens and formula names for text'
 __fish_brew_complete_arg 'search' -l archlinux -d 'Search for text in the given database'
 __fish_brew_complete_arg 'search' -l cask -d 'Search for casks'

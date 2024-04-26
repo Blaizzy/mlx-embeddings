@@ -205,6 +205,7 @@ __brew_internal_commands() {
     'release:Create a new draft Homebrew/brew release with the appropriate version number and release notes'
     'rubocop:Installs, configures and runs Homebrew'\''s `rubocop`'
     'ruby:Run a Ruby instance with Homebrew'\''s libraries loaded'
+    'rubydoc:Generate Homebrew'\''s RubyDoc documentation'
     'search:Perform a substring search of cask tokens and formula names for text'
     'setup-ruby:Installs and configures Homebrew'\''s Ruby'
     'sh:Enter an interactive shell for Homebrew'\''s build environment'
@@ -1682,6 +1683,17 @@ _brew_ruby() {
     '-r[Load a library using `require`]' \
     - file \
     '*::file:__brew_formulae_or_ruby_files'
+}
+
+# brew rubydoc
+_brew_rubydoc() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--help[Show this message]' \
+    '--only-public[Only generate public API documentation]' \
+    '--open[Open generated documentation in a browser]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]'
 }
 
 # brew search
