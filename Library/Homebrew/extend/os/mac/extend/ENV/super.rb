@@ -10,7 +10,6 @@ module Superenv
 
     undef bin
 
-    # @private
     def bin
       return unless DevelopmentTools.installed?
 
@@ -25,12 +24,12 @@ module Superenv
         homebrew_extra_cmake_frameworks_paths,
         determine_cccfg
 
-  # @private
+  sig { returns(T::Array[Pathname]) }
   def homebrew_extra_pkg_config_paths
     [Pathname("/usr/lib/pkgconfig"), Pathname("#{HOMEBREW_LIBRARY}/Homebrew/os/mac/pkgconfig/#{MacOS.version}")]
   end
+  private :homebrew_extra_pkg_config_paths
 
-  # @private
   sig { returns(T::Boolean) }
   def libxml2_include_needed?
     return false if deps.any? { |d| d.name == "libxml2" }
@@ -38,6 +37,7 @@ module Superenv
 
     true
   end
+  private :libxml2_include_needed?
 
   def homebrew_extra_isystem_paths
     paths = []

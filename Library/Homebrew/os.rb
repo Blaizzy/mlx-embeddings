@@ -4,8 +4,6 @@
 require "version"
 
 # Helper functions for querying operating system information.
-#
-# @api private
 module OS
   # Check whether the operating system is macOS.
   #

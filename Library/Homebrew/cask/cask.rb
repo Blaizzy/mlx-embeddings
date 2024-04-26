@@ -12,8 +12,6 @@ require "extend/api_hashable"
 
 module Cask
   # An instance of a cask.
-  #
-  # @api private
   class Cask
     extend Forwardable
     extend Attrable
@@ -35,7 +33,6 @@ module Cask
 
     attr_predicate :loaded_from_api?
 
-    # @api private
     def self.all(eval_all: false)
       if !eval_all && !Homebrew::EnvConfig.eval_all?
         raise ArgumentError, "Cask::Cask#all cannot be used without `--eval-all` or HOMEBREW_EVAL_ALL"
@@ -383,7 +380,6 @@ module Cask
       }
     end
 
-    # @private
     def to_internal_api_hash
       api_hash = {
         "token"              => token,
@@ -426,7 +422,6 @@ module Cask
     HASH_KEYS_TO_SKIP = %w[outdated installed versions].freeze
     private_constant :HASH_KEYS_TO_SKIP
 
-    # @private
     def to_hash_with_variations(hash_method: :to_h)
       case hash_method
       when :to_h

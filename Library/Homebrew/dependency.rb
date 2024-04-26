@@ -4,8 +4,6 @@
 require "dependable"
 
 # A dependency on another Homebrew formula.
-#
-# @api private
 class Dependency
   extend Forwardable
   include Dependable
@@ -27,10 +25,6 @@ class Dependency
 
     @tap, = tap_with_name
   end
-
-  # @!visibility private
-  sig { returns(String) }
-  def to_s = name
 
   def ==(other)
     instance_of?(other.class) && name == other.name && tags == other.tags
@@ -99,6 +93,10 @@ class Dependency
   def uses_from_macos?
     false
   end
+
+  # @!visibility private
+  sig { returns(String) }
+  def to_s = name
 
   # @!visibility private
   sig { returns(String) }

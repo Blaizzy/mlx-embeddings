@@ -25,8 +25,6 @@ require "service"
 require "attestation"
 
 # Installer for a formula.
-#
-# @api private
 class FormulaInstaller
   include FormulaCellarChecks
   extend Attrable

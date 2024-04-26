@@ -4,14 +4,12 @@
 require "hardware"
 require "extend/ENV/shared"
 
-# @api private
 module Stdenv
   include SharedEnvExtension
 
-  # @private
   SAFE_CFLAGS_FLAGS = "-w -pipe"
+  private_constant :SAFE_CFLAGS_FLAGS
 
-  # @private
   sig {
     params(
       formula:         T.nilable(Formula),
@@ -71,11 +69,6 @@ module Stdenv
     append_path "PATH", gcc_formula.opt_bin.to_s
   end
   alias generic_setup_build_environment setup_build_environment
-
-  sig { returns(T::Array[Pathname]) }
-  def homebrew_extra_pkg_config_paths
-    []
-  end
 
   sig { returns(T.nilable(PATH)) }
   def determine_pkg_config_libdir
@@ -156,7 +149,17 @@ module Stdenv
     append "CXX", "-stdlib=libc++" if compiler == :clang
   end
 
-  # @private
+  sig { returns(Integer) }
+  def make_jobs
+    Homebrew::EnvConfig.make_jobs.to_i
+  end
+
+  # This method does nothing in {Stdenv} since there is no argument refurbishment.
+  sig { void }
+  def refurbish_args; end
+
+  private
+
   sig { params(before: Regexp, after: String).void }
   def replace_in_cflags(before, after)
     CC_FLAG_VARS.each do |key|
@@ -172,7 +175,6 @@ module Stdenv
 
   # Sets architecture-specific flags for every environment variable
   # given in the list `flags`.
-  # @private
   sig { params(flags: T::Array[String], map: T::Hash[Symbol, String]).void }
   def set_cpu_flags(flags, map = Hardware::CPU.optimization_flags)
     cflags =~ /(-Xarch_#{Hardware::CPU.arch_32_bit} )-march=/
@@ -185,21 +187,15 @@ module Stdenv
     append flags, map.fetch(effective_arch)
   end
 
-  # @private
+  sig { returns(T::Array[Pathname]) }
+  def homebrew_extra_pkg_config_paths
+    []
+  end
+
   sig { params(map: T::Hash[Symbol, String]).void }
   def set_cpu_cflags(map = Hardware::CPU.optimization_flags)
     set_cpu_flags(CC_FLAG_VARS, map)
   end
-
-  sig { returns(Integer) }
-  def make_jobs
-    Homebrew::EnvConfig.make_jobs.to_i
-  end
-
-  # This method does nothing in stdenv since there's no arg refurbishment
-  # @private
-  sig { void }
-  def refurbish_args; end
 end
 
 require "extend/os/extend/ENV/std"

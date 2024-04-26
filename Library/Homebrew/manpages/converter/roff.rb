@@ -7,8 +7,6 @@ module Homebrew
   module Manpages
     module Converter
       # Converts our Kramdown-like input to roff.
-      #
-      # @api private
       class Roff < ::Kramdown::Converter::Man
         # Override that adds Homebrew metadata for the top level header
         # and doesn't escape the text inside subheaders.
