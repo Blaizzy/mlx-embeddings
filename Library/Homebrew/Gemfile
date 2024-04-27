@@ -16,9 +16,9 @@ end
 # installed gems (should all be require: false)
 # ALL gems that are not vendored should be in a group
 group :doc, optional: true do
+  gem "redcarpet", require: false
   gem "yard", require: false
   gem "yard-sorbet", require: false
-  gem "redcarpet", require: false
 end
 group :ast, optional: true do
   gem "rubocop-ast", require: false

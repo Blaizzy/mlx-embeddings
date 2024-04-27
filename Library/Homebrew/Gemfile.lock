@@ -53,6 +53,7 @@ GEM
     rbi (0.1.12)
       prism (>= 0.18.0, < 0.28)
       sorbet-runtime (>= 0.5.9204)
+    redcarpet (3.6.0)
     regexp_parser (2.9.0)
     rexml (3.2.6)
     rspec (3.13.0)
@@ -175,6 +176,7 @@ DEPENDENCIES
   patchelf
   plist
   pry
+  redcarpet
   rexml
   rspec
   rspec-github
