@@ -32,9 +32,6 @@
       "post_install_defined": false,
       "ruby_source_path": "Formula/f/fennel.rb",
       "ruby_source_sha256": "5856e655fd1cea11496d67bc27fb14fee5cfbdea63c697c3773c7f247581197d",
-      "dependencies": [
-        "lua"
-      ],
       "version": "1.4.0",
       "bottle": {
         "files": {
@@ -43,6 +40,9 @@
             "sha256": "f46028597883cbc38864c61bd3fa402da9cb90ce97415d51a7b5279bc17f7bd0"
           }
         }
+      },
+      "dependencies": {
+        "lua": null
       }
     },
     "ponyc": {
@@ -59,25 +59,6 @@
       "post_install_defined": false,
       "ruby_source_path": "Formula/p/ponyc.rb",
       "ruby_source_sha256": "81d51c25d18710191beb62f9f380bae3d878aad815a65ec1ee2a3b132c1fadb3",
-      "build_dependencies": [
-        "cmake",
-        "python@3.12"
-      ],
-      "uses_from_macos": [
-        {
-          "llvm": [
-            "build",
-            "test"
-          ]
-        },
-        "zlib"
-      ],
-      "uses_from_macos_bounds": [
-        {
-        },
-        {
-        }
-      ],
       "version": "0.58.1",
       "bottle": {
         "files": {
@@ -109,6 +90,28 @@
             "cellar": ":any_skip_relocation",
             "sha256": "ab49318d75eed3ee932c8e5add22f252ec0c852aad94945022877f926e93899f"
           }
+        }
+      },
+      "dependencies": {
+        "cmake": {
+          "tags": [
+            "build"
+          ]
+        },
+        "python@3.12": {
+          "tags": [
+            "build"
+          ]
+        },
+        "llvm": {
+          "tags": [
+            "build",
+            "test"
+          ],
+          "uses_from_macos": null
+        },
+        "zlib": {
+          "uses_from_macos": null
         }
       }
     }

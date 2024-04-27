@@ -216,7 +216,7 @@ module Formulary
         T.bind(self, SoftwareSpec)
 
         deps&.each do |name, info|
-          tags = case info["tags"]
+          tags = case info&.dig("tags")
           in Array => tag_list
             tag_list.map(&:to_sym)
           in String => tag
@@ -225,7 +225,7 @@ module Formulary
             nil
           end
 
-          if info.key?("uses_from_macos")
+          if info&.key?("uses_from_macos")
             bounds = info["uses_from_macos"] || {}
             bounds.deep_transform_keys!(&:to_sym)
             bounds.deep_transform_values!(&:to_sym)
