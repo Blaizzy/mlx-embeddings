@@ -1,8 +1,10 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Utils
   module Backtrace
+    @print_backtrace_message = T.let(false, T::Boolean)
+
     # Cleans `sorbet-runtime` gem paths from the backtrace unless...
     # 1. `verbose` is set
     # 2. first backtrace line starts with `sorbet-runtime`
@@ -22,7 +24,7 @@ module Utils
 
     sig { returns(String) }
     def self.sorbet_runtime_path
-      @sorbet_runtime_path ||= "#{Gem.paths.home}/gems/sorbet-runtime"
+      @sorbet_runtime_path ||= T.let("#{Gem.paths.home}/gems/sorbet-runtime", T.nilable(String))
     end
 
     sig { void }
