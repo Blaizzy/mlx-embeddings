@@ -1038,7 +1038,7 @@ module Formulary
     force_bottle: T.unsafe(nil),
     flags: T.unsafe(nil)
   )
-    tab = Tab.for_keg(keg)
+    tab = keg.tab
     tap = tab.tap
     spec ||= tab.spec
 

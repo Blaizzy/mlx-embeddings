@@ -34,7 +34,7 @@ RSpec.describe FormulaInstaller do
     expect(formula).to be_latest_version_installed
 
     begin
-      expect(Tab.for_keg(keg)).to be_poured_from_bottle
+      expect(keg.tab).to be_poured_from_bottle
 
       yield formula
     ensure

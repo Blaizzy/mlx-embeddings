@@ -40,11 +40,11 @@ module Homebrew
       private
 
       def installed_on_request?(formula)
-        Tab.for_keg(formula.any_installed_keg).installed_on_request
+        formula.any_installed_keg.tab.installed_on_request
       end
 
       def installed_as_dependency?(formula)
-        Tab.for_keg(formula.any_installed_keg).installed_as_dependency
+        formula.any_installed_keg.installed_as_dependency
       end
     end
   end

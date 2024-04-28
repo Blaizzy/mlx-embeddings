@@ -293,9 +293,9 @@ module Homebrew
         end
 
         kegs = formula.installed_kegs
-        heads, versioned = kegs.partition { |k| k.version.head? }
+        heads, versioned = kegs.partition { |keg| keg.version.head? }
         kegs = [
-          *heads.sort_by { |k| -Tab.for_keg(k).time.to_i },
+          *heads.sort_by { |keg| -keg.tab.time.to_i },
           *versioned.sort_by(&:scheme_and_version),
         ]
         if kegs.empty?
@@ -304,7 +304,7 @@ module Homebrew
           puts "Installed"
           kegs.each do |keg|
             puts "#{keg} (#{keg.abv})#{" *" if keg.linked?}"
-            tab = Tab.for_keg(keg).to_s
+            tab = keg.tab.to_s
             puts "  #{tab}" unless tab.empty?
           end
         end

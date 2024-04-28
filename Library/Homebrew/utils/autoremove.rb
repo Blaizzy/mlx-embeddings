@@ -40,7 +40,7 @@ module Utils
           dependents += formula.runtime_formula_dependencies
 
           # Ignore build dependencies when the formula is a bottle
-          next if Tab.for_keg(formula.any_installed_keg).poured_from_bottle
+          next if formula.any_installed_keg&.tab&.poured_from_bottle
 
           formula.deps.select(&:build?).each do |dep|
             dependents << dep.to_formula
@@ -57,7 +57,7 @@ module Utils
       sig { params(formulae: T::Array[Formula]).returns(T::Array[Formula]) }
       def unused_formulae_with_no_formula_dependents(formulae)
         unused_formulae = formulae_with_no_formula_dependents(formulae).reject do |f|
-          Tab.for_keg(f.any_installed_keg).installed_on_request
+          f.any_installed_keg&.tab&.installed_on_request
         end
 
         unless unused_formulae.empty?

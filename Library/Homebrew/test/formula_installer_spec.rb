@@ -30,7 +30,7 @@ RSpec.describe FormulaInstaller do
 
     begin
       Tab.clear_cache
-      expect(Tab.for_keg(keg)).not_to be_poured_from_bottle
+      expect(keg.tab).not_to be_poured_from_bottle
 
       yield formula if block_given?
     ensure

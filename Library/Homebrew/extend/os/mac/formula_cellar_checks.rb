@@ -80,7 +80,7 @@ module FormulaCellarChecks
           #{checker.display_test_output}
       EOS
 
-      tab = Tab.for_keg(keg)
+      tab = keg.tab
       if tab.poured_from_bottle
         output += <<~EOS
           Rebuild this from source with:

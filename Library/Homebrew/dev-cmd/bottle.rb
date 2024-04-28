@@ -491,7 +491,7 @@ module Homebrew
             Tab.clear_cache
             Dependency.clear_cache
             Requirement.clear_cache
-            tab = Tab.for_keg(keg)
+            tab = keg.tab
             original_tab = tab.dup
             tab.poured_from_bottle = false
             tab.time = nil

@@ -143,7 +143,7 @@ class LinkageChecker
         end
 
         begin
-          owner = Keg.for Pathname.new(dylib)
+          owner = Keg.for(Pathname(dylib))
         rescue NotAKegError
           @system_dylibs << dylib
         rescue Errno::ENOENT
@@ -159,7 +159,7 @@ class LinkageChecker
             @broken_dylibs << dylib
           end
         else
-          tap = Tab.for_keg(owner).tap
+          tap = owner.tab.tap
           f = if tap.nil? || tap.core_tap?
             owner.name
           else
