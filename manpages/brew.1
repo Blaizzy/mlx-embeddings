@@ -727,6 +727,16 @@ Print export statements\. When run in a shell, this installation of Homebrew wil
 The variables \fBHOMEBREW_PREFIX\fP, \fBHOMEBREW_CELLAR\fP and \fBHOMEBREW_REPOSITORY\fP are also exported to avoid querying them multiple times\. To help guarantee idempotence, this command produces no output when Homebrew\[u2019]s \fBbin\fP and \fBsbin\fP directories are first and second respectively in your \fBPATH\fP\&\. Consider adding evaluation of this command\[u2019]s output to your dotfiles (e\.g\. \fB~/\.bash_profile\fP or \fB~/\.zprofile\fP on macOS and \fB~/\.bashrc\fP or \fB~/\.zshrc\fP on Linux) with: \fBeval "$(brew shellenv)"\fP
 .P
 The shell can be specified explicitly with a supported shell name parameter\. Unknown shells will output POSIX exports\.
+.SS "\fBtab\fP \fR[\fB\-\-installed\-on\-request\fP] \fR[\fB\-\-no\-installed\-on\-request\fP] \fIformula\fP \fR[\.\.\.]"
+Edit tab information for installed formulae\.
+.P
+This can be useful when you want to control whether an installed formula should be removed by \fBbrew autoremove\fP\&\. To prevent removal, mark the formula as installed on request; to allow removal, mark the formula as not installed on request\.
+.TP
+\fB\-\-installed\-on\-request\fP
+Mark \fIformula\fP as installed on request\.
+.TP
+\fB\-\-no\-installed\-on\-request\fP
+Mark \fIformula\fP as not installed on request\.
 .SS "\fBtap\fP \fR[\fIoptions\fP] \fR[\fIuser\fP\fB/\fP\fIrepo\fP] \fR[\fIURL\fP]"
 Tap a formula repository\. If no arguments are provided, list all installed taps\.
 .P

@@ -1413,6 +1413,16 @@ __fish_brew_complete_arg 'style; and not __fish_seen_argument -l cask -l casks' 
 __fish_brew_complete_arg 'style; and not __fish_seen_argument -l formula -l formulae' -a '(__fish_brew_suggest_casks_all)'
 
 
+__fish_brew_complete_cmd 'tab' 'Edit tab information for installed formulae'
+__fish_brew_complete_arg 'tab' -l debug -d 'Display any debugging information'
+__fish_brew_complete_arg 'tab' -l help -d 'Show this message'
+__fish_brew_complete_arg 'tab' -l installed-on-request -d 'Mark formula as installed on request'
+__fish_brew_complete_arg 'tab' -l no-installed-on-request -d 'Mark formula as not installed on request'
+__fish_brew_complete_arg 'tab' -l quiet -d 'Make some output more quiet'
+__fish_brew_complete_arg 'tab' -l verbose -d 'Make some output more verbose'
+__fish_brew_complete_arg 'tab' -a '(__fish_brew_suggest_formulae_all)'
+
+
 __fish_brew_complete_cmd 'tap' 'Tap a formula repository'
 __fish_brew_complete_arg 'tap' -l custom-remote -d 'Install or change a tap with a custom remote. Useful for mirrors'
 __fish_brew_complete_arg 'tap' -l debug -d 'Display any debugging information'

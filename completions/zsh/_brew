@@ -210,6 +210,7 @@ __brew_internal_commands() {
     'sh:Enter an interactive shell for Homebrew'\''s build environment'
     'shellenv:Print export statements'
     'style:Check formulae or files for conformance to Homebrew style guidelines'
+    'tab:Edit tab information for installed formulae'
     'tap:Tap a formula repository'
     'tap-info:Show detailed information about one or more taps'
     'tap-new:Generate the template files for a new tap'
@@ -1745,6 +1746,19 @@ _brew_style() {
     - cask \
     '(--formula)--cask[Treat all named arguments as casks]' \
     '*::cask:__brew_casks'
+}
+
+# brew tab
+_brew_tab() {
+  _arguments \
+    '--debug[Display any debugging information]' \
+    '--help[Show this message]' \
+    '(--no-installed-on-request)--installed-on-request[Mark formula as installed on request]' \
+    '(--installed-on-request)--no-installed-on-request[Mark formula as not installed on request]' \
+    '--quiet[Make some output more quiet]' \
+    '--verbose[Make some output more verbose]' \
+    - formula \
+    '*::formula:__brew_formulae'
 }
 
 # brew tap
