@@ -438,7 +438,7 @@ class Cmd
   end
 
   def oso_prefix?
-    config.include?("o")
+    config.include?("o") && !configure?
   end
 
   def calls_ld?
