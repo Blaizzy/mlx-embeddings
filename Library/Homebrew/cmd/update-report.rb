@@ -162,7 +162,7 @@ module Homebrew
               next unless formula.any_version_installed?
 
               keg = formula.installed_kegs.last
-              tab = Tab.for_keg(keg)
+              tab = keg.tab
               # force a `brew upgrade` from the linuxbrew-core version to the homebrew-core version (even if lower)
               tab.source["versions"]["version_scheme"] = -1
               tab.write
@@ -631,7 +631,7 @@ class Reporter
 
       next unless (dir = HOMEBREW_CELLAR/name).exist? # skip if formula is not installed.
 
-      tabs = dir.subdirs.map { |d| Tab.for_keg(Keg.new(d)) }
+      tabs = dir.subdirs.map { |d| Keg.new(d).tab }
       next if tabs.first.tap != tap # skip if installed formula is not from this tap.
 
       new_tap = Tap.fetch(new_tap_name)

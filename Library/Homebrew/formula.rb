@@ -657,7 +657,7 @@ class Formula
     end
 
     head_versions.max_by do |pn_pkgversion|
-      [Tab.for_keg(prefix(pn_pkgversion)).source_modified_time, pn_pkgversion.revision]
+      [Keg.new(prefix(pn_pkgversion)).tab.source_modified_time, pn_pkgversion.revision]
     end
   end
 
@@ -751,6 +751,7 @@ class Formula
   end
 
   # All currently installed kegs.
+  sig { returns(T::Array[Keg]) }
   def installed_kegs
     installed_prefixes.map { |dir| Keg.new(dir) }
   end
@@ -1408,7 +1409,7 @@ class Formula
     rescue NotAKegError, Errno::ENOENT
       # file doesn't belong to any keg.
     else
-      tab_tap = Tab.for_keg(keg).tap
+      tab_tap = keg.tab.tap
       # this keg doesn't below to any core/tap formula, most likely coming from a DIY install.
       return false if tab_tap.nil?
 
@@ -1850,12 +1851,15 @@ class Formula
   # universal binaries in a {Formula}'s {Keg}.
   sig { params(targets: T.nilable(T.any(Pathname, String))).void }
   def deuniversalize_machos(*targets)
-    targets = nil if targets.blank?
-    targets ||= any_installed_keg.mach_o_files.select do |file|
-      file.arch == :universal && file.archs.include?(Hardware::CPU.arch)
+    if targets.none?
+      targets = any_installed_keg&.mach_o_files&.select do |file|
+        file.arch == :universal && file.archs.include?(Hardware::CPU.arch)
+      end
     end
 
-    targets.each { |t| extract_macho_slice_from(Pathname.new(t), Hardware::CPU.arch) }
+    targets&.each do |target|
+      extract_macho_slice_from(Pathname(target), Hardware::CPU.arch)
+    end
   end
 
   sig { params(file: Pathname, arch: T.nilable(Symbol)).void }
@@ -2147,6 +2151,7 @@ class Formula
 
   # Returns a Keg for the opt_prefix or installed_prefix if they exist.
   # If not, return `nil`.
+  sig { returns(T.nilable(Keg)) }
   def any_installed_keg
     Formula.cache[:any_installed_keg] ||= {}
     Formula.cache[:any_installed_keg][full_name] ||= if (installed_prefix = any_installed_prefix)
@@ -2328,7 +2333,7 @@ class Formula
     hsh.merge!(dependencies_hash)
 
     hsh["installed"] = installed_kegs.sort_by(&:scheme_and_version).map do |keg|
-      tab = Tab.for_keg keg
+      tab = keg.tab
       {
         "version"                 => keg.version.to_s,
         "used_options"            => tab.used_options.as_flags,
@@ -2882,12 +2887,13 @@ class Formula
     eligible_for_cleanup = []
     if latest_version_installed?
       eligible_kegs = if head? && (head_prefix = latest_head_prefix)
-        head, stable = installed_kegs.partition { |k| k.version.head? }
-        # Remove newest head and stable kegs
-        head - [Keg.new(head_prefix)] + stable.sort_by(&:scheme_and_version).slice(0...-1)
+        head, stable = installed_kegs.partition { |keg| keg.version.head? }
+
+        # Remove newest head and stable kegs.
+        head - [Keg.new(head_prefix)] + T.must(stable.sort_by(&:scheme_and_version).slice(0...-1))
       else
         installed_kegs.select do |keg|
-          tab = Tab.for_keg(keg)
+          tab = keg.tab
           if version_scheme > tab.version_scheme
             true
           elsif version_scheme == tab.version_scheme

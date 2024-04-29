@@ -703,7 +703,7 @@ module Homebrew
 
       require "uninstall"
 
-      kegs_by_rack = removable_formulae.map(&:any_installed_keg).group_by(&:rack)
+      kegs_by_rack = removable_formulae.filter_map(&:any_installed_keg).group_by(&:rack)
       Uninstall.uninstall_kegs(kegs_by_rack)
 
       # The installed formula cache will be invalid after uninstalling.

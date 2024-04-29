@@ -371,11 +371,11 @@ module Homebrew
         # Return keg if it is the only installed keg
         return kegs if kegs.length == 1
 
-        stable_kegs = kegs.reject { |k| k.version.head? }
+        stable_kegs = kegs.reject { |keg| keg.version.head? }
 
         if stable_kegs.blank?
           return kegs.max_by do |keg|
-            [Tab.for_keg(keg).source_modified_time, keg.version.revision]
+            [keg.tab.source_modified_time, keg.version.revision]
           end
         end
 

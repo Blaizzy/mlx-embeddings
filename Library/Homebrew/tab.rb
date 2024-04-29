@@ -128,7 +128,11 @@ class Tab
     new(attributes)
   end
 
+  # Get the {Tab} for the given {Keg},
+  # or a fake one if the formula is not installed.
+  #
   # @api internal
+  sig { params(keg: T.any(Keg, Pathname)).returns(T.attached_class) }
   def self.for_keg(keg)
     path = keg/FILENAME
 

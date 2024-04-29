@@ -128,7 +128,7 @@ class Migrator
     @old_cellar = HOMEBREW_CELLAR/oldname
     raise MigratorNoOldpathError, oldname unless old_cellar.exist?
 
-    @old_tabs = old_cellar.subdirs.map { |d| Tab.for_keg(Keg.new(d)) }
+    @old_tabs = old_cellar.subdirs.map { |d| Keg.new(d).tab }
     @old_tap = old_tabs.first.tap
 
     raise MigratorDifferentTapsError.new(formula, oldname, old_tap) if !force && !from_same_tap_user?
@@ -373,7 +373,7 @@ class Migrator
   # After migration every `INSTALL_RECEIPT.json` has the wrong path to the formula
   # so we must update `INSTALL_RECEIPT`s.
   def update_tabs
-    new_tabs = new_cellar.subdirs.map { |d| Tab.for_keg(Keg.new(d)) }
+    new_tabs = new_cellar.subdirs.map { |d| Keg.new(d).tab }
     new_tabs.each do |tab|
       tab.source["path"] = formula.path.to_s if tab.source["path"]
       tab.write

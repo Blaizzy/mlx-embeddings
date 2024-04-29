@@ -211,7 +211,7 @@ module Homebrew
         return false unless formula.opt_prefix.directory?
 
         keg = Keg.new(formula.opt_prefix.resolved_path)
-        tab = Tab.for_keg(keg)
+        tab = keg.tab
         unless tab.installed_on_request
           tab.installed_on_request = true
           tab.write

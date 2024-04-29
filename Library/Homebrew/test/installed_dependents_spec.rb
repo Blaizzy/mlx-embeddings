@@ -51,7 +51,7 @@ RSpec.describe InstalledDependents do
     end
 
     def alter_tab(keg)
-      tab = Tab.for_keg(keg)
+      tab = keg.tab
       yield tab
       tab.write
     end

@@ -30,7 +30,7 @@ module Utils
       def built_as?(formula)
         return false unless formula.latest_version_installed?
 
-        tab = Tab.for_keg(formula.latest_installed_prefix)
+        tab = Keg.new(formula.latest_installed_prefix).tab
         tab.built_as_bottle
       end
 
@@ -117,7 +117,7 @@ module Utils
           tab_json = bottle_hash[formula.full_name]["bottle"]["tags"][tag]["tab"].to_json
           Tab.from_file_content(tab_json, tabfile)
         else
-          tab = Tab.for_keg(keg)
+          tab = keg.tab
 
           tab.runtime_dependencies = begin
             f_runtime_deps = formula.runtime_dependencies(read_from_tab: false)

@@ -23,7 +23,7 @@ module Homebrew
       next unless recursive_runtime_dependencies.map(&:name).include? "gcc"
 
       keg = formula.installed_kegs.last
-      tab = Tab.for_keg(keg)
+      tab = keg.tab
       # Force reinstallation upon `brew upgrade` to fix the bottle RPATH.
       tab.source["versions"]["version_scheme"] = -1
       tab.write

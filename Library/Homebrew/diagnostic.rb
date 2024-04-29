@@ -832,7 +832,7 @@ module Homebrew
         kegs = Keg.all
 
         deleted_formulae = kegs.filter_map do |keg|
-          tap = Tab.for_keg(keg).tap
+          tap = keg.tab.tap
           tap_keg_name = tap ? "#{tap}/#{keg.name}" : keg.name
 
           loadable = [

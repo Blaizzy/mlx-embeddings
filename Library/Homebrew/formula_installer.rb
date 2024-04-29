@@ -471,7 +471,7 @@ on_request: installed_on_request?, options:)
       Pathname(brew_prefix/"#{formula.name}.rb").atomic_write(s)
 
       keg = Keg.new(formula.prefix)
-      tab = Tab.for_keg(keg)
+      tab = keg.tab
       tab.installed_as_dependency = installed_as_dependency?
       tab.installed_on_request = installed_on_request?
       tab.write
@@ -707,7 +707,7 @@ on_request: installed_on_request?, options:)
 
     if df.linked_keg.directory?
       linked_keg = Keg.new(df.linked_keg.resolved_path)
-      tab = Tab.for_keg(linked_keg)
+      tab = linked_keg.tab
       keg_had_linked_keg = true
       keg_was_linked = linked_keg.linked?
       linked_keg.unlink
@@ -715,7 +715,7 @@ on_request: installed_on_request?, options:)
 
     if df.latest_version_installed?
       installed_keg = Keg.new(df.prefix)
-      tab ||= Tab.for_keg(installed_keg)
+      tab ||= installed_keg.tab
       tmp_keg = Pathname.new("#{installed_keg}.tmp")
       installed_keg.rename(tmp_keg)
     end
@@ -822,7 +822,7 @@ on_request: installed_on_request?, options:)
     end
 
     # Update tab with actual runtime dependencies
-    tab = Tab.for_keg(keg)
+    tab = keg.tab
     Tab.clear_cache
     f_runtime_deps = formula.runtime_dependencies(read_from_tab: false)
     tab.runtime_dependencies = Tab.runtime_deps_hash(formula, f_runtime_deps)
