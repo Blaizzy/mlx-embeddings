@@ -278,9 +278,30 @@ auto-update() {
   then
     export HOMEBREW_AUTO_UPDATING="1"
 
+    # Look for commands that may be referring to a formula/cask in a specific
+    # 3rd-party tap so they can be auto-updated more often (as they do not get
+    # their data from the API).
+    AUTO_UPDATE_TAP_COMMANDS=(
+      install
+      outdated
+      upgrade
+    )
+    if check-array-membership "${HOMEBREW_COMMAND}" "${AUTO_UPDATE_TAP_COMMANDS[@]}"
+    then
+      for arg in "$@"
+      do
+        if [[ "${arg}" == */*/* ]] && [[ "${arg}" != Homebrew/* ]] && [[ "${arg}" != homebrew/* ]]
+        then
+
+          HOMEBREW_AUTO_UPDATE_TAP="1"
+          break
+        fi
+      done
+    fi
+
     if [[ -z "${HOMEBREW_AUTO_UPDATE_SECS}" ]]
     then
-      if [[ -n "${HOMEBREW_NO_INSTALL_FROM_API}" ]]
+      if [[ -n "${HOMEBREW_NO_INSTALL_FROM_API}" || -n "${HOMEBREW_AUTO_UPDATE_TAP}" ]]
       then
         # 5 minutes
         HOMEBREW_AUTO_UPDATE_SECS="300"
@@ -326,6 +347,7 @@ auto-update() {
     brew update --auto-update
 
     unset HOMEBREW_AUTO_UPDATING
+    unset HOMEBREW_AUTO_UPDATE_TAP
 
     # Restore user path as it'll be refiltered by HOMEBREW_BREW_FILE (bin/brew)
     export PATH=${HOMEBREW_PATH}
