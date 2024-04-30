@@ -121,7 +121,7 @@ module Homebrew
         url_sha256 = Digest::SHA256.hexdigest(bottle.url)
         subject = "#{url_sha256}--#{bottle.filename}"
 
-        backfill_attestation = check_attestation bottle, BACKFILL_REPO, BACKFILL_REPO_CI_URI, subject
+        backfill_attestation = check_attestation bottle, BACKFILL_REPO, nil, subject
         timestamp = backfill_attestation.dig("verificationResult", "verifiedTimestamps",
                                              0, "timestamp")
 
