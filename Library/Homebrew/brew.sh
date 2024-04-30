@@ -82,7 +82,9 @@ HOMEBREW_TEMP="${HOMEBREW_TEMP:-${HOMEBREW_DEFAULT_TEMP}}"
 # Don't need to handle a default case.
 # HOMEBREW_LIBRARY set by bin/brew
 # shellcheck disable=SC2249,SC2154
-case "$*" in
+#
+# commands that take a single or no arguments.
+case "$1" in
   --cellar)
     echo "${HOMEBREW_CELLAR}"
     exit 0
@@ -99,12 +101,6 @@ case "$*" in
     echo "${HOMEBREW_CACHE}"
     exit 0
     ;;
-  shellenv)
-    source "${HOMEBREW_LIBRARY}/Homebrew/cmd/shellenv.sh"
-    shift
-    homebrew-shellenv "$1"
-    exit 0
-    ;;
   formulae)
     source "${HOMEBREW_LIBRARY}/Homebrew/cmd/formulae.sh"
     homebrew-formulae
@@ -115,6 +111,21 @@ case "$*" in
     homebrew-casks
     exit 0
     ;;
+  shellenv)
+    source "${HOMEBREW_LIBRARY}/Homebrew/cmd/shellenv.sh"
+    shift
+    homebrew-shellenv "$1"
+    exit 0
+    ;;
+  setup-ruby)
+    source "${HOMEBREW_LIBRARY}/Homebrew/cmd/setup-ruby.sh"
+    shift
+    homebrew-setup-ruby "$1"
+    exit 0
+    ;;
+esac
+# functions that take multiple arguments or handle multiple commands.
+case "$@" in
   # falls back to cmd/--prefix.rb and cmd/--cellar.rb on a non-zero return
   --prefix* | --cellar*)
     source "${HOMEBREW_LIBRARY}/Homebrew/formula_path.sh"
@@ -497,7 +508,8 @@ HOMEBREW_CORE_REPOSITORY="${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core"
 # shellcheck disable=SC2034
 HOMEBREW_CASK_REPOSITORY="${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask"
 
-case "$*" in
+# commands that take a single or no arguments.
+case "$1" in
   --version | -v)
     source "${HOMEBREW_LIBRARY}/Homebrew/cmd/--version.sh"
     homebrew-version

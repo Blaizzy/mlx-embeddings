@@ -12,6 +12,7 @@ require_relative "presence"
 require_relative "present"
 require_relative "safe_navigation_with_blank"
 require_relative "shell_commands"
+require_relative "install_bundler_gems"
 
 # formula audit cops
 require_relative "bottle"
