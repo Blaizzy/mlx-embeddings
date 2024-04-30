@@ -15,8 +15,6 @@ module Homebrew
 
     # @api private
     BACKFILL_REPO = "trailofbits/homebrew-brew-verify"
-    # @api private
-    BACKFILL_REPO_CI_URI = "https://github.com/trailofbits/homebrew-brew-verify/.github/workflows/backfill_signatures.yml@refs/heads/main"
 
     # No backfill attestations after this date are considered valid.
     #
@@ -121,7 +119,15 @@ module Homebrew
         url_sha256 = Digest::SHA256.hexdigest(bottle.url)
         subject = "#{url_sha256}--#{bottle.filename}"
 
-        backfill_attestation = check_attestation bottle, BACKFILL_REPO, BACKFILL_REPO_CI_URI, subject
+        # We don't pass in a signing workflow for backfill signatures because
+        # some backfilled bottle signatures were signed from the 'backfill'
+        # branch, and others from 'main' of trailofbits/homebrew-brew-verify
+        # so the signing workflow is slightly different which causes some bottles to incorrectly
+        # fail when checking their attestation. This shouldn't meaningfully affect security
+        # because if somehow someone could generate false backfill attestations
+        # from a different workflow we will still catch it because the
+        # attestation would have been generated after our cutoff date.
+        backfill_attestation = check_attestation bottle, BACKFILL_REPO, nil, subject
         timestamp = backfill_attestation.dig("verificationResult", "verifiedTimestamps",
                                              0, "timestamp")
 

@@ -124,8 +124,7 @@ RSpec.describe Homebrew::Attestation do
 
       expect(Utils).to receive(:safe_popen_read)
         .with(fake_gh, "attestation", "verify", cached_download, "--repo",
-              described_class::BACKFILL_REPO, "--format", "json", "--cert-identity",
-              described_class::BACKFILL_REPO_CI_URI)
+              described_class::BACKFILL_REPO, "--format", "json")
         .and_return(fake_json_resp_backfill)
 
       described_class.check_core_attestation fake_bottle
@@ -141,8 +140,7 @@ RSpec.describe Homebrew::Attestation do
 
       expect(Utils).to receive(:safe_popen_read)
         .with(fake_gh, "attestation", "verify", cached_download, "--repo",
-              described_class::BACKFILL_REPO, "--format", "json", "--cert-identity",
-              described_class::BACKFILL_REPO_CI_URI)
+              described_class::BACKFILL_REPO, "--format", "json")
         .and_return(fake_json_resp_too_new)
 
       expect do
