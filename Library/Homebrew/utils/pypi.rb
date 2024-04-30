@@ -49,7 +49,7 @@ module PyPI
       @is_pypi_url || !@is_url
     end
 
-    # Get name, URL, SHA-256 checksum, and latest version for a given package.
+    # Get name, URL, SHA-256 checksum and latest version for a given package.
     # This only works for packages from PyPI or from a PyPI URL; packages
     # derived from non-PyPI URLs will produce `nil` here.
     sig { params(new_version: T.nilable(T.any(String, Version))).returns(T.nilable(T::Array[String])) }

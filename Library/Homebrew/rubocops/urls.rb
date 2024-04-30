@@ -127,7 +127,7 @@ module RuboCop
           # SourceForge url patterns
           sourceforge_patterns = %r{^https?://.*\b(sourceforge|sf)\.(com|net)}
           audit_urls(urls, sourceforge_patterns) do |_, url|
-            # Skip if the URL looks like a SVN repo
+            # Skip if the URL looks like a SVN repository.
             next if url.include? "/svnroot/"
             next if url.include? "svn.sourceforge"
             next if url.include? "/p/"
@@ -183,19 +183,19 @@ module RuboCop
             problem "Please use https:// for #{url}"
           end
 
-          # Check for git:// GitHub repo URLs, https:// is preferred.
+          # Check for `git://` GitHub repository URLs, https:// is preferred.
           git_gh_pattern = %r{^git://[^/]*github\.com/}
           audit_urls(urls, git_gh_pattern) do |_, url|
             problem "Please use https:// for #{url}"
           end
 
-          # Check for git:// Gitorious repo URLs, https:// is preferred.
+          # Check for `git://` Gitorious repository URLs, https:// is preferred.
           git_gitorious_pattern = %r{^git://[^/]*gitorious\.org/}
           audit_urls(urls, git_gitorious_pattern) do |_, url|
             problem "Please use https:// for #{url}"
           end
 
-          # Check for http:// GitHub repo URLs, https:// is preferred.
+          # Check for `http://` GitHub repository URLs, https:// is preferred.
           gh_pattern = %r{^http://github\.com/.*\.git$}
           audit_urls(urls, gh_pattern) do |_, url|
             problem "Please use https:// for #{url}"

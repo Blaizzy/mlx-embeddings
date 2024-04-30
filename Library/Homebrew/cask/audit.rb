@@ -685,7 +685,7 @@ module Cask
 
     sig { void }
     def audit_github_repository_archived
-      # Deprecated/disabled casks may have an archived repo.
+      # Deprecated/disabled casks may have an archived repository.
       return if cask.discontinued? || cask.deprecated? || cask.disabled?
 
       user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if online?
@@ -699,7 +699,7 @@ module Cask
 
     sig { void }
     def audit_gitlab_repository_archived
-      # Deprecated/disabled casks may have an archived repo.
+      # Deprecated/disabled casks may have an archived repository.
       return if cask.discontinued? || cask.deprecated? || cask.disabled?
 
       user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if online?

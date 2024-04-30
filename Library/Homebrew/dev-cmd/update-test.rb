@@ -116,7 +116,7 @@ module Homebrew
           # update ENV["PATH"]
           ENV["PATH"] = PATH.new(ENV.fetch("PATH")).prepend(curdir/"bin").to_s
 
-          # run brew help to install portable-ruby (if needed)
+          # Run `brew help` to install `portable-ruby` (if needed).
           quiet_system "brew", "help"
 
           # run brew update

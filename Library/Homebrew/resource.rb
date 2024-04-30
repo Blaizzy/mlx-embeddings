@@ -170,8 +170,8 @@ class Resource < Downloadable
   end
 
   # Whether a livecheck specification is defined or not.
-  # It returns true when a livecheck block is present in the {Resource} and
-  # false otherwise, and is used by livecheck.
+  # It returns true when a `livecheck` block is present in the {Resource} and
+  # false otherwise and is used by livecheck.
   def livecheckable?
     @livecheckable == true
   end

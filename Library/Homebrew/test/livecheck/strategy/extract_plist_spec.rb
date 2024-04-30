@@ -72,7 +72,7 @@ RSpec.describe Homebrew::Livecheck::Strategy::ExtractPlist do
       ).to eq(versions)
     end
 
-    it "returns an array of version strings when given Items, a regex, and a block" do
+    it "returns an array of version strings when given `Item`s, a regex and a block" do
       # Returning a string from block
       expect(
         extract_plist.versions_from_items(multipart_items, multipart_regex) do |items, regex|

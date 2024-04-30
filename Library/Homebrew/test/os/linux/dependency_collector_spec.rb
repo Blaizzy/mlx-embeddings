@@ -10,7 +10,7 @@ RSpec.describe DependencyCollector do
   describe "#add" do
     resource = Resource.new
 
-    context "when xz, unzip, and bzip2 are not available" do
+    context "when xz, unzip and bzip2 are not available" do
       it "creates a resource dependency from a '.xz' URL" do
         resource.url("https://brew.sh/foo.xz")
         allow_any_instance_of(Object).to receive(:which).with("xz")
@@ -30,7 +30,7 @@ RSpec.describe DependencyCollector do
       end
     end
 
-    context "when xz, zip, and bzip2 are available" do
+    context "when xz, zip and bzip2 are available" do
       it "does not create a resource dependency from a '.xz' URL" do
         resource.url("https://brew.sh/foo.xz")
         allow_any_instance_of(Object).to receive(:which).with("xz").and_return(Pathname.new("foo"))

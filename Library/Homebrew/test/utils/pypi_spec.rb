@@ -141,7 +141,7 @@ RSpec.describe PyPI do
         expect(package_with_version.pypi_info(new_version: "5.29.0")).to eq expected_result
       end
 
-      it "gets pypi info from a package name, extras, and version" do
+      it "gets pypi info from a package name, extras and version" do
         expected_result = ["snakemake", old_pypi_package_url, old_package_checksum, "5.28.0"]
         expect(package_with_extra_and_version.pypi_info).to eq expected_result
       end

@@ -17,10 +17,16 @@ module Kernel
   private :superenv?
 end
 
+# <!-- vale off -->
 # @!parse
-#  # ENV is not actually a class, but this makes `YARD` happy
-#  # @see https://rubydoc.info/stdlib/core/ENV ENV core documentation
-#  class ENV; end
+#   # `ENV` is not actually a class, but this makes YARD happy
+#   # @see https://rubydoc.info/stdlib/core/ENV
+#   #   <code>ENV</code> core documentation
+#   # @see Superenv
+#   # @see Stdenv
+#   class ENV; end
+# <!-- vale on -->
+
 module EnvActivation
   sig { params(env: T.nilable(String)).void }
   def activate_extensions!(env: nil)

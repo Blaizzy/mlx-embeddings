@@ -4,7 +4,7 @@ RSpec.describe Cask::Artifact::AbstractArtifact, :cask do
   describe ".read_script_arguments" do
     let(:stanza) { :installer }
 
-    it "accepts a string, and uses it as the executable" do
+    it "accepts a string and uses it as the executable" do
       arguments = "something"
 
       expect(described_class.read_script_arguments(arguments, stanza)).to eq(["something", {}])

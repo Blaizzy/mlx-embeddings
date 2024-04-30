@@ -340,7 +340,7 @@ module Homebrew
         else
           inject_file_list @found, <<~EOS
             libiconv files detected at a system prefix other than /usr.
-            Homebrew doesn't provide a libiconv formula, and expects to link against
+            Homebrew doesn't provide a libiconv formula and expects to link against
             the system version in /usr. libiconv in other prefixes can cause
             compile or link failure, especially if compiled with improper
             architectures. macOS itself never installs anything to /usr/local so

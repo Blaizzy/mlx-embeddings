@@ -25,9 +25,22 @@ jobs:
       - name: Install vale
         run: brew install vale
 
-      - name: Run vale for docs linting
-        working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs
-        run: vale .
+      - name: Lint docs
+        working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
+        run: |
+          set -euo pipefail
+
+          # Avoid failing on broken symlinks.
+          rm Library/Homebrew/os/mac/pkgconfig/fuse/fuse.pc
+          rm Library/Homebrew/os/mac/pkgconfig/fuse/osxfuse.pc
+
+          # No ignore support (https://github.com/errata-ai/vale/issues/131).
+          rm -r Library/Homebrew/vendor
+
+          vale .
+
+          # Restore removed files.
+          git reset --hard
 
       - name: Install Ruby
         uses: ruby/setup-ruby@1198b074305f9356bd56dd4b311757cc0dab2f1c # v1.175.1

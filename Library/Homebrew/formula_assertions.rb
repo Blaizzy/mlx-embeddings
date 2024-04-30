@@ -16,7 +16,8 @@ module Homebrew
       @assertions ||= 0
     end
 
-    # Returns the output of running cmd, and asserts the exit status.
+    # Returns the output of running cmd and asserts the exit status.
+    #
     # @api public
     def shell_output(cmd, result = 0)
       ohai cmd
@@ -28,8 +29,9 @@ module Homebrew
       raise
     end
 
-    # Returns the output of running the cmd with the optional input, and
+    # Returns the output of running the cmd with the optional input and
     # optionally asserts the exit status.
+    #
     # @api public
     def pipe_output(cmd, input = nil, result = nil)
       ohai cmd

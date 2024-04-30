@@ -6,7 +6,7 @@ RSpec.describe Utils::Gzip do
   include FileUtils
 
   describe "compress_with_options" do
-    it "uses the explicitly specified mtime, orig_name, and output path when passed" do
+    it "uses the explicitly specified mtime, orig_name and output path when passed" do
       mktmpdir do |path|
         mtime = Time.at(12345).utc
         orig_name = "someotherfile"

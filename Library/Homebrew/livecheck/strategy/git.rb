@@ -13,7 +13,7 @@ module Homebrew
       # Livecheck has historically prioritized the {Git} strategy over others
       # and this behavior was continued when the priority setup was created.
       # This is partly related to Livecheck checking formula URLs in order of
-      # `head`, `stable`, and then `homepage`. The higher priority here may
+      # `head`, `stable` and then `homepage`. The higher priority here may
       # be removed (or altered) in the future if we reevaluate this particular
       # behavior.
       #

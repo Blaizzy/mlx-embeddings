@@ -22,13 +22,13 @@ module Homebrew
                description: "Include tests that use the GitHub API and tests that use any of the taps for " \
                             "official external commands."
         switch "--debug",
-               description: "Enable debugging using ruby/debug, or surface the standard `odebug` output."
+               description: "Enable debugging using `ruby/debug`, or surface the standard `odebug` output."
         switch "--changed",
                description: "Only runs tests on files that were changed from the master branch."
         switch "--fail-fast",
                description: "Exit early on the first failing test."
         flag   "--only=",
-               description: "Run only <test_script>`_spec.rb`. Appending `:`<line_number> will start at a " \
+               description: "Run only `<test_script>_spec.rb`. Appending `:<line_number>` will start at a " \
                             "specific line."
         flag   "--profile=",
                description: "Run the test suite serially to find the <n> slowest tests."
@@ -145,7 +145,10 @@ module Homebrew
           end
 
           # Workaround for:
+          #
+          # ```
           # ruby: no -r allowed while running setuid (SecurityError)
+          # ```
           Process::UID.change_privilege(Process.euid) if Process.euid != Process.uid
 
           if parallel

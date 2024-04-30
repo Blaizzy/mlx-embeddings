@@ -448,9 +448,9 @@ class Tap
     args << "--origin=origin"
     args << "-q" if quiet
 
-    # Override user-set default template
+    # Override user-set default template.
     args << "--template="
-    # prevent fsmonitor from watching this repo
+    # Prevent `fsmonitor` from watching this repository.
     args << "--config" << "core.fsmonitor=false"
 
     begin

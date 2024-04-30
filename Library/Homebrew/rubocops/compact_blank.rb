@@ -13,7 +13,7 @@ module RuboCop
       #       `[[1, 2], [3, nil]].compact_blank` are not compatible. The same is true for `blank?`.
       #       This will work fine when the receiver is a hash object.
       #
-      #       And `compact_blank!` has different implementations for `Array`, `Hash`, and
+      #       And `compact_blank!` has different implementations for `Array`, `Hash` and
       #       `ActionController::Parameters`.
       #       `Array#compact_blank!`, `Hash#compact_blank!` are equivalent to `delete_if(&:blank?)`.
       #       `ActionController::Parameters#compact_blank!` is equivalent to `reject!(&:blank?)`.

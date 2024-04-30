@@ -395,7 +395,7 @@ RSpec.describe Homebrew::Livecheck::Strategy::Sparkle do
       ).to eq([items[:v121].nice_version])
     end
 
-    it "returns an array of version strings when given content, a regex, and a block" do
+    it "returns an array of version strings when given content, a regex and a block" do
       # Returning a string from the block
       expect(
         sparkle.versions_from_content(xml[:appcast], title_regex) do |item, regex|

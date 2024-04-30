@@ -6,9 +6,10 @@ require "cli/parser"
 module Homebrew
   # Subclass this to implement a `brew` command. This is preferred to declaring a named function in the `Homebrew`
   # module, because:
+  #
   # - Each Command lives in an isolated namespace.
   # - Each Command implements a defined interface.
-  # - `args` is available as an ivar, and thus does not need to be passed as an argument to helper methods.
+  # - `args` is available as an instance method and thus does not need to be passed as an argument to helper methods.
   # - Subclasses no longer need to reference `CLI::Parser` or parse args explicitly.
   #
   # To subclass, implement a `run` method and provide a `cmd_args` block to document the command and its allowed args.

@@ -144,7 +144,7 @@ module Language
 
     # Mixin module for {Formula} adding virtualenv support features.
     module Virtualenv
-      # Instantiates, creates, and yields a {Virtualenv} object for use from
+      # Instantiates, creates and yields a {Virtualenv} object for use from
       # {Formula#install}, which provides helper methods for instantiating and
       # installing packages into a Python virtualenv.
       #
@@ -211,7 +211,7 @@ module Language
 
       # Helper method for the common case of installing a Python application.
       # Creates a virtualenv in `libexec`, installs all `resource`s defined
-      # on the formula, and then installs the formula. An options hash may be
+      # on the formula and then installs the formula. An options hash may be
       # passed (e.g. `:using => "python"`) to override the default, guessed
       # formula preference for python or python@x.y, or to resolve an ambiguous
       # case where it's not clear whether python or python@x.y should be the

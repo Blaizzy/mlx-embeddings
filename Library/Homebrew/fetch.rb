@@ -20,7 +20,7 @@ module Homebrew
       if os.present?
         return true
       elsif ENV["HOMEBREW_TEST_GENERIC_OS"].present?
-        # `:generic` bottles don't exist, and `--os` flag is not specified.
+        # `:generic` bottles don't exist and `--os` flag is not specified.
         return false
       end
       return true if arch.present?

@@ -1175,7 +1175,7 @@ brew search --fink foo
 
 `superenv` is our "super environment" that isolates builds by removing `/usr/local/bin` and all user `PATH`s that are not essential for the build. It does this because user `PATH`s are often full of stuff that breaks builds. `superenv` also removes bad flags from the commands passed to `clang`/`gcc` and injects others (for example all [`keg_only`](https://rubydoc.brew.sh/Formula#keg_only-class_method) dependencies are added to the `-I` and `-L` flags).
 
-If in your local Homebrew build of your new formula, you see `Operation not permitted` errors, this will be because your new formula tried to write to the disk outside of your sandbox area. This is enforced on MacOS by `sandbox-exec`.
+If in your local Homebrew build of your new formula, you see `Operation not permitted` errors, this will be because your new formula tried to write to the disk outside of your sandbox area. This is enforced on macOS by `sandbox-exec`.
 
 ### Fortran
 

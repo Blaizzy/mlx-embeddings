@@ -173,8 +173,8 @@ module OS
       # using that.
       # As of Xcode 10, the Unix-style headers are installed via a
       # separate package, so we can't rely on their being present.
-      # This will only look up SDKs on Xcode 10 or newer, and still
-      # return nil SDKs for Xcode 9 and older.
+      # This will only look up SDKs on Xcode 10 or newer and still
+      # return `nil` SDKs for Xcode 9 and older.
       sig { override.returns(String) }
       def sdk_prefix
         @sdk_prefix ||= if CLT.provides_sdk?

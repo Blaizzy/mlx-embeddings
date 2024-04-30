@@ -7,13 +7,13 @@ require "requirement"
 require "requirements"
 require "extend/cachable"
 
-## A dependency is a formula that another formula needs to install.
-## A requirement is something other than a formula that another formula
-## needs to be present. This includes external language modules,
-## command-line tools in the path, or any arbitrary predicate.
-##
-## The `depends_on` method in the formula DSL is used to declare
-## dependencies and requirements.
+# A dependency is a formula that another formula needs to install.
+# A requirement is something other than a formula that another formula
+# needs to be present. This includes external language modules,
+# command-line tools in the path, or any arbitrary predicate.
+#
+# The `depends_on` method in the formula DSL is used to declare
+# dependencies and requirements.
 
 # This class is used by `depends_on` in the formula DSL to turn dependency
 # specifications into the proper kinds of dependencies and requirements.

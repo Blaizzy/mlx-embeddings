@@ -45,7 +45,7 @@
 - 12:40–12:45 Michka Popoff - Merging the cores <https://github.com/Homebrew/brew/issues/7028>
 - 12:45–12:50 Michka Popoff - Linux CI for homebrew-core <https://github.com/Homebrew/brew/issues/10597>
 - 12:50–13:55 Misty De Meo - Running Homebrew on Apple Silicon
-- 12:55–13:00 Shaun Jackman - Speeding up install times / Git repo size <https://github.com/Homebrew/install/issues/523>
+- 12:55–13:00 Shaun Jackman - Speeding up install times/Git repository size <https://github.com/Homebrew/install/issues/523>
 - 13:10 Meeting adjourned
 
 ## Resolutions

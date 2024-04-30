@@ -221,7 +221,7 @@ module Homebrew
         __check_stray_files "/usr/local/lib", "*.dylib", allow_list, <<~EOS
           Unbrewed dylibs were found in /usr/local/lib.
           If you didn't put them there on purpose they could cause problems when
-          building Homebrew formulae, and may need to be deleted.
+          building Homebrew formulae and may need to be deleted.
 
           Unexpected dylibs:
         EOS
@@ -246,7 +246,7 @@ module Homebrew
         __check_stray_files "/usr/local/lib", "*.a", allow_list, <<~EOS
           Unbrewed static libraries were found in /usr/local/lib.
           If you didn't put them there on purpose they could cause problems when
-          building Homebrew formulae, and may need to be deleted.
+          building Homebrew formulae and may need to be deleted.
 
           Unexpected static libraries:
         EOS
@@ -266,7 +266,7 @@ module Homebrew
         __check_stray_files "/usr/local/lib/pkgconfig", "*.pc", allow_list, <<~EOS
           Unbrewed '.pc' files were found in /usr/local/lib/pkgconfig.
           If you didn't put them there on purpose they could cause problems when
-          building Homebrew formulae, and may need to be deleted.
+          building Homebrew formulae and may need to be deleted.
 
           Unexpected '.pc' files:
         EOS
@@ -287,7 +287,7 @@ module Homebrew
         __check_stray_files "/usr/local/lib", "*.la", allow_list, <<~EOS
           Unbrewed '.la' files were found in /usr/local/lib.
           If you didn't put them there on purpose they could cause problems when
-          building Homebrew formulae, and may need to be deleted.
+          building Homebrew formulae and may need to be deleted.
 
           Unexpected '.la' files:
         EOS
@@ -306,7 +306,7 @@ module Homebrew
         __check_stray_files "/usr/local/include", "**/*.h", allow_list, <<~EOS
           Unbrewed header files were found in /usr/local/include.
           If you didn't put them there on purpose they could cause problems when
-          building Homebrew formulae, and may need to be deleted.
+          building Homebrew formulae and may need to be deleted.
 
           Unexpected header files:
         EOS
@@ -491,7 +491,7 @@ module Homebrew
 
         <<~EOS
           Git could not be found in your PATH.
-          Homebrew uses Git for several internal functions, and some formulae use Git
+          Homebrew uses Git for several internal functions and some formulae use Git
           checkouts instead of stable tarballs. You may want to install Git:
             brew install git
         EOS

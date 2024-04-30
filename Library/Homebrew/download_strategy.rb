@@ -931,8 +931,8 @@ class GitDownloadStrategy < VCSDownloadStrategy
 
     args << "--no-checkout" << "--filter=blob:none" if partial_clone_sparse_checkout?
 
-    args << "--config" << "advice.detachedHead=false" # silences detached head warning
-    args << "--config" << "core.fsmonitor=false" # prevent fsmonitor from watching this repo
+    args << "--config" << "advice.detachedHead=false" # Silences “detached head” warning.
+    args << "--config" << "core.fsmonitor=false" # Prevent `fsmonitor` from watching this repository.
     args << @url << cached_location.to_s
   end
 
