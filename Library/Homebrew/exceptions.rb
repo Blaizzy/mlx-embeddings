@@ -490,8 +490,8 @@ class BuildError < RuntimeError
   sig { returns(T::Array[T.untyped]) }
   def fetch_issues
     GitHub.issues_for_formula(formula.name, tap: formula.tap, state: "open", type: "issue")
-  rescue GitHub::API::RateLimitExceededError => e
-    opoo e.message
+  rescue GitHub::API::Error => e
+    opoo "Unable to query GitHub for recent issues on the tap\n#{e.message}"
     []
   end
 
