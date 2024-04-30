@@ -6,7 +6,8 @@ homebrew-command-path() {
   case "$1" in
     # check we actually have command and not e.g. commandsomething
     command) ;;
-    *) return 1 ;;
+    command*) return 1 ;;
+    *) ;;
   esac
 
   local first_command found_command
