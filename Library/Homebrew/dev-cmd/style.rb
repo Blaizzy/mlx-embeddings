@@ -43,6 +43,8 @@ module Homebrew
 
       sig { override.void }
       def run
+        Homebrew.install_bundler_gems!(groups: ["style"])
+
         target = if args.no_named?
           nil
         else

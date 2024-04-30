@@ -26,8 +26,6 @@ module Homebrew
     )
 
     def self.regenerate_man_pages(quiet:)
-      Homebrew.install_bundler_gems!(groups: ["man"])
-
       require "kramdown"
       require "manpages/parser/ronn"
       require "manpages/converter/kramdown"
