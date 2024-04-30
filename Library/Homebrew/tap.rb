@@ -1458,5 +1458,3 @@ class TapConfig
     Homebrew::Settings.delete key, repo: tap.path
   end
 end
-
-require "extend/os/tap"
