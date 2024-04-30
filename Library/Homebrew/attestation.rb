@@ -121,9 +121,9 @@ module Homebrew
 
         # We don't pass in a signing workflow for backfill signatures because
         # some backfilled bottle signatures were signed from the 'backfill'
-        # branch, and others from 'main', so the signing workflow is slightly
-        # different which causes some bottles to incorrectly fail when checking
-        # their attestation. This shouldn't meaningfully affect security
+        # branch, and others from 'main' of trailofbits/homebrew-brew-verify
+        # so the signing workflow is slightly different which causes some bottles to incorrectly
+        # fail when checking their attestation. This shouldn't meaningfully affect security
         # because if somehow someone could generate false backfill attestations
         # from a different workflow we will still catch it because the
         # attestation would have been generated after our cutoff date.
