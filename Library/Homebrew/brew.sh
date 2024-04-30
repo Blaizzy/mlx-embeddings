@@ -120,6 +120,11 @@ case "$*" in
     source "${HOMEBREW_LIBRARY}/Homebrew/formula_path.sh"
     homebrew-formula-path "$@" && exit 0
     ;;
+  # falls back to cmd/command.rb on a non-zero return
+  command*)
+    source "${HOMEBREW_LIBRARY}/Homebrew/command_path.sh"
+    homebrew-command-path "$@" && exit 0
+    ;;
 esac
 
 #####
