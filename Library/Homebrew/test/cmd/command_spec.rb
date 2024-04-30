@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require "cmd/shared_examples/args_parse"
-require "dev-cmd/command"
+require "cmd/command"
 
-RSpec.describe Homebrew::DevCmd::Command do
+RSpec.describe Homebrew::Cmd::Command do
   it_behaves_like "parseable arguments"
 
   it "returns the file for a given command", :integration_test do

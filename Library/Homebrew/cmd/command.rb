@@ -5,7 +5,7 @@ require "abstract_command"
 require "commands"
 
 module Homebrew
-  module DevCmd
+  module Cmd
     class Command < AbstractCommand
       cmd_args do
         description <<~EOS

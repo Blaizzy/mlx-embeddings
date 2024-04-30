@@ -153,6 +153,10 @@ old. This can be adjusted with `HOMEBREW_CLEANUP_MAX_AGE_DAYS`.
 : Only prune the symlinks and directories from the prefix and remove no other
   files.
 
+### `command` *`command`* \[...\]
+
+Display the path to the file being used when invoking `brew` *`cmd`*.
+
 ### `commands` \[`--quiet`\] \[`--include-aliases`\]
 
 Show lists of built-in and external commands.
@@ -1984,10 +1988,6 @@ Display the source of a *`formula`* or *`cask`*.
 `--cask`
 
 : Treat all named arguments as casks.
-
-### `command` *`command`* \[...\]
-
-Display the path to the file being used when invoking `brew` *`cmd`*.
 
 ### `contributions` \[--user=*`email|username`*\] \[*`--repositories`*`=`\] \[*`--csv`*\]
 
