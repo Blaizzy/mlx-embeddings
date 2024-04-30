@@ -15,8 +15,6 @@ module Homebrew
 
     # @api private
     BACKFILL_REPO = "trailofbits/homebrew-brew-verify"
-    # @api private
-    BACKFILL_REPO_CI_URI = "https://github.com/trailofbits/homebrew-brew-verify/.github/workflows/backfill_signatures.yml@refs/heads/main"
 
     # No backfill attestations after this date are considered valid.
     #
