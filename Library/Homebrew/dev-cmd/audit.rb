@@ -121,6 +121,10 @@ module Homebrew
         skip_style = args.skip_style? || args.no_named? || tap_audit
         no_named_args = T.let(false, T::Boolean)
 
+        gem_groups = ["audit"]
+        gem_groups << "style" unless skip_style
+        Homebrew.install_bundler_gems!(groups: gem_groups)
+
         ENV.activate_extensions!
         ENV.setup_build_environment
 
@@ -163,10 +167,6 @@ module Homebrew
           ofail "No matching formulae or casks to audit!"
           return
         end
-
-        gem_groups = ["audit"]
-        gem_groups << "style" unless skip_style
-        Homebrew.install_bundler_gems!(groups: gem_groups)
 
         style_files = args.named.to_paths unless skip_style
 
