@@ -85,22 +85,6 @@ HOMEBREW_TEMP="${HOMEBREW_TEMP:-${HOMEBREW_DEFAULT_TEMP}}"
 #
 # commands that take a single or no arguments.
 case "$1" in
-  --cellar)
-    echo "${HOMEBREW_CELLAR}"
-    exit 0
-    ;;
-  --repository | --repo)
-    echo "${HOMEBREW_REPOSITORY}"
-    exit 0
-    ;;
-  --caskroom)
-    echo "${HOMEBREW_PREFIX}/Caskroom"
-    exit 0
-    ;;
-  --cache)
-    echo "${HOMEBREW_CACHE}"
-    exit 0
-    ;;
   formulae)
     source "${HOMEBREW_LIBRARY}/Homebrew/cmd/formulae.sh"
     homebrew-formulae
@@ -126,6 +110,22 @@ case "$1" in
 esac
 # functions that take multiple arguments or handle multiple commands.
 case "$@" in
+  --cellar)
+    echo "${HOMEBREW_CELLAR}"
+    exit 0
+    ;;
+  --repository | --repo)
+    echo "${HOMEBREW_REPOSITORY}"
+    exit 0
+    ;;
+  --caskroom)
+    echo "${HOMEBREW_PREFIX}/Caskroom"
+    exit 0
+    ;;
+  --cache)
+    echo "${HOMEBREW_CACHE}"
+    exit 0
+    ;;
   # falls back to cmd/--prefix.rb and cmd/--cellar.rb on a non-zero return
   --prefix* | --cellar*)
     source "${HOMEBREW_LIBRARY}/Homebrew/formula_path.sh"
