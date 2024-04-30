@@ -1141,9 +1141,10 @@ Perform a substring search of cask tokens and formula names for *`text`*. If
 
 : Search for *`text`* in the given database.
 
-### `setup-ruby`
+### `setup-ruby [command]`
 
-Installs and configures Homebrew's Ruby.
+Installs and configures Homebrew's Ruby. If `command` is passed, it will only
+run Bundler if necessary for that command.
 
 ### `shellenv [bash|csh|fish|pwsh|sh|tcsh|zsh]`
 
