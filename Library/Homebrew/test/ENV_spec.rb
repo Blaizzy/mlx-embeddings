@@ -73,8 +73,8 @@ RSpec.describe "ENV" do
         expect(subject["foo"]).to eq("1")
       end
 
-      # NOTE: this may be a wrong behavior; we should probably reject objects that
-      # do not respond to #to_str. For now this documents existing behavior.
+      # NOTE: This may be a wrong behavior; we should probably reject objects that
+      #       do not respond to `#to_str`. For now this documents existing behavior.
       it "coerces a value to a string" do
         subject.append "foo", 42
         expect(subject["foo"]).to eq("42")

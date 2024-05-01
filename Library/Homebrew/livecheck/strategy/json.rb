@@ -4,7 +4,7 @@
 module Homebrew
   module Livecheck
     module Strategy
-      # The {Json} strategy fetches content at a URL, parses it as JSON, and
+      # The {Json} strategy fetches content at a URL, parses it as JSON and
       # provides the parsed data to a `strategy` block. If a regex is present
       # in the `livecheck` block, it should be passed as the second argument to
       # the `strategy` block.

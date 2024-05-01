@@ -537,19 +537,19 @@ module Formulary
   class FormulaLoader
     include Context
 
-    # The formula's name
+    # The formula's name.
     sig { returns(String) }
     attr_reader :name
 
-    # The formula's ruby file's path or filename
+    # The formula file's path.
     sig { returns(Pathname) }
     attr_reader :path
 
-    # The name used to install the formula
+    # The name used to install the formula.
     sig { returns(T.nilable(Pathname)) }
     attr_reader :alias_path
 
-    # The formula's tap (nil if it should be implicitly determined)
+    # The formula's tap (`nil` if it should be implicitly determined).
     sig { returns(T.nilable(Tap)) }
     attr_reader :tap
 
@@ -1019,8 +1019,8 @@ module Formulary
   # Return a {Formula} instance for the given rack.
   #
   # @param spec when nil, will auto resolve the formula's spec.
-  # @param :alias_path will be used if the formula is found not to be
-  #   installed, and discarded if it is installed because the `alias_path` used
+  # @param alias_path will be used if the formula is found not to be
+  #   installed and discarded if it is installed because the `alias_path` used
   #   to install the formula will be set instead.
   sig {
     params(

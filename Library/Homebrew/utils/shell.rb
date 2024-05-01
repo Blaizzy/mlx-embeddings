@@ -110,26 +110,26 @@ module Utils
 
     sig { params(str: String).returns(String) }
     def csh_quote(str)
-      # ruby's implementation of shell_escape
+      # Ruby's implementation of `shell_escape`.
       str = str.to_s
       return "''" if str.empty?
 
       str = str.dup
-      # anything that isn't a known safe character is padded
+      # Anything that isn't a known safe character is padded.
       str.gsub!(UNSAFE_SHELL_CHAR, "\\\\" + "\\1") # rubocop:disable Style/StringConcatenation
-      # newlines have to be specially quoted in csh
+      # Newlines have to be specially quoted in `csh`.
       str.gsub!("\n", "'\\\n'")
       str
     end
 
     sig { params(str: String).returns(String) }
     def sh_quote(str)
-      # ruby's implementation of shell_escape
+      # Ruby's implementation of `shell_escape`.
       str = str.to_s
       return "''" if str.empty?
 
       str = str.dup
-      # anything that isn't a known safe character is padded
+      # Anything that isn't a known safe character is padded.
       str.gsub!(UNSAFE_SHELL_CHAR, "\\\\" + "\\1") # rubocop:disable Style/StringConcatenation
       str.gsub!("\n", "'\n'")
       str

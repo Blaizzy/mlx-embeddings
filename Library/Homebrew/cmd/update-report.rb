@@ -756,7 +756,7 @@ class ReporterHub
   def dump(auto_update: false)
     report_all = ENV["HOMEBREW_UPDATE_REPORT_ALL_FORMULAE"].present?
     if report_all && !Homebrew::EnvConfig.no_install_from_api?
-      odisabled "HOMEBREW_UPDATE_REPORT_ALL_FORMULAE"
+      odisabled "`HOMEBREW_UPDATE_REPORT_ALL_FORMULAE`"
       opoo "This will not report all formulae because Homebrew cannot get this data from the API."
       report_all = false
     end

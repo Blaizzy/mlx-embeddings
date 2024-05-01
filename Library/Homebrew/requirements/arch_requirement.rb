@@ -27,7 +27,6 @@ class ArchRequirement < Requirement
     "The #{@arch} architecture is required for this software."
   end
 
-  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: arch=#{@arch.to_s.inspect} #{tags.inspect}>"

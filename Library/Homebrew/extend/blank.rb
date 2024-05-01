@@ -3,15 +3,20 @@
 
 class Object
   # An object is blank if it's false, empty, or a whitespace string.
-  # For example, +nil+, '', '   ', [], {}, and +false+ are all blank.
   #
-  # This simplifies
+  # For example, `nil`, `''`, `'   '`, `[]`, `{}` and `false` are all blank.
   #
-  #   !address || address.empty?
+  # ### Example
   #
-  # to
+  # ```ruby
+  # !address || address.empty?
+  # ```
   #
-  #   address.blank?
+  # can be simplified to
+  #
+  # ```ruby
+  # address.blank?
+  # ```
   sig { returns(T::Boolean) }
   def blank?
     respond_to?(:empty?) ? !!T.unsafe(self).empty? : false
@@ -21,20 +26,23 @@ class Object
   sig { returns(T::Boolean) }
   def present? = !blank?
 
-  # Returns the receiver if it's present otherwise returns +nil+.
-  # <tt>object.presence</tt> is equivalent to
+  # Returns the receiver if it's present, otherwise returns `nil`.
   #
-  #    object.present? ? object : nil
+  # `object.presence` is equivalent to `object.present? ? object : nil`.
   #
-  # For example, something like
+  # ### Example
   #
-  #   state   = params[:state]   if params[:state].present?
-  #   country = params[:country] if params[:country].present?
-  #   region  = state || country || 'US'
+  # ```ruby
+  # state   = params[:state]   if params[:state].present?
+  # country = params[:country] if params[:country].present?
+  # region  = state || country || 'US'
+  # ```
   #
-  # becomes
+  # can be simplified to
   #
-  #   region = params[:state].presence || params[:country].presence || 'US'
+  # ```ruby
+  # region = params[:state].presence || params[:country].presence || 'US'
+  # ```
   sig { returns(T.nilable(T.self_type)) }
   def presence
     self if present?
@@ -42,9 +50,11 @@ class Object
 end
 
 class NilClass
-  # +nil+ is blank:
+  # `nil` is blank:
   #
-  #   nil.blank? # => true
+  # ```ruby
+  # nil.blank? # => true
+  # ```
   sig { returns(TrueClass) }
   def blank? = true
 
@@ -53,9 +63,11 @@ class NilClass
 end
 
 class FalseClass
-  # +false+ is blank:
+  # `false` is blank:
   #
-  #   false.blank? # => true
+  # ```ruby
+  # false.blank? # => true
+  # ```
   sig { returns(TrueClass) }
   def blank? = true
 
@@ -64,9 +76,11 @@ class FalseClass
 end
 
 class TrueClass
-  # +true+ is not blank:
+  # `true` is not blank:
   #
-  #   true.blank? # => false
+  # ```ruby
+  # true.blank? # => false
+  # ```
   sig { returns(FalseClass) }
   def blank? = false
 
@@ -77,11 +91,12 @@ end
 class Array
   # An array is blank if it's empty:
   #
-  #   [].blank?      # => true
-  #   [1,2,3].blank? # => false
-  #
-  # @return [true, false]
-  alias blank? empty?
+  # ```ruby
+  # [].blank?      # => true
+  # [1,2,3].blank? # => false
+  # ```
+  sig { returns(T::Boolean) }
+  def blank? = empty?
 
   sig { returns(T::Boolean) }
   def present? = !empty? # :nodoc:
@@ -90,11 +105,13 @@ end
 class Hash
   # A hash is blank if it's empty:
   #
-  #   {}.blank?                # => true
-  #   { key: 'value' }.blank?  # => false
   #
-  # @return [true, false]
-  alias blank? empty?
+  # ```ruby
+  # {}.blank?                # => true
+  # { key: 'value' }.blank?  # => false
+  # ```
+  sig { returns(T::Boolean) }
+  def blank? = empty?
 
   sig { returns(T::Boolean) }
   def present? = !empty? # :nodoc:
@@ -103,9 +120,12 @@ end
 class Symbol
   # A Symbol is blank if it's empty:
   #
-  #   :''.blank?     # => true
-  #   :symbol.blank? # => false
-  alias blank? empty?
+  # ```ruby
+  # :''.blank?     # => true
+  # :symbol.blank? # => false
+  # ```
+  sig { returns(T::Boolean) }
+  def blank? = empty?
 
   sig { returns(T::Boolean) }
   def present? = !empty? # :nodoc:
@@ -122,14 +142,18 @@ class String
 
   # A string is blank if it's empty or contains whitespaces only:
   #
-  #   ''.blank?       # => true
-  #   '   '.blank?    # => true
-  #   "\t\n\r".blank? # => true
-  #   ' blah '.blank? # => false
+  # ```ruby
+  # ''.blank?       # => true
+  # '   '.blank?    # => true
+  # "\t\n\r".blank? # => true
+  # ' blah '.blank? # => false
+  # ```
   #
   # Unicode whitespace is supported:
   #
-  #   "\u00a0".blank? # => true
+  # ```ruby
+  # "\u00a0".blank? # => true
+  # ```
   sig { returns(T::Boolean) }
   def blank?
     # The regexp that matches blank strings is expensive. For the case of empty
@@ -150,8 +174,10 @@ end
 class Numeric # :nodoc:
   # No number is blank:
   #
-  #   1.blank? # => false
-  #   0.blank? # => false
+  # ```ruby
+  # 1.blank? # => false
+  # 0.blank? # => false
+  # ```
   sig { returns(FalseClass) }
   def blank? = false
 
@@ -162,7 +188,9 @@ end
 class Time # :nodoc:
   # No Time is blank:
   #
-  #   Time.now.blank? # => false
+  # ```ruby
+  # Time.now.blank? # => false
+  # ```
   sig { returns(FalseClass) }
   def blank? = false
 

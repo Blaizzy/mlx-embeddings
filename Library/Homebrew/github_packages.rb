@@ -94,12 +94,12 @@ class GitHubPackages
   end
 
   def self.repo_without_prefix(repo)
-    # remove redundant repo prefix for a shorter name
+    # Remove redundant repository prefix for a shorter name.
     repo.delete_prefix("homebrew-")
   end
 
   def self.root_url(org, repo, prefix = URL_PREFIX)
-    # docker/skopeo insist on lowercase org ("repository name")
+    # `docker`/`skopeo` insist on lowercase organisation (“repository name”).
     org = org.downcase
 
     "#{prefix}#{org}/#{repo_without_prefix(repo)}"
@@ -115,9 +115,9 @@ class GitHubPackages
   end
 
   def self.image_formula_name(formula_name)
-    # invalid docker name characters
-    # / makes sense because we already use it to separate repo/formula
-    # x makes sense because we already use it in Formulary
+    # Invalid docker name characters:
+    # - `/` makes sense because we already use it to separate repository/formula.
+    # - `x` makes sense because we already use it in `Formulary`.
     formula_name.tr("@", "/")
                 .tr("+", "x")
   end
@@ -231,9 +231,9 @@ class GitHubPackages
       inspect_args << "--creds=#{user}:#{token}"
       inspect_result = system_command(skopeo, print_stderr: false, args: inspect_args)
 
-      # Order here is important
+      # Order here is important.
       if !inspect_result.status.success? && !inspect_result.stderr.match?(/(name|manifest) unknown/)
-        # We got an error, and it was not about the tag or package being unknown.
+        # We got an error and it was not about the tag or package being unknown.
         if warn_on_error
           opoo "#{image_uri} inspection returned an error, skipping upload!\n#{inspect_result.stderr}"
           return
@@ -241,11 +241,11 @@ class GitHubPackages
           odie "#{image_uri} inspection returned an error!\n#{inspect_result.stderr}"
         end
       elsif keep_old
-        # If the tag doesn't exist, ignore --keep-old.
+        # If the tag doesn't exist, ignore `--keep-old`.
         keep_old = false unless inspect_result.status.success?
         # Otherwise, do nothing - the tag already existing is expected behaviour for --keep-old.
       elsif inspect_result.status.success?
-        # The tag already exists, and we are not passing --keep-old.
+        # The tag already exists and we are not passing `--keep-old`.
         if warn_on_error
           opoo "#{image_uri} already exists, skipping upload!"
           return

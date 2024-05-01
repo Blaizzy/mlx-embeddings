@@ -9,8 +9,8 @@ module Cask
     class Postflight < Base
       include Staged
 
-      def suppress_move_to_applications(_options = {})
-        odisabled "Cask::DSL#suppress_move_to_applications"
+      def suppress_move_to_applications(**_options)
+        odisabled "`Cask::DSL::Postflight#suppress_move_to_applications`"
       end
     end
   end

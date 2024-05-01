@@ -112,7 +112,7 @@ module FormulaCellarChecks
 
     <<~EOS
       Libraries were compiled with a flat namespace.
-      This can cause linker errors due to name collisions, and
+      This can cause linker errors due to name collisions and
       is often due to a bug in detecting the macOS version.
         #{flat_namespace_files * "\n  "}
     EOS

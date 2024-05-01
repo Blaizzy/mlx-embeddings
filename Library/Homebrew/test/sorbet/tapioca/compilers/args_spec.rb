@@ -10,7 +10,7 @@ RSpec.describe Tapioca::Compilers::Args do
     Homebrew::Cmd::List.parser
   end
 
-  # good testing candidate, bc it has multiple for each of switch, flag, and comma_array args:
+  # Good testing candidate because it has multiple for each of `switch`, `flag` and `comma_array` args:
   let(:update_python_resources_parser) do
     require "dev-cmd/update-python-resources"
     Homebrew::DevCmd::UpdatePythonResources.parser

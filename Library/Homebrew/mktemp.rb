@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-# Performs {Formula#mktemp}'s functionality, and tracks the results.
+# Performs {Formula#mktemp}'s functionality and tracks the results.
 # Each instance is only intended to be used once.
 class Mktemp
   include FileUtils
@@ -38,7 +38,6 @@ class Mktemp
     @quiet = true
   end
 
-  # @!visibility private
   sig { returns(String) }
   def to_s
     "[Mktemp: #{tmpdir} retain=#{@retain} quiet=#{@quiet}]"

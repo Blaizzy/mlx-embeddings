@@ -146,17 +146,22 @@ class Resource < Downloadable
     super(verify_download_integrity:)
   end
 
-  # @!attribute [w] livecheck
   # {Livecheck} can be used to check for newer versions of the software.
   # This method evaluates the DSL specified in the livecheck block of the
   # {Resource} (if it exists) and sets the instance variables of a {Livecheck}
   # object accordingly. This is used by `brew livecheck` to check for newer
   # versions of the software.
   #
-  # <pre>livecheck do
+  # ### Example
+  #
+  # ```ruby
+  # livecheck do
   #   url "https://example.com/foo/releases"
   #   regex /foo-(\d+(?:\.\d+)+)\.tar/
-  # end</pre>
+  # end
+  # ```
+  #
+  # @!attribute [w] livecheck
   def livecheck(&block)
     return @livecheck unless block
 
@@ -165,8 +170,8 @@ class Resource < Downloadable
   end
 
   # Whether a livecheck specification is defined or not.
-  # It returns true when a livecheck block is present in the {Resource} and
-  # false otherwise, and is used by livecheck.
+  # It returns true when a `livecheck` block is present in the {Resource} and
+  # false otherwise and is used by livecheck.
   def livecheckable?
     @livecheckable == true
   end
@@ -302,7 +307,6 @@ class ResourceStageContext
     @staging = staging
   end
 
-  # @!visibility private
   sig { returns(String) }
   def to_s
     "<#{self.class}: resource=#{resource} staging=#{staging}>"

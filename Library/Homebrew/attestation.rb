@@ -39,8 +39,8 @@ module Homebrew
     sig { returns(Pathname) }
     def self.gh_executable
       # NOTE: We disable HOMEBREW_VERIFY_ATTESTATIONS when installing `gh` itself,
-      # to prevent a cycle during bootstrapping. This can eventually be resolved
-      # by vendoring a pure-Ruby Sigstore verifier client.
+      #       to prevent a cycle during bootstrapping. This can eventually be resolved
+      #       by vendoring a pure-Ruby Sigstore verifier client.
       @gh_executable ||= T.let(with_env("HOMEBREW_VERIFY_ATTESTATIONS" => nil) do
         ensure_executable!("gh")
       end, T.nilable(Pathname))

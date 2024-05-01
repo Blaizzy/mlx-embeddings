@@ -75,7 +75,7 @@ RSpec.describe Homebrew::Livecheck::Strategy::HeaderMatch do
     end
 
     it "returns an array of version strings when given headers and a block" do
-      # Returning a string from block, no regex
+      # Returning a string from block, no regex.
       expect(
         header_match.versions_from_headers(headers[:location]) do |headers|
           v = Version.parse(headers["location"], detected_from_url: true)
@@ -83,16 +83,17 @@ RSpec.describe Homebrew::Livecheck::Strategy::HeaderMatch do
         end,
       ).to eq(versions[:location])
 
-      # Returning a string from block, explicit regex
+      # Returning a string from block, explicit regex.
       expect(
         header_match.versions_from_headers(headers[:location], regexes[:latest]) do |headers, regex|
           headers["location"] ? headers["location"][regex, 1] : nil
         end,
       ).to eq(versions[:location])
 
-      # Returning an array of strings from block
-      # NOTE: Strategies runs `#compact` on an array from a block, so nil
-      # values are filtered out without needing to use `#compact` in the block.
+      # Returning an array of strings from block.
+      #
+      # NOTE: Strategies runs `#compact` on an array from a block, so nil values
+      #       are filtered out without needing to use `#compact` in the block.
       expect(
         header_match.versions_from_headers(
           headers[:content_disposition_and_location],

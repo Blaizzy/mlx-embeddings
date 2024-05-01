@@ -79,9 +79,9 @@ RSpec.describe Homebrew::Livecheck::Strategy::ElectronBuilder do
       end).to eq(find_versions_cached_return_hash.merge({ regex: }))
 
       # NOTE: A regex should be provided using the `#regex` method in a
-      # `livecheck` block but we're using a regex literal in the `strategy`
-      # block here simply to ensure this method works as expected when a
-      # regex isn't provided.
+      #       `livecheck` block but we're using a regex literal in the `strategy`
+      #       block here simply to ensure this method works as expected when a
+      #       regex isn't provided.
       expect(electron_builder.find_versions(url: http_url, provided_content: content) do |yaml|
         regex = /^v?(\d+(?:\.\d+)+)$/i
         yaml["version"][regex, 1]

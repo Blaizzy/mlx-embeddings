@@ -35,8 +35,8 @@ module Cachable
     # A list of all classes that have been loaded into memory that mixin or
     # inherit `Cachable` at the class or module level.
     #
-    # Note: Classes that inherit from `Formula` are excluded since it's not
-    # necessary to track and clear individual formula caches.
+    # NOTE: Classes that inherit from `Formula` are excluded since it's not
+    #       necessary to track and clear individual formula caches.
     def self.class_list
       @class_list ||= []
     end
@@ -44,8 +44,8 @@ module Cachable
     # Clear the cache of every class or module that mixes in or inherits
     # `Cachable` at the class or module level.
     #
-    # Note: Classes that inherit from `Formula` are excluded since it's not
-    # necessary to track and clear individual formula caches.
+    # NOTE: Classes that inherit from `Formula` are excluded since it's not
+    #       necessary to track and clear individual formula caches.
     def self.clear_all_caches
       class_list.each(&:clear_cache)
     end

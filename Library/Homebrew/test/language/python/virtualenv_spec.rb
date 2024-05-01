@@ -140,7 +140,7 @@ RSpec.describe Language::Python::Virtualenv, :needs_python do
       end.to raise_error(ArgumentError)
     end
 
-    it "installs resources in correct order when combining `without`, `start_with`, and `end_with" do
+    it "installs resources in correct order when combining `without`, `start_with` and `end_with" do
       expect(f).to receive(:virtualenv_create).and_return(venv)
       expect(venv).to receive(:pip_install).with([r_d, r_c, r_b])
       expect(venv).to receive(:pip_install_and_link).with(buildpath, { link_manpages: false })

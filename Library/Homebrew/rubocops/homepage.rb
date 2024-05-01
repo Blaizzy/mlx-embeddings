@@ -69,8 +69,8 @@ module RuboCop
           #
           # Compact the above into this list as we're able to remove detailed notations, etc over time.
           when
-               # Check for http:// GitHub homepage URLs, https:// is preferred.
-               # Note: only check homepages that are repo pages, not *.github.com hosts
+               # Check for `http://` GitHub homepage URLs, `https://` is preferred.
+               # NOTE: Only check homepages that are repository pages, not `*.github.com` hosts.
                %r{^http://github\.com/},
                %r{^http://[^/]*\.github\.io/},
 

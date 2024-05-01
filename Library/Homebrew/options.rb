@@ -11,7 +11,6 @@ class Option
     @description = description
   end
 
-  # @!visibility private
   sig { returns(String) }
   def to_s = flag
 
@@ -30,7 +29,6 @@ class Option
     name.hash
   end
 
-  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{flag.inspect}>"
@@ -134,13 +132,11 @@ class Options
 
   alias to_ary to_a
 
-  # @!visibility private
   sig { returns(String) }
   def to_s
     @options.map(&:to_s).join(" ")
   end
 
-  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{to_a.inspect}>"

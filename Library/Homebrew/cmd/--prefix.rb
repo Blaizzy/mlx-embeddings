@@ -95,7 +95,7 @@ module Homebrew
         dirs  = HOMEBREW_PREFIX.subdirs.map { |dir| dir.basename.to_s }
         dirs -= %w[Library Cellar Caskroom .git]
 
-        # Exclude cache, logs, and repository, if they are located under the prefix.
+        # Exclude cache, logs and repository, if they are located under the prefix.
         [HOMEBREW_CACHE, HOMEBREW_LOGS, HOMEBREW_REPOSITORY].each do |dir|
           dirs.delete dir.relative_path_from(HOMEBREW_PREFIX).to_s
         end

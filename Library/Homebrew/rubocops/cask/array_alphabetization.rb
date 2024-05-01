@@ -44,7 +44,7 @@ module RuboCop
           end
 
           # Separate the lines into those that should be sorted and those that should not
-          # ie. skip the opening and closing brackets of the array
+          # i.e. skip the opening and closing brackets of the array.
           to_sort, to_keep = combined_source.partition { |line| !line.include?("[") && !line.include?("]") }
 
           # Sort the lines that should be sorted

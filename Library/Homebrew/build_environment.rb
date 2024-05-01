@@ -28,7 +28,7 @@ class BuildEnvironment
   # DSL for specifying build environment settings.
   module DSL
     # Initialise @env for each class which may use this DSL (e.g. each formula subclass).
-    # `env` may never be called, and it needs to be initialised before the class is frozen.
+    # `env` may never be called and it needs to be initialised before the class is frozen.
     def inherited(child)
       super
       child.instance_eval do

@@ -1,6 +1,6 @@
-# Note: that we use a non-standard config file name to reduce
-# name clashes with other IRB config files like `.irbrc`.
-# Note #2: This doesn't work with system Ruby for some reason.
+# NOTE: We use a non-standard config file name to reduce name clashes with
+#       other IRB config files like `.irbrc`.
+# NOTE: This doesn't work with system Ruby for some reason.
 
 require 'irb/completion'
 

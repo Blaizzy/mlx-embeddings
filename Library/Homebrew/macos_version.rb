@@ -132,6 +132,7 @@ class MacOSVersion < Version
   alias requires_popcnt? requires_nehalem_cpu?
 
   # Represents the absence of a version.
+  #
   # NOTE: Constructor needs to called with an arbitrary macOS-like version which is then set to `nil`.
   NULL = MacOSVersion.new("10.0").tap { |v| v.instance_variable_set(:@version, nil) }.freeze
 end
@@ -141,7 +142,7 @@ require "lazy_object"
 module MacOSVersionErrorCompat
   def const_missing(name)
     if name == :MacOSVersionError
-      odisabled "MacOSVersionError", "MacOSVersion::Error"
+      odisabled "`MacOSVersionError`", "`MacOSVersion::Error`"
       return MacOSVersion::Error
     end
 
@@ -158,7 +159,7 @@ end
 
 module MacOSVersions
   SYMBOLS = LazyObject.new do # rubocop:disable Style/MutableConstant
-    odisabled "MacOSVersions::SYMBOLS", "MacOSVersion::SYMBOLS"
+    odisabled "`MacOSVersions::SYMBOLS`", "`MacOSVersion::SYMBOLS`"
     MacOSVersion::SYMBOLS
   end
 end
@@ -167,7 +168,7 @@ module OS
   module Mac
     # TODO: Replace `::Version` with `Version` when this is removed.
     Version = LazyObject.new do # rubocop:disable Style/MutableConstant
-      odisabled "OS::Mac::Version", "MacOSVersion"
+      odisabled "`OS::Mac::Version`", "`MacOSVersion`"
       MacOSVersion
     end
   end

@@ -87,7 +87,7 @@ using this quick command:_
 
 **When:** Week 1 of YEAR :date: `2024-01-01`
 
-* [ ] PLC: Solicit changes to [Homebrew Governance](Homebrew-Governance.md) in the form of PRs on the `homebrew-governance-private` repo.
+* [ ] PLC: Solicit changes to [Homebrew Governance](Homebrew-Governance.md) in the form of PRs on the `homebrew-governance-private` repository.
 
 ### Three weeks prior
 

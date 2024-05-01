@@ -83,8 +83,8 @@ module Hardware
         sysctl_bool("hw.optional.sse4_2")
       end
 
-      # NOTE: this is more reliable than checking uname.
-      # `sysctl` returns the right answer even when running in Rosetta 2.
+      # NOTE: This is more reliable than checking `uname`. `sysctl` returns
+      #       the right answer even when running in Rosetta 2.
       def physical_cpu_arm64?
         sysctl_bool("hw.optional.arm64")
       end

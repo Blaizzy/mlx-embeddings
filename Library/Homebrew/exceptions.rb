@@ -16,7 +16,6 @@ class UsageError < RuntimeError
     @reason = reason
   end
 
-  # @!visibility private
   sig { returns(String) }
   def to_s
     s = "Invalid usage"
@@ -109,7 +108,6 @@ class FormulaOrCaskUnavailableError < RuntimeError
     "Did you mean #{similar_formula_names.to_sentence two_words_connector: " or ", last_word_connector: " or "}?"
   end
 
-  # @!visibility private
   sig { returns(String) }
   def to_s
     s = "No available formula or cask with the name \"#{name}\". #{did_you_mean}".strip
@@ -129,7 +127,6 @@ class TapFormulaOrCaskUnavailableError < FormulaOrCaskUnavailableError
     @tap = tap
   end
 
-  # @!visibility private
   sig { returns(String) }
   def to_s
     s = super
@@ -149,7 +146,6 @@ class FormulaUnavailableError < FormulaOrCaskUnavailableError
     " (dependency of #{dependent})" if dependent && dependent != name
   end
 
-  # @!visibility private
   sig { returns(String) }
   def to_s
     "No available formula with the name \"#{name}\"#{dependent_s}. #{did_you_mean}".strip
@@ -160,7 +156,6 @@ end
 module FormulaClassUnavailableErrorModule
   attr_reader :path, :class_name, :class_list
 
-  # @!visibility private
   sig { returns(String) }
   def to_s
     s = super
@@ -204,7 +199,6 @@ end
 module FormulaUnreadableErrorModule
   attr_reader :formula_error
 
-  # @!visibility private
   sig { returns(String) }
   def to_s
     "#{name}: " + formula_error.to_s
@@ -233,7 +227,6 @@ class TapFormulaUnavailableError < FormulaUnavailableError
     super "#{tap}/#{name}"
   end
 
-  # @!visibility private
   sig { returns(String) }
   def to_s
     s = super
@@ -572,7 +565,7 @@ class UnbottledError < RuntimeError
   end
 end
 
-# Raised by Homebrew.install, Homebrew.reinstall, and Homebrew.upgrade
+# Raised by `Homebrew.install`, `Homebrew.reinstall` and `Homebrew.upgrade`
 # if the user passes any flags/environment that would case a bottle-only
 # installation on a system without build tools to fail.
 class BuildFlagsError < RuntimeError

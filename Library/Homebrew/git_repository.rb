@@ -106,7 +106,6 @@ class GitRepository
     popen_git("log", "-1", "--pretty=%B", commit, "--", safe:, err: :out)&.strip
   end
 
-  # @!visibility private
   sig { returns(String) }
   def to_s = pathname.to_s
 

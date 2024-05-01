@@ -30,7 +30,7 @@ module RuboCop
           method_calls.delete(:service)
 
           # NOTE: Solving the first problem here might solve the second one too
-          # so we don't show both of them at the same time.
+          #       so we don't show both of them at the same time.
           if !method_calls.keys.intersect?(REQUIRED_METHOD_CALLS)
             offending_node(service_node)
             problem "Service blocks require `run` or `name` to be defined."

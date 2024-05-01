@@ -4,9 +4,10 @@
 module RuboCop
   module Cop
     module Homebrew
-      # This cop restricts usage of IO.read functions for security reasons.
+      # This cop restricts usage of `IO.read` functions for security reasons.
       class IORead < Base
         MSG = "The use of `IO.%<method>s` is a security risk."
+
         RESTRICT_ON_SEND = [:read, :readlines].freeze
 
         def on_send(node)

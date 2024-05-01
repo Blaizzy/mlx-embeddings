@@ -35,7 +35,6 @@ class Dependencies < SimpleDelegator
     self.class.new(*__getobj__.reject { |dep| dep.uses_from_macos? && dep.use_macos_install? })
   end
 
-  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{__getobj__}>"
@@ -62,7 +61,6 @@ class Requirements < SimpleDelegator
     self
   end
 
-  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: {#{__getobj__.to_a.join(", ")}}>"

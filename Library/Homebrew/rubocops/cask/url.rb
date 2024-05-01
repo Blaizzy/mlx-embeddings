@@ -6,16 +6,17 @@ module RuboCop
     module Cask
       # This cop checks that a cask's `url` stanza is formatted correctly.
       #
-      # @example
-      #   # bad
-      #   url "https://example.com/download/foo.dmg",
-      #       verified: "https://example.com/download"
+      # ### Example
       #
+      # ```ruby
+      # # bad
+      # url "https://example.com/download/foo.dmg",
+      #     verified: "https://example.com/download"
       #
-      #   # good
-      #   url "https://example.com/download/foo.dmg",
-      #       verified: "example.com/download/"
-      #
+      # # good
+      # url "https://example.com/download/foo.dmg",
+      #     verified: "example.com/download/"
+      # ```
       class Url < Base
         extend AutoCorrector
         extend Forwardable
@@ -43,7 +44,7 @@ module RuboCop
 
             # Skip if the URL and the verified value are the same.
             next if value_node.source == url_stanza.source.gsub(%r{^"https?://}, "\"")
-            # Skip if the URL has two path components, eg: `https://github.com/google/fonts.git`.
+            # Skip if the URL has two path components, e.g. `https://github.com/google/fonts.git`.
             next if url_stanza.source.gsub(%r{^"https?://}, "\"").count("/") == 2
             # Skip if the verified value ends with a slash.
             next if value_node.str_content.end_with?("/")

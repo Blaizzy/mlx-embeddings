@@ -16,23 +16,18 @@ but the command isn't limited to any one location.
   petere/postgresql
   ```
 
-<!-- vale Homebrew.Terms = OFF -->
-<!-- The `terms` lint suggests changing "repo" to "repository". But we need the abbreviation in the tap syntax and URL example. -->
-
-* `brew tap <user/repo>` makes a clone of the repository at
-  _https://github.com/\<user>/homebrew-\<repo>_ into `$(brew --repository)/Library/Taps`.
+* `brew tap <user>/<repo>` makes a clone of the repository at
+  `https://github.com/<user>/homebrew-<repo>` into `$(brew --repository)/Library/Taps`.
   After that, `brew` will be able to work with those formulae as if they were in Homebrew's
   [homebrew/core](https://github.com/Homebrew/homebrew-core) canonical repository.
   You can install and uninstall them with `brew [un]install`, and the formulae are
   automatically updated when you run `brew update`. (See below for details
   about how `brew tap` handles the names of repositories.)
 
-<!-- vale Homebrew.Terms = ON -->
-
-* `brew tap <user/repo> <URL>` makes a clone of the repository at _URL_.
+* `brew tap <user>/<repo> <URL>` makes a clone of the repository at _URL_.
   Unlike the one-argument version, _URL_ is not assumed to be GitHub, and it
   doesn't have to be HTTP. Any location and any protocol that Git can handle is
-  fine, although non-GitHub taps require running `brew tap --force-auto-update <user/repo>`
+  fine, although non-GitHub taps require running `brew tap --force-auto-update <user>/<repo>`
   to enable automatic updating.
 
 * `brew tap --repair` migrates tapped formulae from a symlink-based to

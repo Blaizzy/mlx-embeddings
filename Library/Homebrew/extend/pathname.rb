@@ -126,10 +126,11 @@ class Pathname
 
     mkpath
 
-    # Use FileUtils.mv over File.rename to handle filesystem boundaries. If src
-    # is a symlink, and its target is moved first, FileUtils.mv will fail:
-    #   https://bugs.ruby-lang.org/issues/7707
-    # In that case, use the system "mv" command.
+    # Use `FileUtils.mv` over `File.rename` to handle filesystem boundaries. If `src`
+    # is a symlink and its target is moved first, `FileUtils.mv` will fail
+    # (https://bugs.ruby-lang.org/issues/7707).
+    #
+    # In that case, use the system `mv` command.
     if src.symlink?
       raise unless Kernel.system "mv", src.to_s, dst
     else
@@ -178,7 +179,9 @@ class Pathname
     T.unsafe(self).open("a", **open_args) { |f| f.puts(content) }
   end
 
-  # @note This always overwrites.
+  # Write to a file atomically.
+  #
+  # NOTE: This always overwrites.
   #
   # @api public
   sig { params(content: String).void }
@@ -201,6 +204,7 @@ class Pathname
       # Changing file ownership failed, moving on.
       nil
     end
+
     begin
       # This operation will affect filesystem ACL's
       chmod(old_stat.mode)

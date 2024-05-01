@@ -138,7 +138,7 @@ class SoftwareSpec
   end
 
   def go_resource(name, &block)
-    # odeprecated "SoftwareSpec#go_resource", "Go modules"
+    # odeprecated "`SoftwareSpec#go_resource`", "Go modules"
     resource name, Resource::Go, &block
   end
 
@@ -205,18 +205,6 @@ class SoftwareSpec
     end
 
     depends_on UsesFromMacOSDependency.new(dep, tags, bounds:)
-  end
-
-  # @deprecated
-  def uses_from_macos_elements
-    # TODO: Remember to remove the delegate from `Formula`.
-    odisabled "#uses_from_macos_elements", "#declared_deps"
-  end
-
-  # @deprecated
-  def uses_from_macos_names
-    # TODO: Remember to remove the delegate from `Formula`.
-    odisabled "#uses_from_macos_names", "#declared_deps"
   end
 
   def deps
@@ -318,7 +306,6 @@ class Bottle
       "#{name}--#{version}#{extname}"
     end
 
-    # @!visibility private
     sig { returns(String) }
     def to_s = to_str
 
@@ -634,11 +621,11 @@ class BottleSpecification
   def checksums
     tags = collector.tags.sort_by do |tag|
       version = tag.to_macos_version
-      # Give arm64 bottles a higher priority so they are first
-      priority = (tag.arch == :arm64) ? "2" : "1"
+      # Give `arm64` bottles a higher priority so they are first.
+      priority = (tag.arch == :arm64) ? 2 : 1
       "#{priority}.#{version}_#{tag}"
     rescue MacOSVersion::Error
-      # Sort non-MacOS tags below MacOS tags.
+      # Sort non-macOS tags below macOS tags.
       "0.#{tag}"
     end
     tags.reverse.map do |tag|

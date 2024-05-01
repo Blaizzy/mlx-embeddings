@@ -25,7 +25,6 @@ module Homebrew
       @text.include? string
     end
 
-    # @!visibility private
     sig { returns(String) }
     def to_s
       @text

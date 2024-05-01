@@ -5,7 +5,7 @@ RSpec.describe Cask::DSL, :cask do
   let(:token) { "basic-cask" }
 
   describe "stanzas" do
-    it "lets you set url, homepage, and version" do
+    it "lets you set url, homepage and version" do
       expect(cask.url.to_s).to eq("https://brew.sh/TestCask-1.2.3.dmg")
       expect(cask.homepage).to eq("https://brew.sh/")
       expect(cask.version.to_s).to eq("1.2.3")

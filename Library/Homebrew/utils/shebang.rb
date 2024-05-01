@@ -20,8 +20,11 @@ module Utils
 
     # Rewrite shebang for the given `paths` using the given `rewrite_info`.
     #
-    # @example
-    #   rewrite_shebang detected_python_shebang, bin/"script.py"
+    # ### Example
+    #
+    # ```ruby
+    # rewrite_shebang detected_python_shebang, bin/"script.py"
+    # ```
     #
     # @api public
     sig { params(rewrite_info: RewriteInfo, paths: T.any(String, Pathname)).void }

@@ -2,51 +2,64 @@
 # frozen_string_literal: true
 
 class Array
-  # Equal to <tt>self[1]</tt>.
+  # Equal to `self[1]`.
   #
-  #   %w( a b c d e ).second # => "b"
+  # ### Example
+  #
+  # ```ruby
+  # %w( a b c d e ).second # => "b"
+  # ```
   def second = self[1]
 
-  # Equal to <tt>self[2]</tt>.
+  # Equal to `self[2]`.
   #
-  #   %w( a b c d e ).third # => "c"
+  # ### Example
+  #
+  # ```ruby
+  # %w( a b c d e ).third # => "c"
+  # ```
   def third = self[2]
 
-  # Equal to <tt>self[3]</tt>.
+  # Equal to `self[3]`.
   #
-  #   %w( a b c d e ).fourth # => "d"
+  # ### Example
+  #
+  # ```ruby
+  # %w( a b c d e ).fourth # => "d"
+  # ```
   def fourth = self[3]
 
-  # Equal to <tt>self[4]</tt>.
+  # Equal to `self[4]`.
   #
-  #   %w( a b c d e ).fifth # => "e"
+  # ### Example
+  #
+  # ```ruby
+  # %w( a b c d e ).fifth # => "e"
+  # ```
   def fifth = self[4]
 
   # Converts the array to a comma-separated sentence where the last element is
   # joined by the connector word.
   #
-  # You can pass the following kwargs to change the default behavior:
+  # ### Examples
   #
-  # * <tt>:words_connector</tt> - The sign or word used to join all but the last
-  #   element in arrays with three or more elements (default: ", ").
-  # * <tt>:last_word_connector</tt> - The sign or word used to join the last element
-  #   in arrays with three or more elements (default: ", and ").
-  # * <tt>:two_words_connector</tt> - The sign or word used to join the elements
-  #   in arrays with two elements (default: " and ").
+  # ```ruby
+  # [].to_sentence                      # => ""
+  # ['one'].to_sentence                 # => "one"
+  # ['one', 'two'].to_sentence          # => "one and two"
+  # ['one', 'two', 'three'].to_sentence # => "one, two and three"
+  # ['one', 'two'].to_sentence(two_words_connector: '-')
+  # # => "one-two"
+  # ```
   #
-  # ==== Examples
+  # ```
+  # ['one', 'two', 'three'].to_sentence(words_connector: ' or ', last_word_connector: ' or at least ')
+  # # => "one or two or at least three"
+  # ```
   #
-  #   [].to_sentence                      # => ""
-  #   ['one'].to_sentence                 # => "one"
-  #   ['one', 'two'].to_sentence          # => "one and two"
-  #   ['one', 'two', 'three'].to_sentence # => "one, two, and three"
-  #   ['one', 'two'].to_sentence(two_words_connector: '-')
-  #   # => "one-two"
-  #
-  #   ['one', 'two', 'three'].to_sentence(words_connector: ' or ', last_word_connector: ' or at least ')
-  #   # => "one or two or at least three"
   # @see https://github.com/rails/rails/blob/v7.0.4.2/activesupport/lib/active_support/core_ext/array/conversions.rb#L8-L84
   #   ActiveSupport Array#to_sentence monkey-patch
+  #
   #
   # Copyright (c) David Heinemeier Hansson
   #
@@ -54,7 +67,7 @@ class Array
   # a copy of this software and associated documentation files (the
   # "Software"), to deal in the Software without restriction, including
   # without limitation the rights to use, copy, modify, merge, publish,
-  # distribute, sublicense, and/or sell copies of the Software, and to
+  # distribute, sublicense and/or sell copies of the Software and to
   # permit persons to whom the Software is furnished to do so, subject to
   # the following conditions:
   #
@@ -68,6 +81,14 @@ class Array
   # LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
   # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
   # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  #
+  #
+  # @param [String] words_connector The sign or word used to join all but the last
+  #   element in arrays with three or more elements (default: `", "`).
+  # @param [String] last_word_connector The sign or word used to join the last element
+  #   in arrays with three or more elements (default: `" and "`).
+  # @param [String] two_words_connector The sign or word used to join the elements
+  #   in arrays with two elements (default: `" and "`).
   sig { params(words_connector: String, two_words_connector: String, last_word_connector: String).returns(String) }
   def to_sentence(words_connector: ", ", two_words_connector: " and ", last_word_connector: " and ")
     case length

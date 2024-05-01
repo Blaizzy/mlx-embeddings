@@ -376,7 +376,7 @@ module Homebrew
     def cache_files
       files = cache.directory? ? cache.children : []
       cask_files = (cache/"Cask").directory? ? (cache/"Cask").children : []
-      api_source_files = (cache/"api-source").glob("*/*/*/*/*") # org/repo/git_head/type/file.rb
+      api_source_files = (cache/"api-source").glob("*/*/*/*/*") # `<org>/<repo>/<git_head>/<type>/<token>.rb`
       gh_actions_artifacts = (cache/"gh-actions-artifact").directory? ? (cache/"gh-actions-artifact").children : []
 
       files.map { |path| { path:, type: nil } } +
@@ -571,8 +571,8 @@ module Homebrew
       HOMEBREW_PREFIX.glob("lib/python*/site-packages").each do |site_packages|
         site_packages.each_child do |child|
           next unless child.directory?
-          # TODO: Work out a sensible way to clean up pip's, setuptools', and wheel's
-          #       {dist,site}-info directories. Alternatively, consider always removing
+          # TODO: Work out a sensible way to clean up `pip`'s, `setuptools`' and `wheel`'s
+          #       `{dist,site}-info` directories. Alternatively, consider always removing
           #       all `-info` directories, because we may not be making use of them.
           next if child.basename.to_s.end_with?("-info")
 

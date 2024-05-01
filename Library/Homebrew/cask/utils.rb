@@ -68,9 +68,9 @@ module Cask
         unless tried_permissions
           print_stderr = Context.current.debug? || Context.current.verbose?
           # TODO: Better handling for the case where path is a symlink.
-          #       The -h and -R flags cannot be combined, and behavior is
+          #       The `-h` and `-R` flags cannot be combined and behavior is
           #       dependent on whether the file argument has a trailing
-          #       slash.  This should do the right thing, but is fragile.
+          #       slash. This should do the right thing, but is fragile.
           command.run("/usr/bin/chflags",
                       print_stderr:,
                       args:         command_args + ["--", "000", path])
@@ -87,7 +87,7 @@ module Cask
         unless tried_ownership
           # in case of ownership problems
           # TODO: Further examine files to see if ownership is the problem
-          #       before using sudo+chown
+          #       before using `sudo` and `chown`.
           ohai "Using sudo to gain ownership of path '#{path}'"
           command.run("/usr/sbin/chown",
                       args: command_args + ["--", User.current, path],

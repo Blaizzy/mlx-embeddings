@@ -7,37 +7,41 @@ module RuboCop
       # Checks code that can be written more easily using
       # `Object#presence` defined by Active Support.
       #
-      # @example
-      #   # bad
-      #   a.present? ? a : nil
+      # ### Examples
       #
-      #   # bad
-      #   !a.present? ? nil : a
+      # ```ruby
+      # # bad
+      # a.present? ? a : nil
       #
-      #   # bad
-      #   a.blank? ? nil : a
+      # # bad
+      # !a.present? ? nil : a
       #
-      #   # bad
-      #   !a.blank? ? a : nil
+      # # bad
+      # a.blank? ? nil : a
       #
-      #   # good
-      #   a.presence
+      # # bad
+      # !a.blank? ? a : nil
       #
-      # @example
-      #   # bad
-      #   a.present? ? a : b
+      # # good
+      # a.presence
+      # ```
       #
-      #   # bad
-      #   !a.present? ? b : a
+      # ```ruby
+      # # bad
+      # a.present? ? a : b
       #
-      #   # bad
-      #   a.blank? ? b : a
+      # # bad
+      # !a.present? ? b : a
       #
-      #   # bad
-      #   !a.blank? ? a : b
+      # # bad
+      # a.blank? ? b : a
       #
-      #   # good
-      #   a.presence || b
+      # # bad
+      # !a.blank? ? a : b
+      #
+      # # good
+      # a.presence || b
+      # ```
       class Presence < Base
         include RangeHelp
         extend AutoCorrector

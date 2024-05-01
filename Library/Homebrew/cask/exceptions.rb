@@ -13,7 +13,6 @@ module Cask
       @errors = errors
     end
 
-    # @!visibility private
     sig { returns(String) }
     def to_s
       <<~EOS
@@ -41,7 +40,6 @@ module Cask
 
   # Error when a cask is not installed.
   class CaskNotInstalledError < AbstractCaskErrorWithToken
-    # @!visibility private
     sig { returns(String) }
     def to_s
       "Cask '#{token}' is not installed."
@@ -57,7 +55,6 @@ module Cask
       @message = message
     end
 
-    # @!visibility private
     sig { returns(String) }
     def to_s
       "Cask '#{token}' has been #{message}"
@@ -73,7 +70,6 @@ module Cask
       @conflicting_cask = conflicting_cask
     end
 
-    # @!visibility private
     sig { returns(String) }
     def to_s
       "Cask '#{token}' conflicts with '#{conflicting_cask}'."
@@ -82,7 +78,6 @@ module Cask
 
   # Error when a cask is not available.
   class CaskUnavailableError < AbstractCaskErrorWithToken
-    # @!visibility private
     sig { returns(String) }
     def to_s
       "Cask '#{token}' is unavailable#{reason.empty? ? "." : ": #{reason}"}"
@@ -91,7 +86,6 @@ module Cask
 
   # Error when a cask is unreadable.
   class CaskUnreadableError < CaskUnavailableError
-    # @!visibility private
     sig { returns(String) }
     def to_s
       "Cask '#{token}' is unreadable#{reason.empty? ? "." : ": #{reason}"}"
@@ -107,7 +101,6 @@ module Cask
       @tap = tap
     end
 
-    # @!visibility private
     sig { returns(String) }
     def to_s
       s = super
@@ -142,7 +135,6 @@ module Cask
 
   # Error when a cask already exists.
   class CaskAlreadyCreatedError < AbstractCaskErrorWithToken
-    # @!visibility private
     sig { returns(String) }
     def to_s
       %Q(Cask '#{token}' already exists. Run #{Formatter.identifier("brew edit --cask #{token}")} to edit it.)
@@ -151,7 +143,6 @@ module Cask
 
   # Error when there is a cyclic cask dependency.
   class CaskCyclicDependencyError < AbstractCaskErrorWithToken
-    # @!visibility private
     sig { returns(String) }
     def to_s
       "Cask '#{token}' includes cyclic dependencies on other Casks#{reason.empty? ? "." : ": #{reason}"}"
@@ -160,7 +151,6 @@ module Cask
 
   # Error when a cask depends on itself.
   class CaskSelfReferencingDependencyError < CaskCyclicDependencyError
-    # @!visibility private
     sig { returns(String) }
     def to_s
       "Cask '#{token}' depends on itself."
@@ -169,7 +159,6 @@ module Cask
 
   # Error when no cask is specified.
   class CaskUnspecifiedError < CaskError
-    # @!visibility private
     sig { returns(String) }
     def to_s
       "This command requires a Cask token."
@@ -178,7 +167,6 @@ module Cask
 
   # Error when a cask is invalid.
   class CaskInvalidError < AbstractCaskErrorWithToken
-    # @!visibility private
     sig { returns(String) }
     def to_s
       "Cask '#{token}' definition is invalid#{reason.empty? ? "." : ": #{reason}"}"
@@ -203,7 +191,6 @@ module Cask
       @reason = reason
     end
 
-    # @!visibility private
     sig { returns(String) }
     def to_s
       s = +"Failed to quarantine #{path}."
@@ -220,7 +207,6 @@ module Cask
 
   # Error while propagating quarantine information to subdirectories.
   class CaskQuarantinePropagationError < CaskQuarantineError
-    # @!visibility private
     sig { returns(String) }
     def to_s
       s = +"Failed to quarantine one or more files within #{path}."
@@ -237,7 +223,6 @@ module Cask
 
   # Error while removing quarantine information.
   class CaskQuarantineReleaseError < CaskQuarantineError
-    # @!visibility private
     sig { returns(String) }
     def to_s
       s = +"Failed to release #{path} from quarantine."

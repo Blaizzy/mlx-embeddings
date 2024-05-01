@@ -13,7 +13,7 @@ module Homebrew
       cmd_args do
         description <<~EOS
           List installed casks and formulae that have an updated version available. By default, version
-          information is displayed in interactive shells, and suppressed otherwise.
+          information is displayed in interactive shells and suppressed otherwise.
         EOS
         switch "-q", "--quiet",
                description: "List only the names of outdated kegs (takes precedence over `--verbose`)."

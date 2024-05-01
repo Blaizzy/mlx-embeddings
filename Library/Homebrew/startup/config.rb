@@ -12,7 +12,7 @@ HOMEBREW_PREFIX = Pathname(ENV.fetch("HOMEBREW_PREFIX")).freeze
 # Where `.git` is found
 HOMEBREW_REPOSITORY = Pathname(ENV.fetch("HOMEBREW_REPOSITORY")).freeze
 
-# Where we store most of Homebrew, taps, and various metadata
+# Where we store most of Homebrew, taps and various metadata
 HOMEBREW_LIBRARY = Pathname(ENV.fetch("HOMEBREW_LIBRARY")).freeze
 
 # Where shim scripts for various build and SCM tools are stored
@@ -39,7 +39,7 @@ HOMEBREW_CACHE = Pathname(ENV.fetch("HOMEBREW_CACHE")).freeze
 # Where formulae installed via URL are cached
 HOMEBREW_CACHE_FORMULA = (HOMEBREW_CACHE/"Formula").freeze
 
-# Where build, postinstall, and test logs of formulae are written to
+# Where build, postinstall and test logs of formulae are written to
 HOMEBREW_LOGS = Pathname(ENV.fetch("HOMEBREW_LOGS")).expand_path.freeze
 
 # Path to the list of Homebrew maintainers as a JSON file

@@ -109,11 +109,11 @@ RSpec.describe Homebrew::Livecheck::Strategy::PageMatch do
         .to eq(find_versions_cached_return_hash)
 
       # NOTE: Ideally, a regex should always be provided to `#find_versions`
-      # for `PageMatch` but there are currently some `livecheck` blocks in
-      # casks where `#regex` isn't used and the regex only exists within a
-      # `strategy` block. This isn't ideal but, for the moment, we allow a
-      # `strategy` block to act as a substitution for a regex and we need to
-      # test this scenario to ensure it works.
+      #       for `PageMatch` but there are currently some `livecheck` blocks in
+      #       casks where `#regex` isn't used and the regex only exists within a
+      #       `strategy` block. This isn't ideal but, for the moment, we allow a
+      #       `strategy` block to act as a substitution for a regex and we need to
+      #       test this scenario to ensure it works.
       #
       # Under normal circumstances, a regex should be established in a
       # `livecheck` block using `#regex` and passed into the `strategy` block

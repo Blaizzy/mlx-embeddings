@@ -4,6 +4,8 @@
 require "dependable"
 
 # A dependency on another Homebrew formula.
+#
+# @api internal
 class Dependency
   extend Forwardable
   include Dependable
@@ -94,11 +96,9 @@ class Dependency
     false
   end
 
-  # @!visibility private
   sig { returns(String) }
   def to_s = name
 
-  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{name.inspect} #{tags.inspect}>"
@@ -115,6 +115,8 @@ class Dependency
     # the list.
     # The default filter, which is applied when a block is not given, omits
     # optionals and recommends based on what the dependent has asked for
+    #
+    # @api internal
     def expand(dependent, deps = dependent.deps, cache_key: nil, &block)
       # Keep track dependencies to avoid infinite cyclic dependency recursion.
       @expand_stack ||= []
@@ -181,6 +183,8 @@ class Dependency
     end
 
     # Keep a dependency, but prune its dependencies.
+    #
+    # @api internal
     sig { void }
     def keep_but_prune_recursive_deps
       throw(:action, :keep_but_prune_recursive_deps)
@@ -282,7 +286,6 @@ class UsesFromMacOSDependency < Dependency
     self.class.new(formula.full_name.to_s, tags, bounds:)
   end
 
-  # @!visibility private
   sig { returns(String) }
   def inspect
     "#<#{self.class.name}: #{name.inspect} #{tags.inspect} #{bounds.inspect}>"

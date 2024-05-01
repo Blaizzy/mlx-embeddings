@@ -6,43 +6,46 @@ module RuboCop
     module Homebrew
       # Checks if collection can be blank-compacted with `compact_blank`.
       #
-      # @note
-      #   It is unsafe by default because false positives may occur in the
-      #   blank check of block arguments to the receiver object.
+      # NOTE: It is unsafe by default because false positives may occur in the
+      #       blank check of block arguments to the receiver object.
       #
-      #   For example, `[[1, 2], [3, nil]].reject { |first, second| second.blank? }` and
-      #   `[[1, 2], [3, nil]].compact_blank` are not compatible. The same is true for `blank?`.
-      #   This will work fine when the receiver is a hash object.
+      #       For example, `[[1, 2], [3, nil]].reject { |first, second| second.blank? }` and
+      #       `[[1, 2], [3, nil]].compact_blank` are not compatible. The same is true for `blank?`.
+      #       This will work fine when the receiver is a hash object.
       #
-      #   And `compact_blank!` has different implementations for `Array`, `Hash`, and
-      #   `ActionController::Parameters`.
-      #   `Array#compact_blank!`, `Hash#compact_blank!` are equivalent to `delete_if(&:blank?)`.
-      #   `ActionController::Parameters#compact_blank!` is equivalent to `reject!(&:blank?)`.
-      #   If the cop makes a mistake, autocorrected code may get unexpected behavior.
+      #       And `compact_blank!` has different implementations for `Array`, `Hash` and
+      #       `ActionController::Parameters`.
+      #       `Array#compact_blank!`, `Hash#compact_blank!` are equivalent to `delete_if(&:blank?)`.
+      #       `ActionController::Parameters#compact_blank!` is equivalent to `reject!(&:blank?)`.
+      #       If the cop makes a mistake, autocorrected code may get unexpected behavior.
       #
-      # @example
+      # ### Examples
       #
-      #   # bad
-      #   collection.reject(&:blank?)
-      #   collection.reject { |_k, v| v.blank? }
+      # ```ruby
+      # # bad
+      # collection.reject(&:blank?)
+      # collection.reject { |_k, v| v.blank? }
       #
-      #   # good
-      #   collection.compact_blank
+      # # good
+      # collection.compact_blank
+      # ```
       #
-      #   # bad
-      #   collection.delete_if(&:blank?)           # Same behavior as `Array#compact_blank!` and `Hash#compact_blank!`
-      #   collection.delete_if { |_, v| v.blank? } # Same behavior as `Array#compact_blank!` and `Hash#compact_blank!`
-      #   collection.reject!(&:blank?)             # Same behavior as `ActionController::Parameters#compact_blank!`
-      #   collection.reject! { |_k, v| v.blank? }  # Same behavior as `ActionController::Parameters#compact_blank!`
+      # ```ruby
+      # # bad
+      # collection.delete_if(&:blank?)           # Same behavior as `Array#compact_blank!` and `Hash#compact_blank!`
+      # collection.delete_if { |_, v| v.blank? } # Same behavior as `Array#compact_blank!` and `Hash#compact_blank!`
+      # collection.reject!(&:blank?)             # Same behavior as `ActionController::Parameters#compact_blank!`
+      # collection.reject! { |_k, v| v.blank? }  # Same behavior as `ActionController::Parameters#compact_blank!`
       #
-      #   # good
-      #   collection.compact_blank!
-      #
+      # # good
+      # collection.compact_blank!
+      # ```
       class CompactBlank < Base
         include RangeHelp
         extend AutoCorrector
 
         MSG = "Use `%<preferred_method>s` instead."
+
         RESTRICT_ON_SEND = [:reject, :delete_if, :reject!].freeze
 
         def_node_matcher :reject_with_block?, <<~PATTERN

@@ -94,70 +94,94 @@ module Cask
         to_s == "latest"
       end
 
+      # The major version.
+      #
       # @api public
       sig { returns(T.self_type) }
       def major
         version { slice(MAJOR_MINOR_PATCH_REGEX, 1) }
       end
 
+      # The minor version.
+      #
       # @api public
       sig { returns(T.self_type) }
       def minor
         version { slice(MAJOR_MINOR_PATCH_REGEX, 2) }
       end
 
+      # The patch version.
+      #
       # @api public
       sig { returns(T.self_type) }
       def patch
         version { slice(MAJOR_MINOR_PATCH_REGEX, 3) }
       end
 
+      # The major and minor version.
+      #
       # @api public
       sig { returns(T.self_type) }
       def major_minor
         version { [major, minor].reject(&:empty?).join(".") }
       end
 
+      # The major, minor and patch version.
+      #
       # @api public
       sig { returns(T.self_type) }
       def major_minor_patch
         version { [major, minor, patch].reject(&:empty?).join(".") }
       end
 
+      # The minor and patch version.
+      #
       # @api public
       sig { returns(T.self_type) }
       def minor_patch
         version { [minor, patch].reject(&:empty?).join(".") }
       end
 
+      # The comma separated values of the version as array.
+      #
       # @api public
       sig { returns(T::Array[Version]) } # Only top-level T.self_type is supported https://sorbet.org/docs/self-type
       def csv
         split(",").map { self.class.new(_1) }
       end
 
+      # The version part before the first comma.
+      #
       # @api public
       sig { returns(T.self_type) }
       def before_comma
         version { split(",", 2).first }
       end
 
+      # The version part after the first comma.
+      #
       # @api public
       sig { returns(T.self_type) }
       def after_comma
         version { split(",", 2).second }
       end
 
+      # The version without any dividers.
+      #
+      # @see DIVIDER_REGEX
       # @api public
       sig { returns(T.self_type) }
       def no_dividers
         version { gsub(DIVIDER_REGEX, "") }
       end
 
+      # The version with the given record separator removed from the end.
+      #
+      # @see String#chomp
       # @api public
-      sig { params(separator: T.nilable(String)).returns(T.self_type) }
-      def chomp(separator = nil)
-        version { to_s.chomp(T.unsafe(separator)) }
+      sig { params(separator: String).returns(T.self_type) }
+      def chomp(separator = T.unsafe(nil))
+        version { to_s.chomp(separator) }
       end
 
       private

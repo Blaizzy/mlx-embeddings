@@ -9,16 +9,26 @@ class BuildOptions
   end
 
   # True if a {Formula} is being built with a specific option.
-  # <pre>args << "--i-want-spam" if build.with? "spam"
   #
+  # ### Examples
+  #
+  # ```ruby
+  # args << "--i-want-spam" if build.with? "spam"
+  # ```
+  #
+  # ```ruby
   # args << "--qt-gui" if build.with? "qt" # "--with-qt" ==> build.with? "qt"
+  # ```
   #
-  # # If a formula presents a user with a choice, but the choice must be fulfilled:
+  # If a formula presents a user with a choice, but the choice must be fulfilled:
+  #
+  # ```ruby
   # if build.with? "example2"
   #   args << "--with-example2"
   # else
   #   args << "--with-example1"
-  # end</pre>
+  # end
+  # ```
   def with?(val)
     option_names = val.respond_to?(:option_names) ? val.option_names : [val]
 
@@ -34,7 +44,12 @@ class BuildOptions
   end
 
   # True if a {Formula} is being built without a specific option.
-  # <pre>args << "--no-spam-plz" if build.without? "spam"</pre>
+  #
+  # ### Example
+  #
+  # ```ruby
+  # args << "--no-spam-plz" if build.without? "spam"
+  # ```
   def without?(val)
     !with?(val)
   end
@@ -45,19 +60,33 @@ class BuildOptions
   end
 
   # True if a {Formula} is being built with {Formula.head} instead of {Formula.stable}.
-  # <pre>args << "--some-new-stuff" if build.head?</pre>
-  # <pre># If there are multiple conditional arguments use a block instead of lines.
+  #
+  # ### Examples
+  #
+  # ```ruby
+  # args << "--some-new-stuff" if build.head?
+  # ```
+  #
+  # If there are multiple conditional arguments use a block instead of lines.
+  #
+  # ```ruby
   # if build.head?
   #   args << "--i-want-pizza"
   #   args << "--and-a-cold-beer" if build.with? "cold-beer"
-  # end</pre>
+  # end
+  # ```
   def head?
     include? "HEAD"
   end
 
   # True if a {Formula} is being built with {Formula.stable} instead of {Formula.head}.
   # This is the default.
-  # <pre>args << "--some-beta" if build.head?</pre>
+  #
+  # ### Example
+  #
+  # ```ruby
+  # args << "--some-beta" if build.head?
+  # ```
   def stable?
     !head?
   end

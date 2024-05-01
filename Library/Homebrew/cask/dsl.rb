@@ -112,6 +112,16 @@ module Cask
       @token = cask.token
     end
 
+    # Specifies the cask's name.
+    #
+    # NOTE: Multiple names can be specified.
+    #
+    # ### Example
+    #
+    # ```ruby
+    # name "Visual Studio Code"
+    # ```
+    #
     # @api public
     def name(*args)
       @name ||= []
@@ -120,6 +130,14 @@ module Cask
       @name.concat(args.flatten)
     end
 
+    # Describes the cask.
+    #
+    # ### Example
+    #
+    # ```ruby
+    # desc "Open-source code editor"
+    # ```
+    #
     # @api public
     def desc(description = nil)
       set_unique_stanza(:desc, description.nil?) { description }
@@ -146,6 +164,14 @@ module Cask
       raise CaskInvalidError.new(cask, "'#{stanza}' stanza failed with: #{e}")
     end
 
+    # Sets the cask's homepage.
+    #
+    # ### Example
+    #
+    # ```ruby
+    # homepage "https://code.visualstudio.com/"
+    # ```
+    #
     # @api public
     def homepage(homepage = nil)
       set_unique_stanza(:homepage, homepage.nil?) { homepage }
@@ -201,6 +227,14 @@ module Cask
       @language_blocks.keys.flatten
     end
 
+    # Sets the cask's download URL.
+    #
+    # ### Example
+    #
+    # ```ruby
+    # url "https://update.code.visualstudio.com/#{version}/#{arch}/stable"
+    # ```
+    #
     # @api public
     def url(*args, **options, &block)
       caller_location = T.must(caller_locations).fetch(0)
@@ -214,6 +248,8 @@ module Cask
       end
     end
 
+    # Sets the cask's appcast URL.
+    #
     # @api public
     def appcast(*args, **kwargs)
       set_unique_stanza(:appcast, args.empty? && kwargs.empty?) do
@@ -222,6 +258,22 @@ module Cask
       end
     end
 
+    # Sets the cask's container type or nested container path.
+    #
+    # ### Examples
+    #
+    # The container is a nested disk image:
+    #
+    # ```ruby
+    # container nested: "orca-#{version}.dmg"
+    # ```
+    #
+    # The container should not be unarchived:
+    #
+    # ```ruby
+    # container type: :naked
+    # ```
+    #
     # @api public
     def container(**kwargs)
       set_unique_stanza(:container, kwargs.empty?) do
@@ -229,6 +281,15 @@ module Cask
       end
     end
 
+    # Sets the cask's version.
+    #
+    # ### Example
+    #
+    # ```ruby
+    # version "1.88.1"
+    # ```
+    #
+    # @see DSL::Version
     # @api public
     def version(arg = nil)
       set_unique_stanza(:version, arg.nil?) do
@@ -240,6 +301,23 @@ module Cask
       end
     end
 
+    # Sets the cask's download checksum.
+    #
+    # ### Example
+    #
+    # For universal or single-architecture downloads:
+    #
+    # ```ruby
+    # sha256 "7bdb497080ffafdfd8cc94d8c62b004af1be9599e865e5555e456e2681e150ca"
+    # ```
+    #
+    # For architecture-dependent downloads:
+    #
+    # ```ruby
+    # sha256 arm:   "7bdb497080ffafdfd8cc94d8c62b004af1be9599e865e5555e456e2681e150ca",
+    #         intel: "b3c1c2442480a0219b9e05cf91d03385858c20f04b764ec08a3fa83d1b27e7b2"
+    # ```
+    #
     # @api public
     def sha256(arg = nil, arm: nil, intel: nil)
       should_return = arg.nil? && arm.nil? && intel.nil?
@@ -259,6 +337,14 @@ module Cask
       end
     end
 
+    # Sets the cask's architecture strings.
+    #
+    # ### Example
+    #
+    # ```ruby
+    # arch arm: "darwin-arm64", intel: "darwin"
+    # ```
+    #
     # @api public
     def arch(arm: nil, intel: nil)
       should_return = arm.nil? && intel.nil?
@@ -270,7 +356,10 @@ module Cask
       end
     end
 
-    # `depends_on` uses a load method so that multiple stanzas can be merged.
+    # Declare dependencies and requirements for a cask.
+    #
+    # NOTE: Multiple dependencies can be specified.
+    #
     # @api public
     def depends_on(**kwargs)
       @depends_on ||= DSL::DependsOn.new
@@ -284,9 +373,11 @@ module Cask
       @depends_on
     end
 
+    # Declare conflicts that keep a cask from installing or working correctly.
+    #
     # @api public
     def conflicts_with(**kwargs)
-      # TODO: remove this constraint, and instead merge multiple conflicts_with stanzas
+      # TODO: Remove this constraint and instead merge multiple `conflicts_with` stanzas
       set_unique_stanza(:conflicts_with, kwargs.empty?) { DSL::ConflictsWith.new(**kwargs) }
     end
 
@@ -298,6 +389,8 @@ module Cask
       cask.caskroom_path
     end
 
+    # The staged location for this cask, including version number.
+    #
     # @api public
     def staged_path
       return @staged_path if @staged_path
@@ -306,6 +399,8 @@ module Cask
       @staged_path = caskroom_path.join(cask_version.to_s)
     end
 
+    # Provide the user with cask-specific information at install time.
+    #
     # @api public
     def caveats(*strings, &block)
       @caveats ||= DSL::Caveats.new(cask)
@@ -326,11 +421,15 @@ module Cask
       @caveats&.discontinued? == true
     end
 
+    # Asserts that the cask artifacts auto-update.
+    #
     # @api public
     def auto_updates(auto_updates = nil)
       set_unique_stanza(:auto_updates, auto_updates.nil?) { auto_updates }
     end
 
+    # Automatically fetch the latest version of a cask from changelogs.
+    #
     # @api public
     def livecheck(&block)
       @livecheck ||= Livecheck.new(cask)
@@ -344,6 +443,10 @@ module Cask
       @livecheck.instance_eval(&block)
     end
 
+    # Declare that a cask is no longer functional or supported.
+    #
+    # NOTE: A warning will be shown when trying to install this cask.
+    #
     # @api public
     def deprecate!(date:, because:)
       @deprecation_date = Date.parse(date)
@@ -353,6 +456,10 @@ module Cask
       @deprecated = true
     end
 
+    # Declare that a cask is no longer functional or supported.
+    #
+    # NOTE: An error will be thrown when trying to install this cask.
+    #
     # @api public
     def disable!(date:, because:)
       @disable_date = Date.parse(date)
@@ -405,6 +512,8 @@ module Cask
       true
     end
 
+    # The directory `app`s are installed into.
+    #
     # @api public
     def appdir
       return HOMEBREW_CASK_APPDIR_PLACEHOLDER if Cask.generating_hash?
