@@ -2382,11 +2382,11 @@ class Formula
       api_hash["versioned_formulae"] = versioned_formulae_list.map(&:name)
     end
 
-    if (dependencies = dependencies_list(:stable).presence)
+    if (dependencies = internal_dependencies_hash(:stable).presence)
       api_hash["dependencies"] = dependencies
     end
 
-    if (head_dependencies = dependencies_list(:head).presence)
+    if (head_dependencies = internal_dependencies_hash(:head).presence)
       api_hash["head_dependencies"] = head_dependencies
     end
 
@@ -2554,7 +2554,11 @@ class Formula
     dependencies = self.class.spec_syms.to_h do |sym|
       [sym, send(sym)&.declared_deps]
     end
-    dependencies.transform_values! { |deps| deps&.reject(&:implicit?) } # Remove all implicit deps from all lists
+
+    # Implicit dependencies are only needed when installing from source
+    # since they are only used to download and unpack source files.
+    # @see DependencyCollector
+    dependencies.transform_values! { |deps| deps&.reject(&:implicit?) }
 
     hash = {}
 
@@ -2609,16 +2613,21 @@ class Formula
     hash
   end
 
-  def dependencies_list(spec_symbol)
-    return if spec_symbol != :stable && spec_symbol != :head
+  def internal_dependencies_hash(spec_symbol)
+    raise ArgumentError, "Unsupported spec: #{spec_symbol}" unless [:stable, :head].include?(spec_symbol)
+    return unless (spec = public_send(spec_symbol))
 
-    send(spec_symbol)&.declared_deps&.each_with_object({}) do |dep, dep_hash|
-      next if dep.implicit? # Remove all implicit deps
+    spec.declared_deps.each_with_object({}) do |dep, dep_hash|
+      # Implicit dependencies are only needed when installing from source
+      # since they are only used to download and unpack source files.
+      # @see DependencyCollector
+      next if dep.implicit?
 
-      dep_hash[dep.name] = {}.tap do |info|
-        info[:tags] = dep.tags if dep.tags.present?
-        info[:uses_from_macos] = dep.bounds.presence if dep.uses_from_macos?
-      end.presence
+      metadata_hash = {}
+      metadata_hash[:tags] = dep.tags if dep.tags.present?
+      metadata_hash[:uses_from_macos] = dep.bounds.presence if dep.uses_from_macos?
+
+      dep_hash[dep.name] = metadata_hash.presence
     end
   end
 
