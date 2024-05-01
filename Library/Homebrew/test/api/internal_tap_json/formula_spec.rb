@@ -107,12 +107,31 @@ RSpec.describe "Internal Tap JSON -- Formula", type: :system do
           "ruby_source_path"       => "Formula/p/ponyc.rb",
           "tap"                    => "homebrew/core",
           "tap_git_head"           => tap_git_head,
-          # TODO: improve this API before we ship internal API v3 to users
           "uses_from_macos"        => [{ "llvm"=>[:build, :test] }, "zlib"],
           "uses_from_macos_bounds" => [{}, {}],
           "versions"               => { "bottle"=>true, "head"=>nil, "stable"=>"0.58.1" },
           "ruby_source_checksum"   => {
             "sha256" => "81d51c25d18710191beb62f9f380bae3d878aad815a65ec1ee2a3b132c1fadb3",
+          },
+        }
+      end
+
+      let(:inko_metadata) do
+        {
+          "desc"                   => "Safe and concurrent object-oriented programming language",
+          "full_name"              => "inko",
+          "homepage"               => "https://inko-lang.org/",
+          "license"                => "MPL-2.0",
+          "name"                   => "inko",
+          "ruby_source_path"       => "Formula/i/inko.rb",
+          "tap"                    => "homebrew/core",
+          "tap_git_head"           => tap_git_head,
+          "dependencies"           => ["llvm@15", "zstd"],
+          "uses_from_macos"        => ["libffi", "ruby"],
+          "uses_from_macos_bounds" => [{ since: :catalina }, { since: :sierra }],
+          "versions"               => { "bottle"=>true, "head"=>"HEAD", "stable"=>"0.14.0" },
+          "ruby_source_checksum"   => {
+            "sha256" => "843f6b5652483b971c83876201d68c95d5f32e67e55a75ac7c95d68c4350aa1c",
           },
         }
       end
@@ -140,6 +159,11 @@ RSpec.describe "Internal Tap JSON -- Formula", type: :system do
       it "loads ponyc from alias" do
         ponyc = Formulary.factory("ponyc-lang")
         expect(ponyc.to_hash).to include(**ponyc_metadata)
+      end
+
+      it "loads ink" do
+        inko = Formulary.factory("inko")
+        expect(inko.to_hash).to include(**inko_metadata)
       end
     end
   end

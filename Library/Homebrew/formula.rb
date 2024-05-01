@@ -2366,13 +2366,6 @@ class Formula
       "ruby_source_sha256"   => ruby_source_checksum&.hexdigest,
     }
 
-    dep_hash = dependencies_hash
-               .except("recommended_dependencies", "optional_dependencies")
-               .transform_values(&:presence)
-               .compact
-
-    api_hash.merge!(dep_hash)
-
     # Exclude default values.
     api_hash["revision"] = revision unless revision.zero?
     api_hash["version_scheme"] = version_scheme unless version_scheme.zero?
@@ -2392,6 +2385,14 @@ class Formula
     if (versioned_formulae_list = versioned_formulae.presence)
       # Could we just use `versioned_formulae_names` here instead?
       api_hash["versioned_formulae"] = versioned_formulae_list.map(&:name)
+    end
+
+    if (dependencies = internal_dependencies_hash(:stable).presence)
+      api_hash["dependencies"] = dependencies
+    end
+
+    if (head_dependencies = internal_dependencies_hash(:head).presence)
+      api_hash["head_dependencies"] = head_dependencies
     end
 
     if (requirements_array = serialized_requirements.presence)
@@ -2558,7 +2559,11 @@ class Formula
     dependencies = self.class.spec_syms.to_h do |sym|
       [sym, send(sym)&.declared_deps]
     end
-    dependencies.transform_values! { |deps| deps&.reject(&:implicit?) } # Remove all implicit deps from all lists
+
+    # Implicit dependencies are only needed when installing from source
+    # since they are only used to download and unpack source files.
+    # @see DependencyCollector
+    dependencies.transform_values! { |deps| deps&.reject(&:implicit?) }
 
     hash = {}
 
@@ -2611,6 +2616,24 @@ class Formula
     end
 
     hash
+  end
+
+  def internal_dependencies_hash(spec_symbol)
+    raise ArgumentError, "Unsupported spec: #{spec_symbol}" unless [:stable, :head].include?(spec_symbol)
+    return unless (spec = public_send(spec_symbol))
+
+    spec.declared_deps.each_with_object({}) do |dep, dep_hash|
+      # Implicit dependencies are only needed when installing from source
+      # since they are only used to download and unpack source files.
+      # @see DependencyCollector
+      next if dep.implicit?
+
+      metadata_hash = {}
+      metadata_hash[:tags] = dep.tags if dep.tags.present?
+      metadata_hash[:uses_from_macos] = dep.bounds.presence if dep.uses_from_macos?
+
+      dep_hash[dep.name] = metadata_hash.presence
+    end
   end
 
   def on_system_blocks_exist?

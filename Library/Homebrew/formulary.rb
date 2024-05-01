@@ -211,38 +211,71 @@ module Formulary
       end
     end
 
-    add_deps = lambda do |spec|
-      T.bind(self, SoftwareSpec)
+    add_deps = if Homebrew::API.internal_json_v3?
+      lambda do |deps|
+        T.bind(self, SoftwareSpec)
 
-      dep_json = json_formula.fetch("#{spec}_dependencies", json_formula)
+        deps&.each do |name, info|
+          tags = case info&.dig("tags")
+          in Array => tag_list
+            tag_list.map(&:to_sym)
+          in String => tag
+            tag.to_sym
+          else
+            nil
+          end
 
-      dep_json["dependencies"]&.each do |dep|
-        # Backwards compatibility check - uses_from_macos used to be a part of dependencies on Linux
-        next if !json_formula.key?("uses_from_macos_bounds") && uses_from_macos_names.include?(dep) &&
-                !Homebrew::SimulateSystem.simulating_or_running_on_macos?
+          if info&.key?("uses_from_macos")
+            bounds = info["uses_from_macos"] || {}
+            bounds.deep_transform_keys!(&:to_sym)
+            bounds.deep_transform_values!(&:to_sym)
 
-        depends_on dep
+            if tags
+              uses_from_macos name => tags, **bounds
+            else
+              uses_from_macos name, **bounds
+            end
+          elsif tags
+            depends_on name => tags
+          else
+            depends_on name
+          end
+        end
       end
+    else
+      lambda do |spec|
+        T.bind(self, SoftwareSpec)
 
-      [:build, :test, :recommended, :optional].each do |type|
-        dep_json["#{type}_dependencies"]&.each do |dep|
+        dep_json = json_formula.fetch("#{spec}_dependencies", json_formula)
+
+        dep_json["dependencies"]&.each do |dep|
           # Backwards compatibility check - uses_from_macos used to be a part of dependencies on Linux
           next if !json_formula.key?("uses_from_macos_bounds") && uses_from_macos_names.include?(dep) &&
                   !Homebrew::SimulateSystem.simulating_or_running_on_macos?
 
-          depends_on dep => type
+          depends_on dep
         end
-      end
 
-      dep_json["uses_from_macos"]&.each_with_index do |dep, index|
-        bounds = dep_json.fetch("uses_from_macos_bounds", [])[index].dup || {}
-        bounds.deep_transform_keys!(&:to_sym)
-        bounds.deep_transform_values!(&:to_sym)
+        [:build, :test, :recommended, :optional].each do |type|
+          dep_json["#{type}_dependencies"]&.each do |dep|
+            # Backwards compatibility check - uses_from_macos used to be a part of dependencies on Linux
+            next if !json_formula.key?("uses_from_macos_bounds") && uses_from_macos_names.include?(dep) &&
+                    !Homebrew::SimulateSystem.simulating_or_running_on_macos?
 
-        if dep.is_a?(Hash)
-          uses_from_macos dep.deep_transform_values(&:to_sym).merge(bounds)
-        else
-          uses_from_macos dep, bounds
+            depends_on dep => type
+          end
+        end
+
+        dep_json["uses_from_macos"]&.each_with_index do |dep, index|
+          bounds = dep_json.fetch("uses_from_macos_bounds", [])[index].dup || {}
+          bounds.deep_transform_keys!(&:to_sym)
+          bounds.deep_transform_values!(&:to_sym)
+
+          if dep.is_a?(Hash)
+            uses_from_macos dep.deep_transform_values(&:to_sym).merge(bounds)
+          else
+            uses_from_macos dep, bounds
+          end
         end
       end
     end
@@ -267,7 +300,11 @@ module Formulary
           version Homebrew::API.internal_json_v3? ? json_formula["version"] : json_formula["versions"]["stable"]
           sha256 urls_stable["checksum"] if urls_stable["checksum"].present?
 
-          instance_exec(:stable, &add_deps)
+          if Homebrew::API.internal_json_v3?
+            instance_exec(json_formula["dependencies"], &add_deps)
+          else
+            instance_exec(:stable, &add_deps)
+          end
 
           requirements[:stable]&.each do |req|
             depends_on req
@@ -283,7 +320,11 @@ module Formulary
           }.compact
           url urls_head["url"], **url_spec
 
-          instance_exec(:head, &add_deps)
+          if Homebrew::API.internal_json_v3?
+            instance_exec(json_formula["head_dependencies"], &add_deps)
+          else
+            instance_exec(:head, &add_deps)
+          end
 
           requirements[:head]&.each do |req|
             depends_on req

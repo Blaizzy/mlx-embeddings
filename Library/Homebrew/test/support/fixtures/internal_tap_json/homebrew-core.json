@@ -32,15 +32,114 @@
       "post_install_defined": false,
       "ruby_source_path": "Formula/f/fennel.rb",
       "ruby_source_sha256": "5856e655fd1cea11496d67bc27fb14fee5cfbdea63c697c3773c7f247581197d",
-      "dependencies": [
-        "lua"
-      ],
       "version": "1.4.0",
       "bottle": {
         "files": {
           "all": {
             "cellar": ":any_skip_relocation",
             "sha256": "f46028597883cbc38864c61bd3fa402da9cb90ce97415d51a7b5279bc17f7bd0"
+          }
+        }
+      },
+      "dependencies": {
+        "lua": null
+      }
+    },
+    "inko": {
+      "desc": "Safe and concurrent object-oriented programming language",
+      "license": "MPL-2.0",
+      "homepage": "https://inko-lang.org/",
+      "urls": {
+        "stable": {
+          "url": "https://releases.inko-lang.org/0.14.0.tar.gz",
+          "checksum": "4e2c82911d6026f76c42ccc164dc45b1b5e331db2e9557460d9319d682668e65"
+        },
+        "head": {
+          "url": "https://github.com/inko-lang/inko.git",
+          "branch": "main"
+        }
+      },
+      "post_install_defined": false,
+      "ruby_source_path": "Formula/i/inko.rb",
+      "ruby_source_sha256": "843f6b5652483b971c83876201d68c95d5f32e67e55a75ac7c95d68c4350aa1c",
+      "version": "0.14.0",
+      "bottle": {
+        "files": {
+          "arm64_sonoma": {
+            "cellar": ":any",
+            "sha256": "f6ff66fdfb3aac69263c32a8a29d13e9d28a80ae33807f34460e55d8c1b228c6"
+          },
+          "arm64_ventura": {
+            "cellar": ":any",
+            "sha256": "be59d916d29d85bb8bc4474eb1c7d42a56236835c3c21b0e36fb9e9df0a25e6e"
+          },
+          "arm64_monterey": {
+            "cellar": ":any",
+            "sha256": "9522c1f89b997dedaa3167ce4dbfa4a2d8c660acddecd32a99a515922e851b52"
+          },
+          "sonoma": {
+            "cellar": ":any",
+            "sha256": "8e32d823ce9712ae2d5a2b9cbe0c9b727223098b3e66b003da087032be9f6818"
+          },
+          "ventura": {
+            "cellar": ":any",
+            "sha256": "178865db1e2b60b4085a2465e8a3879794030a6d22c99b58c95e4bdf5418ef1b"
+          },
+          "monterey": {
+            "cellar": ":any",
+            "sha256": "6ef924939c42d7bb2ec4e0d65cf293147a593f829619928d2580b419ec19b26c"
+          },
+          "x86_64_linux": {
+            "cellar": ":any_skip_relocation",
+            "sha256": "14a02c119990d6a17062290439ac74e6667b41dcb90b18cd90b36d2a09715e10"
+          }
+        }
+      },
+      "dependencies": {
+        "coreutils": {
+          "tags": [
+            "build"
+          ]
+        },
+        "rust": {
+          "tags": [
+            "build"
+          ]
+        },
+        "llvm@15": null,
+        "zstd": null,
+        "libffi": {
+          "uses_from_macos": {
+            "since": "catalina"
+          }
+        },
+        "ruby": {
+          "uses_from_macos": {
+            "since": "sierra"
+          }
+        }
+      },
+      "head_dependencies": {
+        "coreutils": {
+          "tags": [
+            "build"
+          ]
+        },
+        "rust": {
+          "tags": [
+            "build"
+          ]
+        },
+        "llvm@15": null,
+        "zstd": null,
+        "libffi": {
+          "uses_from_macos": {
+            "since": "catalina"
+          }
+        },
+        "ruby": {
+          "uses_from_macos": {
+            "since": "sierra"
           }
         }
       }
@@ -59,25 +158,6 @@
       "post_install_defined": false,
       "ruby_source_path": "Formula/p/ponyc.rb",
       "ruby_source_sha256": "81d51c25d18710191beb62f9f380bae3d878aad815a65ec1ee2a3b132c1fadb3",
-      "build_dependencies": [
-        "cmake",
-        "python@3.12"
-      ],
-      "uses_from_macos": [
-        {
-          "llvm": [
-            "build",
-            "test"
-          ]
-        },
-        "zlib"
-      ],
-      "uses_from_macos_bounds": [
-        {
-        },
-        {
-        }
-      ],
       "version": "0.58.1",
       "bottle": {
         "files": {
@@ -109,6 +189,28 @@
             "cellar": ":any_skip_relocation",
             "sha256": "ab49318d75eed3ee932c8e5add22f252ec0c852aad94945022877f926e93899f"
           }
+        }
+      },
+      "dependencies": {
+        "cmake": {
+          "tags": [
+            "build"
+          ]
+        },
+        "python@3.12": {
+          "tags": [
+            "build"
+          ]
+        },
+        "llvm": {
+          "tags": [
+            "build",
+            "test"
+          ],
+          "uses_from_macos": null
+        },
+        "zlib": {
+          "uses_from_macos": null
         }
       }
     }
