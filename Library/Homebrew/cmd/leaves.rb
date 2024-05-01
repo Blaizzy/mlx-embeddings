@@ -44,7 +44,7 @@ module Homebrew
       end
 
       def installed_as_dependency?(formula)
-        formula.any_installed_keg.installed_as_dependency
+        formula.any_installed_keg.tab.installed_as_dependency
       end
     end
   end
