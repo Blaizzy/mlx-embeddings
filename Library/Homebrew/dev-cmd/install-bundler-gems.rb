@@ -32,7 +32,6 @@ module Homebrew
           Homebrew.forget_user_gem_groups!
         end
 
-        Process::UID.change_privilege(Process.euid) if Process.euid != Process.uid
         Homebrew.install_bundler_gems!(groups:)
       end
     end
