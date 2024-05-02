@@ -656,8 +656,6 @@ module Cask
 
     sig { void }
     def audit_github_prerelease_version
-      return if cask.tap == "homebrew/cask-versions"
-
       odebug "Auditing GitHub prerelease"
       user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if online?
       return if user.nil?
@@ -670,8 +668,6 @@ module Cask
 
     sig { void }
     def audit_gitlab_prerelease_version
-      return if cask.tap == "homebrew/cask-versions"
-
       user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if online?
       return if user.nil?
 
