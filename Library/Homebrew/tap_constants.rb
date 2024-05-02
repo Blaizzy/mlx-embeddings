@@ -36,10 +36,10 @@ HOMEBREW_TAP_DIR_REGEX = T.let(
 HOMEBREW_TAP_PATH_REGEX = T.let(Regexp.new(HOMEBREW_TAP_DIR_REGEX.source + %r{(?:/.*)?\Z}.source).freeze, Regexp)
 # Match official cask taps, e.g `homebrew/cask`.
 HOMEBREW_CASK_TAP_REGEX = T.let(
-  %r{(?:([Cc]askroom)/(cask|versions)|([Hh]omebrew)/(?:homebrew-)?(cask|cask-[\w-]+))},
+  %r{(?:([Cc]askroom)/(cask)|([Hh]omebrew)/(?:homebrew-)?(cask|cask-[\w-]+))},
   Regexp,
 )
-# Match official taps' casks, e.g. `homebrew/cask/somecask` or `homebrew/cask-versions/somecask`.
+# Match official taps' casks, e.g. `homebrew/cask/somecask`.
 HOMEBREW_CASK_TAP_CASK_REGEX = T.let(
   %r{\A#{HOMEBREW_CASK_TAP_REGEX.source}/#{HOMEBREW_TAP_CASK_TOKEN_REGEX.source}\Z},
   Regexp,

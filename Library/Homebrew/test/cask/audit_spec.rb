@@ -335,22 +335,6 @@ RSpec.describe Cask::Audit, :cask do
         end
       end
 
-      context "when cask token contains version designation" do
-        let(:cask_token) { "token-beta" }
-
-        it "fails if the cask is from an official tap" do
-          allow(cask).to receive(:tap).and_return(CoreCaskTap.instance)
-
-          expect(run).to error_with(/token contains version designation/)
-        end
-
-        it "does not fail if the cask is from the `cask-versions` tap" do
-          allow(cask).to receive(:tap).and_return(Tap.fetch("homebrew/cask-versions"))
-
-          expect(run).to pass
-        end
-      end
-
       context "when cask token contains launcher" do
         let(:cask_token) { "token-launcher" }
 
