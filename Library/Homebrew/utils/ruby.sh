@@ -2,6 +2,9 @@
 # When bumping to a new major/minor version, also update the bounds in the Gemfile
 export HOMEBREW_REQUIRED_RUBY_VERSION=3.1
 
+# Disable Ruby options we don't need.
+export HOMEBREW_RUBY_DISABLE_OPTIONS="--disable=gems,rubyopt"
+
 # HOMEBREW_LIBRARY is from the user environment
 # shellcheck disable=SC2154
 test_ruby() {
@@ -144,4 +147,13 @@ If there's no Homebrew Portable Ruby available for your processor:
 
   export HOMEBREW_RUBY_PATH
   [[ -n "${HOMEBREW_LINUX}" && -n "${TERMINFO_DIRS}" ]] && export TERMINFO_DIRS
+}
+
+setup-gem-home-bundle-gemfile() {
+  GEM_VERSION="$("${HOMEBREW_RUBY_PATH}" "${HOMEBREW_RUBY_DISABLE_OPTIONS}" "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby_sh/ruby_gem_version.rb")"
+  GEM_HOME="${HOMEBREW_LIBRARY}/Homebrew/vendor/bundle/ruby/${GEM_VERSION}"
+  BUNDLE_GEMFILE="${HOMEBREW_LIBRARY}/Homebrew/Gemfile"
+
+  export GEM_HOME
+  export BUNDLE_GEMFILE
 }
