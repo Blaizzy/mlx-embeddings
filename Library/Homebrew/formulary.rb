@@ -226,7 +226,7 @@ module Formulary
           end
 
           if info&.key?("uses_from_macos")
-            bounds = info["uses_from_macos"] || {}
+            bounds = info["uses_from_macos"].dup || {}
             bounds.deep_transform_keys!(&:to_sym)
             bounds.deep_transform_values!(&:to_sym)
 

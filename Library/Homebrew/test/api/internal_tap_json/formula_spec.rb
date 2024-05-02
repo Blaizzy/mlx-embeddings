@@ -33,7 +33,7 @@ RSpec.describe "Internal Tap JSON -- Formula", type: :system do
 
       allow(Homebrew::API).to receive(:fetch_json_api_file)
         .with("internal/v3/homebrew-core.jws.json")
-        .and_return([JSON.parse(internal_tap_json), false])
+        .and_return([JSON.parse(internal_tap_json, freeze: true), false])
 
       # `Tap.tap_migration_oldnames` looks for renames in every
       # tap so `CoreCaskTap.tap_migrations` gets called and tries to
