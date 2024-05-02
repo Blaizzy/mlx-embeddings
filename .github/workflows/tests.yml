@@ -111,7 +111,6 @@ jobs:
           brew tap homebrew/aliases
           brew tap homebrew/bundle
           brew tap homebrew/cask-fonts
-          brew tap homebrew/cask-versions
           brew tap homebrew/command-not-found
           brew tap homebrew/formula-analytics
           brew tap homebrew/portable-ruby
@@ -134,8 +133,7 @@ jobs:
       - name: Run brew style on cask taps
         run: |
           brew style homebrew/cask \
-                     homebrew/cask-fonts \
-                     homebrew/cask-versions
+                     homebrew/cask-fonts
 
   formula-audit:
     name: formula audit
@@ -177,16 +175,14 @@ jobs:
       - name: Set up Homebrew all cask taps
         run: |
           brew tap homebrew/cask-fonts
-          brew tap homebrew/cask-versions
 
       - name: Run brew readall on all casks
-        run: brew readall --os=all --arch=all homebrew/cask homebrew/cask-fonts homebrew/cask-versions
+        run: brew readall --os=all --arch=all homebrew/cask homebrew/cask-fonts
 
       - name: Run brew audit --skip-style on casks
         run: |
           brew audit --skip-style --except=version --tap=homebrew/cask
           brew audit --skip-style --except=version --tap=homebrew/cask-fonts
-          brew audit --skip-style --except=version --tap=homebrew/cask-versions
 
       - name: Generate formula API
         run: brew generate-formula-api --dry-run
