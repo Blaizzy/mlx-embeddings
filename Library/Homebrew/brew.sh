@@ -897,9 +897,6 @@ then
   unset HOMEBREW_AUTO_UPDATE_CASK_TAP
 fi
 
-# Disable Ruby options we don't need.
-export HOMEBREW_RUBY_DISABLE_OPTIONS="--disable=gems,rubyopt"
-
 if [[ -z "${HOMEBREW_RUBY_WARNINGS}" ]]
 then
   export HOMEBREW_RUBY_WARNINGS="-W1"
