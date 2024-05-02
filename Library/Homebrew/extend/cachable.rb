@@ -7,9 +7,10 @@ module Cachable
     @cache ||= T.let({}, T.nilable(T::Hash[T.untyped, T.untyped]))
   end
 
+  # NOTE: We overwrite here instead of using `Hash#clear` to handle frozen hashes.
   sig { void }
   def clear_cache
-    cache.clear
+    overwrite_cache!({})
   end
 
   private
