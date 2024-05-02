@@ -430,7 +430,7 @@ module Cask
       add_error "cask token contains .app" if token.end_with? ".app"
 
       match_data = /-(?<designation>alpha|beta|rc|release-candidate)$/.match(cask.token)
-      if match_data && cask.tap&.official? && cask.tap != "homebrew/cask-versions"
+      if match_data && cask.tap&.official?
         add_error "cask token contains version designation '#{match_data[:designation]}'"
       end
 
