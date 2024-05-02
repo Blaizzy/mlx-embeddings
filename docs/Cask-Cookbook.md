@@ -1053,7 +1053,7 @@ The block will be called immediately before downloading; its result value will b
 
 You can use the `url` stanza with either a direct argument or a block but not with both.
 
-Example of using the block syntax: [vlc-nightly.rb](https://github.com/Homebrew/homebrew-cask-versions/blob/d3b9d0fdcf83f1f87c3ad64a852323a6e687c5f7/Casks/vlc-nightly.rb#L7-L12)
+Example of using the block syntax: [vlc@nightly.rb](https://github.com/Homebrew/homebrew-cask/blob/0b2b76ad8c3fbf4e1ee2f5e758640c4963ad6aaf/Casks/v/vlc%40nightly.rb#L7-L12)
 
 ##### Mixing additional URL parameters with the block syntax
 
@@ -1399,7 +1399,6 @@ These illustrate most of the rules for generating a token:
 
 Cask taps have naming conventions specific to each tap.
 
-* [Homebrew/cask-versions](https://github.com/Homebrew/homebrew-cask-versions/blob/HEAD/CONTRIBUTING.md#naming-versions-casks)
 * [Homebrew/cask-fonts](https://github.com/Homebrew/homebrew-cask-fonts/blob/HEAD/CONTRIBUTING.md#naming-font-casks)
 
 ### Special affixes
