@@ -67,7 +67,7 @@ module Homebrew
           regex_suffix = Regexp.escape(suffix).gsub("\\-", "-")
 
           # Example regex: `%r{href=.*?/packages.*?/example[._-]v?(\d+(?:\.\d+)*(?:[._-]post\d+)?)\.t}i`
-          regex_name = Regexp.escape(T.must(match[:package_name])).gsub("\\-", "-")
+          regex_name = Regexp.escape(T.must(match[:package_name])).gsub(/\\[_-]/, "[_-]")
           values[:regex] =
             %r{href=.*?/packages.*?/#{regex_name}[._-]v?(\d+(?:\.\d+)*(?:[._-]post\d+)?)#{regex_suffix}}i
 
