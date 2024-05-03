@@ -1375,6 +1375,14 @@ To convert the App’s Simplified Name (above) to a token:
 * Collapse a series of multiple hyphens into one hyphen.
 * Delete a leading or trailing hyphen.
 
+### Casks pinned to specific versions
+
+Casks pinned to a specific version of the application (i.e. [`carbon-copy-cloner@5`](https://github.com/Homebrew/homebrew-cask/blob/1b8f44198e5e184c597ee07454a1e10f97f36b15/Casks/c/carbon-copy-cloner%405.rb)) should use the same token as the standard cask with a suffix of `@<version-number`. For Carbon Copy Cloner (`carbon-copy-cloner`), pinned to version 5, the token should be `carbon-copy-cloner@5`.
+
+### Casks pinned to development channels
+
+Casks that use an development "channel", such as betas, should use the same token as the standard cask with a suffix of `@<channel>`. For Google Chrome (`google-chrome`), using the "beta" channel, the token should be `google-chrome@beta`.
+
 ### Cask filenames
 
 Casks are stored in a Ruby file named after the token, with the file extension `.rb`.
@@ -1394,6 +1402,14 @@ These illustrate most of the rules for generating a token:
 | `BetterTouchTool.app`  | BetterTouchTool     | bettertouchtool  | `bettertouchtool.rb` |
 | `LPK25 Editor.app`     | LPK25 Editor        | lpk25-editor     | `lpk25-editor.rb` |
 | `Sublime Text 2.app`   | Sublime Text        | sublime-text     | `sublime-text.rb` |
+
+For versioned/development channel casks:
+
+| Standard Cask Token     | Derivative          | Cask Token           | Filename  |
+|------------------------|---------------------|-----------------------|----------------------|
+| `google-chrome`        | Beta Channel        | `google-chrome@beta`  | `google-chrome@beta.rb` |
+| `vlc`                  | Nightly Channel     | `vlc@nightly`         | `vlc@nightly.rb` |
+| `carbon-copy-cloner`   | Pinned to version 5 | `carbon-copy-cloner@5`| `carbon-copy-cloner@5.rb` |
 
 #### Tap-specific cask token examples
 
