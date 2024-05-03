@@ -1377,7 +1377,7 @@ To convert the App’s Simplified Name (above) to a token:
 
 ### Casks pinned to specific versions
 
-Casks pinned to a specific version of the application (ie. [`carbon-copy-cloner@5`](https://github.com/Homebrew/homebrew-cask/blob/1b8f44198e5e184c597ee07454a1e10f97f36b15/Casks/c/carbon-copy-cloner%405.rb)) should use the same token as the standard cask with a suffix of `@<version-number`. For Carbon Copy Cloner (`carbon-copy-cloner`), pinned to version 5, the token should be `carbon-copy-cloner@5`.
+Casks pinned to a specific version of the application (i.e. [`carbon-copy-cloner@5`](https://github.com/Homebrew/homebrew-cask/blob/1b8f44198e5e184c597ee07454a1e10f97f36b15/Casks/c/carbon-copy-cloner%405.rb)) should use the same token as the standard cask with a suffix of `@<version-number`. For Carbon Copy Cloner (`carbon-copy-cloner`), pinned to version 5, the token should be `carbon-copy-cloner@5`.
 
 ### Casks pinned to development channels
 
