@@ -553,9 +553,7 @@ class Formula
   # ```ruby
   # resource("additional_files").stage { bin.install "my/extra/tool" }
   # ```
-  def resource(name)
-    active_spec.resource(name)
-  end
+  delegate resource: :active_spec
 
   # An old name for the formula.
   sig { returns(T.nilable(String)) }
