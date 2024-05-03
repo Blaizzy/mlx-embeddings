@@ -574,7 +574,7 @@ on_request: true)
 
     sig { void }
     def forbidden_tap_check
-      return if Homebrew::EnvConfig.forbidden_taps.blank? && Homebrew::EnvConfig.allowed_taps.blank?
+      return if Tap.allowed_taps.blank? && Tap.forbidden_taps.blank?
 
       owner = Homebrew::EnvConfig.forbidden_owner
       owner_contact = if (contact = Homebrew::EnvConfig.forbidden_owner_contact.presence)
@@ -587,24 +587,28 @@ on_request: true)
           next if dep_tap.blank? || dep_tap.allowed_by_env?
 
           dep_full_name = cask_or_formula.full_name
-          raise CaskCannotBeInstalledError.new(@cask, <<~EOS
-            The installation of #{@cask} has a dependency #{dep_full_name}
-            but #{owner} has either not allowed the #{dep_tap} in `HOMEBREW_ALLOWED_TAPS` or
-            has forbidden the #{dep_tap} in `HOMEBREW_FORBIDDEN_TAPS`.#{owner_contact}
-          EOS
-          )
+          error_message = +"The installation of #{@cask} has a dependency #{dep_full_name}\n" \
+                           "from the #{dep_tap} tap but #{owner} "
+          error_message << "has not allowed this tap in `HOMEBREW_ALLOWED_TAPS`" unless dep_tap.allowed_by_env?
+          error_message << " and\n" if !dep_tap.allowed_by_env? && dep_tap.forbidden_by_env?
+          error_message << "has forbidden this tap in `HOMEBREW_FORBIDDEN_TAPS`" if dep_tap.forbidden_by_env?
+          error_message << ".#{owner_contact}"
+
+          raise CaskCannotBeInstalledError.new(@cask, error_message)
         end
       end
 
       cask_tap = @cask.tap
       return if cask_tap.blank? || cask_tap.allowed_by_env?
 
-      raise CaskCannotBeInstalledError.new(@cask, <<~EOS
-        The installation of #{@cask.full_name} has the tap #{cask_tap}
-        which is either not allowed by #{owner} in `HOMEBREW_ALLOWED_TAPS` or
-        is forbidden by #{owner} in `HOMEBREW_FORBIDDEN_TAPS`.#{owner_contact}
-      EOS
-      )
+      error_message = +"The installation of #{@cask.full_name} has the tap #{cask_tap}\n" \
+                       "but #{owner} "
+      error_message << "has not allowed this tap in `HOMEBREW_ALLOWED_TAPS`" unless cask_tap.allowed_by_env?
+      error_message << " and\n" if !cask_tap.allowed_by_env? && cask_tap.forbidden_by_env?
+      error_message << "has forbidden this tap in `HOMEBREW_FORBIDDEN_TAPS`" if cask_tap.forbidden_by_env?
+      error_message << ".#{owner_contact}"
+
+      raise CaskCannotBeInstalledError.new(@cask, error_message)
     end
 
     sig { void }

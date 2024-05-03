@@ -1095,10 +1095,14 @@ class Tap
   def allowed_by_env?
     @allowed_by_env ||= begin
       allowed_taps = self.class.allowed_taps
-      forbidden_taps = self.class.forbidden_taps
 
-      (official? || allowed_taps.blank? || allowed_taps.include?(self)) && forbidden_taps.exclude?(self)
+      official? || allowed_taps.blank? || allowed_taps.include?(self)
     end
+  end
+
+  sig { returns(T::Boolean) }
+  def forbidden_by_env?
+    @forbidden_by_env ||= self.class.forbidden_taps.include?(self)
   end
 
   private
