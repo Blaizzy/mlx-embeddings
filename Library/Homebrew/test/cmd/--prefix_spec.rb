@@ -13,7 +13,7 @@ RSpec.describe Homebrew::Cmd::Prefix do
       .and be_a_success
   end
 
-  it "prints the prefix for a Formula", :integration_test do
+  it "prints the prefix for a Formula", :integration_test, :needs_homebrew_core do
     expect { brew_sh "--prefix", "wget" }
       .to output("#{ENV.fetch("HOMEBREW_PREFIX")}/opt/wget\n").to_stdout
       .and not_to_output.to_stderr
