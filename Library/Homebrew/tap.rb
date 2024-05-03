@@ -132,6 +132,30 @@ class Tap
     false
   end
 
+  sig { returns(T::Set[Tap]) }
+  def self.allowed_taps
+    allowed_tap_list = Homebrew::EnvConfig.allowed_taps.to_s.split
+
+    Set.new(allowed_tap_list.filter_map do |tap|
+      Tap.fetch(tap)
+    rescue Tap::InvalidNameError
+      opoo "Invalid tap name in `HOMEBREW_ALLOWED_TAPS`: #{tap}"
+      nil
+    end)
+  end
+
+  sig { returns(T::Set[Tap]) }
+  def self.forbidden_taps
+    forbidden_tap_list = Homebrew::EnvConfig.forbidden_taps.to_s.split
+
+    Set.new(forbidden_tap_list.filter_map do |tap|
+      Tap.fetch(tap)
+    rescue Tap::InvalidNameError
+      opoo "Invalid tap name in `HOMEBREW_FORBIDDEN_TAPS`: #{tap}"
+      nil
+    end)
+  end
+
   # @api public
   extend Enumerable
 
@@ -1053,6 +1077,16 @@ class Tap
       return list[formula_or_cask] if value.blank?
 
       list[formula_or_cask] == value
+    end
+  end
+
+  sig { returns(T::Boolean) }
+  def allowed_by_env?
+    @allowed_by_env ||= begin
+      allowed_taps = self.class.allowed_taps
+      forbidden_taps = self.class.forbidden_taps
+
+      (official? || allowed_taps.blank? || allowed_taps.include?(self)) && forbidden_taps.exclude?(self)
     end
   end
 

@@ -1379,30 +1379,9 @@ on_request: installed_on_request?, options:)
     EOS
   end
 
-  sig { params(tap: Tap, allowed_taps: T::Set[Tap], forbidden_taps: T::Set[Tap]).returns(T::Boolean) }
-  def allowed_tap?(tap, allowed_taps, forbidden_taps)
-    (tap.official? || allowed_taps.blank? || allowed_taps.include?(tap)) && forbidden_taps.exclude?(tap)
-  end
-
   sig { void }
   def forbidden_tap_check
-    forbidden_taps = Homebrew::EnvConfig.forbidden_taps.to_s.split
-    allowed_taps = Homebrew::EnvConfig.allowed_taps.to_s.split
-    return if forbidden_taps.blank? && allowed_taps.blank?
-
-    forbidden_taps_set = Set.new(forbidden_taps.filter_map do |tap|
-      Tap.fetch(tap)
-    rescue Tap::InvalidNameError
-      opoo "Invalid tap name in `HOMEBREW_FORBIDDEN_TAPS`: #{tap}"
-      nil
-    end)
-
-    allowed_taps_set = Set.new(allowed_taps.filter_map do |tap|
-      Tap.fetch(tap)
-    rescue Tap::InvalidNameError
-      opoo "Invalid tap name in `HOMEBREW_ALLOWED_TAPS`: #{tap}"
-      nil
-    end)
+    return if Homebrew::EnvConfig.forbidden_taps.blank? && Homebrew::EnvConfig.allowed_taps.blank?
 
     owner = Homebrew::EnvConfig.forbidden_owner
     owner_contact = if (contact = Homebrew::EnvConfig.forbidden_owner_contact.presence)
@@ -1412,8 +1391,7 @@ on_request: installed_on_request?, options:)
     unless ignore_deps?
       compute_dependencies.each do |(dep, _options)|
         dep_tap = dep.tap
-        next if dep_tap.blank?
-        next if allowed_tap?(dep_tap, allowed_taps_set, forbidden_taps_set)
+        next if dep_tap.blank? || dep_tap.allowed_by_env?
 
         raise CannotInstallFormulaError, <<~EOS
           The installation of #{formula.name} has a dependency #{dep.name}
@@ -1426,8 +1404,7 @@ on_request: installed_on_request?, options:)
     return if only_deps?
 
     formula_tap = formula.tap
-    return if formula_tap.blank?
-    return if allowed_tap?(formula_tap, allowed_taps_set, forbidden_taps_set)
+    return if formula_tap.blank? || formula_tap.allowed_by_env?
 
     raise CannotInstallFormulaError, <<~EOS
       The installation of #{formula.full_name} has the tap #{formula_tap}
