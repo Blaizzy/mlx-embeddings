@@ -81,9 +81,6 @@ class Formula
   def loaded_from_api?(*args, **options, &block); end
 
   sig { params(args: T.untyped, options: T.untyped, block: T.untyped).returns(T.untyped) }
-  def resource(*args, **options, &block); end
-
-  sig { params(args: T.untyped, options: T.untyped, block: T.untyped).returns(T.untyped) }
   def deps(*args, **options, &block); end
 
   sig { params(args: T.untyped, options: T.untyped, block: T.untyped).returns(T.untyped) }

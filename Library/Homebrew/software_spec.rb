@@ -123,6 +123,10 @@ class SoftwareSpec
     resources.key?(name)
   end
 
+  sig {
+    params(name: String, klass: T.class_of(Resource), block: T.nilable(T.proc.bind(Resource).void))
+      .returns(T.nilable(Resource))
+  }
   def resource(name, klass = Resource, &block)
     if block
       raise DuplicateResourceError, name if resource_defined?(name)
@@ -132,6 +136,7 @@ class SoftwareSpec
 
       resources[name] = res
       dependency_collector.add(res)
+      res
     else
       resources.fetch(name) { raise ResourceMissingError.new(owner, name) }
     end
