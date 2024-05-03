@@ -574,15 +574,7 @@ on_request: true)
 
     sig { void }
     def forbidden_tap_check
-      forbidden_taps = Homebrew::EnvConfig.forbidden_taps
-      return if forbidden_taps.blank?
-
-      forbidden_taps_set = Set.new(forbidden_taps.split.filter_map do |tap|
-        Tap.fetch(tap)
-      rescue Tap::InvalidNameError
-        opoo "Invalid tap name in `HOMEBREW_FORBIDDEN_TAPS`: #{tap}"
-        nil
-      end)
+      return if Homebrew::EnvConfig.forbidden_taps.blank? && Homebrew::EnvConfig.allowed_taps.blank?
 
       owner = Homebrew::EnvConfig.forbidden_owner
       owner_contact = if (contact = Homebrew::EnvConfig.forbidden_owner_contact.presence)
@@ -592,25 +584,25 @@ on_request: true)
       unless skip_cask_deps?
         cask_and_formula_dependencies.each do |cask_or_formula|
           dep_tap = cask_or_formula.tap
-          next if dep_tap.blank?
-          next unless forbidden_taps_set.include?(dep_tap)
+          next if dep_tap.blank? || dep_tap.allowed_by_env?
 
           dep_full_name = cask_or_formula.full_name
           raise CaskCannotBeInstalledError.new(@cask, <<~EOS
             The installation of #{@cask} has a dependency #{dep_full_name}
-            but the #{dep_tap} tap was forbidden by #{owner} in `HOMEBREW_FORBIDDEN_TAPS`.#{owner_contact}
+            but #{owner} has either not allowed the #{dep_tap} in `HOMEBREW_ALLOWED_TAPS` or
+            has forbidden the #{dep_tap} in `HOMEBREW_FORBIDDEN_TAPS`.#{owner_contact}
           EOS
           )
         end
       end
 
       cask_tap = @cask.tap
-      return if cask_tap.blank?
-      return unless forbidden_taps_set.include?(cask_tap)
+      return if cask_tap.blank? || cask_tap.allowed_by_env?
 
       raise CaskCannotBeInstalledError.new(@cask, <<~EOS
         The installation of #{@cask.full_name} has the tap #{cask_tap}
-        which was forbidden by #{owner} in `HOMEBREW_FORBIDDEN_TAPS`.#{owner_contact}
+        which is either not allowed by #{owner} in `HOMEBREW_ALLOWED_TAPS` or
+        is forbidden by #{owner} in `HOMEBREW_FORBIDDEN_TAPS`.#{owner_contact}
       EOS
       )
     end
