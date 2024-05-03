@@ -129,6 +129,7 @@ class GitHubRunnerMatrix
 
     ephemeral_suffix = +"-#{github_run_id}"
     ephemeral_suffix << "-deps" if @dependent_matrix
+    ephemeral_suffix << "-long" if runner_timeout == GITHUB_ACTIONS_LONG_TIMEOUT
     ephemeral_suffix.freeze
 
     MacOSVersion::SYMBOLS.each_value do |version|
