@@ -42,7 +42,7 @@ RSpec.describe Cask::CaskLoader::FromAPILoader, :cask do
       end
 
       it "returns nil for full name with invalid tap" do
-        expect(described_class.try_new("homebrew/cask-versions/#{token}")).to be_nil
+        expect(described_class.try_new("homebrew/cask-fonts/#{token}")).to be_nil
       end
     end
   end
