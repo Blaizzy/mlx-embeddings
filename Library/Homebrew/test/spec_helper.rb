@@ -160,6 +160,11 @@ RSpec.configure do |config|
     skip "Requires network connection." unless ENV["HOMEBREW_TEST_ONLINE"]
   end
 
+  config.before(:each, :needs_homebrew_core) do
+    core_tap_path = "#{ENV.fetch("HOMEBREW_LIBRARY")}/Taps/homebrew/homebrew-core"
+    skip "Requires homebrew/core to be tapped." unless Dir.exist?(core_tap_path)
+  end
+
   config.before do |example|
     next if example.metadata.key?(:needs_network)
     next if example.metadata.key?(:needs_utils_curl)
