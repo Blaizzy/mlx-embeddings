@@ -11,6 +11,11 @@ module Homebrew
     module_function
 
     ENVS = {
+      HOMEBREW_ALLOWED_TAPS:                     {
+        description: "A space-separated list of taps. Homebrew will refuse to install a " \
+                     "formula unless it and all of its dependencies are in an official tap " \
+                     "or in a tap on this list.",
+      },
       HOMEBREW_API_AUTO_UPDATE_SECS:             {
         description: "Check Homebrew's API for new formulae or cask data every " \
                      "`HOMEBREW_API_AUTO_UPDATE_SECS` seconds. Alternatively, disable API auto-update " \

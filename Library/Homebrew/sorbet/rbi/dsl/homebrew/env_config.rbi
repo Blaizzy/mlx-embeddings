@@ -9,6 +9,9 @@ module Homebrew::EnvConfig
     sig { returns(T.nilable(::String)) }
     def all_proxy; end
 
+    sig { returns(T.nilable(::String)) }
+    def allowed_taps; end
+
     sig { returns(Integer) }
     def api_auto_update_secs; end
 
