@@ -1238,7 +1238,7 @@ RSpec.describe Homebrew::FormulaAuditor do
 
   describe "#audit_conflicts" do
     before do
-      # We don't really test FormulaTextAuditor here
+      # We don't really test the formula text retrieval here
       allow(File).to receive(:open).and_return("")
     end
 
