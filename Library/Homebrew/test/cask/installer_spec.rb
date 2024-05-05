@@ -326,22 +326,27 @@ RSpec.describe Cask::Installer, :cask do
   end
 
   describe "#forbidden_tap_check" do
-    it "raises on forbidden tap on cask" do
-      ENV["HOMEBREW_FORBIDDEN_TAPS"] = tap = "homebrew/forbidden"
+    before do
+      allow(Tap).to receive(:forbidden_taps).and_return(forbidden_taps_set)
+    end
 
-      cask = Cask::Cask.new("homebrew-forbidden-tap", tap: Tap.fetch(tap)) do
+    let(:homebrew_forbidden) { Tap.fetch("homebrew/forbidden") }
+    let(:forbidden_taps_set) { Set.new([homebrew_forbidden]) }
+
+    it "raises on forbidden tap on cask" do
+      cask = Cask::Cask.new("homebrew-forbidden-tap", tap: homebrew_forbidden) do
         url "file://#{TEST_FIXTURE_DIR}/cask/container.tar.gz"
       end
 
       expect do
         described_class.new(cask).forbidden_tap_check
-      end.to raise_error(Cask::CaskCannotBeInstalledError, /has the tap #{tap}/)
+      end.to raise_error(Cask::CaskCannotBeInstalledError, /has the tap #{homebrew_forbidden}/)
     end
 
     it "raises on forbidden tap on dependency" do
-      ENV["HOMEBREW_FORBIDDEN_TAPS"] = dep_tap = "homebrew/forbidden"
+      dep_tap = homebrew_forbidden
       dep_name = "homebrew-forbidden-dependency-tap"
-      dep_path = Tap.fetch(dep_tap).new_formula_path(dep_name)
+      dep_path = dep_tap.new_formula_path(dep_name)
       dep_path.parent.mkpath
       dep_path.write <<~RUBY
         class #{Formulary.class_s(dep_name)} < Formula
@@ -358,7 +363,7 @@ RSpec.describe Cask::Installer, :cask do
 
       expect do
         described_class.new(cask).forbidden_tap_check
-      end.to raise_error(Cask::CaskCannotBeInstalledError, /but the #{dep_tap} tap was forbidden/)
+      end.to raise_error(Cask::CaskCannotBeInstalledError, /from the #{dep_tap} tap but/)
     ensure
       dep_path.parent.parent.rmtree
     end

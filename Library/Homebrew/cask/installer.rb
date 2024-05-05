@@ -584,7 +584,7 @@ on_request: true)
       unless skip_cask_deps?
         cask_and_formula_dependencies.each do |cask_or_formula|
           dep_tap = cask_or_formula.tap
-          next if dep_tap.blank? || dep_tap.allowed_by_env?
+          next if dep_tap.blank? || (dep_tap.allowed_by_env? && !dep_tap.forbidden_by_env?)
 
           dep_full_name = cask_or_formula.full_name
           error_message = +"The installation of #{@cask} has a dependency #{dep_full_name}\n" \
@@ -599,7 +599,7 @@ on_request: true)
       end
 
       cask_tap = @cask.tap
-      return if cask_tap.blank? || cask_tap.allowed_by_env?
+      return if cask_tap.blank? || (cask_tap.allowed_by_env? && !cask_tap.forbidden_by_env?)
 
       error_message = +"The installation of #{@cask.full_name} has the tap #{cask_tap}\n" \
                        "but #{owner} "
