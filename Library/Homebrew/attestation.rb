@@ -33,6 +33,12 @@ module Homebrew
     # @api private
     class InvalidAttestationError < RuntimeError; end
 
+    # Raised if attestation verification cannot continue due to missing
+    # credentials.
+    #
+    # @api private
+    class GhAuthNeeded < RuntimeError; end
+
     # Returns a path to a suitable `gh` executable for attestation verification.
     #
     # @api private
@@ -56,6 +62,7 @@ module Homebrew
     # `https://github/OWNER/REPO/.github/workflows/WORKFLOW.yml@REF` format.
     #
     # @return [Hash] the JSON-decoded response.
+    # @raise [GhAuthNeeded] on any authentication failures
     # @raise [InvalidAttestationError] on any verification failures
     #
     # @api private
@@ -69,9 +76,18 @@ module Homebrew
 
       cmd += ["--cert-identity", signing_workflow] if signing_workflow.present?
 
+      # Fail early if we have no credentials. The command below invariably
+      # fails without them, so this saves us a network roundtrip before
+      # presenting the user with the same error.
+      credentials = GitHub::API.credentials
+      raise GhAuthNeeded, "missing credentials" if credentials.blank?
+
       begin
-        output = Utils.safe_popen_read(*cmd)
+        output = Utils.safe_popen_read({ "GH_TOKEN" => credentials }, *cmd)
       rescue ErrorDuringExecution => e
+        # Even if we have credentials, they may be invalid or malformed.
+        raise GhAuthNeeded, "invalid credentials" if e.status.exitstatus == 4
+
         raise InvalidAttestationError, "attestation verification failed: #{e}"
       end
 
@@ -100,6 +116,7 @@ module Homebrew
     # This is a specialization of `check_attestation` for homebrew-core.
     #
     # @return [Hash] the JSON-decoded response
+    # @raise [GhAuthNeeded] on any authentication failures
     # @raise [InvalidAttestationError] on any verification failures
     #
     # @api private
