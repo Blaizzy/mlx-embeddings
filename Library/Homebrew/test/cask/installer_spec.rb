@@ -327,10 +327,14 @@ RSpec.describe Cask::Installer, :cask do
 
   describe "#forbidden_tap_check" do
     before do
+      allow(Tap).to receive(:allowed_taps).and_return(allowed_taps_set)
       allow(Tap).to receive(:forbidden_taps).and_return(forbidden_taps_set)
     end
 
     let(:homebrew_forbidden) { Tap.fetch("homebrew/forbidden") }
+    let(:allowed_third_party) { Tap.fetch("nothomebrew/allowed") }
+    let(:disallowed_third_party) { Tap.fetch("nothomebrew/notallowed") }
+    let(:allowed_taps_set) { Set.new([allowed_third_party]) }
     let(:forbidden_taps_set) { Set.new([homebrew_forbidden]) }
 
     it "raises on forbidden tap on cask" do
@@ -341,6 +345,24 @@ RSpec.describe Cask::Installer, :cask do
       expect do
         described_class.new(cask).forbidden_tap_check
       end.to raise_error(Cask::CaskCannotBeInstalledError, /has the tap #{homebrew_forbidden}/)
+    end
+
+    it "raises on not allowed third-party tap on cask" do
+      cask = Cask::Cask.new("homebrew-not-allowed-tap", tap: disallowed_third_party) do
+        url "file://#{TEST_FIXTURE_DIR}/cask/container.tar.gz"
+      end
+
+      expect do
+        described_class.new(cask).forbidden_tap_check
+      end.to raise_error(Cask::CaskCannotBeInstalledError, /has the tap #{disallowed_third_party}/)
+    end
+
+    it "does not raise on allowed tap on cask" do
+      cask = Cask::Cask.new("third-party-allowed-tap", tap: allowed_third_party) do
+        url "file://#{TEST_FIXTURE_DIR}/cask/container.tar.gz"
+      end
+
+      expect { described_class.new(cask).forbidden_tap_check }.not_to raise_error
     end
 
     it "raises on forbidden tap on dependency" do

@@ -259,10 +259,14 @@ RSpec.describe FormulaInstaller do
 
   describe "#forbidden_tap_check" do
     before do
+      allow(Tap).to receive(:allowed_taps).and_return(allowed_taps_set)
       allow(Tap).to receive(:forbidden_taps).and_return(forbidden_taps_set)
     end
 
     let(:homebrew_forbidden) { Tap.fetch("homebrew/forbidden") }
+    let(:allowed_third_party) { Tap.fetch("nothomebrew/allowed") }
+    let(:disallowed_third_party) { Tap.fetch("nothomebrew/notallowed") }
+    let(:allowed_taps_set) { Set.new([allowed_third_party]) }
     let(:forbidden_taps_set) { Set.new([homebrew_forbidden]) }
 
     it "raises on forbidden tap on formula" do
@@ -286,6 +290,50 @@ RSpec.describe FormulaInstaller do
       end.to raise_error(CannotInstallFormulaError, /has the tap #{f_tap}/)
     ensure
       f_path.parent.parent.rmtree
+    end
+
+    it "raises on not allowed third-party tap on formula" do
+      f_tap = disallowed_third_party
+      f_name = "homebrew-not-allowed-tap"
+      f_path = disallowed_third_party.new_formula_path(f_name)
+      f_path.parent.mkpath
+      f_path.write <<~RUBY
+        class #{Formulary.class_s(f_name)} < Formula
+          url "foo"
+          version "0.1"
+        end
+      RUBY
+      Formulary.cache.delete(f_path)
+
+      f = Formulary.factory("#{f_tap}/#{f_name}")
+      fi = described_class.new(f)
+
+      expect do
+        fi.forbidden_tap_check
+      end.to raise_error(CannotInstallFormulaError, /has the tap #{f_tap}/)
+    ensure
+      f_path.parent.parent.parent.rmtree
+    end
+
+    it "does not raise on allowed tap on formula" do
+      f_tap = allowed_third_party
+      f_name = "homebrew-allowed-tap"
+      f_path = allowed_third_party.new_formula_path(f_name)
+      f_path.parent.mkpath
+      f_path.write <<~RUBY
+        class #{Formulary.class_s(f_name)} < Formula
+          url "foo"
+          version "0.1"
+        end
+      RUBY
+      Formulary.cache.delete(f_path)
+
+      f = Formulary.factory("#{f_tap}/#{f_name}")
+      fi = described_class.new(f)
+
+      expect { fi.forbidden_tap_check }.not_to raise_error
+    ensure
+      f_path.parent.parent.parent.rmtree
     end
 
     it "raises on forbidden tap on dependency" do
