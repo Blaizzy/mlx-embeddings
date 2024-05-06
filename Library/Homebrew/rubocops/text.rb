@@ -30,8 +30,15 @@ module RuboCop
             problem "Formulae should not depend on both OpenSSL and LibreSSL (even optionally)."
           end
 
-          if formula_tap == "homebrew-core" && (depends_on?("veclibfort") || depends_on?("lapack"))
-            problem "Formulae in homebrew/core should use OpenBLAS as the default serial linear algebra library."
+          if formula_tap == "homebrew-core"
+            if depends_on?("veclibfort") || depends_on?("lapack")
+              problem "Formulae in homebrew/core should use OpenBLAS as the default serial linear algebra library."
+            end
+
+            if find_node_method_by_name(body_node, :keg_only)&.source&.include?("HOMEBREW_PREFIX")
+              problem "`keg_only` reason should not include `HOMEBREW_PREFIX` " \
+                      "as it creates confusing `brew info` output."
+            end
           end
 
           unless method_called_ever?(body_node, :go_resource)

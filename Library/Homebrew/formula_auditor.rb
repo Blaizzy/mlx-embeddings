@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "deprecate_disable"
-require "formula_text_auditor"
 require "formula_versions"
 require "resource_auditor"
 require "utils/shared_audits"
@@ -32,7 +31,7 @@ module Homebrew
       @core_tap = formula.tap&.core_tap? || options[:core_tap]
       @problems = []
       @new_formula_problems = []
-      @text = FormulaTextAuditor.new(formula.path)
+      @text = formula.path.open("rb", &:read)
       @specs = %w[stable head].filter_map { |s| formula.send(s) }
       @spdx_license_data = options[:spdx_license_data]
       @spdx_exception_data = options[:spdx_exception_data]
@@ -508,16 +507,6 @@ module Homebrew
 
       problem "#{formula.name} was relicensed to a non-open-source license from version #{relicensed_version}. " \
               "It must not be upgraded to version #{relicensed_version} or newer."
-    end
-
-    def audit_keg_only_reason
-      return unless @core_tap
-      return unless formula.keg_only?
-
-      keg_only_message = text.to_s.match(/keg_only\s+["'](.*)["']/)&.captures&.first
-      return unless keg_only_message&.include?("HOMEBREW_PREFIX")
-
-      problem "`keg_only` reason should not include `HOMEBREW_PREFIX` as it creates confusing `brew info` output."
     end
 
     def audit_versioned_keg_only
