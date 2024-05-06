@@ -132,11 +132,10 @@ class Tap
     false
   end
 
-  # rubocop:disable Style/ClassVars
-  # We want the the class variables below to be global to all `Tap` classes and subclasses.
   sig { returns(T::Set[Tap]) }
   def self.allowed_taps
-    @@allowed_taps ||= begin
+    cache_key = "allowed_taps_#{Homebrew::EnvConfig.allowed_taps.to_s.gsub(" ", "_")}".to_sym
+    cache[cache_key] ||= begin
       allowed_tap_list = Homebrew::EnvConfig.allowed_taps.to_s.split
 
       Set.new(allowed_tap_list.filter_map do |tap|
@@ -144,15 +143,14 @@ class Tap
       rescue Tap::InvalidNameError
         opoo "Invalid tap name in `HOMEBREW_ALLOWED_TAPS`: #{tap}"
         nil
-      end)
+      end).freeze
     end
-
-    @@allowed_taps.freeze
   end
 
   sig { returns(T::Set[Tap]) }
   def self.forbidden_taps
-    @@forbidden_taps ||= begin
+    cache_key = "forbidden_taps_#{Homebrew::EnvConfig.forbidden_taps.to_s.gsub(" ", "_")}".to_sym
+    cache[cache_key] ||= begin
       forbidden_tap_list = Homebrew::EnvConfig.forbidden_taps.to_s.split
 
       Set.new(forbidden_tap_list.filter_map do |tap|
@@ -160,12 +158,9 @@ class Tap
       rescue Tap::InvalidNameError
         opoo "Invalid tap name in `HOMEBREW_FORBIDDEN_TAPS`: #{tap}"
         nil
-      end)
+      end).freeze
     end
-
-    @@forbidden_taps.freeze
   end
-  # rubocop:enable Style/ClassVars
 
   # @api public
   extend Enumerable
