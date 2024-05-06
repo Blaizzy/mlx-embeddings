@@ -259,8 +259,7 @@ RSpec.describe FormulaInstaller do
 
   describe "#forbidden_tap_check" do
     before do
-      allow(Tap).to receive(:allowed_taps).and_return(allowed_taps_set)
-      allow(Tap).to receive(:forbidden_taps).and_return(forbidden_taps_set)
+      allow(Tap).to receive_messages(allowed_taps: allowed_taps_set, forbidden_taps: forbidden_taps_set)
     end
 
     let(:homebrew_forbidden) { Tap.fetch("homebrew/forbidden") }

@@ -134,7 +134,7 @@ class Tap
 
   sig { returns(T::Set[Tap]) }
   def self.allowed_taps
-    cache_key = "allowed_taps_#{Homebrew::EnvConfig.allowed_taps.to_s.gsub(" ", "_")}".to_sym
+    cache_key = :"allowed_taps_#{Homebrew::EnvConfig.allowed_taps.to_s.tr(" ", "_")}"
     cache[cache_key] ||= begin
       allowed_tap_list = Homebrew::EnvConfig.allowed_taps.to_s.split
 
@@ -149,7 +149,7 @@ class Tap
 
   sig { returns(T::Set[Tap]) }
   def self.forbidden_taps
-    cache_key = "forbidden_taps_#{Homebrew::EnvConfig.forbidden_taps.to_s.gsub(" ", "_")}".to_sym
+    cache_key = :"forbidden_taps_#{Homebrew::EnvConfig.forbidden_taps.to_s.tr(" ", "_")}"
     cache[cache_key] ||= begin
       forbidden_tap_list = Homebrew::EnvConfig.forbidden_taps.to_s.split
 
