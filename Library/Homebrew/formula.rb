@@ -553,7 +553,17 @@ class Formula
   # ```ruby
   # resource("additional_files").stage { bin.install "my/extra/tool" }
   # ```
-  delegate resource: :active_spec
+  #
+  # FIXME: This should not actually take a block. All resources should be defined
+  #        at the top-level using {Formula.resource} instead
+  #        (see https://github.com/Homebrew/brew/issues/17203#issuecomment-2093654431).
+  #
+  # @api public
+  sig {
+    params(name: String, klass: T.class_of(Resource), block: T.nilable(T.proc.bind(Resource).void))
+      .returns(T.nilable(Resource))
+  }
+  def resource(name, klass = Resource, &block) = active_spec.resource(name, klass, &block)
 
   # An old name for the formula.
   sig { returns(T.nilable(String)) }
@@ -3710,6 +3720,7 @@ class Formula
     # ```
     #
     # @api public
+    sig { params(name: String, klass: T.class_of(Resource), block: T.nilable(T.proc.bind(Resource).void)).void }
     def resource(name, klass = Resource, &block)
       specs.each do |spec|
         spec.resource(name, klass, &block) unless spec.resource_defined?(name)
