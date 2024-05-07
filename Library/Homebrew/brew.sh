@@ -508,6 +508,13 @@ HOMEBREW_CORE_REPOSITORY="${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core"
 # shellcheck disable=SC2034
 HOMEBREW_CASK_REPOSITORY="${HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-cask"
 
+# Shift the -v to the end of the parameter list
+if [[ "$1" == "-v" ]]
+then
+  shift
+  set -- "$@" -v
+fi
+
 # commands that take a single or no arguments.
 case "$1" in
   --version | -v)
@@ -791,13 +798,6 @@ You have not agreed to the Xcode license. Please resolve this by running:
 EOS
     fi
   fi
-fi
-
-if [[ "$1" == "-v" ]]
-then
-  # Shift the -v to the end of the parameter list
-  shift
-  set -- "$@" -v
 fi
 
 for arg in "$@"
