@@ -868,7 +868,7 @@ module Cask
 
     sig { returns(T::Boolean) }
     def bad_sourceforge_url?
-      bad_url_format?(/sourceforge/,
+      bad_url_format?(%r{((downloads|\.dl)\.|//)sourceforge},
                       [
                         %r{\Ahttps://sourceforge\.net/projects/[^/]+/files/latest/download\Z},
                         %r{\Ahttps://downloads\.sourceforge\.net/(?!(project|sourceforge)/)},

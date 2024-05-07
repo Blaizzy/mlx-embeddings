@@ -143,10 +143,7 @@ module RuboCop
             end
 
             if url.match?(%r{^https?://prdownloads\.})
-              problem <<~EOS.chomp
-                Don't use prdownloads in SourceForge urls (url is #{url}).
-                        See: http://librelist.com/browser/homebrew/2011/1/12/prdownloads-is-bad/
-              EOS
+              problem "Don't use prdownloads in SourceForge urls (url is #{url})."
             end
 
             if url.match?(%r{^http://\w+\.dl\.})
