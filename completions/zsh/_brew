@@ -191,7 +191,6 @@ __brew_internal_commands() {
     'options:Show install options specific to formula'
     'outdated:List installed casks and formulae that have an updated version available'
     'pin:Pin the specified formula, preventing them from being upgraded when issuing the `brew upgrade` formula command'
-    'postgresql-upgrade-database:Upgrades the database for the `postgresql` formula'
     'postinstall:Rerun the post-install steps for formula'
     'pr-automerge:Find pull requests that can be automatically merged using `brew pr-publish`'
     'pr-publish:Publish bottles for a pull request with GitHub Actions'
@@ -1432,15 +1431,6 @@ _brew_post_install() {
     '--verbose[Make some output more verbose]' \
     - installed_formula \
     '*::installed_formula:__brew_installed_formulae'
-}
-
-# brew postgresql-upgrade-database
-_brew_postgresql_upgrade_database() {
-  _arguments \
-    '--debug[Display any debugging information]' \
-    '--help[Show this message]' \
-    '--quiet[Make some output more quiet]' \
-    '--verbose[Make some output more verbose]'
 }
 
 # brew postinstall
