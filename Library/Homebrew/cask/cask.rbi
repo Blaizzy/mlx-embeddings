@@ -2,8 +2,6 @@
 
 module Cask
   class Cask
-    def appcast; end
-
     def appdir; end
 
     def artifacts; end

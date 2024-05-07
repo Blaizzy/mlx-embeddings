@@ -124,8 +124,8 @@ module Homebrew
 
       sig { override.void }
       def run
-        # Deprecated since this is now the default behavior.
-        odeprecated "`brew upgrade --ignore-pinned`" if args.ignore_pinned?
+        # Disabled since this is now the default behavior.
+        odisabled "`brew upgrade --ignore-pinned`" if args.ignore_pinned?
 
         formulae, casks = args.named.to_resolved_formulae_to_casks
         # If one or more formulae are specified, but no casks were

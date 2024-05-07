@@ -451,22 +451,6 @@ RSpec.describe FormulaInstaller do
   end
 
   describe "#install_service" do
-    it "works if plist is set" do
-      formula = Testball.new
-      path = formula.launchd_service_path
-      formula.opt_prefix.mkpath
-
-      expect(formula).to receive(:plist).twice.and_return("PLIST")
-      expect(formula).to receive(:launchd_service_path).and_call_original
-
-      installer = described_class.new(formula)
-      expect do
-        installer.install_service
-      end.not_to output(/Error: Failed to install service files/).to_stderr
-
-      expect(path).to exist
-    end
-
     it "works if service is set" do
       formula = Testball.new
       service = Homebrew::Service.new(formula)
@@ -474,14 +458,13 @@ RSpec.describe FormulaInstaller do
       service_path = formula.systemd_service_path
       formula.opt_prefix.mkpath
 
-      expect(formula).to receive(:plist).and_return(nil)
-      expect(formula).to receive(:service?).exactly(3).and_return(true)
-      expect(formula).to receive(:service).exactly(7).and_return(service)
+      expect(formula).to receive(:service?).and_return(true)
+      expect(formula).to receive(:service).at_least(:once).and_return(service)
       expect(formula).to receive(:launchd_service_path).and_call_original
       expect(formula).to receive(:systemd_service_path).and_call_original
 
       expect(service).to receive(:timed?).and_return(false)
-      expect(service).to receive(:command?).exactly(2).and_return(true)
+      expect(service).to receive(:command?).and_return(true)
       expect(service).to receive(:to_plist).and_return("plist")
       expect(service).to receive(:to_systemd_unit).and_return("unit")
 
@@ -502,15 +485,14 @@ RSpec.describe FormulaInstaller do
       timer_path = formula.systemd_timer_path
       formula.opt_prefix.mkpath
 
-      expect(formula).to receive(:plist).and_return(nil)
-      expect(formula).to receive(:service?).exactly(3).and_return(true)
-      expect(formula).to receive(:service).exactly(9).and_return(service)
+      expect(formula).to receive(:service?).and_return(true)
+      expect(formula).to receive(:service).at_least(:once).and_return(service)
       expect(formula).to receive(:launchd_service_path).and_call_original
       expect(formula).to receive(:systemd_service_path).and_call_original
       expect(formula).to receive(:systemd_timer_path).and_call_original
 
       expect(service).to receive(:timed?).and_return(true)
-      expect(service).to receive(:command?).exactly(2).and_return(true)
+      expect(service).to receive(:command?).and_return(true)
       expect(service).to receive(:to_plist).and_return("plist")
       expect(service).to receive(:to_systemd_unit).and_return("unit")
       expect(service).to receive(:to_systemd_timer).and_return("timer")
@@ -530,8 +512,7 @@ RSpec.describe FormulaInstaller do
       path = formula.launchd_service_path
       formula.opt_prefix.mkpath
 
-      expect(formula).to receive(:plist).and_return(nil)
-      expect(formula).to receive(:service?).exactly(3).and_return(nil)
+      expect(formula).to receive(:service?).and_return(nil)
       expect(formula).not_to receive(:launchd_service_path)
 
       installer = described_class.new(formula)
@@ -539,25 +520,6 @@ RSpec.describe FormulaInstaller do
         installer.install_service
       end.not_to output(/Error: Failed to install service files/).to_stderr
 
-      expect(path).not_to exist
-    end
-
-    it "errors with duplicate definition" do
-      formula = Testball.new
-      path = formula.launchd_service_path
-      formula.opt_prefix.mkpath
-
-      expect(formula).to receive(:plist).and_return("plist")
-      expect(formula).to receive(:service?).and_return(true)
-      expect(formula).not_to receive(:service)
-      expect(formula).not_to receive(:launchd_service_path)
-
-      installer = described_class.new(formula)
-      expect do
-        installer.install_service
-      end.to output("Error: Formula specified both service and plist\n").to_stderr
-
-      expect(Homebrew).to have_failed
       expect(path).not_to exist
     end
   end

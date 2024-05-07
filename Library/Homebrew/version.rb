@@ -345,12 +345,6 @@ class Version
     parse(specs.fetch(:tag, url), detected_from_url: true)
   end
 
-  sig { params(val: String).returns(Version) }
-  def self.create(val)
-    odisabled "`Version.create`", "`Version.new`"
-    new(val)
-  end
-
   sig { params(spec: T.any(String, Pathname), detected_from_url: T::Boolean).returns(T.attached_class) }
   def self.parse(spec, detected_from_url: false)
     spec = CGI.unescape(spec.to_s) if detected_from_url

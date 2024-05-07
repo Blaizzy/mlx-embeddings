@@ -118,20 +118,6 @@ class Tap
     [tap, token.downcase]
   end
 
-  sig { returns(CoreCaskTap) }
-  def self.default_cask_tap
-    odisabled "`Tap.default_cask_tap`", "`CoreCaskTap.instance`"
-
-    CoreCaskTap.instance
-  end
-
-  sig { params(force: T::Boolean).returns(T::Boolean) }
-  def self.install_default_cask_tap_if_necessary(force: false)
-    odisabled "`Tap.install_default_cask_tap_if_necessary`", "`CoreCaskTap.instance.ensure_installed!`"
-
-    false
-  end
-
   sig { returns(T::Set[Tap]) }
   def self.allowed_taps
     cache_key = :"allowed_taps_#{Homebrew::EnvConfig.allowed_taps.to_s.tr(" ", "_")}"
@@ -1057,7 +1043,7 @@ class Tap
   # An array of all installed {Tap} names.
   sig { returns(T::Array[String]) }
   def self.names
-    # odeprecated "`#{self}.names`"
+    odeprecated "`#{self}.names`"
 
     map(&:name).sort
   end
@@ -1169,7 +1155,7 @@ class AbstractCoreTap < Tap
 
   sig { void }
   def self.ensure_installed!
-    # odeprecated "`#{self}.ensure_installed!`", "`#{self}.instance.ensure_installed!`"
+    odeprecated "`#{self}.ensure_installed!`", "`#{self}.instance.ensure_installed!`"
 
     instance.ensure_installed!
   end

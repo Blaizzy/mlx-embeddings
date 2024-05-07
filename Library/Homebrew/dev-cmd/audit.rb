@@ -50,13 +50,11 @@ module Homebrew
                             "`--strict` and `--online`."
         switch "--new-formula",
                replacement: "--new",
-               # odeprecated: change this to true on disable and remove `args.new_formula?` calls
-               disable:     false,
+               disable:     true,
                hidden:      true
         switch "--new-cask",
                replacement: "--new",
-               # odeprecated: change this to true on disable and remove `args.new_formula?` calls
-               disable:     false,
+               disable:     true,
                hidden:      true
         switch "--[no-]signing",
                description: "Audit for signed apps, which are required on ARM"
@@ -105,9 +103,6 @@ module Homebrew
 
       sig { override.void }
       def run
-        new_cask = args.new? || args.new_cask?
-        new_formula = args.new? || args.new_formula?
-
         Formulary.enable_factory_cache!
 
         os_arch_combinations = args.os_arch_combinations
@@ -115,8 +110,8 @@ module Homebrew
         Homebrew.auditing = true
         Homebrew.inject_dump_stats!(FormulaAuditor, /^audit_/) if args.audit_debug?
 
-        strict = new_formula || args.strict?
-        online = new_formula || args.online?
+        strict = args.new? || args.strict?
+        online = args.new? || args.online?
         tap_audit = args.tap.present?
         skip_style = args.skip_style? || args.no_named? || tap_audit
         no_named_args = T.let(false, T::Boolean)
@@ -176,7 +171,7 @@ module Homebrew
 
         if only_cops
           style_options[:only_cops] = only_cops
-        elsif new_formula || new_cask
+        elsif args.new?
           nil
         elsif except_cops
           style_options[:except_cops] = except_cops
@@ -207,7 +202,7 @@ module Homebrew
 
           only = only_cops ? ["style"] : args.only
           options = {
-            new_formula:,
+            new_formula:         args.new?,
             strict:,
             online:,
             git:                 args.git?,
@@ -262,7 +257,7 @@ module Homebrew
                 # No need for `|| nil` for `--[no-]signing`
                 # because boolean switches are already `nil` if not passed
                 audit_signing:         args.signing?,
-                audit_new_cask:        new_cask || nil,
+                audit_new_cask:        args.new? || nil,
                 audit_token_conflicts: args.token_conflicts? || nil,
                 quarantine:            true,
                 any_named_args:        !no_named_args,

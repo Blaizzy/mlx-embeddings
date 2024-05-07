@@ -427,7 +427,7 @@ module FormulaCellarChecks
     problem_if_output(check_elisp_root(formula.share, formula.name))
     problem_if_output(check_python_packages(formula.lib, formula.deps))
     problem_if_output(check_shim_references(formula.prefix))
-    problem_if_output(check_plist(formula.prefix, formula.plist))
+    problem_if_output(check_plist(formula.prefix, formula.launchd_service_path))
     problem_if_output(check_python_symlinks(formula.name, formula.keg_only?))
     problem_if_output(check_cpuid_instruction(formula))
     problem_if_output(check_binary_arches(formula))

@@ -79,7 +79,7 @@ class AbstractDownloadStrategy
   # Disable any output during downloading.
   sig { void }
   def shutup!
-    odeprecated "`AbstractDownloadStrategy#shutup!`", "`AbstractDownloadStrategy#quiet!`"
+    odisabled "`AbstractDownloadStrategy#shutup!`", "`AbstractDownloadStrategy#quiet!`"
     quiet!
   end
 

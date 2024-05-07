@@ -49,8 +49,6 @@ module Homebrew
                description: "Specify the <SHA-256> checksum of the new download."
         flag   "--fork-org=",
                description: "Use the specified GitHub organization for forking."
-        switch "-f", "--force",
-               hidden: true
 
         conflicts "--dry-run", "--write"
         conflicts "--no-audit", "--online"
@@ -62,8 +60,7 @@ module Homebrew
 
       sig { override.void }
       def run
-        odeprecated "brew bump-cask-pr --online" if args.online?
-        odisabled "brew bump-cask-pr --force" if args.force?
+        odisabled "brew bump-cask-pr --online" if args.online?
 
         # This will be run by `brew audit` or `brew style` later so run it first to
         # not start spamming during normal output.

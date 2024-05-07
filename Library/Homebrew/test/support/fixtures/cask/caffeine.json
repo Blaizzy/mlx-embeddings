@@ -8,7 +8,6 @@
   "desc": null,
   "homepage": "https://brew.sh/",
   "url": "https://www.example.com/cask/caffeine.zip",
-  "appcast": null,
   "version": "1.2.3",
   "installed": null,
   "outdated": false,

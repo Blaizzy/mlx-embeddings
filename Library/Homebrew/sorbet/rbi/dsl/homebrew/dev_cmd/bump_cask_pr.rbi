@@ -16,12 +16,6 @@ class Homebrew::DevCmd::BumpCaskPr::Args < Homebrew::CLI::Args
   sig { returns(T::Boolean) }
   def dry_run?; end
 
-  sig { returns(T::Boolean) }
-  def f?; end
-
-  sig { returns(T::Boolean) }
-  def force?; end
-
   sig { returns(T.nilable(String)) }
   def fork_org; end
 

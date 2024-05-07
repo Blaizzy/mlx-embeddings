@@ -92,19 +92,6 @@ RSpec.describe Homebrew::Livecheck::SkipConditions do
           regex(/"stable":"(\d+(?:\.\d+)+)"/i)
         end
       end,
-      discontinued:      Cask::Cask.new("test_discontinued") do
-        version "0.0.1"
-        sha256 :no_check
-
-        url "https://brew.sh/test-0.0.1.tgz"
-        name "Test Discontinued"
-        desc "Discontinued test cask"
-        homepage "https://brew.sh"
-
-        caveats do
-          discontinued
-        end
-      end,
       deprecated:        Cask::Cask.new("test_deprecated") do
         version "0.0.1"
         sha256 :no_check
@@ -258,13 +245,6 @@ RSpec.describe Homebrew::Livecheck::SkipConditions do
         },
       },
       cask:    {
-        discontinued:      {
-          cask:   "test_discontinued",
-          status: "discontinued",
-          meta:   {
-            livecheckable: false,
-          },
-        },
         deprecated:        {
           cask:   "test_deprecated",
           status: "deprecated",
@@ -377,13 +357,6 @@ RSpec.describe Homebrew::Livecheck::SkipConditions do
 
         expect(skip_conditions.skip_information(formulae[:skip_with_message]))
           .to eq(status_hashes[:formula][:skip_with_message])
-      end
-    end
-
-    context "when a cask without a livecheckable is discontinued" do
-      it "skips" do
-        expect(skip_conditions.skip_information(casks[:discontinued]))
-          .to eq(status_hashes[:cask][:discontinued])
       end
     end
 
@@ -500,13 +473,6 @@ RSpec.describe Homebrew::Livecheck::SkipConditions do
 
         expect(skip_conditions.referenced_skip_information(formulae[:skip_with_message], original_name))
           .to eq(status_hashes[:formula][:skip_with_message].merge({ formula: original_name }))
-      end
-    end
-
-    context "when a cask without a livecheckable is discontinued" do
-      it "errors" do
-        expect { skip_conditions.referenced_skip_information(casks[:discontinued], original_name) }
-          .to raise_error(RuntimeError, "Referenced cask (test_discontinued) is skipped as discontinued")
       end
     end
 
@@ -631,14 +597,6 @@ RSpec.describe Homebrew::Livecheck::SkipConditions do
 
         expect { skip_conditions.print_skip_information(status_hashes[:formula][:skip_with_message]) }
           .to output("test_skip_with_message: skipped - Not maintained\n").to_stdout
-          .and not_to_output.to_stderr
-      end
-    end
-
-    context "when the cask is discontinued without a livecheckable" do
-      it "prints skip information" do
-        expect { skip_conditions.print_skip_information(status_hashes[:cask][:discontinued]) }
-          .to output("test_discontinued: discontinued\n").to_stdout
           .and not_to_output.to_stderr
       end
     end

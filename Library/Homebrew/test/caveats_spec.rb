@@ -31,30 +31,9 @@ RSpec.describe Caveats do
   end
 
   describe "#caveats" do
-    context "when f.plist is not nil", :needs_macos do
+    context "when service block is defined" do
       before do
-        allow(Utils::Service).to receive(:launchctl?).and_return(true)
-      end
-
-      it "prints error when no launchd is present" do
-        f = formula do
-          url "foo-1.0"
-          def plist
-            "plist_test.plist"
-          end
-        end
-        expect(Utils::Service).to receive(:launchctl?).once.and_return(false)
-        expect(described_class.new(f).caveats).to include("provides a launchd plist which can only be used on macOS!")
-      end
-
-      it "prints plist login information when f.plist_startup is nil" do
-        f = formula do
-          url "foo-1.0"
-          def plist
-            "plist_test.plist"
-          end
-        end
-        expect(described_class.new(f).caveats).to include("restart at login")
+        allow(Utils::Service).to receive_messages(launchctl?: true, systemctl?: true)
       end
 
       it "gives information about service" do
@@ -71,41 +50,6 @@ RSpec.describe Caveats do
         expect(caveats).to include("background service")
       end
 
-      it "warns about brew failing under tmux" do
-        f = formula do
-          url "foo-1.0"
-          def plist
-            "plist_test.plist"
-          end
-        end
-        ENV["HOMEBREW_TMUX"] = "1"
-        allow(Homebrew).to receive(:_system).and_return(true)
-        allow(Homebrew).to receive(:_system).with("/usr/bin/pbpaste").and_return(false)
-        caveats = described_class.new(f).caveats
-
-        expect(caveats).to include("WARNING:")
-        expect(caveats).to include("tmux")
-      end
-
-      # TODO: This should get deprecated and the service block `plist_name` method should get used instead.
-      it "prints info when there are custom service files" do
-        f = formula do
-          url "foo-1.0"
-          def plist_name
-            "custom.mxcl.foo"
-          end
-        end
-        expect(Utils::Service).to receive(:installed?).with(f).once.and_return(true)
-        expect(Utils::Service).to receive(:running?).with(f).once.and_return(false)
-        expect(described_class.new(f).caveats).to include("restart at login")
-      end
-    end
-
-    context "when service block is defined" do
-      before do
-        allow(Utils::Service).to receive_messages(launchctl?: true, systemctl?: true)
-      end
-
       it "prints warning when no service daemon is found" do
         f = formula do
           url "foo-1.0"
@@ -113,8 +57,8 @@ RSpec.describe Caveats do
             run [bin/"cmd"]
           end
         end
-        expect(Utils::Service).to receive(:launchctl?).twice.and_return(false)
-        expect(Utils::Service).to receive(:systemctl?).once.and_return(false)
+        expect(Utils::Service).to receive(:launchctl?).and_return(false)
+        expect(Utils::Service).to receive(:systemctl?).and_return(false)
         expect(described_class.new(f).caveats).to include("service which can only be used on macOS or systemd!")
       end
 

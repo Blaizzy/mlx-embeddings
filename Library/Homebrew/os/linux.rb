@@ -58,60 +58,60 @@ module OS
     raise "Loaded OS::Linux on generic OS!" if ENV["HOMEBREW_TEST_GENERIC_OS"]
 
     def self.version
-      odeprecated "`MacOS.version` on Linux"
+      odisabled "`MacOS.version` on Linux"
       MacOSVersion::NULL
     end
 
     def self.full_version
-      odeprecated "`MacOS.full_version` on Linux"
+      odisabled "`MacOS.full_version` on Linux"
       MacOSVersion::NULL
     end
 
     def self.languages
-      odeprecated "`MacOS.languages` on Linux"
+      odisabled "`MacOS.languages` on Linux"
       @languages ||= Array(ENV["LANG"]&.slice(/[a-z]+/)).uniq
     end
 
     def self.language
-      odeprecated "`MacOS.language` on Linux"
+      odisabled "`MacOS.language` on Linux"
       languages.first
     end
 
     def self.sdk_root_needed?
-      odeprecated "`MacOS.sdk_root_needed?` on Linux"
+      odisabled "`MacOS.sdk_root_needed?` on Linux"
       false
     end
 
     def self.sdk_path_if_needed(_version = nil)
-      odeprecated "`MacOS.sdk_path_if_needed` on Linux"
+      odisabled "`MacOS.sdk_path_if_needed` on Linux"
       nil
     end
 
     def self.sdk_path(_version = nil)
-      odeprecated "`MacOS.sdk_path` on Linux"
+      odisabled "`MacOS.sdk_path` on Linux"
       nil
     end
 
     module Xcode
       def self.version
-        odeprecated "`MacOS::Xcode.version` on Linux"
+        odisabled "`MacOS::Xcode.version` on Linux"
         ::Version::NULL
       end
 
       def self.installed?
-        odeprecated "`MacOS::Xcode.installed?` on Linux"
+        odisabled "`MacOS::Xcode.installed?` on Linux"
         false
       end
     end
 
     module CLT
       def self.version
-        odeprecated "`MacOS::CLT.version` on Linux"
+        odisabled "`MacOS::CLT.version` on Linux"
         ::Version::NULL
       end
 
       def self.installed?
-        odeprecated "`MacOS::CLT.installed?` on Linux"
+        odisabled "`MacOS::CLT.installed?` on Linux"
         false
       end
     end

@@ -59,12 +59,6 @@ class Homebrew::DevCmd::Audit::Args < Homebrew::CLI::Args
   def new?; end
 
   sig { returns(T::Boolean) }
-  def new_cask?; end
-
-  sig { returns(T::Boolean) }
-  def new_formula?; end
-
-  sig { returns(T::Boolean) }
   def online?; end
 
   sig { returns(T.nilable(T::Array[String])) }
