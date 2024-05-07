@@ -63,10 +63,8 @@ RSpec.describe RuboCop::Cop::FormulaAudit::Urls do
       "col" => 2,
     }, {
       "url" => "http://prdownloads.sourceforge.net/foo/foo-1.tar.gz",
-      "msg" => <<~EOS.chomp,
-        Don't use prdownloads in SourceForge urls (url is http://prdownloads.sourceforge.net/foo/foo-1.tar.gz).
-                See: http://librelist.com/browser/homebrew/2011/1/12/prdownloads-is-bad/
-      EOS
+      "msg" => "Don't use prdownloads in SourceForge urls " \
+               "(url is http://prdownloads.sourceforge.net/foo/foo-1.tar.gz).",
       "col" => 2,
     }, {
       "url" => "http://foo.dl.sourceforge.net/sourceforge/foozip/foozip_1.0.tar.bz2",
