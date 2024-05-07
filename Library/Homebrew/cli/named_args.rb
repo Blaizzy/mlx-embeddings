@@ -103,6 +103,20 @@ module Homebrew
                                                 .map(&:freeze).freeze
       end
 
+      # Returns formulae and casks after validating that a tap is present for each of them.
+      def to_formulae_and_casks_with_taps
+        to_formulae_and_casks.each do |formula_or_cask|
+          case formula_or_cask
+          when Formula
+            odie "Formula #{formula_or_cask.name} is not in a tap!" unless formula_or_cask.tap
+          when Cask::Cask
+            odie "Cask #{formula_or_cask.token} is not in a tap!" unless formula_or_cask.tap
+          else
+            raise ArgumentError, "Expected a formula or a cask: #{formula_or_cask}"
+          end
+        end
+      end
+
       def to_formulae_and_casks_and_unavailable(only: parent&.only_formula_or_cask, method: nil)
         @to_formulae_casks_unknowns ||= {}
         @to_formulae_casks_unknowns[method] = downcased_unique_named.map do |name|

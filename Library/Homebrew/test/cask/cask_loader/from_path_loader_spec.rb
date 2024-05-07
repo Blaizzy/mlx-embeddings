@@ -42,5 +42,14 @@ RSpec.describe Cask::CaskLoader::FromPathLoader do
                            /invalid 'depends_on macos' value: unknown or unsupported macOS version:/)
       end
     end
+
+    context "with a JSON cask file" do
+      let(:sourcefile_path) { TEST_FIXTURE_DIR/"cask/everything.json" }
+
+      it "loads a cask with a source file path" do
+        cask = described_class.new(sourcefile_path).load(config: nil)
+        expect(cask.sourcefile_path).to eq sourcefile_path
+      end
+    end
   end
 end

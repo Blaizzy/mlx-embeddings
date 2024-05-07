@@ -78,13 +78,7 @@ module Homebrew
             casks = args.formula? ? [] : Cask::Caskroom.casks
             formulae + casks
           elsif args.named.present?
-            if args.formula?
-              args.named.to_formulae
-            elsif args.cask?
-              args.named.to_casks
-            else
-              args.named.to_formulae_and_casks
-            end
+            args.named.to_formulae_and_casks_with_taps
           end
 
           formulae_and_casks = formulae_and_casks&.sort_by do |formula_or_cask|
