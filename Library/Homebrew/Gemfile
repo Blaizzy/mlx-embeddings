@@ -35,7 +35,7 @@ end
 group :man, optional: true do
   gem "kramdown", require: false
 end
-group :pr_upload, optional: true do
+group :pr_upload, :bottle, optional: true do
   gem "json_schemer", require: false
 end
 group :prof, optional: true do

@@ -6,6 +6,7 @@ require "fileutils"
 require "formula"
 require "utils/bottles"
 require "tab"
+require "sbom"
 require "keg"
 require "formula_versions"
 require "utils/inreplace"
@@ -95,6 +96,8 @@ module Homebrew
 
       sig { override.void }
       def run
+        Homebrew.install_bundler_gems!(groups: ["bottle"])
+
         if args.merge?
           Homebrew.install_bundler_gems!(groups: ["ast"])
           return merge
@@ -491,6 +494,8 @@ module Homebrew
             Tab.clear_cache
             Dependency.clear_cache
             Requirement.clear_cache
+            SBOM.clear_cache
+
             tab = keg.tab
             original_tab = tab.dup
             tab.poured_from_bottle = false
@@ -502,6 +507,9 @@ module Homebrew
             else
               tab.write
             end
+
+            sbom = SBOM.create(formula)
+            sbom.write
 
             keg.consistent_reproducible_symlink_permissions!
 
