@@ -258,10 +258,20 @@ RSpec.describe FormulaInstaller do
   end
 
   describe "#forbidden_tap_check" do
+    before do
+      allow(Tap).to receive_messages(allowed_taps: allowed_taps_set, forbidden_taps: forbidden_taps_set)
+    end
+
+    let(:homebrew_forbidden) { Tap.fetch("homebrew/forbidden") }
+    let(:allowed_third_party) { Tap.fetch("nothomebrew/allowed") }
+    let(:disallowed_third_party) { Tap.fetch("nothomebrew/notallowed") }
+    let(:allowed_taps_set) { Set.new([allowed_third_party]) }
+    let(:forbidden_taps_set) { Set.new([homebrew_forbidden]) }
+
     it "raises on forbidden tap on formula" do
-      ENV["HOMEBREW_FORBIDDEN_TAPS"] = f_tap = "homebrew/forbidden"
+      f_tap = homebrew_forbidden
       f_name = "homebrew-forbidden-tap"
-      f_path = Tap.fetch(f_tap).new_formula_path(f_name)
+      f_path = homebrew_forbidden.new_formula_path(f_name)
       f_path.parent.mkpath
       f_path.write <<~RUBY
         class #{Formulary.class_s(f_name)} < Formula
@@ -281,10 +291,54 @@ RSpec.describe FormulaInstaller do
       f_path.parent.parent.rmtree
     end
 
+    it "raises on not allowed third-party tap on formula" do
+      f_tap = disallowed_third_party
+      f_name = "homebrew-not-allowed-tap"
+      f_path = disallowed_third_party.new_formula_path(f_name)
+      f_path.parent.mkpath
+      f_path.write <<~RUBY
+        class #{Formulary.class_s(f_name)} < Formula
+          url "foo"
+          version "0.1"
+        end
+      RUBY
+      Formulary.cache.delete(f_path)
+
+      f = Formulary.factory("#{f_tap}/#{f_name}")
+      fi = described_class.new(f)
+
+      expect do
+        fi.forbidden_tap_check
+      end.to raise_error(CannotInstallFormulaError, /has the tap #{f_tap}/)
+    ensure
+      f_path.parent.parent.parent.rmtree
+    end
+
+    it "does not raise on allowed tap on formula" do
+      f_tap = allowed_third_party
+      f_name = "homebrew-allowed-tap"
+      f_path = allowed_third_party.new_formula_path(f_name)
+      f_path.parent.mkpath
+      f_path.write <<~RUBY
+        class #{Formulary.class_s(f_name)} < Formula
+          url "foo"
+          version "0.1"
+        end
+      RUBY
+      Formulary.cache.delete(f_path)
+
+      f = Formulary.factory("#{f_tap}/#{f_name}")
+      fi = described_class.new(f)
+
+      expect { fi.forbidden_tap_check }.not_to raise_error
+    ensure
+      f_path.parent.parent.parent.rmtree
+    end
+
     it "raises on forbidden tap on dependency" do
-      ENV["HOMEBREW_FORBIDDEN_TAPS"] = dep_tap = "homebrew/forbidden"
+      dep_tap = homebrew_forbidden
       dep_name = "homebrew-forbidden-dependency-tap"
-      dep_path = Tap.fetch(dep_tap).new_formula_path(dep_name)
+      dep_path = homebrew_forbidden.new_formula_path(dep_name)
       dep_path.parent.mkpath
       dep_path.write <<~RUBY
         class #{Formulary.class_s(dep_name)} < Formula
@@ -310,7 +364,7 @@ RSpec.describe FormulaInstaller do
 
       expect do
         fi.forbidden_tap_check
-      end.to raise_error(CannotInstallFormulaError, /but the #{dep_tap} tap was forbidden/)
+      end.to raise_error(CannotInstallFormulaError, /from the #{dep_tap} tap but/)
     ensure
       dep_path.parent.parent.rmtree
     end

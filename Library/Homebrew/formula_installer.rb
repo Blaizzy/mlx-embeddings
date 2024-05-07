@@ -1391,15 +1391,7 @@ on_request: installed_on_request?, options:)
 
   sig { void }
   def forbidden_tap_check
-    forbidden_taps = Homebrew::EnvConfig.forbidden_taps
-    return if forbidden_taps.blank?
-
-    forbidden_taps_set = Set.new(forbidden_taps.split.filter_map do |tap|
-      Tap.fetch(tap)
-    rescue Tap::InvalidNameError
-      opoo "Invalid tap name in `HOMEBREW_FORBIDDEN_TAPS`: #{tap}"
-      nil
-    end)
+    return if Tap.allowed_taps.blank? && Tap.forbidden_taps.blank?
 
     owner = Homebrew::EnvConfig.forbidden_owner
     owner_contact = if (contact = Homebrew::EnvConfig.forbidden_owner_contact.presence)
@@ -1409,26 +1401,32 @@ on_request: installed_on_request?, options:)
     unless ignore_deps?
       compute_dependencies.each do |(dep, _options)|
         dep_tap = dep.tap
-        next if dep_tap.blank?
-        next unless forbidden_taps_set.include?(dep_tap)
+        next if dep_tap.blank? || (dep_tap.allowed_by_env? && !dep_tap.forbidden_by_env?)
 
-        raise CannotInstallFormulaError, <<~EOS
-          The installation of #{formula.name} has a dependency #{dep.name}
-          but the #{dep_tap} tap was forbidden by #{owner} in `HOMEBREW_FORBIDDEN_TAPS`.#{owner_contact}
-        EOS
+        error_message = +"The installation of #{formula.name} has a dependency #{dep.name}\n" \
+                         "from the #{dep_tap} tap but #{owner} "
+        error_message << "has not allowed this tap in `HOMEBREW_ALLOWED_TAPS`" unless dep_tap.allowed_by_env?
+        error_message << " and\n" if !dep_tap.allowed_by_env? && dep_tap.forbidden_by_env?
+        error_message << "has forbidden this tap in `HOMEBREW_FORBIDDEN_TAPS`" if dep_tap.forbidden_by_env?
+        error_message << ".#{owner_contact}"
+
+        raise CannotInstallFormulaError, error_message
       end
     end
 
     return if only_deps?
 
     formula_tap = formula.tap
-    return if formula_tap.blank?
-    return unless forbidden_taps_set.include?(formula_tap)
+    return if formula_tap.blank? || (formula_tap.allowed_by_env? && !formula_tap.forbidden_by_env?)
 
-    raise CannotInstallFormulaError, <<~EOS
-      The installation of #{formula.full_name} has the tap #{formula_tap}
-      which was forbidden by #{owner} in `HOMEBREW_FORBIDDEN_TAPS`.#{owner_contact}
-    EOS
+    error_message = +"The installation of #{formula.full_name} has the tap #{formula_tap}\n" \
+                     "but #{owner} "
+    error_message << "has not allowed this tap in `HOMEBREW_ALLOWED_TAPS`" unless formula_tap.allowed_by_env?
+    error_message << " and\n" if !formula_tap.allowed_by_env? && formula_tap.forbidden_by_env?
+    error_message << "has forbidden this tap in `HOMEBREW_FORBIDDEN_TAPS`" if formula_tap.forbidden_by_env?
+    error_message << ".#{owner_contact}"
+
+    raise CannotInstallFormulaError, error_message
   end
 
   sig { void }

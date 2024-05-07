@@ -142,6 +142,24 @@ RSpec.describe Tap do
     end
   end
 
+  describe "::allowed_taps" do
+    before { allow(Homebrew::EnvConfig).to receive(:allowed_taps).and_return("homebrew/allowed") }
+
+    it "returns a set of allowed taps according to the environment" do
+      expect(described_class.allowed_taps)
+        .to contain_exactly(described_class.fetch("homebrew/allowed"))
+    end
+  end
+
+  describe "::forbidden_taps" do
+    before { allow(Homebrew::EnvConfig).to receive(:forbidden_taps).and_return("homebrew/forbidden") }
+
+    it "returns a set of forbidden taps according to the environment" do
+      expect(described_class.forbidden_taps)
+        .to contain_exactly(described_class.fetch("homebrew/forbidden"))
+    end
+  end
+
   specify "::names" do
     expect(described_class.names.sort).to eq(["homebrew/core", "homebrew/foo"])
   end

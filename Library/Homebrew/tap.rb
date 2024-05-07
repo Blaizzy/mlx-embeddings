@@ -132,6 +132,36 @@ class Tap
     false
   end
 
+  sig { returns(T::Set[Tap]) }
+  def self.allowed_taps
+    cache_key = :"allowed_taps_#{Homebrew::EnvConfig.allowed_taps.to_s.tr(" ", "_")}"
+    cache[cache_key] ||= begin
+      allowed_tap_list = Homebrew::EnvConfig.allowed_taps.to_s.split
+
+      Set.new(allowed_tap_list.filter_map do |tap|
+        Tap.fetch(tap)
+      rescue Tap::InvalidNameError
+        opoo "Invalid tap name in `HOMEBREW_ALLOWED_TAPS`: #{tap}"
+        nil
+      end).freeze
+    end
+  end
+
+  sig { returns(T::Set[Tap]) }
+  def self.forbidden_taps
+    cache_key = :"forbidden_taps_#{Homebrew::EnvConfig.forbidden_taps.to_s.tr(" ", "_")}"
+    cache[cache_key] ||= begin
+      forbidden_tap_list = Homebrew::EnvConfig.forbidden_taps.to_s.split
+
+      Set.new(forbidden_tap_list.filter_map do |tap|
+        Tap.fetch(tap)
+      rescue Tap::InvalidNameError
+        opoo "Invalid tap name in `HOMEBREW_FORBIDDEN_TAPS`: #{tap}"
+        nil
+      end).freeze
+    end
+  end
+
   # @api public
   extend Enumerable
 
@@ -1054,6 +1084,20 @@ class Tap
 
       list[formula_or_cask] == value
     end
+  end
+
+  sig { returns(T::Boolean) }
+  def allowed_by_env?
+    @allowed_by_env ||= begin
+      allowed_taps = self.class.allowed_taps
+
+      official? || allowed_taps.blank? || allowed_taps.include?(self)
+    end
+  end
+
+  sig { returns(T::Boolean) }
+  def forbidden_by_env?
+    @forbidden_by_env ||= self.class.forbidden_taps.include?(self)
   end
 
   private
