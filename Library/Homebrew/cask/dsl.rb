@@ -248,16 +248,6 @@ module Cask
       end
     end
 
-    # Sets the cask's appcast URL.
-    #
-    # @api public
-    def appcast(*args, **kwargs)
-      set_unique_stanza(:appcast, args.empty? && kwargs.empty?) do
-        odisabled "the `appcast` stanza", "the `livecheck` stanza"
-        true
-      end
-    end
-
     # Sets the cask's container type or nested container path.
     #
     # ### Examples
@@ -417,7 +407,7 @@ module Cask
     end
 
     def discontinued?
-      # odeprecated "`discontinued?`", "`deprecated?` or `disabled?`"
+      odeprecated "`discontinued?`", "`deprecated?` or `disabled?`"
       @caveats&.discontinued? == true
     end
 

@@ -35,11 +35,6 @@ module Homebrew
         switch "--autosquash",
                description: "Automatically reformat and reword commits in the pull request to our " \
                             "preferred format."
-        switch "--no-autosquash",
-               description: "Skip automatically reformatting and rewording commits in the pull request to our " \
-                            "preferred format.",
-               disable:     true, # odisabled: remove this switch with 4.3.0
-               hidden:      true
         switch "--branch-okay",
                description: "Do not warn if pulling to a branch besides the repository default (useful for testing)."
         switch "--resolve",

@@ -352,7 +352,6 @@ module Cask
         "homepage"             => homepage,
         "url"                  => url,
         "url_specs"            => url_specs,
-        "appcast"              => appcast,
         "version"              => version,
         "installed"            => installed_version,
         "installed_time"       => install_time&.to_i,

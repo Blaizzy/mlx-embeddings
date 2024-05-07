@@ -45,8 +45,6 @@ module Homebrew
                description: "Limit number of package results returned."
         flag   "--start-with=",
                description: "Letter or word that the list of package results should alphabetically follow."
-        switch "-f", "--force",
-               hidden:      true
 
         conflicts "--cask", "--formula"
         conflicts "--tap=", "--installed"
@@ -62,8 +60,6 @@ module Homebrew
         if args.limit.present? && !args.formula? && !args.cask?
           raise UsageError, "`--limit` must be used with either `--formula` or `--cask`."
         end
-
-        odisabled "brew bump --force" if args.force?
 
         Homebrew.with_no_api_env do
           formulae_and_casks = if args.tap

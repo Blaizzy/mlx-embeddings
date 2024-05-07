@@ -112,7 +112,6 @@ Layout/LineLength:
       ' url "',
       ' mirror "',
       " plist_options ",
-      ' appcast "',
       ' executable: "',
       ' font "',
       ' homepage "',

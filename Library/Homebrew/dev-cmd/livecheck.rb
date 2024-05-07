@@ -120,19 +120,7 @@ module Homebrew
       private
 
       def watchlist_path
-        @watchlist_path ||= begin
-          watchlist = File.expand_path(Homebrew::EnvConfig.livecheck_watchlist)
-
-          unless File.exist?(watchlist)
-            previous_default_watchlist = File.expand_path("~/.brew_livecheck_watchlist")
-            if File.exist?(previous_default_watchlist)
-              odisabled "~/.brew_livecheck_watchlist", "~/.homebrew/livecheck_watchlist.txt"
-              watchlist = previous_default_watchlist
-            end
-          end
-
-          watchlist
-        end
+        @watchlist_path ||= File.expand_path(Homebrew::EnvConfig.livecheck_watchlist)
       end
     end
   end

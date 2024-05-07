@@ -152,14 +152,10 @@ class Caveats
   end
 
   def service_caveats
-    return if !formula.plist && !formula.service? && !Utils::Service.installed?(formula) && !keg&.plist_installed?
+    return if !formula.service? && !Utils::Service.installed?(formula) && !keg&.plist_installed?
     return if formula.service? && !formula.service.command? && !Utils::Service.installed?(formula)
 
     s = []
-
-    return <<~EOS if !Utils::Service.launchctl? && formula.plist
-      #{Formatter.warning("Warning:")} #{formula.name} provides a launchd plist which can only be used on macOS!
-    EOS
 
     # Brew services only works with these two tools
     return <<~EOS if !Utils::Service.systemctl? && !Utils::Service.launchctl? && formula.service.command?

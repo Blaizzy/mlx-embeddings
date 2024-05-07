@@ -17,12 +17,6 @@ class Homebrew::DevCmd::Bump::Args < Homebrew::CLI::Args
   def casks?; end
 
   sig { returns(T::Boolean) }
-  def f?; end
-
-  sig { returns(T::Boolean) }
-  def force?; end
-
-  sig { returns(T::Boolean) }
   def formula?; end
 
   sig { returns(T::Boolean) }

@@ -20,7 +20,7 @@ RSpec.describe Migrator do
   let(:old_pin) { HOMEBREW_PINNED_KEGS/"oldname" }
 
   before do |example|
-    allow(new_formula).to receive(:oldname).and_return("oldname")
+    allow(new_formula).to receive(:oldnames).and_return(["oldname"])
 
     # do not create directories for error tests
     next if example.metadata[:description].start_with?("raises an error")

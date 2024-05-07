@@ -565,13 +565,6 @@ class Formula
   }
   def resource(name, klass = Resource, &block) = active_spec.resource(name, klass, &block)
 
-  # An old name for the formula.
-  sig { returns(T.nilable(String)) }
-  def oldname
-    odisabled "`Formula#oldname`", "`Formula#oldnames`"
-    @oldname ||= oldnames.first
-  end
-
   # Old names for the formula.
   #
   # @api internal
@@ -604,16 +597,6 @@ class Formula
 
   # The declared {Dependency}s for the currently active {SoftwareSpec} (i.e. including those provided by macOS)
   delegate declared_deps: :active_spec
-
-  # Dependencies provided by macOS for the currently active {SoftwareSpec}.
-  def uses_from_macos_elements
-    odisabled "`Formula#uses_from_macos_elements`", "`Formula#declared_deps`"
-  end
-
-  # Dependency names provided by macOS for the currently active {SoftwareSpec}.
-  def uses_from_macos_names
-    odisabled "`Formula#uses_from_macos_names`", "`Formula#declared_deps`"
-  end
 
   # The {Requirement}s for the currently active {SoftwareSpec}.
   delegate requirements: :active_spec
@@ -1241,8 +1224,7 @@ class Formula
   #
   # @see https://www.unix.com/man-page/all/5/plist/ <code>plist(5)</code> man page
   def plist
-    # odeprecated: consider removing entirely in 4.3.0
-    # odeprecated "`Formula#plist`", "`Homebrew::Service`"
+    odeprecated "`Formula#plist`", "`Homebrew::Service`"
     nil
   end
 
@@ -2401,7 +2383,7 @@ class Formula
       "name"                     => name,
       "full_name"                => full_name,
       "tap"                      => tap&.name,
-      "oldname"                  => oldnames.first, # deprecated
+      "oldname"                  => ("odeprecated" if oldnames.first),
       "oldnames"                 => oldnames,
       "aliases"                  => aliases.sort,
       "versioned_formulae"       => versioned_formulae.map(&:name),
@@ -3731,7 +3713,7 @@ class Formula
     #
     # @api public
     def go_resource(name, &block)
-      # odeprecated "`Formula.go_resource`", "Go modules"
+      odeprecated "`Formula.go_resource`", "Go modules"
       specs.each { |spec| spec.go_resource(name, &block) }
     end
 

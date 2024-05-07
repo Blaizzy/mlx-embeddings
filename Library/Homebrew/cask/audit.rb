@@ -289,7 +289,7 @@ module Cask
 
     sig { params(livecheck_result: T.any(NilClass, T::Boolean, Symbol)).void }
     def audit_hosting_with_livecheck(livecheck_result: audit_livecheck_version)
-      return if cask.discontinued? || cask.deprecated? || cask.disabled?
+      return if cask.deprecated? || cask.disabled?
       return if cask.version&.latest?
       return unless cask.url
       return if block_url_offline?
@@ -682,7 +682,7 @@ module Cask
     sig { void }
     def audit_github_repository_archived
       # Deprecated/disabled casks may have an archived repository.
-      return if cask.discontinued? || cask.deprecated? || cask.disabled?
+      return if cask.deprecated? || cask.disabled?
 
       user, repo = get_repo_data(%r{https?://github\.com/([^/]+)/([^/]+)/?.*}) if online?
       return if user.nil?
@@ -696,7 +696,7 @@ module Cask
     sig { void }
     def audit_gitlab_repository_archived
       # Deprecated/disabled casks may have an archived repository.
-      return if cask.discontinued? || cask.deprecated? || cask.disabled?
+      return if cask.deprecated? || cask.disabled?
 
       user, repo = get_repo_data(%r{https?://gitlab\.com/([^/]+)/([^/]+)/?.*}) if online?
       return if user.nil?

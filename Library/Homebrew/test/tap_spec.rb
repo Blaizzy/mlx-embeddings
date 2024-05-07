@@ -160,10 +160,6 @@ RSpec.describe Tap do
     end
   end
 
-  specify "::names" do
-    expect(described_class.names.sort).to eq(["homebrew/core", "homebrew/foo"])
-  end
-
   specify "attributes" do
     expect(homebrew_foo_tap.user).to eq("Homebrew")
     expect(homebrew_foo_tap.repo).to eq("foo")

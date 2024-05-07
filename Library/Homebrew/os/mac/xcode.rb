@@ -123,7 +123,7 @@ module OS
 
       sig { returns(T::Boolean) }
       def self.installed?
-        odeprecated "`MacOS::Xcode.installed?` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
+        odisabled "`MacOS::Xcode.installed?` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
         !prefix.nil?
       end
 
@@ -175,7 +175,7 @@ module OS
       # @api internal
       sig { returns(::Version) }
       def self.version
-        odeprecated "`MacOS::Xcode.version` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
+        odisabled "`MacOS::Xcode.version` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
         # may return a version string
         # that is guessed based on the compiler, so do not
         # use it in order to check if Xcode is installed.
@@ -274,7 +274,7 @@ module OS
       # Returns true even if outdated tools are installed.
       sig { returns(T::Boolean) }
       def self.installed?
-        odeprecated "`MacOS::CLT.installed?` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
+        odisabled "`MacOS::CLT.installed?` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
         !version.null?
       end
 
@@ -409,7 +409,7 @@ module OS
       # @api internal
       sig { returns(::Version) }
       def self.version
-        odeprecated "`MacOS::CLT.version` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
+        odisabled "`MacOS::CLT.version` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
         if @version ||= detect_version
           ::Version.new @version
         else

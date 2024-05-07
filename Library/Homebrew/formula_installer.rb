@@ -1049,12 +1049,7 @@ on_request: installed_on_request?, options:)
 
   sig { void }
   def install_service
-    if formula.service? && formula.plist
-      ofail "Formula specified both service and plist"
-      return
-    end
-
-    if formula.service? && formula.service.command?
+    service = if formula.service? && formula.service.command?
       service_path = formula.systemd_service_path
       service_path.atomic_write(formula.service.to_systemd_unit)
       service_path.chmod 0644
@@ -1064,14 +1059,9 @@ on_request: installed_on_request?, options:)
         timer_path.atomic_write(formula.service.to_systemd_timer)
         timer_path.chmod 0644
       end
-    end
 
-    service = if formula.service? && formula.service.command?
       formula.service.to_plist
-    elsif formula.plist
-      formula.plist
     end
-
     return unless service
 
     launchd_service_path = formula.launchd_service_path
