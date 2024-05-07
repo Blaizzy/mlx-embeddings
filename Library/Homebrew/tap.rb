@@ -445,6 +445,21 @@ class Tap
       raise TapAlreadyTappedError, name unless shallow?
     end
 
+    if !allowed_by_env? || forbidden_by_env?
+      owner = Homebrew::EnvConfig.forbidden_owner
+      owner_contact = if (contact = Homebrew::EnvConfig.forbidden_owner_contact.presence)
+        "\n#{contact}"
+      end
+
+      error_message = +"The installation of the #{full_name} was requested but #{owner}\n"
+      error_message << "has not allowed this tap in `HOMEBREW_ALLOWED_TAPS`" unless allowed_by_env?
+      error_message << " and\n" if !allowed_by_env? && forbidden_by_env?
+      error_message << "has forbidden this tap in `HOMEBREW_FORBIDDEN_TAPS`" if forbidden_by_env?
+      error_message << ".#{owner_contact}"
+
+      odie error_message
+    end
+
     # ensure git is installed
     Utils::Git.ensure_installed!
 
