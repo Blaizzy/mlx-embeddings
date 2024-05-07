@@ -2217,6 +2217,9 @@ User\-specific environment files take precedence over prefix\-specific files and
 .P
 Note that these files do not support shell variable expansion e\.g\. \fB$HOME\fP or command execution e\.g\. \fB$(cat file)\fP\&\.
 .TP
+\fBHOMEBREW_ALLOWED_TAPS\fP
+A space\-separated list of taps\. Homebrew will refuse to install a formula unless it and all of its dependencies are in an official tap or in a tap on this list\.
+.TP
 \fBHOMEBREW_API_AUTO_UPDATE_SECS\fP
 Check Homebrew\[u2019]s API for new formulae or cask data every \fBHOMEBREW_API_AUTO_UPDATE_SECS\fP seconds\. Alternatively, disable API auto\-update checks entirely with \fBHOMEBREW_NO_AUTO_UPDATE\fP\&\.
 .RS

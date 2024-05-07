@@ -3470,6 +3470,12 @@ prefix-specific files take precedence over system-wide files (unless
 Note that these files do not support shell variable expansion e.g. `$HOME` or
 command execution e.g. `$(cat file)`.
 
+`HOMEBREW_ALLOWED_TAPS`
+
+: A space-separated list of taps. Homebrew will refuse to install a formula
+  unless it and all of its dependencies are in an official tap or in a tap on
+  this list.
+
 `HOMEBREW_API_AUTO_UPDATE_SECS`
 
 : Check Homebrew's API for new formulae or cask data every
