@@ -74,7 +74,7 @@ RSpec.describe Caveats do
         expect(described_class.new(f).caveats).to include("startup")
       end
 
-      it "prints service login information when f.plist_startup is nil" do
+      it "prints service login information" do
         f = formula do
           url "foo-1.0"
           service do
