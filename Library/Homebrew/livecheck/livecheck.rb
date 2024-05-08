@@ -762,11 +762,8 @@ module Homebrew
         # in the strategy's `#find_versions` method once we figure out why
         # `strategy.method(:find_versions).parameters` isn't working as
         # expected.
-        if strategy_name == "ExtractPlist"
-          strategy_args[:cask] = cask if cask.present?
-        else
-          strategy_args[:url] = url
-        end
+        strategy_args[:cask] = cask if strategy_name == "ExtractPlist" && cask.present?
+        strategy_args[:url] = url
         strategy_args.compact!
 
         strategy_data = strategy.find_versions(**strategy_args, &livecheck_strategy_block)
