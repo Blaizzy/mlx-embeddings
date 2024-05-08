@@ -67,7 +67,7 @@ GEM
       rspec-support (~> 3.13.0)
     rspec-github (2.4.0)
       rspec-core (~> 3.0)
-    rspec-mocks (3.13.0)
+    rspec-mocks (3.13.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-retry (0.6.2)
@@ -159,7 +159,6 @@ GEM
 
 PLATFORMS
   aarch64-linux
-  arm-linux
   arm64-darwin
   x86_64-darwin
   x86_64-linux
