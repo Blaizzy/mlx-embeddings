@@ -266,7 +266,8 @@ EOS
     then
       git checkout --force "${UPSTREAM_BRANCH}" "${QUIET_ARGS[@]}"
     else
-      if [[ -n "${UPSTREAM_TAG}" && "${UPSTREAM_BRANCH}" != "master" ]]
+      if [[ -n "${UPSTREAM_TAG}" && "${UPSTREAM_BRANCH}" != "master" ]] &&
+         [[ "${INITIAL_BRANCH}" != "master" ]]
       then
         git branch --force "master" "origin/master" "${QUIET_ARGS[@]}"
       fi
