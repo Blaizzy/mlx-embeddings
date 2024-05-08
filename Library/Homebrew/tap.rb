@@ -465,7 +465,7 @@ class Tap
       return
     elsif (core_tap? || core_cask_tap?) && !Homebrew::EnvConfig.no_install_from_api? && !force
       odie "Tapping #{name} is no longer typically necessary.\n" \
-           "Add #{Formatter.option("--force")} if you are sure you need it for local development."
+           "Add #{Formatter.option("--force")} if you are sure you need it for contributing to Homebrew."
     end
 
     clear_cache
