@@ -57,6 +57,13 @@ module Homebrew
 
           Or `brew tap #{tap}` and then `brew install <formula>`.
 
+          Optionally, in a [brew-bundle](https://github.com/Homebrew/homebrew-bundle) `Brewfile`:
+
+          ```ruby
+          tap "#{tap}"
+          brew "<formula>"
+          ```
+
           ## Documentation
 
           `brew help`, `man brew` or check [Homebrew's documentation](https://docs.brew.sh).
