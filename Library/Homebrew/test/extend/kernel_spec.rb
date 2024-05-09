@@ -230,12 +230,12 @@ RSpec.describe Kernel do
       expect do
         odeprecated(
           "method", "replacement",
-          caller:  ["#{HOMEBREW_LIBRARY}/Taps/homebrew/homebrew-core/"],
+          caller:  ["#{HOMEBREW_LIBRARY}/Taps/playbrew/homebrew-play/"],
           disable: true
         )
       end.to raise_error(
         MethodDeprecatedError,
-        %r{method.*replacement.*homebrew/core.*/Taps/homebrew/homebrew-core/}m,
+        %r{method.*replacement.*playbrew/homebrew-play.*/Taps/playbrew/homebrew-play/}m,
       )
     end
   end

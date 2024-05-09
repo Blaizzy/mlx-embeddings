@@ -15,7 +15,7 @@ module Homebrew
     def self.check_style_and_print(files, **options)
       success = check_style_impl(files, :print, **options)
 
-      if ENV["GITHUB_ACTIONS"] && !success
+      if GitHub::Actions.env_set? && !success
         check_style_json(files, **options).each do |path, offenses|
           offenses.each do |o|
             line = o.location.line

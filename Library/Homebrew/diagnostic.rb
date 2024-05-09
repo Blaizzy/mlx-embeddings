@@ -925,7 +925,7 @@ module Homebrew
 
       def check_cask_staging_location
         # Skip this check when running CI since the staging path is not writable for security reasons
-        return if ENV["GITHUB_ACTIONS"]
+        return if GitHub::Actions.env_set?
 
         path = Cask::Caskroom.path
 

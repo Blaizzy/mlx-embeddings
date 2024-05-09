@@ -136,10 +136,9 @@ on_request: true)
 
       case deprecate_disable_type
       when :deprecated
-        puts "::warning::#{message_full}" if ENV["GITHUB_ACTIONS"]
         opoo message_full
       when :disabled
-        puts "::error::#{message_full}" if ENV["GITHUB_ACTIONS"]
+        GitHub::Actions.puts_annotation_if_env_set(:error, message)
         raise CaskCannotBeInstalledError.new(@cask, message)
       end
     end

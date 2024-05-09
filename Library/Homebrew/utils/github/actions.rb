@@ -35,6 +35,25 @@ module GitHub
       EOS
     end
 
+    sig { returns(T::Boolean) }
+    def self.env_set?
+      ENV.fetch("GITHUB_ACTIONS", false).present?
+    end
+
+    sig {
+      params(
+        type: Symbol, message: String,
+        file: T.nilable(T.any(String, Pathname)),
+        line: T.nilable(Integer)
+      ).void
+    }
+    def self.puts_annotation_if_env_set(type, message, file: nil, line: nil)
+      # Don't print annotations during tests, too messy to handle these.
+      return if ENV.fetch("HOMEBREW_TESTS", false)
+
+      puts Annotation.new(type, message) if env_set?
+    end
+
     # Helper class for formatting annotations on GitHub Actions.
     class Annotation
       ANNOTATION_TYPES = [:notice, :warning, :error].freeze
@@ -52,7 +71,7 @@ module GitHub
         params(
           type:       Symbol,
           message:    String,
-          file:       T.any(String, Pathname),
+          file:       T.nilable(T.any(String, Pathname)),
           title:      T.nilable(String),
           line:       T.nilable(Integer),
           end_line:   T.nilable(Integer),
@@ -60,12 +79,12 @@ module GitHub
           end_column: T.nilable(Integer),
         ).void
       }
-      def initialize(type, message, file:, title: nil, line: nil, end_line: nil, column: nil, end_column: nil)
+      def initialize(type, message, file: nil, title: nil, line: nil, end_line: nil, column: nil, end_column: nil)
         raise ArgumentError, "Unsupported type: #{type.inspect}" if ANNOTATION_TYPES.exclude?(type)
 
         @type = type
         @message = Tty.strip_ansi(message)
-        @file = self.class.path_relative_to_workspace(file)
+        @file = self.class.path_relative_to_workspace(file) if file.present?
         @title = Tty.strip_ansi(title) if title
         @line = Integer(line) if line
         @end_line = Integer(end_line) if end_line
@@ -76,15 +95,17 @@ module GitHub
       sig { returns(String) }
       def to_s
         metadata = @type.to_s
-        metadata << " file=#{Actions.escape(@file.to_s)}"
+        if @file
+          metadata << " file=#{Actions.escape(@file.to_s)}"
 
-        if @line
-          metadata << ",line=#{@line}"
-          metadata << ",endLine=#{@end_line}" if @end_line
+          if @line
+            metadata << ",line=#{@line}"
+            metadata << ",endLine=#{@end_line}" if @end_line
 
-          if @column
-            metadata << ",col=#{@column}"
-            metadata << ",endColumn=#{@end_column}" if @end_column
+            if @column
+              metadata << ",col=#{@column}"
+              metadata << ",endColumn=#{@end_column}" if @end_column
+            end
           end
         end
 
@@ -97,6 +118,8 @@ module GitHub
       # the `GITHUB_WORKSPACE` directory or if no `file` is specified.
       sig { returns(T::Boolean) }
       def relevant?
+        return true if @file.blank?
+
         @file.descend.next.to_s != ".."
       end
     end

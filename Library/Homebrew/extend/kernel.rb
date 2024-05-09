@@ -64,6 +64,7 @@ module Kernel
   def opoo(message)
     Tty.with($stderr) do |stderr|
       stderr.puts Formatter.warning(message, label: "Warning")
+      GitHub::Actions.puts_annotation_if_env_set(:warning, message)
     end
   end
 
@@ -73,6 +74,7 @@ module Kernel
   def onoe(message)
     Tty.with($stderr) do |stderr|
       stderr.puts Formatter.error(message, label: "Error")
+      GitHub::Actions.puts_annotation_if_env_set(:error, message)
     end
   end
 
@@ -146,11 +148,14 @@ module Kernel
       next unless (match = line.match(HOMEBREW_TAP_PATH_REGEX))
 
       tap = Tap.fetch(match[:user], match[:repo])
-      tap_message = +"\nPlease report this issue to the #{tap} tap (not Homebrew/brew or Homebrew/homebrew-core)"
+      tap_message = +"\nPlease report this issue to the #{tap.full_name} tap"
+      tap_message += " (not Homebrew/brew or Homebrew/homebrew-core)" unless tap.official?
       tap_message += ", or even better, submit a PR to fix it" if replacement
       tap_message << ":\n  #{line.sub(/^(.*:\d+):.*$/, '\1')}\n\n"
       break
     end
+    file, line, = backtrace.first.split(":")
+    line = line.to_i if line.present?
 
     message = +"Calling #{method} is #{verb}! #{replacement_message}"
     message << tap_message if tap_message
@@ -158,12 +163,13 @@ module Kernel
 
     disable = true if disable_for_developers && Homebrew::EnvConfig.developer?
     if disable || Homebrew.raise_deprecation_exceptions?
-      puts "::error::#{message}" if ENV["GITHUB_ACTIONS"]
+      puts GitHub::Actions::Annotation.new(:error, message, file:, line:) if GitHub::Actions.env_set?
+      GitHub::Actions.puts_annotation_if_env_set(:error, message, file:, line:)
       exception = MethodDeprecatedError.new(message)
       exception.set_backtrace(backtrace)
       raise exception
     elsif !Homebrew.auditing?
-      puts "::warning::#{message}" if ENV["GITHUB_ACTIONS"]
+      GitHub::Actions.puts_annotation_if_env_set(:warning, message, file:, line:)
       opoo message
     end
   end

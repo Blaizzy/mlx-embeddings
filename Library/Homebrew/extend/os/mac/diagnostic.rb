@@ -134,7 +134,7 @@ module Homebrew
         # `brew test-bot` runs `brew doctor` in the CI for the Homebrew/brew
         # repository. This only needs to support whatever CI providers
         # Homebrew/brew is currently using.
-        return if ENV["GITHUB_ACTIONS"]
+        return if GitHub::Actions.env_set?
 
         # With fake El Capitan for Portable Ruby, we are intentionally not using Xcode 8.
         # This is because we are not using the CLT and Xcode 8 has the 10.12 SDK.
@@ -165,7 +165,7 @@ module Homebrew
         # `brew test-bot` runs `brew doctor` in the CI for the Homebrew/brew
         # repository. This only needs to support whatever CI providers
         # Homebrew/brew is currently using.
-        return if ENV["GITHUB_ACTIONS"]
+        return if GitHub::Actions.env_set?
 
         <<~EOS
           A newer Command Line Tools release is available.
