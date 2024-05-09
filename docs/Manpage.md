@@ -3510,12 +3510,6 @@ command execution e.g. `$(cat file)`.
   downloaded from
   `http://localhost:8080/v2/homebrew/core/gettext/manifests/0.21`
 
-`HOMEBREW_AUTOREMOVE`
-
-: If set, calls to `brew cleanup` and `brew uninstall` will automatically remove
-  unused formula dependents and if `HOMEBREW_NO_INSTALL_CLEANUP` is not set,
-  `brew cleanup` will start running `brew autoremove` periodically.
-
 `HOMEBREW_AUTO_UPDATE_SECS`
 
 : Run `brew update` once every `HOMEBREW_AUTO_UPDATE_SECS` seconds before some
@@ -3829,6 +3823,11 @@ command execution e.g. `$(cat file)`.
 
 : If set, do not send analytics. Google Analytics were destroyed. For more
   information, see: <https://docs.brew.sh/Analytics>
+
+`HOMEBREW_NO_AUTOREMOVE`
+
+: If set, calls to `brew cleanup` and `brew uninstall` will not automatically
+  remove unused formula dependents.
 
 `HOMEBREW_NO_AUTO_UPDATE`
 

@@ -191,6 +191,9 @@ module Homebrew::EnvConfig
     def no_auto_update?; end
 
     sig { returns(T::Boolean) }
+    def no_autoremove?; end
+
+    sig { returns(T::Boolean) }
     def no_bootsnap?; end
 
     sig { returns(T.nilable(::String)) }
