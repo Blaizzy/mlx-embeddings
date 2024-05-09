@@ -983,7 +983,7 @@ on_request: installed_on_request?, options:)
     end
 
     cask_installed_with_formula_name = begin
-      Cask::CaskLoader.load(formula.name).installed?
+      Cask::CaskLoader.load(formula.name, warn: false).installed?
     rescue Cask::CaskUnavailableError, Cask::CaskInvalidError
       false
     end
