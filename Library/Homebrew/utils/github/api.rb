@@ -5,6 +5,7 @@ require "system_command"
 require "tempfile"
 require "utils/shell"
 require "utils/formatter"
+require "utils/uid"
 
 module GitHub
   def self.pat_blurb(scopes = ALL_SCOPES)
@@ -138,37 +139,45 @@ module GitHub
     # Gets the token from the GitHub CLI for github.com.
     sig { returns(T.nilable(String)) }
     def self.github_cli_token
-      # Avoid `Formula["gh"].opt_bin` so this method works even with `HOMEBREW_DISABLE_LOAD_FORMULA`.
-      env = { "PATH" => PATH.new(HOMEBREW_PREFIX/"opt/gh/bin", ENV.fetch("PATH")) }
-      gh_out, _, result = system_command "gh",
-                                         args:         ["auth", "token", "--hostname", "github.com"],
-                                         env:,
-                                         print_stderr: false
-      return unless result.success?
+      Utils::UID.drop_euid do
+        # Avoid `Formula["gh"].opt_bin` so this method works even with `HOMEBREW_DISABLE_LOAD_FORMULA`.
+        env = {
+          "PATH" => PATH.new(HOMEBREW_PREFIX/"opt/gh/bin", ENV.fetch("PATH")),
+          "HOME" => Etc.getpwuid(Process.uid)&.dir,
+        }
+        gh_out, _, result = system_command "gh",
+                                           args:         ["auth", "token", "--hostname", "github.com"],
+                                           env:,
+                                           print_stderr: false
+        return unless result.success?
 
-      gh_out.chomp
+        gh_out.chomp
+      end
     end
 
     # Gets the password field from `git-credential-osxkeychain` for github.com,
     # but only if that password looks like a GitHub Personal Access Token.
     sig { returns(T.nilable(String)) }
     def self.keychain_username_password
-      git_credential_out, _, result = system_command "git",
-                                                     args:         ["credential-osxkeychain", "get"],
-                                                     input:        ["protocol=https\n", "host=github.com\n"],
-                                                     print_stderr: false
-      return unless result.success?
+      Utils::UID.drop_euid do
+        git_credential_out, _, result = system_command "git",
+                                                       args:         ["credential-osxkeychain", "get"],
+                                                       input:        ["protocol=https\n", "host=github.com\n"],
+                                                       env:          { "HOME" => Etc.getpwuid(Process.uid)&.dir },
+                                                       print_stderr: false
+        return unless result.success?
 
-      github_username = git_credential_out[/username=(.+)/, 1]
-      github_password = git_credential_out[/password=(.+)/, 1]
-      return unless github_username
+        github_username = git_credential_out[/username=(.+)/, 1]
+        github_password = git_credential_out[/password=(.+)/, 1]
+        return unless github_username
 
-      # Don't use passwords from the keychain unless they look like
-      # GitHub Personal Access Tokens:
-      #   https://github.com/Homebrew/brew/issues/6862#issuecomment-572610344
-      return unless GITHUB_PERSONAL_ACCESS_TOKEN_REGEX.match?(github_password)
+        # Don't use passwords from the keychain unless they look like
+        # GitHub Personal Access Tokens:
+        #   https://github.com/Homebrew/brew/issues/6862#issuecomment-572610344
+        return unless GITHUB_PERSONAL_ACCESS_TOKEN_REGEX.match?(github_password)
 
-      github_password
+        github_password
+      end
     end
 
     def self.credentials
