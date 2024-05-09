@@ -107,13 +107,7 @@ module Homebrew
       def to_formulae_and_casks_with_taps
         formulae_and_casks_with_taps, formulae_and_casks_without_taps =
           to_formulae_and_casks.partition do |formula_or_cask|
-            case formula_or_cask
-            when Formula, Cask::Cask
-              formula_or_cask.tap&.installed?
-            else
-              # TODO: Refactor methods so that Sorbet can tell that this is unreachable.
-              raise ArgumentError, "Not a formula or cask: #{formula_or_cask.class}"
-            end
+            T.cast(formula_or_cask, T.any(Formula, Cask::Cask)).tap&.installed?
           end
 
         return formulae_and_casks_with_taps if formulae_and_casks_without_taps.blank?
@@ -125,7 +119,7 @@ module Homebrew
         odie <<~ERROR
           These #{types.join(" and ")} are not in any locally installed taps!
 
-          - #{formulae_and_casks_without_taps.sort_by(&:to_s).join("\n- ")}
+            #{formulae_and_casks_without_taps.sort_by(&:to_s).join("\n  ")}
 
           You may need to run `brew tap` to install additional taps.
         ERROR
