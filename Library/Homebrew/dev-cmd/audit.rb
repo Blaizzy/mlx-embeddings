@@ -153,7 +153,7 @@ module Homebrew
                         "brew audit [name ...]"
             end
 
-            args.named.to_formulae_and_casks
+            args.named.to_formulae_and_casks_with_taps
                 .partition { |formula_or_cask| formula_or_cask.is_a?(Formula) }
           end
         end

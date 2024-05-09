@@ -73,13 +73,7 @@ module Homebrew
             casks = args.formula? ? [] : Cask::Cask.all(eval_all: args.eval_all?)
             formulae + casks
           elsif args.named.present?
-            if args.formula?
-              args.named.to_formulae
-            elsif args.cask?
-              args.named.to_casks
-            else
-              args.named.to_formulae_and_casks
-            end
+            args.named.to_formulae_and_casks_with_taps
           elsif File.exist?(watchlist_path)
             begin
               names = Pathname.new(watchlist_path).read.lines
