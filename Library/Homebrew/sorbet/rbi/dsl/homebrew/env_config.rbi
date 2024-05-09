@@ -29,9 +29,6 @@ module Homebrew::EnvConfig
     def auto_update_secs; end
 
     sig { returns(T::Boolean) }
-    def autoremove?; end
-
-    sig { returns(T::Boolean) }
     def bat?; end
 
     sig { returns(T.nilable(::String)) }
