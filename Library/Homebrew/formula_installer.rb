@@ -23,6 +23,7 @@ require "deprecate_disable"
 require "unlink"
 require "service"
 require "attestation"
+require "sbom"
 
 # Installer for a formula.
 class FormulaInstaller
@@ -828,6 +829,12 @@ on_request: installed_on_request?, options:)
     tab.runtime_dependencies = Tab.runtime_deps_hash(formula, f_runtime_deps)
     tab.write
 
+    # write a SBOM file (if we don't already have one and aren't bottling)
+    if !build_bottle? && !SBOM.exist?(formula)
+      sbom = SBOM.create(formula, tab)
+      sbom.write(validate: Homebrew::EnvConfig.developer?)
+    end
+
     # let's reset Utils::Git.available? if we just installed git
     Utils::Git.clear_available_cache if formula.name == "git"
 
@@ -1215,6 +1222,8 @@ on_request: installed_on_request?, options:)
   sig { void }
   def fetch
     return if previously_fetched_formula
+
+    SBOM.fetch_schema! if Homebrew::EnvConfig.developer?
 
     fetch_dependencies
 
