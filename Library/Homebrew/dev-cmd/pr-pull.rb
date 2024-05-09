@@ -170,7 +170,7 @@ module Homebrew
               safe_system HOMEBREW_BREW_FILE, *upload_args
             end
           ensure
-            if args.retain_bottle_dir? && ENV["GITHUB_ACTIONS"]
+            if args.retain_bottle_dir? && GitHub::Actions.env_set?
               ohai "Bottle files retained at:", dir
               File.open(ENV.fetch("GITHUB_OUTPUT"), "a") do |f|
                 f.puts "bottle_path=#{dir}"

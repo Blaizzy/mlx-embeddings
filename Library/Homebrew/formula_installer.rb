@@ -206,10 +206,9 @@ class FormulaInstaller
 
       case deprecate_disable_type
       when :deprecated
-        puts "::warning::#{message}" if ENV["GITHUB_ACTIONS"]
         opoo message
       when :disabled
-        puts "::error::#{message}" if ENV["GITHUB_ACTIONS"]
+        GitHub::Actions.puts_annotation_if_env_set(:error, message)
         raise CannotInstallFormulaError, message
       end
     end
@@ -505,7 +504,8 @@ on_request: installed_on_request?, options:)
 
       raise if Homebrew::EnvConfig.developer?
 
-      $stderr.puts "Please report this issue to the #{formula.tap} tap (not Homebrew/brew or Homebrew/homebrew-core)!"
+      $stderr.puts "Please report this issue to the #{formula.tap&.full_name} tap".squeeze(" ")
+      $stderr.puts " (not Homebrew/brew or Homebrew/homebrew-core)!" unless formula.core_formula?
       false
     else
       f.linked_keg.exist? && f.opt_prefix.exist?

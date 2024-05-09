@@ -308,7 +308,7 @@ module Homebrew
           ofail "#{errors_summary}."
         end
 
-        return unless ENV["GITHUB_ACTIONS"]
+        return unless GitHub::Actions.env_set?
 
         annotations = formula_problems.merge(cask_problems).flat_map do |(_, path), problems|
           problems.map do |problem|
