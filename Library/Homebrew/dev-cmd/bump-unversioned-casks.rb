@@ -125,6 +125,8 @@ module Homebrew
             end
           rescue => e
             onoe e
+
+            nil
           end
 
           if sha256.present? && last_sha256 != sha256
@@ -134,6 +136,8 @@ module Homebrew
               end
             rescue Timeout::Error
               onoe "Timed out guessing version for cask '#{cask}'."
+
+              nil
             end
 
             if version

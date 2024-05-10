@@ -61,26 +61,29 @@ module Kernel
   # Print a warning message.
   #
   # @api public
+  sig { params(message: T.any(String, Exception)).void }
   def opoo(message)
     Tty.with($stderr) do |stderr|
       stderr.puts Formatter.warning(message, label: "Warning")
-      GitHub::Actions.puts_annotation_if_env_set(:warning, message)
+      GitHub::Actions.puts_annotation_if_env_set(:warning, message.to_s)
     end
   end
 
   # Print an error message.
   #
   # @api public
+  sig { params(message: T.any(String, Exception)).void }
   def onoe(message)
     Tty.with($stderr) do |stderr|
       stderr.puts Formatter.error(message, label: "Error")
-      GitHub::Actions.puts_annotation_if_env_set(:error, message)
+      GitHub::Actions.puts_annotation_if_env_set(:error, message.to_s)
     end
   end
 
   # Print an error message and fail at the end of the program.
   #
   # @api public
+  sig { params(error: T.any(String, Exception)).void }
   def ofail(error)
     onoe error
     Homebrew.failed = true

@@ -45,6 +45,8 @@ module Homebrew
               To install, run:
                 brew install --HEAD #{name}
             EOS
+
+            nil
           end
         else
           args.named.to_latest_kegs
