@@ -1401,6 +1401,13 @@ class CoreCaskTap < AbstractCoreTap
     cask_dir/cask_subdir/"#{token.downcase}.rb"
   end
 
+  sig { params(token: String).returns(Pathname) }
+  def new_cask_font_path(token)
+    font_first_letter = T.must(token.split("font-").second)[0].to_s
+    cask_subdir = "fonts/font-#{font_first_letter}"
+    cask_dir/cask_subdir/"#{token.downcase}.rb"
+  end
+
   sig { override.returns(T::Array[Pathname]) }
   def cask_files
     return super if Homebrew::EnvConfig.no_install_from_api?
