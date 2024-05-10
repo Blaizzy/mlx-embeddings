@@ -817,7 +817,11 @@ module Cask
     def audit_cask_path
       return unless cask.tap.core_cask_tap?
 
-      expected_path = cask.tap.new_cask_path(cask.token)
+      expected_path = if cask.artifacts.any?(Artifact::Font)
+        cask.tap.new_cask_font_path(cask.token)
+      else
+        cask.tap.new_cask_path(cask.token)
+      end
 
       return if cask.sourcefile_path.to_s.end_with?(expected_path)
 
