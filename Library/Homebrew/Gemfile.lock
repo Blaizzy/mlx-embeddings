@@ -54,7 +54,7 @@ GEM
       prism (>= 0.18.0, < 1.0.0)
       sorbet-runtime (>= 0.5.9204)
     redcarpet (3.6.0)
-    regexp_parser (2.9.0)
+    regexp_parser (2.9.1)
     rexml (3.2.6)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
