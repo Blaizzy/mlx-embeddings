@@ -33,7 +33,7 @@ RSpec.describe Homebrew::DevCmd::DetermineTestRunners do
       macos_version = MacOSVersion.new(v)
       next if macos_version.unsupported_release?
 
-      out << v
+      out << "#{v}-x86_64"
       out << "#{v}-arm64"
     end
 
