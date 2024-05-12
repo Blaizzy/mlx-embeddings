@@ -1404,7 +1404,7 @@ class CoreCaskTap < AbstractCoreTap
   sig { params(token: String).returns(Pathname) }
   def new_cask_font_path(token)
     font_first_letter = T.must(token.split("font-").second)[0].to_s
-    cask_subdir = "fonts/font-#{font_first_letter}"
+    cask_subdir = "font/font-#{font_first_letter}"
     cask_dir/cask_subdir/"#{token.downcase}.rb"
   end
 
