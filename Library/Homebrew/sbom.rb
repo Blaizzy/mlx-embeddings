@@ -388,7 +388,7 @@ class SBOM
 
   sig { returns(Time) }
   def source_modified_time
-    Time.at(@source_modified_time || 0)
+    Time.at(@source_modified_time || 0).utc
   end
 
   sig { params(val: T.untyped).returns(T.any(String, Symbol)) }
