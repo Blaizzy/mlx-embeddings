@@ -495,7 +495,27 @@ setup_git() {
 setup_curl
 setup_git
 
-HOMEBREW_VERSION="$("${HOMEBREW_GIT}" -C "${HOMEBREW_REPOSITORY}" describe --tags --dirty --abbrev=7 2>/dev/null)"
+GIT_DESCRIBE_CACHE="${HOMEBREW_REPOSITORY}/.git/describe-cache"
+GIT_REVISION=$("${HOMEBREW_GIT}" -C "${HOMEBREW_REPOSITORY}" rev-parse HEAD 2>/dev/null)
+if [[ -n "${GIT_REVISION}" ]]
+then
+  GIT_DESCRIBE_CACHE_FILE="${GIT_DESCRIBE_CACHE}/${GIT_REVISION}"
+  if [[ -f "${GIT_DESCRIBE_CACHE_FILE}" ]]
+  then
+    HOMEBREW_VERSION="$(cat "${GIT_DESCRIBE_CACHE_FILE}")"
+  else
+    rm -rf "${GIT_DESCRIBE_CACHE}"
+    HOMEBREW_VERSION="$("${HOMEBREW_GIT}" -C "${HOMEBREW_REPOSITORY}" describe --tags --dirty --abbrev=7 2>/dev/null)"
+    mkdir -p "${GIT_DESCRIBE_CACHE}"
+    echo "${HOMEBREW_VERSION}" >"${GIT_DESCRIBE_CACHE_FILE}"
+  fi
+  unset GIT_DESCRIBE_CACHE_FILE
+else
+  rm -rf "${GIT_DESCRIBE_CACHE}"
+fi
+unset GIT_REVISION
+unset GIT_DESCRIBE_CACHE
+
 HOMEBREW_USER_AGENT_VERSION="${HOMEBREW_VERSION}"
 if [[ -z "${HOMEBREW_VERSION}" ]]
 then
