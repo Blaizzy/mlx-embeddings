@@ -494,7 +494,6 @@ module Homebrew
             Tab.clear_cache
             Dependency.clear_cache
             Requirement.clear_cache
-            SBOM.clear_cache
 
             tab = keg.tab
             original_tab = tab.dup
@@ -509,7 +508,7 @@ module Homebrew
             end
 
             sbom = SBOM.create(formula, tab)
-            sbom.write
+            sbom.write(bottling: true)
 
             keg.consistent_reproducible_symlink_permissions!
 
