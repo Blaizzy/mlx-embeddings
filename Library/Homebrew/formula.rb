@@ -2383,7 +2383,6 @@ class Formula
       "name"                     => name,
       "full_name"                => full_name,
       "tap"                      => tap&.name,
-      "oldname"                  => ("odeprecated" if oldnames.first),
       "oldnames"                 => oldnames,
       "aliases"                  => aliases.sort,
       "versioned_formulae"       => versioned_formulae.map(&:name),
