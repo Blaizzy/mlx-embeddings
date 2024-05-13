@@ -544,7 +544,7 @@ module GitHub
     elsif state == "open" && ENV["GITHUB_REPOSITORY_OWNER"] == "Homebrew"
       # Try use PR API, which might be cheaper on rate limits in some cases.
       # The rate limit of the search API under GraphQL is unclear as it's
-      # costs the same as any other query accoding to /rate_limit.
+      # costs the same as any other query according to /rate_limit.
       # The PR API is also not very scalable so limit to Homebrew CI.
       return fetch_open_pull_requests(name, tap_remote_repo, version:)
     end

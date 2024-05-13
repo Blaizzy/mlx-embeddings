@@ -264,7 +264,7 @@ module Kernel
     raise ErrorDuringExecution.new([cmd, *args], status: $CHILD_STATUS)
   end
 
-  # Run a system comand without any output.
+  # Run a system command without any output.
   #
   # @api internal
   def quiet_system(cmd, *args)
