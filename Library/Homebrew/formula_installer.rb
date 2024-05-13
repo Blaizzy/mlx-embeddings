@@ -829,8 +829,8 @@ on_request: installed_on_request?, options:)
     tab.runtime_dependencies = Tab.runtime_deps_hash(formula, f_runtime_deps)
     tab.write
 
-    # write a SBOM file (if we don't already have one and aren't bottling)
-    if !build_bottle? && !SBOM.exist?(formula)
+    # write/update a SBOM file (if we aren't bottling)
+    unless build_bottle?
       sbom = SBOM.create(formula, tab)
       sbom.write(validate: Homebrew::EnvConfig.developer?)
     end

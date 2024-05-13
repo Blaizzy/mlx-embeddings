@@ -9,8 +9,6 @@ require "utils/curl"
 
 # Rather than calling `new` directly, use one of the class methods like {SBOM.create}.
 class SBOM
-  extend Cachable
-
   FILENAME = "sbom.spdx.json"
   SCHEMA_URL = "https://spdx.github.io/spdx-3-model/model.jsonld"
   SCHEMA_FILENAME = "sbom.spdx.schema.3.json"
@@ -23,7 +21,7 @@ class SBOM
       name:                 formula.name,
       homebrew_version:     HOMEBREW_VERSION,
       spdxfile:             SBOM.spdxfile(formula),
-      time:                 Time.now.to_i,
+      time:                 tab.time,
       source_modified_time: tab.source_modified_time.to_i,
       compiler:             tab.compiler,
       stdlib:               tab.stdlib,
@@ -116,8 +114,8 @@ class SBOM
     end
   end
 
-  sig { returns(T::Boolean) }
-  def valid?
+  sig { params(bottling: T::Boolean).returns(T::Boolean) }
+  def valid?(bottling: false)
     unless require? "json_schemer"
       error_message = "Need json_schemer to validate SBOM, run `brew install-bundler-gems --add-groups=bottle`!"
       odie error_message if ENV["HOMEBREW_ENFORCE_SBOM"]
@@ -132,7 +130,7 @@ class SBOM
     end
 
     schemer = JSONSchemer.schema(schema)
-    data = to_spdx_sbom
+    data = to_spdx_sbom(bottling:)
     return true if schemer.valid?(data)
 
     opoo "SBOM validation errors:"
@@ -145,20 +143,18 @@ class SBOM
     false
   end
 
-  sig { params(validate: T::Boolean).void }
-  def write(validate: true)
+  sig { params(validate: T::Boolean, bottling: T::Boolean).void }
+  def write(validate: true, bottling: false)
     # If this is a new installation, the cache of installed formulae
     # will no longer be valid.
     Formula.clear_cache unless spdxfile.exist?
 
-    self.class.cache[spdxfile] = self
-
-    if validate && !valid?
+    if validate && !valid?(bottling:)
       opoo "SBOM is not valid, not writing to disk!"
       return
     end
 
-    spdxfile.atomic_write(JSON.pretty_generate(to_spdx_sbom))
+    spdxfile.atomic_write(JSON.pretty_generate(to_spdx_sbom(bottling:)))
   end
 
   private
@@ -171,8 +167,14 @@ class SBOM
     attributes.each { |key, value| instance_variable_set(:"@#{key}", value) }
   end
 
-  sig { params(runtime_dependency_declaration: T::Array[Hash], compiler_declaration: Hash).returns(T::Array[Hash]) }
-  def generate_relations_json(runtime_dependency_declaration, compiler_declaration)
+  sig {
+    params(
+      runtime_dependency_declaration: T::Array[Hash],
+      compiler_declaration:           Hash,
+      bottling:                       T::Boolean,
+    ).returns(T::Array[Hash])
+  }
+  def generate_relations_json(runtime_dependency_declaration, compiler_declaration, bottling:)
     runtime = runtime_dependency_declaration.map do |dependency|
       {
         spdxElementId:      dependency[:SPDXID],
@@ -180,6 +182,7 @@ class SBOM
         relatedSpdxElement: "SPDXRef-Bottle-#{name}",
       }
     end
+
     patches = source[:patches].each_with_index.map do |_patch, index|
       {
         spdxElementId:      "SPDXRef-Patch-#{name}-#{index}",
@@ -188,25 +191,26 @@ class SBOM
       }
     end
 
-    base = [
-      {
-        spdxElementId:      "SPDXRef-File-#{name}",
-        relationshipType:   "PACKAGE_OF",
-        relatedSpdxElement: "SPDXRef-Archive-#{name}-src",
-      },
-      {
+    base = T.let([{
+      spdxElementId:      "SPDXRef-File-#{name}",
+      relationshipType:   "PACKAGE_OF",
+      relatedSpdxElement: "SPDXRef-Archive-#{name}-src",
+    }], T::Array[Hash])
+
+    unless bottling
+      base << {
         spdxElementId:      "SPDXRef-Compiler",
         relationshipType:   "BUILD_TOOL_OF",
         relatedSpdxElement: "SPDXRef-Package-#{name}-src",
-      },
-    ]
-
-    if compiler_declaration["SPDXRef-Stdlib"].present?
-      base << {
-        spdxElementId:      "SPDXRef-Stdlib",
-        relationshipType:   "DEPENDENCY_OF",
-        relatedSpdxElement: "SPDXRef-Bottle-#{name}",
       }
+
+      if compiler_declaration["SPDXRef-Stdlib"].present?
+        base << {
+          spdxElementId:      "SPDXRef-Stdlib",
+          relationshipType:   "DEPENDENCY_OF",
+          relatedSpdxElement: "SPDXRef-Bottle-#{name}",
+        }
+      end
     end
 
     runtime + patches + base
@@ -214,13 +218,19 @@ class SBOM
 
   sig {
     params(runtime_dependency_declaration: T::Array[Hash],
-           compiler_declaration:           Hash).returns(T::Array[T::Hash[Symbol,
-                                                                          T.any(String,
-                                                                                T::Array[T::Hash[Symbol, String]])]])
+           compiler_declaration:           Hash,
+           bottling:                       T::Boolean).returns(
+             T::Array[
+              T::Hash[
+                Symbol,
+                T.any(String, T::Array[T::Hash[Symbol, String]])
+              ],
+            ],
+           )
   }
-  def generate_packages_json(runtime_dependency_declaration, compiler_declaration)
+  def generate_packages_json(runtime_dependency_declaration, compiler_declaration, bottling:)
     bottle = []
-    if (bottle_info = get_bottle_info(source[:bottle]))
+    if !bottling && (bottle_info = get_bottle_info(source[:bottle]))
       bottle << {
         SPDXID:           "SPDXRef-Bottle-#{name}",
         name:             name.to_s,
@@ -247,6 +257,12 @@ class SBOM
       }
     end
 
+    compiler_declarations = if bottling
+      []
+    else
+      compiler_declaration.values
+    end
+
     [
       {
         SPDXID:           "SPDXRef-Archive-#{name}-src",
@@ -266,7 +282,7 @@ class SBOM
           },
         ],
       },
-    ] + runtime_dependency_declaration + compiler_declaration.values + bottle
+    ] + runtime_dependency_declaration + compiler_declarations + bottle
   end
 
   sig { returns(T::Array[T::Hash[Symbol, T.any(T::Boolean, String, T::Array[T::Hash[Symbol, String]])]]) }
@@ -308,8 +324,8 @@ class SBOM
     end
   end
 
-  sig { returns(T::Hash[Symbol, T.any(String, T::Array[T::Hash[Symbol, String]])]) }
-  def to_spdx_sbom
+  sig { params(bottling: T::Boolean).returns(T::Hash[Symbol, T.any(String, T::Array[T::Hash[Symbol, String]])]) }
+  def to_spdx_sbom(bottling:)
     runtime_full = full_spdx_runtime_dependencies
 
     compiler_info = {
@@ -342,13 +358,13 @@ class SBOM
       }
     end
 
-    packages = generate_packages_json(runtime_full, compiler_info)
+    packages = generate_packages_json(runtime_full, compiler_info, bottling:)
     {
       SPDXID:            "SPDXRef-DOCUMENT",
       spdxVersion:       "SPDX-2.3",
       name:              "SBOM-SPDX-#{name}-#{stable_version}",
       creationInfo:      {
-        created:  DateTime.now.to_s,
+        created:  (Time.at(time).utc if time.present? && !bottling),
         creators: ["Tool: https://github.com/homebrew/brew@#{homebrew_version}"],
       },
       dataLicense:       "CC0-1.0",
@@ -356,7 +372,7 @@ class SBOM
       documentDescribes: packages.map { |dependency| dependency[:SPDXID] },
       files:             [],
       packages:,
-      relationships:     generate_relations_json(runtime_full, compiler_info),
+      relationships:     generate_relations_json(runtime_full, compiler_info, bottling:),
     }
   end
 
@@ -388,7 +404,7 @@ class SBOM
 
   sig { returns(Time) }
   def source_modified_time
-    Time.at(@source_modified_time || 0).utc
+    Time.at(@source_modified_time).utc
   end
 
   sig { params(val: T.untyped).returns(T.any(String, Symbol)) }
