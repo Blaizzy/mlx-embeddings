@@ -6,4 +6,5 @@ group :test do
   gem "html-proofer"
   gem "mdl"
   gem "rake"
+  gem "webrick"
 end
