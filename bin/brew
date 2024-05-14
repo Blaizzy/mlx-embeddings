@@ -76,7 +76,7 @@ then
   HOMEBREW_REPOSITORY="${BREW_FILE_DIRECTORY%/*}"
 fi
 
-# Try to find a /usr/local HOMEBREW_PREFIX where possible (for bottles)
+# Try to find a /usr/local HOMEBREW_PREFIX where possible (for macOS x86_64 bottles)
 if [[ -L "/usr/local/bin/brew" && ! -L "${HOMEBREW_PREFIX}/Cellar" ]]
 then
   USR_LOCAL_BREW_FILE_DIRECTORY="$(symlink_target_directory "/usr/local/bin/brew" "/usr/local/bin")"
