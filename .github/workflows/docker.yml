@@ -22,10 +22,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ["18.04", "20.04", "22.04"]
+        version: ["18.04", "20.04", "22.04", "24.04"]
     steps:
       - name: Checkout
-        uses: actions/checkout@main
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
