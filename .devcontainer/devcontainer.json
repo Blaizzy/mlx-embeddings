@@ -10,13 +10,6 @@
 
   "customizations": {
     "vscode": {
-      "settings": {
-        // Turns off the display of CPU and battery frequency (because it's useless)
-        // This setting is only required for GitHub Codespaces
-        "resmon.show.battery": false,
-        "resmon.show.cpufreq": false
-      },
-
       // Installing all necessary extensions for vscode
       // Taken from: .vscode/extensions.json
       "extensions": [
