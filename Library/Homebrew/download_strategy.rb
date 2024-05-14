@@ -405,6 +405,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
 
       if (domain = Homebrew::EnvConfig.artifact_domain)
         url = url.sub(%r{^https?://#{GitHubPackages::URL_DOMAIN}/}o, "#{domain.chomp("/")}/")
+        urls = [] if Homebrew::EnvConfig.artifact_domain_no_fallback?
       end
 
       ohai "Downloading #{url}"

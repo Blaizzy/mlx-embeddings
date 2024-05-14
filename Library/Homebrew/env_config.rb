@@ -44,6 +44,12 @@ module Homebrew
                      "to instead be downloaded from " \
                      "`http://localhost:8080/v2/homebrew/core/gettext/manifests/0.21`",
       },
+      HOMEBREW_ARTIFACT_DOMAIN_NO_FALLBACK:      {
+        description: "If `HOMEBREW_ARTIFACT_DOMAIN` and `HOMEBREW_ARTIFACT_DOMAIN_NO_FALLBACK` are both set, " \
+                     "if the request to `HOMEBREW_ARTIFACT_DOMAIN` fails then it Homebrew will error rather than " \
+                     "trying any other/default URLs.",
+        boolean:     true,
+      },
       HOMEBREW_AUTO_UPDATE_SECS:                 {
         description:  "Run `brew update` once every `HOMEBREW_AUTO_UPDATE_SECS` seconds before some commands, " \
                       "e.g. `brew install`, `brew upgrade` and `brew tap`. Alternatively, " \
