@@ -237,8 +237,12 @@ class Resource < Downloadable
     # glibc-bootstrap
     if url.start_with?("https://github.com/Homebrew/glibc-bootstrap/releases/download")
       if (artifact_domain = Homebrew::EnvConfig.artifact_domain.presence)
-        extra_urls << url.sub("https://github.com", artifact_domain)
+        artifact_url = url.sub("https://github.com", artifact_domain)
+        return [artifact_url] if Homebrew::EnvConfig.artifact_domain_no_fallback?
+
+        extra_urls << artifact_url
       end
+
       if Homebrew::EnvConfig.bottle_domain != HOMEBREW_BOTTLE_DEFAULT_DOMAIN
         tag, filename = url.split("/").last(2)
         extra_urls << "#{Homebrew::EnvConfig.bottle_domain}/glibc-bootstrap/#{tag}/#{filename}"

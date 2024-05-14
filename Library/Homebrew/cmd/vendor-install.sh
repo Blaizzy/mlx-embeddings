@@ -47,6 +47,11 @@ set_ruby_variables() {
     if [[ -n "${HOMEBREW_ARTIFACT_DOMAIN}" ]]
     then
       ruby_URLs+=("${HOMEBREW_ARTIFACT_DOMAIN}/v2/homebrew/portable-ruby/portable-ruby/blobs/sha256:${ruby_SHA}")
+      if [[ -n "${HOMEBREW_ARTIFACT_DOMAIN_NO_FALLBACK}" ]]
+      then
+        ruby_URL="${ruby_URLs[0]}"
+        return
+      fi
     fi
     if [[ -n "${HOMEBREW_BOTTLE_DOMAIN}" ]]
     then
