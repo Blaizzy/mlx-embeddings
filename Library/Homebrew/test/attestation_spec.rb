@@ -13,39 +13,45 @@ RSpec.describe Homebrew::Attestation do
   let(:fake_bottle) do
     instance_double(Bottle, cached_download:, filename: fake_bottle_filename, url: fake_bottle_url)
   end
-  let(:fake_json_resp) do
-    JSON.dump([
-      { verificationResult: {
-        verifiedTimestamps: [{ timestamp: "2024-03-13T00:00:00Z" }],
-        statement:          { subject: [{ name: fake_bottle_filename.to_s }] },
-      } },
-    ])
+  let(:fake_result_invalid_json) { instance_double(SystemCommand::Result, stdout: "\"invalid JSON") }
+  let(:fake_result_json_resp) do
+    instance_double(SystemCommand::Result,
+                    stdout: JSON.dump([
+                      { verificationResult: {
+                        verifiedTimestamps: [{ timestamp: "2024-03-13T00:00:00Z" }],
+                        statement:          { subject: [{ name: fake_bottle_filename.to_s }] },
+                      } },
+                    ]))
   end
-  let(:fake_json_resp_backfill) do
-    JSON.dump([
-      { verificationResult: {
-        verifiedTimestamps: [{ timestamp: "2024-03-13T00:00:00Z" }],
-        statement:          {
-          subject: [{ name: "#{Digest::SHA256.hexdigest(fake_bottle_url)}--#{fake_bottle_filename}" }],
-        },
-      } },
-    ])
+  let(:fake_result_json_resp_backfill) do
+    digest = Digest::SHA256.hexdigest(fake_bottle_url)
+    instance_double(SystemCommand::Result,
+                    stdout: JSON.dump([
+                      { verificationResult: {
+                        verifiedTimestamps: [{ timestamp: "2024-03-13T00:00:00Z" }],
+                        statement:          {
+                          subject: [{ name: "#{digest}--#{fake_bottle_filename}" }],
+                        },
+                      } },
+                    ]))
   end
-  let(:fake_json_resp_too_new) do
-    JSON.dump([
-      { verificationResult: {
-        verifiedTimestamps: [{ timestamp: "2024-03-15T00:00:00Z" }],
-        statement:          { subject: [{ name: fake_bottle_filename.to_s }] },
-      } },
-    ])
+  let(:fake_result_json_resp_too_new) do
+    instance_double(SystemCommand::Result,
+                    stdout: JSON.dump([
+                      { verificationResult: {
+                        verifiedTimestamps: [{ timestamp: "2024-03-15T00:00:00Z" }],
+                        statement:          { subject: [{ name: fake_bottle_filename.to_s }] },
+                      } },
+                    ]))
   end
   let(:fake_json_resp_wrong_sub) do
-    JSON.dump([
-      { verificationResult: {
-        verifiedTimestamps: [{ timestamp: "2024-03-13T00:00:00Z" }],
-        statement:          { subject: [{ name: "wrong-subject.tar.gz" }] },
-      } },
-    ])
+    instance_double(SystemCommand::Result,
+                    stdout: JSON.dump([
+                      { verificationResult: {
+                        verifiedTimestamps: [{ timestamp: "2024-03-13T00:00:00Z" }],
+                        statement:          { subject: [{ name: "wrong-subject.tar.gz" }] },
+                      } },
+                    ]))
   end
 
   describe "::gh_executable" do
@@ -78,9 +84,10 @@ RSpec.describe Homebrew::Attestation do
       expect(GitHub::API).to receive(:credentials)
         .and_return(fake_gh_creds)
 
-      expect(Utils).to receive(:safe_popen_read)
-        .with({ "GH_TOKEN" => fake_gh_creds }, fake_gh, "attestation", "verify", cached_download, "--repo",
-              described_class::HOMEBREW_CORE_REPO, "--format", "json")
+      expect(described_class).to receive(:system_command!)
+        .with(fake_gh, args: ["attestation", "verify", cached_download, "--repo",
+                              described_class::HOMEBREW_CORE_REPO, "--format", "json"],
+              env: { "GH_TOKEN" => fake_gh_creds }, secrets: [fake_gh_creds])
         .and_raise(ErrorDuringExecution.new(["foo"], status: fake_error_status))
 
       expect do
@@ -93,9 +100,10 @@ RSpec.describe Homebrew::Attestation do
       expect(GitHub::API).to receive(:credentials)
         .and_return(fake_gh_creds)
 
-      expect(Utils).to receive(:safe_popen_read)
-        .with({ "GH_TOKEN" => fake_gh_creds }, fake_gh, "attestation", "verify", cached_download, "--repo",
-              described_class::HOMEBREW_CORE_REPO, "--format", "json")
+      expect(described_class).to receive(:system_command!)
+        .with(fake_gh, args: ["attestation", "verify", cached_download, "--repo",
+                              described_class::HOMEBREW_CORE_REPO, "--format", "json"],
+              env: { "GH_TOKEN" => fake_gh_creds }, secrets: [fake_gh_creds])
         .and_raise(ErrorDuringExecution.new(["foo"], status: fake_auth_status))
 
       expect do
@@ -108,10 +116,11 @@ RSpec.describe Homebrew::Attestation do
       expect(GitHub::API).to receive(:credentials)
         .and_return(fake_gh_creds)
 
-      expect(Utils).to receive(:safe_popen_read)
-        .with({ "GH_TOKEN" => fake_gh_creds }, fake_gh, "attestation", "verify", cached_download, "--repo",
-              described_class::HOMEBREW_CORE_REPO, "--format", "json")
-        .and_return("\"invalid json")
+      expect(described_class).to receive(:system_command!)
+        .with(fake_gh, args: ["attestation", "verify", cached_download, "--repo",
+                              described_class::HOMEBREW_CORE_REPO, "--format", "json"],
+              env: { "GH_TOKEN" => fake_gh_creds }, secrets: [fake_gh_creds])
+        .and_return(fake_result_invalid_json)
 
       expect do
         described_class.check_attestation fake_bottle,
@@ -123,9 +132,10 @@ RSpec.describe Homebrew::Attestation do
       expect(GitHub::API).to receive(:credentials)
         .and_return(fake_gh_creds)
 
-      expect(Utils).to receive(:safe_popen_read)
-        .with({ "GH_TOKEN" => fake_gh_creds }, fake_gh, "attestation", "verify", cached_download, "--repo",
-              described_class::HOMEBREW_CORE_REPO, "--format", "json")
+      expect(described_class).to receive(:system_command!)
+        .with(fake_gh, args: ["attestation", "verify", cached_download, "--repo",
+                              described_class::HOMEBREW_CORE_REPO, "--format", "json"],
+              env: { "GH_TOKEN" => fake_gh_creds }, secrets: [fake_gh_creds])
         .and_return(fake_json_resp_wrong_sub)
 
       expect do
@@ -145,43 +155,48 @@ RSpec.describe Homebrew::Attestation do
     end
 
     it "calls gh with args for homebrew-core" do
-      expect(Utils).to receive(:safe_popen_read)
-        .with({ "GH_TOKEN" => fake_gh_creds }, fake_gh, "attestation", "verify", cached_download, "--repo",
-              described_class::HOMEBREW_CORE_REPO, "--format", "json", "--cert-identity",
-              described_class::HOMEBREW_CORE_CI_URI)
-        .and_return(fake_json_resp)
+      expect(described_class).to receive(:system_command!)
+        .with(fake_gh, args: ["attestation", "verify", cached_download, "--repo",
+                              described_class::HOMEBREW_CORE_REPO, "--format", "json", "--cert-identity",
+                              described_class::HOMEBREW_CORE_CI_URI],
+              env: { "GH_TOKEN" => fake_gh_creds }, secrets: [fake_gh_creds])
+        .and_return(fake_result_json_resp)
 
       described_class.check_core_attestation fake_bottle
     end
 
     it "calls gh with args for backfill when homebrew-core fails" do
-      expect(Utils).to receive(:safe_popen_read)
-        .with({ "GH_TOKEN" => fake_gh_creds }, fake_gh, "attestation", "verify", cached_download, "--repo",
-              described_class::HOMEBREW_CORE_REPO, "--format", "json", "--cert-identity",
-              described_class::HOMEBREW_CORE_CI_URI)
+      expect(described_class).to receive(:system_command!)
+        .with(fake_gh, args: ["attestation", "verify", cached_download, "--repo",
+                              described_class::HOMEBREW_CORE_REPO, "--format", "json", "--cert-identity",
+                              described_class::HOMEBREW_CORE_CI_URI],
+              env: { "GH_TOKEN" => fake_gh_creds }, secrets: [fake_gh_creds])
         .once
         .and_raise(described_class::InvalidAttestationError)
 
-      expect(Utils).to receive(:safe_popen_read)
-        .with({ "GH_TOKEN" => fake_gh_creds }, fake_gh, "attestation", "verify", cached_download, "--repo",
-              described_class::BACKFILL_REPO, "--format", "json")
-        .and_return(fake_json_resp_backfill)
+      expect(described_class).to receive(:system_command!)
+        .with(fake_gh, args: ["attestation", "verify", cached_download, "--repo",
+                              described_class::BACKFILL_REPO, "--format", "json"],
+              env: { "GH_TOKEN" => fake_gh_creds }, secrets: [fake_gh_creds])
+        .and_return(fake_result_json_resp_backfill)
 
       described_class.check_core_attestation fake_bottle
     end
 
     it "raises when the backfilled attestation is too new" do
-      expect(Utils).to receive(:safe_popen_read)
-        .with({ "GH_TOKEN" => fake_gh_creds }, fake_gh, "attestation", "verify", cached_download, "--repo",
-              described_class::HOMEBREW_CORE_REPO, "--format", "json", "--cert-identity",
-              described_class::HOMEBREW_CORE_CI_URI)
+      expect(described_class).to receive(:system_command!)
+        .with(fake_gh, args: ["attestation", "verify", cached_download, "--repo",
+                              described_class::HOMEBREW_CORE_REPO, "--format", "json", "--cert-identity",
+                              described_class::HOMEBREW_CORE_CI_URI],
+              env: { "GH_TOKEN" => fake_gh_creds }, secrets: [fake_gh_creds])
         .once
         .and_raise(described_class::InvalidAttestationError)
 
-      expect(Utils).to receive(:safe_popen_read)
-        .with({ "GH_TOKEN" => fake_gh_creds }, fake_gh, "attestation", "verify", cached_download, "--repo",
-              described_class::BACKFILL_REPO, "--format", "json")
-        .and_return(fake_json_resp_too_new)
+      expect(described_class).to receive(:system_command!)
+        .with(fake_gh, args: ["attestation", "verify", cached_download, "--repo",
+                              described_class::BACKFILL_REPO, "--format", "json"],
+              env: { "GH_TOKEN" => fake_gh_creds }, secrets: [fake_gh_creds])
+        .and_return(fake_result_json_resp_too_new)
 
       expect do
         described_class.check_core_attestation fake_bottle

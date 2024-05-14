@@ -5,9 +5,12 @@ require "date"
 require "json"
 require "utils/popen"
 require "exceptions"
+require "system_command"
 
 module Homebrew
   module Attestation
+    extend SystemCommand::Mixin
+
     # @api private
     HOMEBREW_CORE_REPO = "Homebrew/homebrew-core"
     # @api private
@@ -71,7 +74,7 @@ module Homebrew
              signing_workflow: T.nilable(String), subject: T.nilable(String)).returns(T::Hash[T.untyped, T.untyped])
     }
     def self.check_attestation(bottle, signing_repo, signing_workflow = nil, subject = nil)
-      cmd = [gh_executable, "attestation", "verify", bottle.cached_download, "--repo", signing_repo, "--format",
+      cmd = ["attestation", "verify", bottle.cached_download, "--repo", signing_repo, "--format",
              "json"]
 
       cmd += ["--cert-identity", signing_workflow] if signing_workflow.present?
@@ -83,7 +86,8 @@ module Homebrew
       raise GhAuthNeeded, "missing credentials" if credentials.blank?
 
       begin
-        output = Utils.safe_popen_read({ "GH_TOKEN" => credentials }, *cmd)
+        result = system_command!(gh_executable, args: cmd, env: { "GH_TOKEN" => credentials },
+                                secrets: [credentials])
       rescue ErrorDuringExecution => e
         # Even if we have credentials, they may be invalid or malformed.
         raise GhAuthNeeded, "invalid credentials" if e.status.exitstatus == 4
@@ -92,7 +96,7 @@ module Homebrew
       end
 
       begin
-        attestations = JSON.parse(output)
+        attestations = JSON.parse(result.stdout)
       rescue JSON::ParserError
         raise InvalidAttestationError, "attestation verification returned malformed JSON"
       end
