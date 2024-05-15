@@ -45,5 +45,6 @@ class LinkageChecker
     #   https://github.com/Homebrew/brew/pull/13796
     # TODO: Find a nicer way to handle this. (e.g. examining the ELF file to determine the required libstdc++.)
     @undeclared_deps.delete("gcc")
+    @indirect_deps.delete("gcc")
   end
 end
