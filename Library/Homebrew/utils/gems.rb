@@ -244,7 +244,12 @@ module Homebrew
     groups |= (user_gem_groups & valid_gem_groups)
     groups.sort!
 
-    ENV["BUNDLE_CACHE_PATH"] = (HOMEBREW_CACHE/"bundler_cache").to_s
+    homebrew_cache = if defined?(HOMEBREW_CACHE)
+      HOMEBREW_CACHE.to_s
+    else
+      ENV.fetch("HOMEBREW_CACHE")
+    end
+    ENV["BUNDLE_CACHE_PATH"] = "#{homebrew_cache}/bundler_cache"
     ENV["BUNDLE_GEMFILE"] = gemfile
     ENV["BUNDLE_WITH"] = groups.join(" ")
     ENV["BUNDLE_FROZEN"] = "true"
