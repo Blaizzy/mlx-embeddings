@@ -45,6 +45,9 @@ brew install hello
 
 If you're using an older distribution of Linux, installing your first package will also install a recent version of *glibc* and *gcc*. Use `brew doctor` to troubleshoot common issues.
 
+> [!NOTICE]
+> Please note that unlike macOS, Homebrew does not use a sandbox when building on Linux, so formulae may install outside the Homebrew prefix.
+
 ## Requirements
 
 - **Linux** 3.2 or newer
