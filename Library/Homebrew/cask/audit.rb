@@ -197,7 +197,7 @@ module Cask
     def audit_description
       # Fonts seldom benefit from descriptions and requiring them disproportionately
       # increases the maintenance burden.
-      return if cask.tap == "homebrew/cask-fonts"
+      return if cask.tap == "homebrew/cask" && cask.token.include?("font-")
 
       add_error("Cask should have a description. Please add a `desc` stanza.", strict_only: true) if cask.desc.blank?
     end

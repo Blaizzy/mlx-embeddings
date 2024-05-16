@@ -1285,7 +1285,6 @@ This section describes the algorithm implemented in the `generate_cask_token` sc
 * [Cask Filenames](#cask-filenames)
 * [Cask Headers](#cask-headers)
 * [Cask Token Examples](#cask-token-examples)
-* [Tap-Specific Cask Token Examples](#tap-specific-cask-token-examples)
 * [Special Affixes](#special-affixes)
 
 ### Purpose
@@ -1410,12 +1409,6 @@ For versioned/development channel casks:
 | `google-chrome`        | Beta Channel        | `google-chrome@beta`  | `google-chrome@beta.rb` |
 | `vlc`                  | Nightly Channel     | `vlc@nightly`         | `vlc@nightly.rb` |
 | `carbon-copy-cloner`   | Pinned to version 5 | `carbon-copy-cloner@5`| `carbon-copy-cloner@5.rb` |
-
-#### Tap-specific cask token examples
-
-Cask taps have naming conventions specific to each tap.
-
-* [Homebrew/cask-fonts](https://github.com/Homebrew/homebrew-cask-fonts/blob/HEAD/CONTRIBUTING.md#naming-font-casks)
 
 ### Special affixes
 
