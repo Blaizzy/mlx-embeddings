@@ -51,10 +51,6 @@ For unrelated apps that share a name, the most popular one (usually the one alre
 
 We do not accept these casks since they involve a higher-than-normal security risk.
 
-### Fonts
-
-Font casks live in the [Homebrew/homebrew-cask-fonts](https://github.com/Homebrew/homebrew-cask-fonts) repository. See the `homebrew/cask-fonts` repository [CONTRIBUTING.md](https://github.com/Homebrew/homebrew-cask-fonts/blob/HEAD/CONTRIBUTING.md) for details.
-
 ## Apps that bundle malware
 
 Unfortunately, in the world of software there are bad actors that bundle malware with their apps. Even so, Homebrew Cask has long decided it will not be an active gatekeeper ([macOS already has one](https://support.apple.com/en-us/HT202491)) and [users are expected to know about the software they are installing](#homebrew-cask-is-not-a-discoverability-service). This means we will not always remove casks that link to these apps, in part because there is no clear line between useful app, potentially unwanted program, and the different shades of malware—what is useful to one user may be seen as malicious by another.

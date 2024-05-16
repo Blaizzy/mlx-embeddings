@@ -1998,10 +1998,9 @@ Summarise contributions to Homebrew repositories.
 
 : Specify a comma-separated list of repositories to search. Supported
   repositories: `brew`, `core`, `cask`, `aliases`, `bundle`,
-  `command-not-found`, `test-bot`, `services` and `cask-fonts`. Omitting this
-  flag, or specifying `--repositories=primary`, searches only the main
-  repositories: brew,core,cask. Specifying `--repositories=all`, searches all
-  repositories.
+  `command-not-found`, `test-bot` and `services`. Omitting this flag, or
+  specifying `--repositories=primary`, searches only the main repositories:
+  brew,core,cask. Specifying `--repositories=all`, searches all repositories.
 
 `--from`
 
