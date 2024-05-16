@@ -17,7 +17,7 @@ else
   end
 
   # This list should match .gitignore
-  vendored_versions = ["3.1"].freeze
+  vendored_versions = ["3.3"].freeze
   vendored_versions.include?("#{ruby_major}.#{ruby_minor}")
 end.freeze
 
@@ -43,8 +43,8 @@ if Pathname.new(RbConfig.ruby).to_s.include?("/vendor/portable-ruby/")
   ruby_version = RbConfig::CONFIG["ruby_version"]
   ruby_path = "#{RbConfig::CONFIG["rubylibprefix"]}/gems/#{ruby_version}"
 
-  $LOAD_PATH.unshift "#{ruby_path}/extensions/#{Gem::Platform.local}/#{ruby_version}-static/debug-1.6.3"
-  $LOAD_PATH.unshift "#{ruby_path}/gems/debug-1.6.3/lib"
+  $LOAD_PATH.unshift "#{ruby_path}/extensions/#{Gem::Platform.local}/#{ruby_version}-static/debug-1.9.1"
+  $LOAD_PATH.unshift "#{ruby_path}/gems/debug-1.9.1/lib"
 end
 
 unless $LOAD_PATH.include?(HOMEBREW_LIBRARY_PATH.to_s)

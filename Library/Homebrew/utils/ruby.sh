@@ -1,6 +1,6 @@
 # When bumping, run `brew vendor-gems --update=--ruby`
 # When bumping to a new major/minor version, also update the bounds in the Gemfile
-export HOMEBREW_REQUIRED_RUBY_VERSION=3.1
+export HOMEBREW_REQUIRED_RUBY_VERSION=3.3
 
 # Disable Ruby options we don't need.
 export HOMEBREW_RUBY_DISABLE_OPTIONS="--disable=gems,rubyopt"

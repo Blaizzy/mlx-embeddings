@@ -5,9 +5,9 @@ source "https://rubygems.org"
 # The default case (no envs), should always be a restrictive bound on the lowest supported minor version.
 # This is the branch that Dependabot will use.
 if ENV.fetch("HOMEBREW_USE_RUBY_FROM_PATH", "").empty?
-  ruby "~> 3.1.0"
+  ruby "~> 3.3.0"
 else
-  ruby ">= 3.1.0"
+  ruby ">= 3.3.0"
 end
 
 # disallowed gems (should not be used)
