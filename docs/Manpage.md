@@ -3568,6 +3568,10 @@ command execution e.g. `$(cat file)`.
   
   *Default:* `$BROWSER` or the OS's default browser.
 
+`HOMEBREW_BUNDLE_USER_CACHE`
+
+: If set, use this directory as the `bundle`(1) user cache.
+
 `HOMEBREW_CACHE`
 
 : Use this directory as the download cache.

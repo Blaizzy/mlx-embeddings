@@ -52,6 +52,9 @@ module Homebrew::EnvConfig
     sig { returns(T.nilable(::String)) }
     def browser; end
 
+    sig { returns(T.nilable(::String)) }
+    def bundle_user_cache; end
+
     sig { returns(String) }
     def cache; end
 
