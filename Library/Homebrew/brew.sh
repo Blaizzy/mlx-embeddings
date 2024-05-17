@@ -92,6 +92,8 @@ else
   HOMEBREW_CELLAR="${HOMEBREW_PREFIX}/Cellar"
 fi
 
+HOMEBREW_CASKROOM="${HOMEBREW_PREFIX}/Caskroom"
+
 HOMEBREW_CACHE="${HOMEBREW_CACHE:-${HOMEBREW_DEFAULT_CACHE}}"
 HOMEBREW_LOGS="${HOMEBREW_LOGS:-${HOMEBREW_DEFAULT_LOGS}}"
 HOMEBREW_TEMP="${HOMEBREW_TEMP:-${HOMEBREW_DEFAULT_TEMP}}"
@@ -138,7 +140,7 @@ case "$@" in
     exit 0
     ;;
   --caskroom)
-    echo "${HOMEBREW_PREFIX}/Caskroom"
+    echo "${HOMEBREW_CASKROOM}"
     exit 0
     ;;
   --cache)
@@ -154,6 +156,11 @@ case "$@" in
   command*)
     source "${HOMEBREW_LIBRARY}/Homebrew/command_path.sh"
     homebrew-command-path "$@" && exit 0
+    ;;
+  # falls back to cmd/list.rb on a non-zero return
+  list*)
+    source "${HOMEBREW_LIBRARY}/Homebrew/list.sh"
+    homebrew-list "$@" && exit 0
     ;;
 esac
 
@@ -783,6 +790,7 @@ export HOMEBREW_LOGS
 export HOMEBREW_DEFAULT_TEMP
 export HOMEBREW_TEMP
 export HOMEBREW_CELLAR
+export HOMEBREW_CASKROOM
 export HOMEBREW_SYSTEM
 export HOMEBREW_SYSTEM_CA_CERTIFICATES_TOO_OLD
 export HOMEBREW_CURL
