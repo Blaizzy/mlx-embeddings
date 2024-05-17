@@ -13,4 +13,7 @@ end
 class Homebrew::DevCmd::Prof::Args < Homebrew::CLI::Args
   sig { returns(T::Boolean) }
   def stackprof?; end
+
+  sig { returns(T::Boolean) }
+  def vernier?; end
 end

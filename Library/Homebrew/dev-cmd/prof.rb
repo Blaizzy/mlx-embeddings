@@ -12,6 +12,8 @@ module Homebrew
         EOS
         switch "--stackprof",
                description: "Use `stackprof` instead of `ruby-prof` (the default)."
+        switch "--vernier",
+               description: "Use `vernier` instead of `ruby-prof` (the default)."
 
         named_args :command, min: 1
       end
@@ -39,17 +41,26 @@ module Homebrew
         Homebrew.setup_gem_environment!
 
         if args.stackprof?
+          # odeprecated. vernier is better in every way
           with_env HOMEBREW_STACKPROF: "1" do
             system(*HOMEBREW_RUBY_EXEC_ARGS, brew_rb, *args.named)
           end
           output_filename = "prof/d3-flamegraph.html"
           safe_system "stackprof --d3-flamegraph prof/stackprof.dump > #{output_filename}"
+          exec_browser output_filename
+        elsif args.vernier?
+          output_filename = "prof/vernier.json"
+          Process::UID.change_privilege(Process.euid) if Process.euid != Process.uid
+          safe_system "vernier", "run", "--output=#{output_filename}", "--allocation_sample_rate=500", "--",
+                      RUBY_PATH, brew_rb, *args.named
+          ohai "Profiling complete!"
+          puts "Upload the results from #{output_filename} to:"
+          puts "  #{Formatter.url("https://vernier.prof")}"
         else
           output_filename = "prof/call_stack.html"
           safe_system "ruby-prof", "--printer=call_stack", "--file=#{output_filename}", brew_rb, "--", *args.named
+          exec_browser output_filename
         end
-
-        exec_browser output_filename
       rescue OptionParser::InvalidOption => e
         ofail e
 
