@@ -1,8 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "set"
-
 module Cask
   # Sorted set containing all cask artifacts.
   class ArtifactSet < ::Set

@@ -6,7 +6,6 @@ require "env_config"
 require "cask/config"
 require "cli/args"
 require "optparse"
-require "set"
 require "utils/tty"
 
 module Homebrew

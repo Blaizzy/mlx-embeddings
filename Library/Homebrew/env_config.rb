@@ -1,8 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "set"
-
 module Homebrew
   # Helper module for querying Homebrew-specific environment variables.
   #
