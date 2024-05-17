@@ -8,7 +8,6 @@ require "fileutils"
 require "json"
 require "json/add/exception"
 require "forwardable"
-require "set"
 
 require "extend/array"
 require "extend/blank"

@@ -6,7 +6,6 @@ require "utils/bottles"
 require "attrable"
 require "formula"
 require "cask/cask_loader"
-require "set"
 
 module Homebrew
   # Helper class for cleaning up the Homebrew cache.
