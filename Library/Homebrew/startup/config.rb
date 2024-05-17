@@ -33,6 +33,9 @@ HOMEBREW_LOCKS = (HOMEBREW_PREFIX/"var/homebrew/locks").freeze
 # Where we store built products
 HOMEBREW_CELLAR = Pathname(ENV.fetch("HOMEBREW_CELLAR")).freeze
 
+# Where we store Casks
+HOMEBREW_CASKROOM = Pathname(ENV.fetch("HOMEBREW_CASKROOM")).freeze
+
 # Where downloads (bottles, source tarballs, etc.) are cached
 HOMEBREW_CACHE = Pathname(ENV.fetch("HOMEBREW_CACHE")).freeze
 
