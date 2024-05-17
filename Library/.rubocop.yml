@@ -221,7 +221,7 @@ Performance/MethodObjectAsBlock:
 
 RSpec:
   Include:
-    - 'Homebrew/test/**/*'
+    - "Homebrew/test/**/*"
 
 # Intentionally disabled as it doesn't fit with our code style.
 RSpec/AnyInstance:
@@ -284,6 +284,7 @@ Sorbet/TrueSigil:
     - "/**/{Formula,Casks}/**/*.rb"
     - "**/{Formula,Casks}/**/*.rb"
     - "Homebrew/test/**/*.rb"
+    - "Homebrew/extend/pathname/rmtree.rb"
 
 # Require &&/|| instead of and/or
 Style/AndOr:
