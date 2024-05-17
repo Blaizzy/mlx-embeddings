@@ -10,11 +10,11 @@ require "English"
 module Homebrew
   # Keep in sync with the `Gemfile.lock`'s BUNDLED WITH.
   # After updating this, run `brew vendor-gems --update=--bundler`.
-  HOMEBREW_BUNDLER_VERSION = "2.4.18"
+  HOMEBREW_BUNDLER_VERSION = "2.5.9"
 
   # Bump this whenever a committed vendored gem is later added to or exclusion removed from gitignore.
   # This will trigger it to reinstall properly if `brew install-bundler-gems` needs it.
-  VENDOR_VERSION = 6
+  VENDOR_VERSION = 7
   private_constant :VENDOR_VERSION
 
   RUBY_BUNDLE_VENDOR_DIRECTORY = (HOMEBREW_LIBRARY_PATH/"vendor/bundle/ruby").freeze

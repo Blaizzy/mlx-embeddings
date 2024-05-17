@@ -33,6 +33,7 @@ Style/Documentation:
     - extend/ENV/super.rb
     - extend/kernel.rb
     - extend/pathname.rb
+    - extend/pathname/rmtree.rb
     - formula.rb
     - formula_assertions.rb
     - formula_free_port.rb

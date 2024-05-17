@@ -314,8 +314,8 @@ RSpec.shared_examples "#uninstall_phase or #zap_phase" do
 
       before do
         allow_any_instance_of(Cask::Artifact::AbstractUninstall).to receive(:trash_paths)
-          .and_wrap_original do |method, *args|
-            method.call(*args).tap do |trashed, _|
+          .and_wrap_original do |method, *args, **kwargs|
+            method.call(*args, **kwargs).tap do |trashed, _|
               FileUtils.rm_r trashed
             end
           end

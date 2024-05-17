@@ -1,4 +1,12 @@
 require 'rbconfig'
+module Kernel
+  remove_method(:gem) if private_method_defined?(:gem)
+
+  def gem(*)
+  end
+
+  private :gem
+end
 unless defined?(Gem)
   module Gem
     def self.ruby_api_version
@@ -17,8 +25,7 @@ end
 if Gem.respond_to?(:discover_gems_on_require=)
   Gem.discover_gems_on_require = false
 else
-  kernel = (class << ::Kernel; self; end)
-  [kernel, ::Kernel].each do |k|
+  [::Kernel.singleton_class, ::Kernel].each do |k|
     if k.private_method_defined?(:gem_original_require)
       private_require = k.private_method_defined?(:require)
       k.send(:remove_method, :require)

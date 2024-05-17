@@ -584,3 +584,5 @@ module ObserverPathnameExtension
     puts "uninfo #{self}" if ObserverPathnameExtension.verbose?
   end
 end
+
+require "extend/pathname/rmtree"
