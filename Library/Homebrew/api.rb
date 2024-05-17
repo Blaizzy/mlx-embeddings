@@ -4,7 +4,10 @@
 require "api/analytics"
 require "api/cask"
 require "api/formula"
-require "base64" # TODO: Add this to the Gemfile or remove it before moving to Ruby 3.4.
+require "warnings"
+Warnings.ignore :default_gems do
+  require "base64" # TODO: Add this to the Gemfile or remove it before moving to Ruby 3.4.
+end
 require "extend/cachable"
 
 module Homebrew

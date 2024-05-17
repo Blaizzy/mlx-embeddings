@@ -2,7 +2,10 @@
 # frozen_string_literal: true
 
 require "abstract_command"
-require "csv"
+require "warnings"
+Warnings.ignore :default_gems do
+  require "csv"
+end
 
 module Homebrew
   module DevCmd

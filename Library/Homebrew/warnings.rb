@@ -14,6 +14,9 @@ module Warnings
       %r{warning: please see https://github\.com/whitequark/parser#compatibility-with-ruby-mri\.},
       # <!-- vale on -->
     ],
+    default_gems:  [
+      /warning: .+\.rb was loaded from the standard library, .+ default gems since Ruby \d+\.\d+\.\d+\./,
+    ],
   }.freeze
 
   def self.ignore(*warnings)
