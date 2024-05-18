@@ -13,8 +13,6 @@ module Homebrew
 
     # @api private
     HOMEBREW_CORE_REPO = "Homebrew/homebrew-core"
-    # @api private
-    HOMEBREW_CORE_CI_URI = "https://github.com/Homebrew/homebrew-core/.github/workflows/publish-commit-bottles.yml@refs/heads/master"
 
     # @api private
     BACKFILL_REPO = "trailofbits/homebrew-brew-verify"
@@ -127,7 +125,18 @@ module Homebrew
     sig { params(bottle: Bottle).returns(T::Hash[T.untyped, T.untyped]) }
     def self.check_core_attestation(bottle)
       begin
-        attestation = check_attestation bottle, HOMEBREW_CORE_REPO, HOMEBREW_CORE_CI_URI
+        # Ideally, we would also constrain the signing workflow here, but homebrew-core
+        # currently uses multiple signing workflows to produce bottles
+        # (e.g. `dispatch-build-bottle.yml`, `dispatch-rebottle.yml`, etc.).
+        #
+        # We could check each of these (1) explicitly (slow), (2) by generating a pattern
+        # to pass into `--cert-identity-regex` (requires us to build up a Go-style regex),
+        # or (3) by checking the resulting JSON for the expected signing workflow.
+        #
+        # Long term, we should probably either do (3) *or* switch to a single reusable
+        # workflow, which would then be our sole identity. However, GitHub's
+        # attestations currently do not include reusable workflow state by default.
+        attestation = check_attestation bottle, HOMEBREW_CORE_REPO
         return attestation
       rescue InvalidAttestationError
         odebug "falling back on backfilled attestation for #{bottle}"
