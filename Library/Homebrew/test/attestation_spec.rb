@@ -157,8 +157,7 @@ RSpec.describe Homebrew::Attestation do
     it "calls gh with args for homebrew-core" do
       expect(described_class).to receive(:system_command!)
         .with(fake_gh, args: ["attestation", "verify", cached_download, "--repo",
-                              described_class::HOMEBREW_CORE_REPO, "--format", "json", "--cert-identity",
-                              described_class::HOMEBREW_CORE_CI_URI],
+                              described_class::HOMEBREW_CORE_REPO, "--format", "json"],
               env: { "GH_TOKEN" => fake_gh_creds }, secrets: [fake_gh_creds])
         .and_return(fake_result_json_resp)
 
@@ -168,8 +167,7 @@ RSpec.describe Homebrew::Attestation do
     it "calls gh with args for backfill when homebrew-core fails" do
       expect(described_class).to receive(:system_command!)
         .with(fake_gh, args: ["attestation", "verify", cached_download, "--repo",
-                              described_class::HOMEBREW_CORE_REPO, "--format", "json", "--cert-identity",
-                              described_class::HOMEBREW_CORE_CI_URI],
+                              described_class::HOMEBREW_CORE_REPO, "--format", "json"],
               env: { "GH_TOKEN" => fake_gh_creds }, secrets: [fake_gh_creds])
         .once
         .and_raise(described_class::InvalidAttestationError)
@@ -186,8 +184,7 @@ RSpec.describe Homebrew::Attestation do
     it "raises when the backfilled attestation is too new" do
       expect(described_class).to receive(:system_command!)
         .with(fake_gh, args: ["attestation", "verify", cached_download, "--repo",
-                              described_class::HOMEBREW_CORE_REPO, "--format", "json", "--cert-identity",
-                              described_class::HOMEBREW_CORE_CI_URI],
+                              described_class::HOMEBREW_CORE_REPO, "--format", "json"],
               env: { "GH_TOKEN" => fake_gh_creds }, secrets: [fake_gh_creds])
         .once
         .and_raise(described_class::InvalidAttestationError)
