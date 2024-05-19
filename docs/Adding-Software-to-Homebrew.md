@@ -14,7 +14,7 @@ If everything checks out, you're ready to get started on a new formula!
 
 ### Writing the formula
 
-1. It's a good idea to find existing formulae in Homebrew that have similarities to the software you want to add. This will help you to understand how specific languages, build methods, etc. are typically handled. Start by tapping `homebrew/core`: first set `HOMEBREW_NO_INSTALL_FROM_API=1` in your shell environment, then run `brew tap homebrew/core` to clone the `homebrew/core` tap to the path returned by `brew --repository homebrew/core`.
+1. It's a good idea to find existing formulae in Homebrew that have similarities to the software you want to add. This will help you to understand how specific languages, build methods, etc. are typically handled. Start by tapping `homebrew/core`: first set `HOMEBREW_NO_INSTALL_FROM_API=1` in your shell environment, then run `brew tap --force homebrew/core` to clone the `homebrew/core` tap to the path returned by `brew --repository homebrew/core`.
 
 1. If you're starting from scratch, you can use the [`brew create` command](Manpage.md#create-options-url) to produce a basic version of your formula. This command accepts a number of options and you may be able to save yourself some work by using an appropriate template option like `--python`.
 
