@@ -41,6 +41,7 @@ end
 group :prof, optional: true do
   gem "ruby-prof", require: false
   gem "stackprof", require: false
+  gem "vernier", require: false
 end
 group :pry, optional: true do
   gem "pry", require: false
