@@ -1598,11 +1598,14 @@ Use the specified \fIURL\fP as the root of the bottle\[u2019]s URL instead of Ho
 .TP
 \fB\-\-root\-url\-using\fP
 Use the specified download strategy class for downloading the bottle\[u2019]s URL instead of Homebrew\[u2019]s default\.
-.SS "\fBprof\fP \fR[\fB\-\-stackprof\fP] \fIcommand\fP \fR[\.\.\.]"
+.SS "\fBprof\fP \fR[\fB\-\-stackprof\fP] \fR[\fB\-\-vernier\fP] \fIcommand\fP \fR[\.\.\.]"
 Run Homebrew with a Ruby profiler\. For example, \fBbrew prof readall\fP\&\.
 .TP
 \fB\-\-stackprof\fP
 Use \fBstackprof\fP instead of \fBruby\-prof\fP (the default)\.
+.TP
+\fB\-\-vernier\fP
+Use \fBvernier\fP instead of \fBruby\-prof\fP (the default)\.
 .SS "\fBrelease\fP \fR[\fB\-\-major\fP] \fR[\fB\-\-minor\fP]"
 Create a new draft Homebrew/brew release with the appropriate version number and release notes\.
 .P

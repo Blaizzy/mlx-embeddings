@@ -1814,6 +1814,7 @@ _brew_prof() {
       --quiet
       --stackprof
       --verbose
+      --vernier
       "
       return
       ;;

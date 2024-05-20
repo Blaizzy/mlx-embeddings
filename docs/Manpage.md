@@ -2507,13 +2507,17 @@ Apply the bottle commit and publish bottles to a host.
 : Use the specified download strategy class for downloading the bottle's URL
   instead of Homebrew's default.
 
-### `prof` \[`--stackprof`\] *`command`* \[...\]
+### `prof` \[`--stackprof`\] \[`--vernier`\] *`command`* \[...\]
 
 Run Homebrew with a Ruby profiler. For example, `brew prof readall`.
 
 `--stackprof`
 
 : Use `stackprof` instead of `ruby-prof` (the default).
+
+`--vernier`
+
+: Use `vernier` instead of `ruby-prof` (the default).
 
 ### `release` \[`--major`\] \[`--minor`\]
 

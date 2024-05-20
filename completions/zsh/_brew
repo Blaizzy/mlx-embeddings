@@ -1529,6 +1529,7 @@ _brew_prof() {
     '--quiet[Make some output more quiet]' \
     '--stackprof[Use `stackprof` instead of `ruby-prof` (the default)]' \
     '--verbose[Make some output more verbose]' \
+    '--vernier[Use `vernier` instead of `ruby-prof` (the default)]' \
     - command \
     '*::command:__brew_commands'
 }
