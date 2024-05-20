@@ -405,6 +405,7 @@ jobs:
             runs-on: macos-14
     env:
       HOMEBREW_TEST_BOT_ANALYTICS: 1
+      HOMEBREW_ENFORCE_SBOM: 1
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew

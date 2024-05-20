@@ -17,6 +17,13 @@ class SBOM
   # Instantiates a {SBOM} for a new installation of a formula.
   sig { params(formula: Formula, tab: Tab).returns(T.attached_class) }
   def self.create(formula, tab)
+    active_spec = if formula.stable?
+      T.must(formula.stable)
+    else
+      T.must(formula.head)
+    end
+    active_spec_sym = formula.active_spec_sym
+
     attributes = {
       name:                 formula.name,
       homebrew_version:     HOMEBREW_VERSION,
@@ -32,13 +39,13 @@ class SBOM
         path:         formula.specified_path.to_s,
         tap:          formula.tap&.name,
         tap_git_head: nil, # Filled in later if possible
-        spec:         formula.active_spec_sym.to_s,
-        patches:      formula.stable&.patches,
+        spec:         active_spec_sym.to_s,
+        patches:      active_spec.patches,
         bottle:       formula.bottle_hash,
-        stable:       {
-          version:  formula.stable&.version,
-          url:      formula.stable&.url,
-          checksum: formula.stable&.checksum,
+        active_spec_sym =>       {
+          version:  active_spec.version,
+          url:      active_spec.url,
+          checksum: active_spec.checksum,
         },
       },
     }
@@ -230,7 +237,8 @@ class SBOM
   }
   def generate_packages_json(runtime_dependency_declaration, compiler_declaration, bottling:)
     bottle = []
-    if !bottling && (bottle_info = get_bottle_info(source[:bottle]))
+    if !bottling && (bottle_info = get_bottle_info(source[:bottle])) &&
+       (stable_version = source.dig(:stable, :version))
       bottle << {
         SPDXID:           "SPDXRef-Bottle-#{name}",
         name:             name.to_s,
@@ -267,18 +275,18 @@ class SBOM
       {
         SPDXID:           "SPDXRef-Archive-#{name}-src",
         name:             name.to_s,
-        versionInfo:      stable_version.to_s,
+        versionInfo:      spec_version.to_s,
         filesAnalyzed:    false,
         licenseDeclared:  assert_value(nil),
         builtDate:        source_modified_time.to_s,
         licenseConcluded: assert_value(license),
-        downloadLocation: source[:stable][:url],
+        downloadLocation: source[spec_symbol][:url],
         copyrightText:    assert_value(nil),
         externalRefs:     [],
         checksums:        [
           {
             algorithm:     "SHA256",
-            checksumValue: source[:stable][:checksum].to_s,
+            checksumValue: source[spec_symbol][:checksum].to_s,
           },
         ],
       },
@@ -362,13 +370,13 @@ class SBOM
     {
       SPDXID:            "SPDXRef-DOCUMENT",
       spdxVersion:       "SPDX-2.3",
-      name:              "SBOM-SPDX-#{name}-#{stable_version}",
+      name:              "SBOM-SPDX-#{name}-#{spec_version}",
       creationInfo:      {
         created:  (Time.at(time).utc if time.present? && !bottling),
         creators: ["Tool: https://github.com/homebrew/brew@#{homebrew_version}"],
       },
       dataLicense:       "CC0-1.0",
-      documentNamespace: "https://formulae.brew.sh/spdx/#{name}-#{stable_version}.json",
+      documentNamespace: "https://formulae.brew.sh/spdx/#{name}-#{spec_version}.json",
       documentDescribes: packages.map { |dependency| dependency[:SPDXID] },
       files:             [],
       packages:,
@@ -397,9 +405,14 @@ class SBOM
     Tap.fetch(tap_name) if tap_name
   end
 
+  sig { returns(Symbol) }
+  def spec_symbol
+    source.fetch(:spec).to_sym
+  end
+
   sig { returns(T.nilable(Version)) }
-  def stable_version
-    source[:stable][:version]
+  def spec_version
+    source.fetch(spec_symbol)[:version]
   end
 
   sig { returns(Time) }
