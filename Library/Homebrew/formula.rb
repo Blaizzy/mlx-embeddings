@@ -2579,9 +2579,13 @@ class Formula
 
   # Returns the bottle information for a formula.
   def bottle_hash(compact_for_api: false)
-    bottle_spec = T.must(stable).bottle_specification
-
     hash = {}
+    stable_spec = stable
+    return hash unless stable_spec
+    return hash unless bottle_defined?
+
+    bottle_spec = stable_spec.bottle_specification
+
     hash["rebuild"] = bottle_spec.rebuild if !compact_for_api || !bottle_spec.rebuild.zero?
     hash["root_url"] = bottle_spec.root_url unless compact_for_api
     hash["files"] = {}
