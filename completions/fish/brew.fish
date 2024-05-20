@@ -1236,6 +1236,7 @@ __fish_brew_complete_arg 'prof' -l help -d 'Show this message'
 __fish_brew_complete_arg 'prof' -l quiet -d 'Make some output more quiet'
 __fish_brew_complete_arg 'prof' -l stackprof -d 'Use `stackprof` instead of `ruby-prof` (the default)'
 __fish_brew_complete_arg 'prof' -l verbose -d 'Make some output more verbose'
+__fish_brew_complete_arg 'prof' -l vernier -d 'Use `vernier` instead of `ruby-prof` (the default)'
 __fish_brew_complete_arg 'prof' -a '(__fish_brew_suggest_commands)'
 
 
