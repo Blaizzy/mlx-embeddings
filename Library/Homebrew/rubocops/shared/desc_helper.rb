@@ -64,7 +64,7 @@ module RuboCop
         if type == :cask &&
            (match = regex_match_group(desc, /\b(macOS|Mac( ?OS( ?X)?)?|OS ?X)(?! virtual machines?)\b/i)) &&
            match[1] != "MAC"
-          desc_problem "Description shouldn't contain the platform."
+          add_offense(@offensive_source_range, message: "Description shouldn't contain the platform.")
         end
 
         # Check if a full stop is used at the end of a desc (apart from in the case of "etc.").
@@ -108,6 +108,8 @@ module RuboCop
           correction.gsub!(/^\s+/, "")
           correction.gsub!(/\s+$/, "")
           correction.gsub!(/\.$/, "")
+
+          next if correction == match_data[:correction]
 
           corrector.replace(@offensive_node.source_range, "#{quote}#{correction}#{quote}")
         end
