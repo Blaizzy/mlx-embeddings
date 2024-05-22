@@ -658,7 +658,7 @@ Minitest::BacktraceFilter::MT_RE = T.let(T.unsafe(nil), Regexp)
 
 # Dispatch to multiple reporters as one.
 #
-# source://minitest//lib/minitest.rb#936
+# source://minitest//lib/minitest.rb#934
 class Minitest::CompositeReporter < ::Minitest::AbstractReporter
   # @return [CompositeReporter] a new instance of CompositeReporter
   #
@@ -1163,7 +1163,7 @@ end
 #     end
 #   end
 #
-# source://minitest//lib/minitest.rb#762
+# source://minitest//lib/minitest.rb#760
 class Minitest::StatisticsReporter < ::Minitest::Reporter
   # @return [StatisticsReporter] a new instance of StatisticsReporter
   #
@@ -1291,7 +1291,7 @@ end
 # plugin, pull this out of the composite and replace it with your
 # own.
 #
-# source://minitest//lib/minitest.rb#863
+# source://minitest//lib/minitest.rb#862
 class Minitest::SummaryReporter < ::Minitest::StatisticsReporter
   # source://minitest//lib/minitest.rb#897
   def aggregated_results(io); end
