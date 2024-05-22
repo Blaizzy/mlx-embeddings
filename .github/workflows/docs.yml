@@ -43,7 +43,7 @@ jobs:
           git reset --hard
 
       - name: Install Ruby
-        uses: ruby/setup-ruby@7dc18ff0ca6e3630d3f29d2a85ebf6cc27ae9d6c # v1.177.0
+        uses: ruby/setup-ruby@943103cae7d3f1bb1e4951d5fcc7928b40e4b742 # v1.177.1
         with:
           ruby-version: "3.1"
           bundler-cache: true
@@ -83,7 +83,7 @@ jobs:
           path: rubydoc
 
       - name: Install Ruby
-        uses: ruby/setup-ruby@7dc18ff0ca6e3630d3f29d2a85ebf6cc27ae9d6c # v1.177.0
+        uses: ruby/setup-ruby@943103cae7d3f1bb1e4951d5fcc7928b40e4b742 # v1.177.1
         with:
           ruby-version: "3.1"
           bundler-cache: true
