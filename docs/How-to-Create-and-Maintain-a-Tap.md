@@ -48,10 +48,10 @@ You can provide your tap users with custom `brew` commands by adding them in a `
 
 See [homebrew/aliases](https://github.com/Homebrew/homebrew-aliases) for an example of a tap with external commands.
 
-## Official Vendor Taps
+## Upstream taps
 
 Some upstream software providers like to package their software in their own Homebrew tap. When their software is [eligible for Homebrew/homebrew-core](Acceptable-Formulae.md) we prefer to maintain software there for ease of updates, improved discoverability and use of tools such as [formulae.brew.sh](https://formulae.brew.sh).
 
-We are not willing to remove software packaged in Homebrew/homebrew-core in favour of an upstream tap. We are not willing to instruct users in our formulae to use your formulae instead. If upstream projects have issues with how Homebrew packages your software: please file issues (or, ideally, pull requests) to address these problems.
+We are not willing to remove software packaged in Homebrew/homebrew-core in favour of an upstream tap. We are not willing to instruct users of our formulae to use an upstream tap instead. If upstream projects have issues with how Homebrew packages your software: please file issues (or, ideally, pull requests) to address these problems.
 
 There’s an increasing desire in commercial open source about “maintaining control” e.g. defining exactly what binaries are shipping to users. Not supporting users (or even software distributions) to build-from-source is antithetical to the values of open source. If you think Homebrew's perspective is annoying on this: try and see how Debian responds to requests to ship your binaries.
