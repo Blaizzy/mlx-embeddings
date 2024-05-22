@@ -33,8 +33,6 @@ gem:
     - ruby-prof
     - simplecov_json_formatter
     - simpleidn
-    - unf
-    - unf_ext
     - unicode-display_width
     - yard-sorbet
   prerequire: sorbet/tapioca/prerequire.rb
