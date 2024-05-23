@@ -219,7 +219,7 @@ module Homebrew
           stdout, stderr, status = curl_output(
             *PAGE_CONTENT_CURL_ARGS, url,
             **DEFAULT_CURL_OPTIONS,
-            use_homebrew_curl: homebrew_curl,
+            use_homebrew_curl: homebrew_curl || !curl_supports_fail_with_body?,
             user_agent:
           )
           next unless status.success?
