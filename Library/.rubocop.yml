@@ -406,6 +406,11 @@ Style/RescueStandardError:
 Style/ReturnNil:
   Enabled: true
 
+# Broken with rubocop-1.64.0, tries to autocorrect calls to e.g. :"1?"
+# TODO: report to rubocop
+Style/SendWithLiteralMethodName:
+  Enabled: false
+
 # We have no use for using `warn` because we
 # are calling Ruby with warnings disabled.
 Style/StderrPuts:
