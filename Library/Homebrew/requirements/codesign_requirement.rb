@@ -13,7 +13,7 @@ class CodesignRequirement < Requirement
     @identity = options.fetch(:identity)
     @with = options.fetch(:with, "code signing")
     @url = options.fetch(:url, nil)
-    super(tags)
+    super
   end
 
   satisfy(build_env: false) do

@@ -88,7 +88,7 @@ class MacOSRequirement < Requirement
   end
 
   def ==(other)
-    super(other) && comparator == other.comparator && version == other.version
+    super && comparator == other.comparator && version == other.version
   end
   alias eql? ==
 

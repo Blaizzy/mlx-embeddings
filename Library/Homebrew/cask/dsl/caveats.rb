@@ -20,7 +20,7 @@ module Cask
       attr_predicate :discontinued?
 
       def initialize(*args)
-        super(*args)
+        super
         @built_in_caveats = {}
         @custom_caveats = []
         @discontinued = false

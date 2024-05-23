@@ -146,11 +146,11 @@ class AbstractDownloadStrategy
   private
 
   def puts(*args)
-    super(*args) unless quiet?
+    super unless quiet?
   end
 
   def ohai(*args)
-    super(*args) unless quiet?
+    super unless quiet?
   end
 
   def silent_command(*args, **options)
@@ -605,7 +605,7 @@ class HomebrewCurlDownloadStrategy < CurlDownloadStrategy
     raise HomebrewCurlDownloadStrategyError, url unless Formula["curl"].any_version_installed?
 
     options[:use_homebrew_curl] = true
-    super(*args, **options)
+    super
   end
 end
 
@@ -620,7 +620,7 @@ class CurlGitHubPackagesDownloadStrategy < CurlDownloadStrategy
     # GitHub Packages authorization header.
     # HOMEBREW_GITHUB_PACKAGES_AUTH set in brew.sh
     meta[:headers] << "Authorization: #{HOMEBREW_GITHUB_PACKAGES_AUTH}"
-    super(url, name, version, **meta)
+    super
   end
 
   private

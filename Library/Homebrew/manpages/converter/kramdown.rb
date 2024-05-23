@@ -22,7 +22,7 @@ module Homebrew
             # Don't duplicate the URL if the link text is the same as the URL.
             "<#{text}>"
           else
-            super(element, options)
+            super
           end
         end
       end

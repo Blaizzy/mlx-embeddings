@@ -23,7 +23,7 @@ module Homebrew
         # Ignore non-documentation comments.
         content = content&.sub(/\A(typed|.*rubocop):.*/m, "")
 
-        content = super(content)
+        content = super
 
         source = handler&.statement&.source
 

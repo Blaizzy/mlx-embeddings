@@ -256,7 +256,7 @@ class UsesFromMacOSDependency < Dependency
 
   sig { params(minimum_version: T.nilable(Version), minimum_revision: T.nilable(Integer)).returns(T::Boolean) }
   def installed?(minimum_version: nil, minimum_revision: nil)
-    use_macos_install? || super(minimum_version:, minimum_revision:)
+    use_macos_install? || super
   end
 
   sig { returns(T::Boolean) }

@@ -19,7 +19,7 @@ module Cask
       end
 
       def initialize(cask, path, **stanza_options)
-        super(cask, path, **stanza_options)
+        super
         @path = cask.staged_path.join(path)
         @stanza_options = stanza_options
       end

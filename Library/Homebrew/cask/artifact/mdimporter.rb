@@ -13,7 +13,7 @@ module Cask
       end
 
       def install_phase(**options)
-        super(**options)
+        super
         reload_spotlight(**options)
       end
 
