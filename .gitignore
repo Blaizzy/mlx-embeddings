@@ -173,9 +173,10 @@
 !/.editorconfig
 !/.gitignore
 !/.irb_config
-!/.yardopts
-!/.vale.ini
+!/.ruby-version
 !/.shellcheckrc
+!/.vale.ini
+!/.yardopts
 !/CHANGELOG.md
 !/CONTRIBUTING.md
 !/Dockerfile

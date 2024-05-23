@@ -9,6 +9,13 @@ on:
 permissions:
   contents: read
 
+env:
+  HOMEBREW_DEVELOPER: 1
+  HOMEBREW_NO_AUTO_UPDATE: 1
+  HOMEBREW_NO_ENV_HINTS: 1
+  HOMEBREW_BOOTSNAP: 1
+  HOMEBREW_NO_INSTALL_CLEANUP: 1
+
 jobs:
   linting:
     if: github.repository == 'Homebrew/brew'
@@ -45,7 +52,6 @@ jobs:
       - name: Install Ruby
         uses: ruby/setup-ruby@943103cae7d3f1bb1e4951d5fcc7928b40e4b742 # v1.177.1
         with:
-          ruby-version: "3.1"
           bundler-cache: true
           working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/docs
 
@@ -85,8 +91,8 @@ jobs:
       - name: Install Ruby
         uses: ruby/setup-ruby@943103cae7d3f1bb1e4951d5fcc7928b40e4b742 # v1.177.1
         with:
-          ruby-version: "3.1"
           bundler-cache: true
+          working-directory: rubydoc
 
       - name: Process rubydoc comments
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}/Library/Homebrew
