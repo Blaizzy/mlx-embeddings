@@ -21,11 +21,11 @@ module InstallRenamed
   end
 
   def +(other)
-    super(other).extend(InstallRenamed)
+    super.extend(InstallRenamed)
   end
 
   def /(other)
-    super(other).extend(InstallRenamed)
+    super.extend(InstallRenamed)
   end
 
   private

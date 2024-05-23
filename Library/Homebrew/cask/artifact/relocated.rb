@@ -38,7 +38,7 @@ module Cask
           .void
       }
       def initialize(cask, source, **target_hash)
-        super(cask, source, **target_hash)
+        super
 
         target = target_hash[:target]
         @source_string = source.to_s

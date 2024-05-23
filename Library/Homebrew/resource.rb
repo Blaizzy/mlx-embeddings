@@ -143,7 +143,7 @@ class Resource < Downloadable
   def fetch(verify_download_integrity: true)
     fetch_patches
 
-    super(verify_download_integrity:)
+    super
   end
 
   # {Livecheck} can be used to check for newer versions of the software.

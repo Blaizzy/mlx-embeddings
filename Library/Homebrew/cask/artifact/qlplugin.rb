@@ -13,12 +13,12 @@ module Cask
       end
 
       def install_phase(**options)
-        super(**options)
+        super
         reload_quicklook(**options)
       end
 
       def uninstall_phase(**options)
-        super(**options)
+        super
         reload_quicklook(**options)
       end
 

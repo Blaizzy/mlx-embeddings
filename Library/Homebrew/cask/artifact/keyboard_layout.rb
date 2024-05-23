@@ -8,12 +8,12 @@ module Cask
     # Artifact corresponding to the `keyboard_layout` stanza.
     class KeyboardLayout < Moved
       def install_phase(**options)
-        super(**options)
+        super
         delete_keyboard_layout_cache(**options)
       end
 
       def uninstall_phase(**options)
-        super(**options)
+        super
         delete_keyboard_layout_cache(**options)
       end
 

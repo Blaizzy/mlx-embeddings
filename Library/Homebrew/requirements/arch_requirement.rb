@@ -11,7 +11,7 @@ class ArchRequirement < Requirement
 
   def initialize(tags)
     @arch = tags.shift
-    super(tags)
+    super
   end
 
   satisfy(build_env: false) do

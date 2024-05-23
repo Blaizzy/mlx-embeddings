@@ -15,7 +15,7 @@ module Homebrew
       def initialize
         require "cli/named_args"
 
-        super()
+        super
 
         @processed_options = []
         @options_only = []

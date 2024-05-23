@@ -18,7 +18,7 @@ RSpec.describe Homebrew::Cmd::UpdateReport do
           ENV["HOMEBREW_UPDATE_BEFORE#{tap.repo_var_suffix}"] = "12345678"
           ENV["HOMEBREW_UPDATE_AFTER#{tap.repo_var_suffix}"] = "abcdef00"
 
-          super(tap)
+          super
         end
       end
     end

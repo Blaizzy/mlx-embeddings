@@ -8,7 +8,7 @@ module Cask
     # Artifact corresponding to the `binary` stanza.
     class Binary < Symlinked
       def link(command: nil, **options)
-        super(command:, **options)
+        super
         return if source.executable?
 
         if source.writable?

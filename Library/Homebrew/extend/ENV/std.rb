@@ -128,7 +128,7 @@ module Stdenv
 
   sig { void }
   def clang
-    super()
+    super
     replace_in_cflags(/-Xarch_#{Hardware::CPU.arch_32_bit} (-march=\S*)/, '\1')
     map = Hardware::CPU.optimization_flags.dup
     if DevelopmentTools.clang_build_version < 700
