@@ -470,6 +470,13 @@ module Utils
       T.must(file).unlink
     end
 
+    def curl_supports_fail_with_body?
+      @curl_supports_fail_with_body ||= Hash.new do |h, key|
+        h[key] = Version.new(curl_output("-V").stdout[/curl (\d+(\.\d+)+)/, 1]) >= Version.new("7.76.0")
+      end
+      @curl_supports_fail_with_body[curl_path]
+    end
+
     def curl_supports_tls13?
       @curl_supports_tls13 ||= Hash.new do |h, key|
         h[key] = quiet_system(curl_executable, "--tlsv1.3", "--head", "https://brew.sh/")
