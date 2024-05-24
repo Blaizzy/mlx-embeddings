@@ -47,6 +47,12 @@ module Cask
       @token_conflicts = token_conflicts
       @only = only || []
       @except = except || []
+
+      # Clean up `#extract_artifacts` tmp dir when Audit object is destroyed
+      ObjectSpace.define_finalizer(
+        self,
+        proc { FileUtils.remove_entry(@tmpdir) if @tmpdir },
+      )
     end
 
     def run!
