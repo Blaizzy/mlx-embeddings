@@ -4,18 +4,19 @@ module Warning
   module Processor
     # Map of symbols to regexps for warning messages to ignore.
     IGNORE_MAP = {
-      ambiguous_slash: /: warning: ambiguous first argument; put parentheses or a space even after `\/' operator\n\z|: warning: ambiguity between regexp and two divisions: wrap regexp in parentheses or add a space after `\/' operator\n\z/,
-      arg_prefix: /: warning: `[&\*]' interpreted as argument prefix\n\z/,
+      ambiguous_slash: /: warning: ambiguous first argument; put parentheses or a space even after [`']\/' operator\n\z|: warning: ambiguity between regexp and two divisions: wrap regexp in parentheses or add a space after [`']\/' operator\n\z/,
+      arg_prefix: /: warning: [`'][&\*]' interpreted as argument prefix\n\z/,
       bignum: /: warning: constant ::Bignum is deprecated\n\z/,
       fixnum: /: warning: constant ::Fixnum is deprecated\n\z/,
+      ignored_block: /: warning: the block passed to '.+' defined at .+:\d+ may be ignored\n\z/,
       method_redefined: /: warning: method redefined; discarding old .+\n\z|: warning: previous definition of .+ was here\n\z/,
-      missing_gvar: /: warning: global variable `\$.+' not initialized\n\z/,
+      missing_gvar: /: warning: global variable [`']\$.+' not initialized\n\z/,
       missing_ivar: /: warning: instance variable @.+ not initialized\n\z/,
       not_reached: /: warning: statement not reached\n\z/,
       shadow: /: warning: shadowing outer local variable - \w+\n\z/,
       unused_var: /: warning: assigned but unused variable - \w+\n\z/,
       useless_operator: /: warning: possibly useless use of [><!=]+ in void context\n\z/,
-      keyword_separation: /: warning: (?:Using the last argument (?:for `.+' )?as keyword parameters is deprecated; maybe \*\* should be added to the call|Passing the keyword argument (?:for `.+' )?as the last hash parameter is deprecated|Splitting the last argument (?:for `.+' )?into positional and keyword parameters is deprecated|The called method (?:`.+' )?is defined here)\n\z/,
+      keyword_separation: /: warning: (?:Using the last argument (?:for [`'].+' )?as keyword parameters is deprecated; maybe \*\* should be added to the call|Passing the keyword argument (?:for [`'].+' )?as the last hash parameter is deprecated|Splitting the last argument (?:for [`'].+' )?into positional and keyword parameters is deprecated|The called method (?:[`'].+' )?is defined here)\n\z/,
       safe: /: warning: (?:rb_safe_level_2_warning|rb_safe_level|rb_set_safe_level_force|rb_set_safe_level|rb_secure|rb_insecure_operation|rb_check_safe_obj|\$SAFE) will (?:be removed|become a normal global variable) in Ruby 3\.0\n\z/,
       taint: /: warning: (?:rb_error_untrusted|rb_check_trusted|Pathname#taint|Pathname#untaint|rb_env_path_tainted|Object#tainted\?|Object#taint|Object#untaint|Object#untrusted\?|Object#untrust|Object#trust|rb_obj_infect|rb_tainted_str_new|rb_tainted_str_new_cstr) is deprecated and will be removed in Ruby 3\.2\.?\n\z/,
       mismatched_indentations: /: warning: mismatched indentations at '.+' with '.+' at \d+\n\z/,
@@ -166,7 +167,7 @@ module Warning
     #     /instance variable @\w+ not initialized/ => proc do |warning|
     #       LOGGER.warning(warning)
     #     end,
-    #     /global variable `\$\w+' not initialized/ => proc do |warning|
+    #     /global variable [`']\$\w+' not initialized/ => proc do |warning|
     #       LOGGER.error(warning)
     #     end
     #   )
