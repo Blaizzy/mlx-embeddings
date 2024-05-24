@@ -44,11 +44,24 @@ module Homebrew
                               debug: false, verbose: false)
       raise ArgumentError, "Invalid output type: #{output_type.inspect}" if [:print, :json].exclude?(output_type)
 
-      shell_files, ruby_files =
-        Array(files).map(&method(:Pathname))
-                    .partition { |f| f.realpath == HOMEBREW_BREW_FILE.realpath || f.extname == ".sh" }
+      ruby_files = []
+      shell_files = []
+      actionlint_files = []
+      Array(files).map(&method(:Pathname))
+                  .each do |path|
+        case path.extname
+        when ".rb"
+          ruby_files << path
+        when ".sh"
+          shell_files << path
+        when ".yml"
+          actionlint_files << path if path.realpath.to_s.include?("/.github/workflows/")
+        else
+          shell_files << path if path.realpath == HOMEBREW_BREW_FILE.realpath
+        end
+      end
 
-      rubocop_result = if shell_files.any? && ruby_files.none?
+      rubocop_result = if files.present? && ruby_files.empty?
         (output_type == :json) ? [] : true
       else
         run_rubocop(ruby_files, output_type,
@@ -59,22 +72,28 @@ module Homebrew
                     debug:, verbose:)
       end
 
-      shellcheck_result = if ruby_files.any? && shell_files.none?
+      shellcheck_result = if files.present? && shell_files.empty?
         (output_type == :json) ? [] : true
       else
         run_shellcheck(shell_files, output_type, fix:)
       end
 
-      shfmt_result = if ruby_files.any? && shell_files.none?
+      shfmt_result = if files.present? && shell_files.empty?
         true
       else
         run_shfmt(shell_files, fix:)
       end
 
+      actionlint_result = if files.present? && actionlint_files.empty?
+        true
+      else
+        run_actionlint(actionlint_files)
+      end
+
       if output_type == :json
         Offenses.new(rubocop_result + shellcheck_result)
       else
-        rubocop_result && shellcheck_result && shfmt_result
+        rubocop_result && shellcheck_result && shfmt_result && actionlint_result
       end
     end
 
@@ -242,6 +261,14 @@ module Homebrew
       $CHILD_STATUS.success?
     end
 
+    def self.run_actionlint(files)
+      files = github_workflow_files if files.blank?
+      system actionlint, "-shellcheck", shellcheck,
+             "-config-file", HOMEBREW_REPOSITORY/".github/actionlint.yaml",
+             *files
+      $CHILD_STATUS.success?
+    end
+
     def self.json_result!(result)
       # An exit status of 1 just means violations were found; other numbers mean
       # execution errors.
@@ -270,6 +297,15 @@ module Homebrew
       ]
     end
 
+    def self.github_workflow_files
+      HOMEBREW_REPOSITORY.glob(".github/workflows/*.yml")
+    end
+
+    def self.rubocop
+      ensure_formula_installed!("rubocop", latest: true,
+                                           reason: "Ruby style checks").opt_bin/"rubocop"
+    end
+
     def self.shellcheck
       ensure_formula_installed!("shellcheck", latest: true,
                                               reason: "shell style checks").opt_bin/"shellcheck"
@@ -279,6 +315,11 @@ module Homebrew
       ensure_formula_installed!("shfmt", latest: true,
                                          reason: "formatting shell scripts")
       HOMEBREW_LIBRARY/"Homebrew/utils/shfmt.sh"
+    end
+
+    def self.actionlint
+      ensure_formula_installed!("actionlint", latest: true,
+                                              reason: "GitHub Actions checks").opt_bin/"actionlint"
     end
 
     # Collection of style offenses.
