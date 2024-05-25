@@ -77,11 +77,7 @@ module Homebrew
           )
         end
 
-        if ENV["HOMEBREW_AUTOREMOVE"].present?
-          opoo "HOMEBREW_AUTOREMOVE is now a no-op as it is the default behaviour. " \
-               "Set HOMEBREW_NO_AUTOREMOVE=1 to disable it."
-        end
-        Cleanup.autoremove unless Homebrew::EnvConfig.no_autoremove?
+        Cleanup.autoremove if Homebrew::EnvConfig.autoremove?
       end
     end
   end

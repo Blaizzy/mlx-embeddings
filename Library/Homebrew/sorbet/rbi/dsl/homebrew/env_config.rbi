@@ -28,6 +28,9 @@ module Homebrew::EnvConfig
     sig { returns(T::Boolean) }
     def artifact_domain_no_fallback?; end
 
+    sig { returns(T::Boolean) }
+    def autoremove?; end
+
     sig { returns(T.nilable(::String)) }
     def auto_update_secs; end
 
@@ -192,9 +195,6 @@ module Homebrew::EnvConfig
 
     sig { returns(T::Boolean) }
     def no_auto_update?; end
-
-    sig { returns(T::Boolean) }
-    def no_autoremove?; end
 
     sig { returns(T::Boolean) }
     def no_bootsnap?; end
