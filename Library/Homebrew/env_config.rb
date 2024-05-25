@@ -48,6 +48,12 @@ module Homebrew
                      "trying any other/default URLs.",
         boolean:     true,
       },
+      HOMEBREW_AUTOREMOVE:                       {
+        description: "If set, calls to `brew cleanup` and `brew uninstall` will automatically " \
+                     "remove unused formula dependents and if `HOMEBREW_NO_INSTALL_CLEANUP` is not set, " \
+                     "`brew cleanup` will start running `brew autoremove` periodically.",
+        boolean:     true,
+      },
       HOMEBREW_AUTO_UPDATE_SECS:                 {
         description:  "Run `brew update` once every `HOMEBREW_AUTO_UPDATE_SECS` seconds before some commands, " \
                       "e.g. `brew install`, `brew upgrade` and `brew tap`. Alternatively, " \
@@ -304,11 +310,6 @@ module Homebrew
       HOMEBREW_NO_ANALYTICS:                     {
         description: "If set, do not send analytics. Google Analytics were destroyed. " \
                      "For more information, see: <https://docs.brew.sh/Analytics>",
-        boolean:     true,
-      },
-      HOMEBREW_NO_AUTOREMOVE:                    {
-        description: "If set, calls to `brew cleanup` and `brew uninstall` will not automatically " \
-                     "remove unused formula dependents.",
         boolean:     true,
       },
       HOMEBREW_NO_AUTO_UPDATE:                   {
