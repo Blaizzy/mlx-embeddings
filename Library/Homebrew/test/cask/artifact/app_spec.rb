@@ -350,8 +350,9 @@ RSpec.describe Cask::Artifact::App, :cask do
         allow(command).to receive(:run!).with(any_args).and_call_original
 
         expect(command).to receive(:run!)
-          .with("/bin/cp", args: ["-pR", source_contents_path, target_path],
-                           sudo: true)
+          .with(a_string_ending_with("cp"),
+                hash_including(args: include(source_contents_path, target_path),
+                               sudo: true))
           .and_call_original
         expect(FileUtils).not_to receive(:move).with(source_contents_path, an_instance_of(Pathname))
 

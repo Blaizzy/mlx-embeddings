@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "utils/cp"
+
 module UnpackStrategy
   # Strategy for unpacking uncompressed files.
   class Uncompressed
@@ -22,7 +24,7 @@ module UnpackStrategy
 
     sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
     def extract_to_dir(unpack_dir, basename:, verbose: false)
-      FileUtils.cp path, unpack_dir/basename.sub(/^[\da-f]{64}--/, ""), preserve: true, verbose:
+      Utils::Cp.copy path, unpack_dir/basename.sub(/^[\da-f]{64}--/, ""), verbose:
     end
   end
 end

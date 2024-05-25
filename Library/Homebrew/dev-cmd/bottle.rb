@@ -11,6 +11,7 @@ require "keg"
 require "formula_versions"
 require "utils/inreplace"
 require "erb"
+require "utils/cp"
 require "utils/gzip"
 require "api"
 require "extend/hash/deep_merge"
@@ -767,7 +768,7 @@ module Homebrew
               all_bottle_hash = { formula_name => all_bottle_formula_hash }
 
               puts "Copying #{filename} to #{all_filename}" if args.verbose?
-              FileUtils.cp filename.to_s, all_filename.to_s
+              Utils::Cp.copy filename.to_s, all_filename.to_s
 
               puts "Writing #{all_filename.json}" if args.verbose?
               all_local_json_path = Pathname(all_filename.json)

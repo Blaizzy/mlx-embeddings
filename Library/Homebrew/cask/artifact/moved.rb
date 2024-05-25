@@ -3,6 +3,7 @@
 
 require "cask/artifact/relocated"
 require "cask/quarantine"
+require "utils/cp"
 
 module Cask
   module Artifact
@@ -108,8 +109,7 @@ module Cask
           if target.writable?
             source.children.each { |child| FileUtils.move(child, target/child.basename) }
           else
-            command.run!("/bin/cp", args: ["-pR", *source.children, target],
-                                    sudo: true)
+            ::Utils::Cp.copy_recursive(source.children, target, sudo: true, command:)
           end
           Quarantine.copy_xattrs(source, target, command:)
           source.rmtree
@@ -118,7 +118,7 @@ module Cask
         else
           # default sudo user isn't necessarily able to write to Homebrew's locations
           # e.g. with runas_default set in the sudoers (5) file.
-          command.run!("/bin/cp", args: ["-pR", source, target], sudo: true)
+          ::Utils::Cp.copy_recursive(source, target, sudo: true, command:)
           source.rmtree
         end
 
@@ -161,8 +161,8 @@ module Cask
         ohai "Backing #{self.class.english_name} '#{target.basename}' up to '#{source}'"
         source.dirname.mkpath
 
-        # We need to preserve extended attributes between copies.
-        command.run!("/bin/cp", args: ["-pR", target, source], sudo: !source.parent.writable?)
+        # `Utils::Cp` preserves extended attributes between copies.
+        ::Utils::Cp.copy_recursive(target, source, sudo: !source.parent.writable?, command:)
 
         delete(target, force:, command:, **options)
       end
