@@ -946,7 +946,7 @@ RSpec.describe Cask::Audit, :cask do
       context "when --strict is passed" do
         let(:strict) { true }
 
-        it { is_expected.to error_with(message)}
+        it { is_expected.to error_with(message) }
       end
     end
 
