@@ -328,8 +328,7 @@ module Cask
         add_error "SourceForge URL format incorrect. See #{Formatter.url(SOURCEFORGE_OSDN_REFERENCE_URL)}",
                   location: cask.url.location
       elsif bad_osdn_url?
-        add_error "OSDN URLs are disabled.",
-                  location: cask.url.location
+        add_error "OSDN download urls are disabled.", location: cask.url.location, strict_only: true
       end
     end
 
@@ -895,7 +894,7 @@ module Cask
 
     sig { returns(T::Boolean) }
     def bad_osdn_url?
-      cask.url.to_s.match?(%r{^(?:https?://)?(?:\w+\.)*osdn\.jp(?=/|$)})
+      URI(cask.url.to_s).host.match?(%r{^(?:\w+\.)*osdn\.jp(?=/|$)})
     end
 
     # sig { returns(String) }
