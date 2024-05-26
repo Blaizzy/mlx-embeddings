@@ -293,9 +293,13 @@ class SBOM
     ] + runtime_dependency_declaration + compiler_declarations + bottle
   end
 
-  sig { returns(T::Array[T::Hash[Symbol, T.any(T::Boolean, String, T::Array[T::Hash[Symbol, String]])]]) }
-  def full_spdx_runtime_dependencies
-    return [] unless @runtime_dependencies.present?
+  sig {
+    params(bottling: T::Boolean).returns(T::Array[T::Hash[Symbol,
+                                                          T.any(T::Boolean, String,
+                                                                T::Array[T::Hash[Symbol, String]])]])
+  }
+  def full_spdx_runtime_dependencies(bottling:)
+    return [] if @runtime_dependencies.blank?
 
     @runtime_dependencies.compact.filter_map do |dependency|
       next unless dependency.present?
@@ -306,7 +310,7 @@ class SBOM
       # Only set bottle URL if the dependency is the same version as the formula/bottle.
       bottle_url = bottle_info["url"] if dependency["pkg_version"] == dependency["formula_pkg_version"]
 
-      {
+      dependency_json = {
         SPDXID:           "SPDXRef-Package-SPDXRef-#{dependency["name"].tr("/", "-")}-#{dependency["pkg_version"]}",
         name:             dependency["name"],
         versionInfo:      dependency["pkg_version"],
@@ -329,12 +333,17 @@ class SBOM
           },
         ],
       }
+      if bottling
+        dependency_json.delete(:downloadLocation)
+        dependency_json.delete(:checksums)
+      end
+      dependency_json
     end
   end
 
   sig { params(bottling: T::Boolean).returns(T::Hash[Symbol, T.any(String, T::Array[T::Hash[Symbol, String]])]) }
   def to_spdx_sbom(bottling:)
-    runtime_full = full_spdx_runtime_dependencies
+    runtime_full = full_spdx_runtime_dependencies(bottling:)
 
     compiler_info = {
       "SPDXRef-Compiler" => {
