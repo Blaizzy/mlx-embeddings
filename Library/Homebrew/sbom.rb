@@ -156,8 +156,7 @@ class SBOM
     # will no longer be valid.
     Formula.clear_cache unless spdxfile.exist?
 
-    valid = valid?(bottling:)
-    if validate && valid.present? && !valid
+    if validate && (valid = valid?(bottling:)).present? && !valid
       opoo "SBOM is not valid, not writing to disk!"
       return
     end
