@@ -895,7 +895,7 @@ module Cask
 
     sig { returns(T::Boolean) }
     def bad_osdn_url?
-      cask.url.to_s.match?(/^(?:https?:\/\/)?(?:\w+\.)*osdn\.jp(?=\/|$)/)
+      cask.url.to_s.match?(%r{^(?:https?://)?(?:\w+\.)*osdn\.jp(?=/|$)})
     end
 
     # sig { returns(String) }
