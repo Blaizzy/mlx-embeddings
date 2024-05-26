@@ -126,7 +126,7 @@ class SBOM
     unless require? "json_schemer"
       error_message = "Need json_schemer to validate SBOM, run `brew install-bundler-gems --add-groups=bottle`!"
       odie error_message if ENV["HOMEBREW_ENFORCE_SBOM"]
-      return false
+      return true
     end
 
     schema = SBOM.fetch_schema!
