@@ -121,12 +121,12 @@ class SBOM
     end
   end
 
-  sig { params(bottling: T::Boolean).returns(T.nilable(T::Boolean)) }
+  sig { params(bottling: T::Boolean).returns(T::Boolean) }
   def valid?(bottling: false)
     unless require? "json_schemer"
       error_message = "Need json_schemer to validate SBOM, run `brew install-bundler-gems --add-groups=bottle`!"
       odie error_message if ENV["HOMEBREW_ENFORCE_SBOM"]
-      return nil
+      return true
     end
 
     schema = SBOM.fetch_schema!
@@ -156,7 +156,7 @@ class SBOM
     # will no longer be valid.
     Formula.clear_cache unless spdxfile.exist?
 
-    if validate && (valid = valid?(bottling:)).present? && !valid
+    if validate && !valid?(bottling:)
       opoo "SBOM is not valid, not writing to disk!"
       return
     end
