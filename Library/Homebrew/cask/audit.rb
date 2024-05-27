@@ -324,12 +324,20 @@ module Cask
       return if block_url_offline?
 
       odebug "Auditing URL format"
-      if bad_sourceforge_url?
-        add_error "SourceForge URL format incorrect. See #{Formatter.url(SOURCEFORGE_OSDN_REFERENCE_URL)}",
-                  location: cask.url.location
-      elsif bad_osdn_url?
-        add_error "OSDN download urls are disabled.", location: cask.url.location, strict_only: true
-      end
+      return unless bad_sourceforge_url?
+
+      add_error "SourceForge URL format incorrect. See #{Formatter.url(SOURCEFORGE_OSDN_REFERENCE_URL)}",
+                location: cask.url.location
+    end
+
+    def audit_download_url_is_osdn
+      return unless cask.url
+      return if block_url_offline?
+
+      odebug "Auditing download url is OSDN or not"
+      return unless bad_osdn_url?
+
+      add_error "OSDN download urls are disabled.", location: cask.url.location, strict_only: true
     end
 
     VERIFIED_URL_REFERENCE_URL = "https://docs.brew.sh/Cask-Cookbook#when-url-and-homepage-domains-differ-add-verified"
@@ -894,7 +902,7 @@ module Cask
 
     sig { returns(T::Boolean) }
     def bad_osdn_url?
-      T.must(URI(cask.url.to_s).host).match?(%r{^(?:\w+\.)*osdn\.jp(?=/|$)})
+      domain.match?(%r{^(?:\w+\.)*osdn\.jp(?=/|$)})
     end
 
     # sig { returns(String) }
