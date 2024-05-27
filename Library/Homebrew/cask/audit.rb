@@ -894,7 +894,7 @@ module Cask
 
     sig { returns(T::Boolean) }
     def bad_osdn_url?
-      URI(cask.url.to_s).host.match?(%r{^(?:\w+\.)*osdn\.jp(?=/|$)})
+      T.must(URI(cask.url.to_s).host).match?(%r{^(?:\w+\.)*osdn\.jp(?=/|$)})
     end
 
     # sig { returns(String) }
