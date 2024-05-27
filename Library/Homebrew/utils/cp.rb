@@ -41,6 +41,8 @@ module Utils
       sig { returns(T.any(String, Pathname)) }
       def executable
         case type
+        when :macos
+          Pathname("/bin/cp")
         when :coreutils
           GCP
         when :uutils
@@ -50,23 +52,26 @@ module Utils
         end
       end
 
+      MACOS_FLAGS = [
+        # Perform a lightweight copy-on-write clone if applicable.
+        "-c",
+      ].freeze
       GNU_FLAGS = [
         # Unlike BSD cp, `gcp -p` doesn't guarantee to preserve extended attributes, including
         # quarantine information on macOS.
         "--preserve=all",
         "--no-preserve=links",
-        # Perform a lightweight copy-on-write clone if applicable.
+        # Equivalent to `-c` on macOS.
         "--reflink=auto",
       ].freeze
-      # On macOS, the `cp` utility has the `-c` option, which is equivalent to
-      # `gcp --reflink=always`, but we are not using that because it would fail if the `clonefile`
-      # syscall isn't applicable (the underlying filesystem doesn't support the feature or the
-      # source and the target are on different filesystems).
       GENERIC_FLAGS = [].freeze
 
       sig { returns(T::Array[String]) }
       def extra_flags
-        if type
+        case type
+        when :macos
+          MACOS_FLAGS
+        when :coreutils, :uutils
           GNU_FLAGS
         else
           GENERIC_FLAGS
@@ -76,6 +81,12 @@ module Utils
       sig { returns(T.nilable(Symbol)) }
       def type
         return @type if defined?(@type)
+
+        # The `cp` command on some older macOS versions also had the `-c` option, but before Sonoma,
+        # the command would fail if the `clonefile` syscall isn't applicable (the underlying
+        # filesystem doesn't support the feature or the source and the target are on different
+        # filesystems).
+        return @type = :macos if MacOS.version >= :sonoma
 
         {
           coreutils: "coreutils",
