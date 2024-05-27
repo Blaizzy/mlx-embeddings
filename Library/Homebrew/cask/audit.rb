@@ -47,12 +47,6 @@ module Cask
       @token_conflicts = token_conflicts
       @only = only || []
       @except = except || []
-
-      # Clean up `#extract_artifacts` tmp dir when Audit object is destroyed
-      ObjectSpace.define_finalizer(
-        self,
-        proc { FileUtils.remove_entry(@tmpdir) if @tmpdir },
-      )
     end
 
     def run!
@@ -539,6 +533,12 @@ module Cask
       return if artifacts.empty?
 
       @tmpdir ||= Pathname(Dir.mktmpdir("cask-audit", HOMEBREW_TEMP))
+
+      # Clean up tmp dir when @tmpdir object is destroyed
+      ObjectSpace.define_finalizer(
+        @tmpdir,
+        proc { FileUtils.remove_entry(@tmpdir) },
+      )
 
       ohai "Downloading and extracting artifacts"
 
