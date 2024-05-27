@@ -932,17 +932,21 @@ RSpec.describe Cask::Audit, :cask do
 
         it { is_expected.not_to error_with(message) }
       end
+    end
 
-      context "with incorrect OSDN URL format" do
-        let(:cask_token) { "osdn-incorrect-url-format" }
+    describe "disable OSDN download url" do
+      let(:only) { ["download_url_is_osdn"] }
+      let(:message) { /OSDN download urls are disabled./ }
+      let(:cask_token) { "osdn-urls" }
 
-        it { is_expected.to error_with(message) }
+      context "when --strict is not passed" do
+        it { is_expected.not_to error_with(message) }
       end
 
-      context "with correct OSDN URL format" do
-        let(:cask_token) { "osdn-correct-url-format" }
+      context "when --strict is passed" do
+        let(:strict) { true }
 
-        it { is_expected.not_to error_with(message) }
+        it { is_expected.to error_with(message) }
       end
     end
 
