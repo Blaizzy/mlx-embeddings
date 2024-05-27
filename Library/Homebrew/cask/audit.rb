@@ -333,8 +333,6 @@ module Cask
     def audit_download_url_is_osdn
       return unless cask.url
       return if block_url_offline?
-
-      odebug "Auditing download url is OSDN or not"
       return unless bad_osdn_url?
 
       add_error "OSDN download urls are disabled.", location: cask.url.location, strict_only: true
