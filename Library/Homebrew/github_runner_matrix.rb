@@ -67,6 +67,7 @@ class GitHubRunnerMatrix
 
   SELF_HOSTED_LINUX_RUNNER = "linux-self-hosted-1"
   GITHUB_ACTIONS_LONG_TIMEOUT = 4320
+  GITHUB_ACTIONS_SHORT_TIMEOUT = 120
 
   sig { returns(LinuxRunnerSpec) }
   def linux_runner_spec
@@ -120,8 +121,10 @@ class GitHubRunnerMatrix
     end
 
     github_run_id      = ENV.fetch("GITHUB_RUN_ID")
-    runner_timeout     = ENV.fetch("HOMEBREW_MACOS_TIMEOUT").to_i
+    long_timeout       = ENV.fetch("HOMEBREW_MACOS_LONG_TIMEOUT", "false") == "true"
     use_github_runner  = ENV.fetch("HOMEBREW_MACOS_BUILD_ON_GITHUB_RUNNER", "false") == "true"
+
+    runner_timeout = long_timeout ? GITHUB_ACTIONS_LONG_TIMEOUT : GITHUB_ACTIONS_SHORT_TIMEOUT
 
     # Use GitHub Actions macOS Runner for testing dependents if compatible with timeout.
     use_github_runner ||= @dependent_matrix
