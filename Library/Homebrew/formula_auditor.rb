@@ -453,6 +453,9 @@ module Homebrew
       return unless @core_tap
       return unless Homebrew::SimulateSystem.simulating_or_running_on_linux?
       return unless linux_only_gcc_dep?(formula)
+      # https://github.com/Homebrew/homebrew-core/pull/171634
+      # https://github.com/nghttp2/nghttp2/issues/2194
+      return if formula.tap&.audit_exception(:linux_only_gcc_dependency_allowlist, formula.name)
 
       problem "Formulae in homebrew/core should not have a Linux-only dependency on GCC."
     end
