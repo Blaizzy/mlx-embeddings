@@ -163,13 +163,13 @@ module Homebrew
 
           puts "Determining contributions for #{person} on #{repo_full_name}..." if args.verbose?
 
-          author_commits, committer_commits = GitHub.count_repo_commits(repo_full_name, person, args,
-                                                                        max: MAX_REPO_COMMITS)
+          author_commits, committer_commits = GitHub.count_repo_commits(repo_full_name, person,
+                                                                        from:, to: args.to, max: MAX_REPO_COMMITS)
           data[repo] = {
             author:       author_commits,
             committer:    committer_commits,
             coauthorship: git_log_trailers_cmd(T.must(repo_path), person, "Co-authored-by", from:, to: args.to),
-            review:       count_reviews(repo_full_name, person),
+            review:       count_reviews(repo_full_name, person, from:, to: args.to),
           }
         end
 
@@ -202,9 +202,12 @@ module Homebrew
         Utils.safe_popen_read(*cmd).lines.count { |l| l.include?(person) }
       end
 
-      sig { params(repo_full_name: String, person: String).returns(Integer) }
-      def count_reviews(repo_full_name, person)
-        GitHub.count_issues("", is: "pr", repo: repo_full_name, reviewed_by: person, review: "approved", args:)
+      sig {
+        params(repo_full_name: String, person: String, from: T.nilable(String),
+               to: T.nilable(String)).returns(Integer)
+      }
+      def count_reviews(repo_full_name, person, from:, to:)
+        GitHub.count_issues("", is: "pr", repo: repo_full_name, reviewed_by: person, review: "approved", from:, to:)
       rescue GitHub::API::ValidationFailedError
         if args.verbose?
           onoe "Couldn't search GitHub for PRs by #{person}. Their profile might be private. Defaulting to 0."
