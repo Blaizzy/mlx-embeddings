@@ -163,8 +163,8 @@ module Homebrew
 
           puts "Determining contributions for #{person} on #{repo_full_name}..." if args.verbose?
 
-          author_commits, committer_commits = GitHub.count_repo_commits(repo_full_name, person, args,
-                                                                        max: MAX_REPO_COMMITS)
+          author_commits, committer_commits = GitHub.count_repo_commits(repo_full_name, person,
+                                                                        from:, to: args.to, max: MAX_REPO_COMMITS)
           data[repo] = {
             author:       author_commits,
             committer:    committer_commits,
