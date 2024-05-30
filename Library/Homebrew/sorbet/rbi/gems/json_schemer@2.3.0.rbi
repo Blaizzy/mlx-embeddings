@@ -11,61 +11,61 @@
 # source://json_schemer//lib/json_schemer/version.rb#2
 module JSONSchemer
   class << self
-    # source://json_schemer//lib/json_schemer.rb#235
+    # source://json_schemer//lib/json_schemer.rb#234
     def configuration; end
 
     # @yield [configuration]
     #
-    # source://json_schemer//lib/json_schemer.rb#239
+    # source://json_schemer//lib/json_schemer.rb#238
     def configure; end
 
-    # source://json_schemer//lib/json_schemer.rb#143
+    # source://json_schemer//lib/json_schemer.rb#142
     def draft201909; end
 
-    # source://json_schemer//lib/json_schemer.rb#131
+    # source://json_schemer//lib/json_schemer.rb#130
     def draft202012; end
 
-    # source://json_schemer//lib/json_schemer.rb#179
+    # source://json_schemer//lib/json_schemer.rb#178
     def draft4; end
 
-    # source://json_schemer//lib/json_schemer.rb#167
+    # source://json_schemer//lib/json_schemer.rb#166
     def draft6; end
 
-    # source://json_schemer//lib/json_schemer.rb#155
+    # source://json_schemer//lib/json_schemer.rb#154
     def draft7; end
 
-    # source://json_schemer//lib/json_schemer.rb#231
+    # source://json_schemer//lib/json_schemer.rb#230
     def openapi(document, **options); end
 
-    # source://json_schemer//lib/json_schemer.rb#201
+    # source://json_schemer//lib/json_schemer.rb#200
     def openapi30; end
 
-    # source://json_schemer//lib/json_schemer.rb#223
+    # source://json_schemer//lib/json_schemer.rb#222
     def openapi30_document; end
 
-    # source://json_schemer//lib/json_schemer.rb#191
+    # source://json_schemer//lib/json_schemer.rb#190
     def openapi31; end
 
-    # source://json_schemer//lib/json_schemer.rb#215
+    # source://json_schemer//lib/json_schemer.rb#214
     def openapi31_document; end
 
-    # source://json_schemer//lib/json_schemer.rb#116
+    # source://json_schemer//lib/json_schemer.rb#115
     def schema(schema, **options); end
 
     # @return [Boolean]
     #
-    # source://json_schemer//lib/json_schemer.rb#121
+    # source://json_schemer//lib/json_schemer.rb#120
     def valid_schema?(schema, **options); end
 
-    # source://json_schemer//lib/json_schemer.rb#126
+    # source://json_schemer//lib/json_schemer.rb#125
     def validate_schema(schema, **options); end
 
     private
 
-    # source://json_schemer//lib/json_schemer.rb#264
+    # source://json_schemer//lib/json_schemer.rb#263
     def meta_schema(schema, options); end
 
-    # source://json_schemer//lib/json_schemer.rb#245
+    # source://json_schemer//lib/json_schemer.rb#244
     def resolve(schema, options); end
   end
 end
@@ -1306,7 +1306,7 @@ module JSONSchemer::Errors
   end
 end
 
-# source://json_schemer//lib/json_schemer.rb#107
+# source://json_schemer//lib/json_schemer.rb#106
 JSONSchemer::FILE_URI_REF_RESOLVER = T.let(T.unsafe(nil), Proc)
 
 # source://json_schemer//lib/json_schemer/format/duration.rb#3
@@ -1821,19 +1821,19 @@ JSONSchemer::I18N_SCOPE = T.let(T.unsafe(nil), String)
 # source://json_schemer//lib/json_schemer/result.rb#4
 JSONSchemer::I18N_SEPARATOR = T.let(T.unsafe(nil), String)
 
-# source://json_schemer//lib/json_schemer.rb#77
+# source://json_schemer//lib/json_schemer.rb#76
 class JSONSchemer::InvalidEcmaRegexp < ::StandardError; end
 
-# source://json_schemer//lib/json_schemer.rb#76
+# source://json_schemer//lib/json_schemer.rb#75
 class JSONSchemer::InvalidFileURI < ::StandardError; end
 
-# source://json_schemer//lib/json_schemer.rb#74
+# source://json_schemer//lib/json_schemer.rb#73
 class JSONSchemer::InvalidRefPointer < ::StandardError; end
 
-# source://json_schemer//lib/json_schemer.rb#73
+# source://json_schemer//lib/json_schemer.rb#72
 class JSONSchemer::InvalidRefResolution < ::StandardError; end
 
-# source://json_schemer//lib/json_schemer.rb#75
+# source://json_schemer//lib/json_schemer.rb#74
 class JSONSchemer::InvalidRegexpResolution < ::StandardError; end
 
 # source://json_schemer//lib/json_schemer/keyword.rb#3
@@ -1915,10 +1915,10 @@ JSONSchemer::Location::JSON_POINTER_TOKEN_ESCAPE_CHARS = T.let(T.unsafe(nil), Ha
 # source://json_schemer//lib/json_schemer/location.rb#5
 JSONSchemer::Location::JSON_POINTER_TOKEN_ESCAPE_REGEX = T.let(T.unsafe(nil), Regexp)
 
-# source://json_schemer//lib/json_schemer.rb#286
+# source://json_schemer//lib/json_schemer.rb#285
 JSONSchemer::META_SCHEMAS_BY_BASE_URI_STR = T.let(T.unsafe(nil), Hash)
 
-# source://json_schemer//lib/json_schemer.rb#274
+# source://json_schemer//lib/json_schemer.rb#273
 JSONSchemer::META_SCHEMA_CALLABLES_BY_BASE_URI_STR = T.let(T.unsafe(nil), Hash)
 
 # source://json_schemer//lib/json_schemer/openapi.rb#3
@@ -2648,37 +2648,37 @@ JSONSchemer::Schema::UNKNOWN_KEYWORD_CLASS = JSONSchemer::Draft202012::Vocab::Co
 # source://json_schemer//lib/json_schemer/schema.rb#21
 JSONSchemer::Schema::VOCABULARY_KEYWORD_CLASS = JSONSchemer::Draft202012::Vocab::Core::Vocabulary
 
-# source://json_schemer//lib/json_schemer.rb#70
+# source://json_schemer//lib/json_schemer.rb#69
 class JSONSchemer::UnknownContentEncoding < ::StandardError; end
 
-# source://json_schemer//lib/json_schemer.rb#71
+# source://json_schemer//lib/json_schemer.rb#70
 class JSONSchemer::UnknownContentMediaType < ::StandardError; end
 
-# source://json_schemer//lib/json_schemer.rb#68
+# source://json_schemer//lib/json_schemer.rb#67
 class JSONSchemer::UnknownFormat < ::StandardError; end
 
-# source://json_schemer//lib/json_schemer.rb#72
+# source://json_schemer//lib/json_schemer.rb#71
 class JSONSchemer::UnknownOutputFormat < ::StandardError; end
 
-# source://json_schemer//lib/json_schemer.rb#67
+# source://json_schemer//lib/json_schemer.rb#66
 class JSONSchemer::UnknownRef < ::StandardError; end
 
-# source://json_schemer//lib/json_schemer.rb#69
+# source://json_schemer//lib/json_schemer.rb#68
 class JSONSchemer::UnknownVocabulary < ::StandardError; end
 
-# source://json_schemer//lib/json_schemer.rb#66
+# source://json_schemer//lib/json_schemer.rb#65
 class JSONSchemer::UnsupportedOpenAPIVersion < ::StandardError; end
 
 # source://json_schemer//lib/json_schemer/version.rb#3
 JSONSchemer::VERSION = T.let(T.unsafe(nil), String)
 
-# source://json_schemer//lib/json_schemer.rb#79
+# source://json_schemer//lib/json_schemer.rb#78
 JSONSchemer::VOCABULARIES = T.let(T.unsafe(nil), Hash)
 
-# source://json_schemer//lib/json_schemer.rb#103
+# source://json_schemer//lib/json_schemer.rb#102
 JSONSchemer::VOCABULARY_ORDER = T.let(T.unsafe(nil), Hash)
 
-# source://json_schemer//lib/json_schemer.rb#105
+# source://json_schemer//lib/json_schemer.rb#104
 JSONSchemer::WINDOWS_URI_PATH_REGEX = T.let(T.unsafe(nil), Regexp)
 
 # source://json_schemer//lib/json_schemer/result.rb#7
