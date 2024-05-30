@@ -232,7 +232,7 @@ class RBI::TypedParam < ::T::Struct
   const :type, ::String
 
   class << self
-    # source://sorbet-runtime/0.5.11375/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.11394/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -1150,7 +1150,7 @@ class Tapioca::ConfigHelper::ConfigError < ::T::Struct
   const :message_parts, T::Array[::Tapioca::ConfigHelper::ConfigErrorMessagePart]
 
   class << self
-    # source://sorbet-runtime/0.5.11375/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.11394/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -1161,7 +1161,7 @@ class Tapioca::ConfigHelper::ConfigErrorMessagePart < ::T::Struct
   const :colors, T::Array[::Symbol]
 
   class << self
-    # source://sorbet-runtime/0.5.11375/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.11394/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -2467,7 +2467,7 @@ class Tapioca::Loaders::Loader
   # @param engine [T.class_of(Rails::Engine)]
   # @return [Array<String>]
   #
-  # source://sorbet-runtime/0.5.11375/lib/types/private/methods/_methods.rb#257
+  # source://sorbet-runtime/0.5.11394/lib/types/private/methods/_methods.rb#257
   def eager_load_paths(*args, **_arg1, &blk); end
 
   # source://tapioca//lib/tapioca/loaders/loader.rb#188
@@ -2575,19 +2575,19 @@ module Tapioca::RBIFilesHelper
 
   private
 
-  # source://tapioca//lib/tapioca/helpers/rbi_files_helper.rb#209
+  # source://tapioca//lib/tapioca/helpers/rbi_files_helper.rb#223
   sig { params(nodes: T::Array[::RBI::Node]).returns(T::Array[::RBI::Scope]) }
   def extract_empty_scopes(nodes); end
 
-  # source://tapioca//lib/tapioca/helpers/rbi_files_helper.rb#214
+  # source://tapioca//lib/tapioca/helpers/rbi_files_helper.rb#228
   sig { params(nodes: T::Array[::RBI::Node]).returns(T::Array[T.any(::RBI::Attr, ::RBI::Method)]) }
   def extract_methods_and_attrs(nodes); end
 
-  # source://tapioca//lib/tapioca/helpers/rbi_files_helper.rb#224
+  # source://tapioca//lib/tapioca/helpers/rbi_files_helper.rb#238
   sig { params(nodes: T::Array[::RBI::Node]).returns(T::Array[T.any(::RBI::Mixin, ::RBI::RequiresAncestor)]) }
   def extract_mixins(nodes); end
 
-  # source://tapioca//lib/tapioca/helpers/rbi_files_helper.rb#234
+  # source://tapioca//lib/tapioca/helpers/rbi_files_helper.rb#248
   sig do
     params(
       nodes: T::Array[T.any(::RBI::Attr, ::RBI::Method)]
@@ -2595,7 +2595,7 @@ module Tapioca::RBIFilesHelper
   end
   def extract_nodes_with_sigs(nodes); end
 
-  # source://tapioca//lib/tapioca/helpers/rbi_files_helper.rb#202
+  # source://tapioca//lib/tapioca/helpers/rbi_files_helper.rb#216
   sig do
     params(
       nodes: T::Array[::RBI::Node],
@@ -2605,7 +2605,7 @@ module Tapioca::RBIFilesHelper
   end
   def extract_shims_and_todos(nodes, shim_rbi_dir:, todo_rbi_file:); end
 
-  # source://tapioca//lib/tapioca/helpers/rbi_files_helper.rb#266
+  # source://tapioca//lib/tapioca/helpers/rbi_files_helper.rb#280
   sig { params(path: ::String).returns(::String) }
   def gem_name_from_rbi_path(path); end
 
@@ -2617,7 +2617,7 @@ module Tapioca::RBIFilesHelper
   sig { params(nodes: T::Array[::RBI::Node], shim_rbi_dir: ::String, todo_rbi_file: ::String).returns(T::Boolean) }
   def shims_or_todos_have_duplicates?(nodes, shim_rbi_dir:, todo_rbi_file:); end
 
-  # source://tapioca//lib/tapioca/helpers/rbi_files_helper.rb#239
+  # source://tapioca//lib/tapioca/helpers/rbi_files_helper.rb#253
   sig { params(errors: T::Array[::Spoom::Sorbet::Errors::Error], gem_dir: ::String).void }
   def update_gem_rbis_strictnesses(errors, gem_dir); end
 end
@@ -2743,7 +2743,7 @@ module Tapioca::Runtime; end
 # available, it implements finding the attached class of a singleton
 # class by iterating through ObjectSpace.
 module Tapioca::Runtime::AttachedClassOf
-  # source://tapioca//lib/tapioca/runtime/attached_class_of_legacy.rb#17
+  # source://tapioca//lib/tapioca/runtime/attached_class_of_32.rb#14
   sig { params(singleton_class: ::Class).returns(T.nilable(::Module)) }
   def attached_class_of(singleton_class); end
 end
@@ -3375,7 +3375,7 @@ module Tapioca::Static::SymbolLoader
 
     # @return [Array<T.class_of(Rails::Engine)>]
     #
-    # source://sorbet-runtime/0.5.11375/lib/types/private/methods/_methods.rb#257
+    # source://sorbet-runtime/0.5.11394/lib/types/private/methods/_methods.rb#257
     def engines(*args, **_arg1, &blk); end
 
     # source://tapioca//lib/tapioca/static/symbol_loader.rb#82
@@ -3498,14 +3498,14 @@ class URI::Source < ::URI::File
   sig { params(v: T.nilable(::String)).returns(T::Boolean) }
   def check_host(v); end
 
-  # source://uri/0.12.1/uri/generic.rb#243
+  # source://uri/0.13.0/uri/generic.rb#243
   def gem_name; end
 
   # source://tapioca//lib/tapioca/helpers/source_uri.rb#25
   sig { returns(T.nilable(::String)) }
   def gem_version; end
 
-  # source://uri/0.12.1/uri/generic.rb#283
+  # source://uri/0.13.0/uri/generic.rb#283
   def line_number; end
 
   # source://tapioca//lib/tapioca/helpers/source_uri.rb#51
