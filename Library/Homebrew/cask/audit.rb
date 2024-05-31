@@ -549,6 +549,13 @@ module Cask
 
       # Extract the container to the temporary directory.
       primary_container.extract_nestedly(to: @tmpdir, basename: downloaded_path.basename, verbose: false)
+
+      if (nested_container = @cask.container&.nested)
+        FileUtils.chmod_R "+rw", @tmpdir/nested_container, force: true, verbose: false
+        UnpackStrategy.detect(@tmpdir/nested_container, merge_xattrs: true)
+                      .extract_nestedly(to: @tmpdir, verbose: false)
+      end
+
       @artifacts_extracted = true # Set the flag to indicate that extraction has occurred.
 
       # Yield the artifacts and temp directory to the block if provided.
