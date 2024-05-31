@@ -1829,15 +1829,13 @@ class Formula
   # Standard parameters for cabal-v2 builds.
   sig { returns(T::Array[String]) }
   def std_cabal_v2_args
-    env = T.cast(ENV, T.any(Stdenv, Superenv))
-
     # cabal-install's dependency-resolution backtracking strategy can
     # easily need more than the default 2,000 maximum number of
     # "backjumps," since Hackage is a fast-moving, rolling-release
     # target. The highest known needed value by a formula was 43,478
     # for git-annex, so 100,000 should be enough to avoid most
     # gratuitous backjumps build failures.
-    ["--jobs=#{env.make_jobs}", "--max-backjumps=100000", "--install-method=copy", "--installdir=#{bin}"]
+    ["--jobs=#{ENV.make_jobs}", "--max-backjumps=100000", "--install-method=copy", "--installdir=#{bin}"]
   end
 
   # Standard parameters for meson builds.
@@ -3156,8 +3154,7 @@ class Formula
     if cmd == "python"
       setup_py_in_args = %w[setup.py build.py].include?(args.first)
       setuptools_shim_in_args = args.any? { |a| a.to_s.start_with? "import setuptools" }
-      env = T.cast(ENV, T.any(Stdenv, Superenv))
-      env.refurbish_args if setup_py_in_args || setuptools_shim_in_args
+      ENV.refurbish_args if setup_py_in_args || setuptools_shim_in_args
     end
 
     $stdout.reopen(out)
