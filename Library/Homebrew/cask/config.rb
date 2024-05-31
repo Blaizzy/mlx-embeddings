@@ -155,9 +155,9 @@ module Cask
     sig { returns(T::Array[String]) }
     def languages
       [
-        *T.cast(explicit.fetch(:languages, []), T::Array[String]),
-        *T.cast(env.fetch(:languages, []), T::Array[String]),
-        *T.cast(default.fetch(:languages, []), T::Array[String]),
+        *explicit.fetch(:languages, []),
+        *env.fetch(:languages, []),
+        *default.fetch(:languages, []),
       ].uniq.select do |lang|
         # Ensure all languages are valid.
         Locale.parse(lang)

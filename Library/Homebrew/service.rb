@@ -152,8 +152,7 @@ module Homebrew
       when true, false
         @keep_alive = { always: value }
       when Hash
-        hash = T.cast(value, Hash)
-        unless (hash.keys - KEEP_ALIVE_KEYS).empty?
+        unless (value.keys - KEEP_ALIVE_KEYS).empty?
           raise TypeError, "Service#keep_alive allows only #{KEEP_ALIVE_KEYS}"
         end
 

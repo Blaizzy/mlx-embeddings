@@ -462,7 +462,6 @@ module Formulary
       end
     end
 
-    klass = T.cast(klass, T.class_of(Formula))
     mod.const_set(class_name, klass)
 
     platform_cache[:api] ||= {}
