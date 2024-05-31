@@ -83,7 +83,7 @@ module Homebrew
 
         odie <<~EOS unless cask.tap.allow_bump?(cask.token)
           Whoops, the #{cask.token} cask has its version update
-          pull requests automatically opened by BrewTestBot!
+          pull requests automatically opened by BrewTestBot every ~3 hours!
           We'd still love your contributions, though, so try another one
           that's not in the autobump list:
             #{Formatter.url("#{cask.tap.remote}/blob/master/.github/autobump.txt")}
