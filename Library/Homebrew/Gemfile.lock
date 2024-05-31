@@ -206,7 +206,7 @@ DEPENDENCIES
   yard-sorbet
 
 RUBY VERSION
-   ruby 3.3.1
+   ruby 3.3.2p78
 
 BUNDLED WITH
    2.5.9
