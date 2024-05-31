@@ -26,7 +26,6 @@ module OS
     # @api internal
     sig { returns(MacOSVersion) }
     def self.version
-      odisabled "`MacOS.version` on Linux" if Homebrew::SimulateSystem.simulating_or_running_on_linux?
       @version ||= full_version.strip_patch
     end
 
