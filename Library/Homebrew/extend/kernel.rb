@@ -166,7 +166,6 @@ module Kernel
 
     disable = true if disable_for_developers && Homebrew::EnvConfig.developer?
     if disable || Homebrew.raise_deprecation_exceptions?
-      puts GitHub::Actions::Annotation.new(:error, message, file:, line:) if GitHub::Actions.env_set?
       GitHub::Actions.puts_annotation_if_env_set(:error, message, file:, line:)
       exception = MethodDeprecatedError.new(message)
       exception.set_backtrace(backtrace)

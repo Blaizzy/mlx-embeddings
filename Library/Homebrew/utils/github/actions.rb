@@ -50,8 +50,10 @@ module GitHub
     def self.puts_annotation_if_env_set(type, message, file: nil, line: nil)
       # Don't print annotations during tests, too messy to handle these.
       return if ENV.fetch("HOMEBREW_TESTS", false)
+      return unless env_set?
 
-      puts Annotation.new(type, message) if env_set?
+      std = (type == :notice) ? $stdout : $stderr
+      std.puts Annotation.new(type, message)
     end
 
     # Helper class for formatting annotations on GitHub Actions.
