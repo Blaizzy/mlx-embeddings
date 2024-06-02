@@ -51,17 +51,6 @@ module Homebrew
           expanded_paths.each do |path|
             raise_with_message!(path, args.cask?) unless path.exist?
           end
-
-          if expanded_paths.any? do |path|
-               !Homebrew::EnvConfig.no_install_from_api? &&
-               !Homebrew::EnvConfig.no_env_hints? &&
-               (core_formula_path?(path) || core_cask_path?(path) || core_formula_tap?(path) || core_cask_tap?(path))
-             end
-            opoo <<~EOS
-              `brew install` ignores locally edited casks and formulae if
-              HOMEBREW_NO_INSTALL_FROM_API is not set.
-            EOS
-          end
           expanded_paths
         end
 
@@ -71,6 +60,17 @@ module Homebrew
         end
 
         exec_editor(*paths)
+
+        if paths.any? do |path|
+             !Homebrew::EnvConfig.no_install_from_api? &&
+             !Homebrew::EnvConfig.no_env_hints? &&
+             (core_formula_path?(path) || core_cask_path?(path) || core_formula_tap?(path) || core_cask_tap?(path))
+           end
+          opoo <<~EOS
+            `brew install` ignores locally edited casks and formulae if
+            HOMEBREW_NO_INSTALL_FROM_API is not set.
+          EOS
+        end
       end
 
       private
