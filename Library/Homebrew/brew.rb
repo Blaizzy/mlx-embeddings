@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 # `HOMEBREW_STACKPROF` should be set via `brew prof --stackprof`, not manually.
