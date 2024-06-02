@@ -58,10 +58,12 @@ module Homebrew
             safe_system "bundle", "exec", "parlour"
 
             if args.suggest_typed?
-              ohai "Bumping Sorbet `typed` sigils..."
+              ohai "Checking if we can bump Sorbet `typed` sigils..."
               # --sorbet needed because of https://github.com/Shopify/spoom/issues/488
-              safe_system "bundle", "exec", "spoom", "srb", "bump", "--dry", "--sorbet",
-                          "#{Gem.bin_path("sorbet", "srb")} tc"
+              safe_system "bundle", "exec", "spoom", "srb", "bump", "--dry", "--from", "false", "--to", "true",
+                          "--sorbet", "#{Gem.bin_path("sorbet", "srb")} tc"
+              safe_system "bundle", "exec", "spoom", "srb", "bump", "--dry", "--from", "true", "--to", "strict",
+                          "--sorbet", "#{Gem.bin_path("sorbet", "srb")} tc"
             end
 
             return
