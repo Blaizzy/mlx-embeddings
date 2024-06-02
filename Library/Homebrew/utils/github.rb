@@ -151,17 +151,18 @@ module GitHub
   def self.search_query_string(*main_params, **qualifiers)
     params = main_params
 
-    if (args = qualifiers.fetch(:args, nil))
-      params << if args.from && args.to
-        "created:#{args.from}..#{args.to}"
-      elsif args.from
-        "created:>=#{args.from}"
-      elsif args.to
-        "created:<=#{args.to}"
-      end
+    from = qualifiers.fetch(:from, nil)
+    to = qualifiers.fetch(:to, nil)
+
+    params << if from && to
+      "created:#{from}..#{to}"
+    elsif from
+      "created:>=#{from}"
+    elsif to
+      "created:<=#{to}"
     end
 
-    params += qualifiers.except(:args).flat_map do |key, value|
+    params += qualifiers.except(:args, :from, :to).flat_map do |key, value|
       Array(value).map { |v| "#{key.to_s.tr("_", "-")}:#{v}" }
     end
 
