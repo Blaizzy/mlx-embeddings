@@ -440,6 +440,7 @@ module Cask
           MacOSVersion::SYMBOLS.keys.product(OnSystem::ARCH_OPTIONS).each do |os, arch|
             bottle_tag = ::Utils::Bottles::Tag.new(system: os, arch:)
             next unless bottle_tag.valid_combination?
+            next if depends_on.macos && !depends_on.macos.allows?(bottle_tag.to_macos_version)
 
             Homebrew::SimulateSystem.with(os:, arch:) do
               refresh
