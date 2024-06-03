@@ -20,7 +20,7 @@ module Homebrew
                             "If you want to remove everything, use `--prune=all`."
         switch "-n", "--dry-run",
                description: "Show what would be removed, but do not actually remove anything."
-        switch "-s",
+        switch "-s", "--scrub",
                description: "Scrub the cache, including downloads for even the latest versions. " \
                             "Note that downloads for any installed formulae or casks will still not be deleted. " \
                             "If you want to delete those too: `rm -rf \"$(brew --cache)\"`"
