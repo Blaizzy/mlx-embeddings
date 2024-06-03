@@ -601,8 +601,8 @@ _brew_cleanup() {
       --prune
       --prune-prefix
       --quiet
+      --scrub
       --verbose
-      -s
       "
       return
       ;;
