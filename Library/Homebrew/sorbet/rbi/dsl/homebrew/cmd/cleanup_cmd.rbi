@@ -25,4 +25,7 @@ class Homebrew::Cmd::CleanupCmd::Args < Homebrew::CLI::Args
 
   sig { returns(T::Boolean) }
   def s?; end
+
+  sig { returns(T::Boolean) }
+  def scrub?; end
 end
