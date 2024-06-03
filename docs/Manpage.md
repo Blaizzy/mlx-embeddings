@@ -142,7 +142,7 @@ old. This can be adjusted with `HOMEBREW_CLEANUP_MAX_AGE_DAYS`.
 
 : Show what would be removed, but do not actually remove anything.
 
-`-s`
+`-s`, `--scrub`
 
 : Scrub the cache, including downloads for even the latest versions. Note that
   downloads for any installed formulae or casks will still not be deleted. If
