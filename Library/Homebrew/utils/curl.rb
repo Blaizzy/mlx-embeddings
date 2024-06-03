@@ -223,7 +223,7 @@ module Utils
         )
 
         # 22 means a non-successful HTTP status code, not a `curl` error, so we still got some headers.
-        if result.success? || result.exit_status == 22
+        if result.success? || result.exit_status == 8 || result.exit_status == 22
           parsed_output = parse_curl_output(result.stdout)
 
           if request_args.empty?
@@ -235,7 +235,7 @@ module Utils
             next if (400..499).cover?(parsed_output.fetch(:responses).last&.fetch(:status_code).to_i)
           end
 
-          return parsed_output if result.success?
+          return parsed_output if result.success? || result.exit_status == 8
         end
 
         result.assert_success!
