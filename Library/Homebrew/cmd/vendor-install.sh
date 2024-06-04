@@ -186,21 +186,33 @@ EOS
   if [[ -x "/usr/bin/shasum" ]]
   then
     sha="$(/usr/bin/shasum -a 256 "${CACHED_LOCATION}" | cut -d' ' -f1)"
-  elif [[ -x "$(type -P sha256sum)" ]]
+  fi
+
+  if [[ -z "${sha}" && -x "$(type -P sha256sum)" ]]
   then
     sha="$(sha256sum "${CACHED_LOCATION}" | cut -d' ' -f1)"
-  elif [[ -x "$(type -P ruby)" ]]
+  fi
+
+  if [[ -z "${sha}" ]]
   then
-    sha="$(
-      ruby <<EOSCRIPT
+    if [[ -x "$(type -P ruby)" ]]
+    then
+      sha="$(
+        ruby <<EOSCRIPT
 require 'digest/sha2'
 digest = Digest::SHA256.new
 File.open('${CACHED_LOCATION}', 'rb') { |f| digest.update(f.read) }
 puts digest.hexdigest
 EOSCRIPT
-    )"
-  else
-    odie "Cannot verify checksum ('shasum' or 'sha256sum' not found)!"
+      )"
+    else
+      odie "Cannot verify checksum ('shasum', 'sha256sum' and 'ruby' not found)!"
+    fi
+  fi
+
+  if [[ -z "${sha}" ]]
+  then
+    odie "Could not get checksum ('shasum', 'sha256sum' and 'ruby' produced no output)!"
   fi
 
   if [[ "${sha}" != "${VENDOR_SHA}" ]]
