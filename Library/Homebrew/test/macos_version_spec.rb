@@ -80,6 +80,10 @@ RSpec.describe MacOSVersion do
     expect(described_class.new("10.14").pretty_name).to eq("Mojave")
   end
 
+  specify "#inspect" do
+    expect(described_class.new("11").inspect).to eq("#<MacOSVersion: \"11\">")
+  end
+
   specify "#requires_nehalem_cpu?", :needs_macos do
     expect(Hardware::CPU).to receive(:type).at_least(:twice).and_return(:intel)
     expect(described_class.new("10.14").requires_nehalem_cpu?).to be true

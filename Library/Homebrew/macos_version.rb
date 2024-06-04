@@ -100,6 +100,11 @@ class MacOSVersion < Version
     pretty_name
   end
 
+  sig { returns(String) }
+  def inspect
+    "#<#{self.class.name}: #{to_s.inspect}>"
+  end
+
   sig { returns(T::Boolean) }
   def outdated_release?
     self < HOMEBREW_MACOS_OLDEST_SUPPORTED
