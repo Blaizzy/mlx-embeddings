@@ -12,6 +12,13 @@ module Utils
     include SystemCommand::Mixin
     extend SystemCommand::Mixin
 
+    # Error returned when the server sent data curl could not parse.
+    CURL_WEIRD_SERVER_REPLY_EXIT_CODE = 8
+
+    # Error returned when `--fail` is used and the HTTP server returns an error
+    # code that is >= 400.
+    CURL_HTTP_RETURNED_ERROR_EXIT_CODE = 22
+
     # This regex is used to extract the part of an ETag within quotation marks,
     # ignoring any leading weak validator indicator (`W/`). This simplifies
     # ETag comparison in `#curl_check_http_content`.
@@ -26,7 +33,10 @@ module Utils
     # the status code and any following descriptive text (e.g. `Not Found`).
     HTTP_STATUS_LINE_REGEX = %r{^HTTP/.* (?<code>\d+)(?: (?<text>[^\r\n]+))?}
 
-    private_constant :ETAG_VALUE_REGEX, :HTTP_RESPONSE_BODY_SEPARATOR, :HTTP_STATUS_LINE_REGEX
+    private_constant :CURL_WEIRD_SERVER_REPLY_EXIT_CODE,
+                     :CURL_HTTP_RETURNED_ERROR_EXIT_CODE,
+                     :ETAG_VALUE_REGEX, :HTTP_RESPONSE_BODY_SEPARATOR,
+                     :HTTP_STATUS_LINE_REGEX
 
     module_function
 
@@ -222,8 +232,10 @@ module Utils
           **options
         )
 
-        # 22 means a non-successful HTTP status code, not a `curl` error, so we still got some headers.
-        if result.success? || result.exit_status == 22
+        # We still receive usable headers with certain non-successful exit
+        # statuses, so we special case them below.
+        if result.success? ||
+           [CURL_WEIRD_SERVER_REPLY_EXIT_CODE, CURL_HTTP_RETURNED_ERROR_EXIT_CODE].include?(result.exit_status)
           parsed_output = parse_curl_output(result.stdout)
 
           if request_args.empty?
@@ -235,7 +247,8 @@ module Utils
             next if (400..499).cover?(parsed_output.fetch(:responses).last&.fetch(:status_code).to_i)
           end
 
-          return parsed_output if result.success?
+          return parsed_output if result.success? ||
+                                  result.exit_status == CURL_WEIRD_SERVER_REPLY_EXIT_CODE
         end
 
         result.assert_success!
