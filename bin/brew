@@ -57,6 +57,12 @@ do
 done
 unset cmd
 
+# Take the HOMEBREW_PATH if we are running brew within brew, otherwise we would lose the original path.
+if [[ -n "${HOMEBREW_BREW_FILE:-}" && -n "${HOMEBREW_PATH:-}" ]]
+then
+  PATH="${HOMEBREW_PATH}"
+fi
+
 BREW_FILE_DIRECTORY="$(quiet_cd "${0%/*}/" && pwd -P)"
 HOMEBREW_BREW_FILE="${BREW_FILE_DIRECTORY%/}/${0##*/}"
 HOMEBREW_PREFIX="${HOMEBREW_BREW_FILE%/*/*}"
