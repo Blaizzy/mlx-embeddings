@@ -391,9 +391,6 @@ auto-update() {
     unset HOMEBREW_AUTO_UPDATING
     unset HOMEBREW_AUTO_UPDATE_TAP
 
-    # Restore user path as it'll be refiltered by HOMEBREW_BREW_FILE (bin/brew)
-    export PATH=${HOMEBREW_PATH}
-
     # exec a new process to set any new environment variables.
     exec "${HOMEBREW_BREW_FILE}" "$@"
   fi
