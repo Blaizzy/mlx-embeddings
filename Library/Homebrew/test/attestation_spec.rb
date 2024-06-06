@@ -10,8 +10,9 @@ RSpec.describe Homebrew::Attestation do
   let(:cached_download) { "/fake/cached/download" }
   let(:fake_bottle_filename) { instance_double(Bottle::Filename, to_s: "fakebottle--1.0.faketag.bottle.tar.gz") }
   let(:fake_bottle_url) { "https://example.com/#{fake_bottle_filename}" }
+  let(:fake_bottle_tag) { instance_double(Utils::Bottles::Tag, to_sym: :faketag) }
   let(:fake_bottle) do
-    instance_double(Bottle, cached_download:, filename: fake_bottle_filename, url: fake_bottle_url)
+    instance_double(Bottle, cached_download:, filename: fake_bottle_filename, url: fake_bottle_url, tag: fake_bottle_tag)
   end
   let(:fake_result_invalid_json) { instance_double(SystemCommand::Result, stdout: "\"invalid JSON") }
   let(:fake_result_json_resp) do
