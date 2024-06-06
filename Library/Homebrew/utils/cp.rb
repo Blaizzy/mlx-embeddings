@@ -48,7 +48,7 @@ module Utils
         # The `cp` command on older macOS versions also had the `-c` option, but before Sonoma, the
         # command would fail if the `clonefile` syscall isn't applicable (the underlying filesystem
         # doesn't support the feature or the source and the target are on different filesystems).
-        if MacOS.version >= :sonoma
+        if OS.mac? && MacOS.version >= :sonoma
           MACOS_FLAGS
         else
           GENERIC_FLAGS
