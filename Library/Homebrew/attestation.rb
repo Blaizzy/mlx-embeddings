@@ -112,8 +112,8 @@ module Homebrew
         # This is sound insofar as the signature has already been verified. However,
         # longer term, we should also directly attest to `:all`-tagged bottles.
         attestations.find do |a|
-          subject = a.dig("verificationResult", "statement", "subject", 0, "name")
-          subject.start_with? "#{bottle.filename.name}--#{bottle.filename.version}"
+          actual_subject = a.dig("verificationResult", "statement", "subject", 0, "name")
+          actual_subject.start_with? "#{bottle.filename.name}--#{bottle.filename.version}"
         end
       else
         attestations.find do |a|
