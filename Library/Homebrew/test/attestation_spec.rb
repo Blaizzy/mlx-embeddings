@@ -8,10 +8,20 @@ RSpec.describe Homebrew::Attestation do
   let(:fake_error_status) { instance_double(Process::Status, exitstatus: 1, termsig: nil) }
   let(:fake_auth_status) { instance_double(Process::Status, exitstatus: 4, termsig: nil) }
   let(:cached_download) { "/fake/cached/download" }
-  let(:fake_bottle_filename) { instance_double(Bottle::Filename, to_s: "fakebottle--1.0.faketag.bottle.tar.gz") }
+  let(:fake_bottle_filename) do
+    instance_double(Bottle::Filename, name: "fakebottle", version: "1.0",
+   to_s: "fakebottle--1.0.faketag.bottle.tar.gz")
+  end
   let(:fake_bottle_url) { "https://example.com/#{fake_bottle_filename}" }
+  let(:fake_bottle_tag) { instance_double(Utils::Bottles::Tag, to_sym: :faketag) }
+  let(:fake_all_bottle_tag) { instance_double(Utils::Bottles::Tag, to_sym: :all) }
   let(:fake_bottle) do
-    instance_double(Bottle, cached_download:, filename: fake_bottle_filename, url: fake_bottle_url)
+    instance_double(Bottle, cached_download:, filename: fake_bottle_filename, url: fake_bottle_url,
+                    tag: fake_bottle_tag)
+  end
+  let(:fake_all_bottle) do
+    instance_double(Bottle, cached_download:, filename: fake_bottle_filename, url: fake_bottle_url,
+                    tag: fake_all_bottle_tag)
   end
   let(:fake_result_invalid_json) { instance_double(SystemCommand::Result, stdout: "\"invalid JSON") }
   let(:fake_result_json_resp) do
@@ -142,6 +152,19 @@ RSpec.describe Homebrew::Attestation do
         described_class.check_attestation fake_bottle,
                                           described_class::HOMEBREW_CORE_REPO
       end.to raise_error(described_class::InvalidAttestationError)
+    end
+
+    it "checks subject prefix when the bottle is an :all bottle" do
+      expect(GitHub::API).to receive(:credentials)
+        .and_return(fake_gh_creds)
+
+      expect(described_class).to receive(:system_command!)
+        .with(fake_gh, args: ["attestation", "verify", cached_download, "--repo",
+                              described_class::HOMEBREW_CORE_REPO, "--format", "json"],
+              env: { "GH_TOKEN" => fake_gh_creds }, secrets: [fake_gh_creds])
+        .and_return(fake_result_json_resp)
+
+      described_class.check_attestation fake_all_bottle, described_class::HOMEBREW_CORE_REPO
     end
   end
 
