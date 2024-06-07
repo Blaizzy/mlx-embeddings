@@ -227,7 +227,7 @@ class Pathname
     else
       dst.dirname.mkpath
       dst = yield(self, dst) if block_given?
-      Utils::Cp.copy_with_attributes(self, dst)
+      Utils::Cp.with_attributes(self, dst)
     end
   end
 

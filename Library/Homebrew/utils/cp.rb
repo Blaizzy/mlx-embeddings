@@ -17,7 +17,7 @@ module Utils
           command: T.class_of(SystemCommand),
         ).returns(SystemCommand::Result)
       }
-      def copy_with_attributes(source, target, sudo: false, verbose: false, command: SystemCommand)
+      def with_attributes(source, target, sudo: false, verbose: false, command: SystemCommand)
         # On macOS, `cp -p` guarantees to preserve extended attributes (including quarantine
         # information) in addition to file mode. Other implementations like coreutils does not
         # necessarily guarantee the same behavior, but that is fine because we don't really need to
@@ -34,7 +34,7 @@ module Utils
           command: T.class_of(SystemCommand),
         ).returns(SystemCommand::Result)
       }
-      def copy_recursive_with_attributes(source, target, sudo: false, verbose: false, command: SystemCommand)
+      def recursive_with_attributes(source, target, sudo: false, verbose: false, command: SystemCommand)
         command.run! "cp", args: ["-pR", *extra_flags, *source, target], sudo:, verbose:
       end
 

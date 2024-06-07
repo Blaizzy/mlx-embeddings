@@ -25,7 +25,7 @@ module UnpackStrategy
 
     sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
     def extract_to_dir(unpack_dir, basename:, verbose:)
-      Utils::Cp.copy_with_attributes path, unpack_dir/basename
+      Utils::Cp.with_attributes path, unpack_dir/basename
       quiet_flags = verbose ? [] : ["-q"]
       system_command! "unxz",
                       args:    [*quiet_flags, "-T0", "--", unpack_dir/basename],

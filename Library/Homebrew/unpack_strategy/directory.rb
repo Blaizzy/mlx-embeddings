@@ -22,9 +22,9 @@ module UnpackStrategy
     sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
     def extract_to_dir(unpack_dir, basename:, verbose:)
       path.children.each do |child|
-        Utils::Cp.copy_recursive_with_attributes (child.directory? && !child.symlink?) ? "#{child}/." : child,
-                                                 unpack_dir/child.basename,
-                                                 verbose:
+        Utils::Cp.recursive_with_attributes (child.directory? && !child.symlink?) ? "#{child}/." : child,
+                                            unpack_dir/child.basename,
+                                            verbose:
       end
     end
   end
