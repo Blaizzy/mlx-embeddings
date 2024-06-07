@@ -40,10 +40,8 @@ module Utils
 
       private
 
-      GENERIC_FLAGS = [].freeze
-
       def extra_flags
-        GENERIC_FLAGS
+        [].freeze
       end
     end
   end
