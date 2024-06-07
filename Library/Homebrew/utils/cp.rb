@@ -1,6 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
+require "extend/os/cp"
 require "system_command"
 
 module Utils
@@ -39,20 +40,10 @@ module Utils
 
       private
 
-      # Use the lightweight `clonefile(2)` syscall if applicable.
-      MACOS_FLAGS = ["-c"].freeze
       GENERIC_FLAGS = [].freeze
 
-      sig { returns(T::Array[String]) }
       def extra_flags
-        # The `cp` command on older macOS versions also had the `-c` option, but before Sonoma, the
-        # command would fail if the `clonefile` syscall isn't applicable (the underlying filesystem
-        # doesn't support the feature or the source and the target are on different filesystems).
-        if OS.mac? && MacOS.version >= :sonoma
-          MACOS_FLAGS
-        else
-          GENERIC_FLAGS
-        end
+        GENERIC_FLAGS
       end
     end
   end
