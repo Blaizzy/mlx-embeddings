@@ -9,14 +9,25 @@ module Utils
   # Helper functions for copying files.
   module Cp
     class << self
-      def with_attributes(source, target, sudo: false, verbose: false, command: SystemCommand)
-        odisabled "`Utils::Cp.with_attributes` with `sudo: true` on Linux" if sudo
-        FileUtils.cp source, target, preserve: true, verbose:
+      def with_attributes(source, target, force_command: false, sudo: false, verbose: false, command: SystemCommand)
+        if force_command || sudo
+          command.run! "cp", args: ["-p", *source, target], sudo:, verbose:
+        else
+          FileUtils.cp source, target, preserve: true, verbose:
+        end
+
+        nil
       end
 
-      def recursive_with_attributes(source, target, sudo: false, verbose: false, command: SystemCommand)
-        odisabled "`Utils::Cp.recursive_with_attributes` with `sudo: true` on Linux" if sudo
-        FileUtils.cp_r source, target, preserve: true, verbose:
+      def recursive_with_attributes(source, target, force_command: false, sudo: false, verbose: false,
+                                    command: SystemCommand)
+        if force_command || sudo
+          command.run! "cp", args: ["-pR", *source, target], sudo:, verbose:
+        else
+          FileUtils.cp_r source, target, preserve: true, verbose:
+        end
+
+        nil
       end
     end
   end

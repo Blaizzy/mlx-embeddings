@@ -24,6 +24,7 @@ module UnpackStrategy
       path.children.each do |child|
         Utils::Cp.recursive_with_attributes (child.directory? && !child.symlink?) ? "#{child}/." : child,
                                             unpack_dir/child.basename,
+                                            force_command: true,
                                             verbose:
       end
     end
