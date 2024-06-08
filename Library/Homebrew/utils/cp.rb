@@ -2,46 +2,21 @@
 # frozen_string_literal: true
 
 require "extend/os/cp"
+require "fileutils"
 require "system_command"
 
 module Utils
-  # Helper functions for interacting with the `cp` command.
+  # Helper functions for copying files.
   module Cp
     class << self
-      sig {
-        params(
-          source:  T.any(String, Pathname, T::Array[T.any(String, Pathname)]),
-          target:  T.any(String, Pathname),
-          sudo:    T::Boolean,
-          verbose: T::Boolean,
-          command: T.class_of(SystemCommand),
-        ).returns(SystemCommand::Result)
-      }
       def with_attributes(source, target, sudo: false, verbose: false, command: SystemCommand)
-        # On macOS, `cp -p` guarantees to preserve extended attributes (including quarantine
-        # information) in addition to file mode. Other implementations like coreutils does not
-        # necessarily guarantee the same behavior, but that is fine because we don't really need to
-        # preserve extended attributes except when copying Cask artifacts.
-        command.run! "cp", args: ["-p", *extra_flags, *source, target], sudo:, verbose:
+        odisabled "`Utils::Cp.with_attributes` with `sudo: true` on Linux" if sudo
+        FileUtils.cp source, target, preserve: true, verbose:
       end
 
-      sig {
-        params(
-          source:  T.any(String, Pathname, T::Array[T.any(String, Pathname)]),
-          target:  T.any(String, Pathname),
-          sudo:    T::Boolean,
-          verbose: T::Boolean,
-          command: T.class_of(SystemCommand),
-        ).returns(SystemCommand::Result)
-      }
       def recursive_with_attributes(source, target, sudo: false, verbose: false, command: SystemCommand)
-        command.run! "cp", args: ["-pR", *extra_flags, *source, target], sudo:, verbose:
-      end
-
-      private
-
-      def extra_flags
-        [].freeze
+        odisabled "`Utils::Cp.recursive_with_attributes` with `sudo: true` on Linux" if sudo
+        FileUtils.cp_r source, target, preserve: true, verbose:
       end
     end
   end
