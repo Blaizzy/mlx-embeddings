@@ -5,45 +5,6 @@ module Utils
   module Cp
     class << self
       module MacOSOverride
-        sig {
-          params(
-            source:        T.any(String, Pathname, T::Array[T.any(String, Pathname)]),
-            target:        T.any(String, Pathname),
-            force_command: T::Boolean,
-            sudo:          T::Boolean,
-            verbose:       T::Boolean,
-            command:       T.class_of(SystemCommand),
-          ).void
-        }
-        def with_attributes(source, target, force_command: false, sudo: false, verbose: false, command: SystemCommand)
-          if (flags = extra_flags)
-            command.run! "cp", args: ["-p", *flags, *source, target], sudo:, verbose:
-            nil
-          else
-            super
-          end
-        end
-
-        sig {
-          params(
-            source:        T.any(String, Pathname, T::Array[T.any(String, Pathname)]),
-            target:        T.any(String, Pathname),
-            force_command: T::Boolean,
-            sudo:          T::Boolean,
-            verbose:       T::Boolean,
-            command:       T.class_of(SystemCommand),
-          ).void
-        }
-        def recursive_with_attributes(source, target, force_command: false, sudo: false, verbose: false,
-                                      command: SystemCommand)
-          if (flags = extra_flags)
-            command.run! "cp", args: ["-pR", *flags, *source, target], sudo:, verbose:
-            nil
-          else
-            super
-          end
-        end
-
         private
 
         # Use the lightweight `clonefile(2)` syscall if applicable.
