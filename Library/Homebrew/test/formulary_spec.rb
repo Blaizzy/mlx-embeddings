@@ -641,6 +641,45 @@ RSpec.describe Formulary do
           #   end
           # end
         end
+
+        context "to a third-party tap" do
+          let(:old_tap) { Tap.fetch("another", "foo") }
+          let(:new_tap) { Tap.fetch("another", "bar") }
+          let(:formula_file) { new_tap.formula_dir/"#{token}.rb" }
+
+          before do
+            new_tap.formula_dir.mkpath
+            FileUtils.touch formula_file
+          end
+
+          after do
+            FileUtils.rm_rf Tap::TAP_DIRECTORY/"another"
+          end
+
+          # FIXME
+          # It would be preferable not to print a warning when installing with the short token
+          it "warns when loading the short token" do
+            expect do
+              described_class.loader_for(token)
+            end.to output(
+              a_string_including("Formula #{old_tap}/#{token} was renamed to #{new_tap}/#{token}.").once,
+            ).to_stderr
+          end
+
+          it "does not warn when loading the full token in the new tap" do
+            expect do
+              described_class.loader_for("#{new_tap}/#{token}")
+            end.not_to output.to_stderr
+          end
+
+          it "warns when loading the full token in the old tap" do
+            expect do
+              described_class.loader_for("#{old_tap}/#{token}")
+            end.to output(
+              a_string_including("Formula #{old_tap}/#{token} was renamed to #{new_tap}/#{token}.").once,
+            ).to_stderr
+          end
+        end
       end
     end
   end

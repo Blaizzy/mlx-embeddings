@@ -458,6 +458,7 @@ module Cask
 
         loaders = Tap.select { |tap| tap.installed? && !tap.core_cask_tap? }
                      .filter_map { |tap| super("#{tap}/#{token}", warn:) }
+                     .uniq(&:path)
                      .select { |tap| tap.path.exist? }
 
         case loaders.count

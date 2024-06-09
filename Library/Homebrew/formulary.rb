@@ -827,6 +827,7 @@ module Formulary
 
       loaders = Tap.select { |tap| tap.installed? && !tap.core_tap? }
                    .filter_map { |tap| super("#{tap}/#{name}", warn:) }
+                   .uniq(&:path)
                    .select { |tap| tap.path.exist? }
 
       case loaders.count
