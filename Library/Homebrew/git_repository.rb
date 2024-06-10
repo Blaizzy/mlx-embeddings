@@ -16,9 +16,11 @@ class GitRepository
   end
 
   sig { returns(T::Boolean) }
-  def git_repo?
+  def git_repository?
     pathname.join(".git").exist?
   end
+  # odeprecated: use git_repository? instead
+  alias git_repo? git_repository?
 
   # Gets the URL of the Git origin remote.
   sig { returns(T.nilable(String)) }

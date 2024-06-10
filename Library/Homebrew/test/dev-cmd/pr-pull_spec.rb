@@ -99,8 +99,8 @@ RSpec.describe Homebrew::DevCmd::PrPull do
         File.write(formula_file, formula_version)
         safe_system Utils::Git.git, "commit", formula_file, "-m", "version", "--author=#{secondary_author}"
         pr_pull.autosquash!(original_hash, tap:)
-        expect(tap.git_repo.commit_message).to include("foo 2.0")
-        expect(tap.git_repo.commit_message).to include("Co-authored-by: #{secondary_author}")
+        expect(tap.git_repository.commit_message).to include("foo 2.0")
+        expect(tap.git_repository.commit_message).to include("Co-authored-by: #{secondary_author}")
       end
 
       (path/"Casks").mkpath
@@ -130,8 +130,8 @@ RSpec.describe Homebrew::DevCmd::PrPull do
         safe_system Utils::Git.git, "add", formula_file
         safe_system Utils::Git.git, "commit", "-m", "foo 1.0 (new formula)"
       end
-      pr_pull.signoff!(tap.git_repo)
-      expect(tap.git_repo.commit_message).to include("Signed-off-by:")
+      pr_pull.signoff!(tap.git_repository)
+      expect(tap.git_repository.commit_message).to include("Signed-off-by:")
 
       (path/"Casks").mkpath
       cask_file.write(cask)
@@ -139,8 +139,8 @@ RSpec.describe Homebrew::DevCmd::PrPull do
         safe_system Utils::Git.git, "add", cask_file
         safe_system Utils::Git.git, "commit", "-m", "food 1.0 (new cask)"
       end
-      pr_pull.signoff!(tap.git_repo)
-      expect(tap.git_repo.commit_message).to include("Signed-off-by:")
+      pr_pull.signoff!(tap.git_repository)
+      expect(tap.git_repository.commit_message).to include("Signed-off-by:")
     end
   end
 
