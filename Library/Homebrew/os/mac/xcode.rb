@@ -15,9 +15,11 @@ module OS
       # This may be a beta version for a beta macOS.
       sig { params(macos: MacOSVersion).returns(String) }
       def self.latest_version(macos: MacOS.version)
-        latest_stable = "15.1"
+        latest_stable = "15.4"
         case macos
-        when "14", "13" then latest_stable
+        when "15" then "16.0"
+        when "14" then latest_stable
+        when "13" then "15.2"
         when "12" then "14.2"
         when "11" then "13.2.1"
         when "10.15" then "12.4"
@@ -40,6 +42,7 @@ module OS
       sig { returns(String) }
       def self.minimum_version
         case MacOS.version
+        when "15" then "16.0"
         when "14" then "15.0"
         when "13" then "14.1"
         when "12" then "13.1"
@@ -253,8 +256,9 @@ module OS
         when "13.0.0" then "13.2.1"
         when "13.1.6" then "13.4.1"
         when "14.0.0" then "14.2"
-        when "15.0.0" then "15.1"
-        else               "14.3"
+        when "14.0.3" then "14.3.1"
+        when "16.0.0" then "16.0"
+        else               "15.4"
         end
       end
 
@@ -347,7 +351,9 @@ module OS
       sig { returns(String) }
       def self.latest_clang_version
         case MacOS.version
-        when "14", "13" then "1500.1.0.2.5"
+        when "15" then "1600.0.20.10"
+        when "14" then "1500.3.9.4"
+        when "13" then "1500.1.0.2.5"
         when "12"    then "1400.0.29.202"
         when "11"    then "1300.0.29.30"
         when "10.15" then "1200.0.32.29"
@@ -364,6 +370,7 @@ module OS
       sig { returns(String) }
       def self.minimum_version
         case MacOS.version
+        when "15" then "16.0.0"
         when "14" then "15.0.0"
         when "13" then "14.0.0"
         when "12" then "13.0.0"

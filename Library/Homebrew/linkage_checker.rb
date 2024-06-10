@@ -112,7 +112,7 @@ class LinkageChecker
         # weakly loaded dylibs may not actually exist on disk, so skip them
         # when checking for broken linkage
         keg_files_dylibs[file] =
-          file.dynamically_linked_libraries(except: :LC_LOAD_WEAK_DYLIB)
+          file.dynamically_linked_libraries(except: :DYLIB_USE_WEAK_LINK)
       end
     end
 
