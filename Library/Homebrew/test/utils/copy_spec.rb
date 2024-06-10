@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require "system_command"
-require "utils/cp"
+require "utils/copy"
 
-RSpec.describe Utils::Cp do
+RSpec.describe Utils::Copy do
   let(:path) { Pathname(Dir.mktmpdir) }
   let(:source) { path/"source" }
   let(:target) { path/"target" }

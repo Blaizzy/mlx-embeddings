@@ -1,7 +1,7 @@
 # typed: true
 # frozen_string_literal: true
 
-require "utils/cp"
+require "utils/copy"
 
 module UnpackStrategy
   # Strategy for unpacking directories.
@@ -22,10 +22,10 @@ module UnpackStrategy
     sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
     def extract_to_dir(unpack_dir, basename:, verbose:)
       path.children.each do |child|
-        Utils::Cp.recursive_with_attributes (child.directory? && !child.symlink?) ? "#{child}/." : child,
-                                            unpack_dir/child.basename,
-                                            force_command: true,
-                                            verbose:
+        Utils::Copy.recursive_with_attributes (child.directory? && !child.symlink?) ? "#{child}/." : child,
+                                              unpack_dir/child.basename,
+                                              force_command: true,
+                                              verbose:
       end
     end
   end

@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 module Utils
-  module Cp
+  module Copy
     class << self
       module MacOSOverride
         private

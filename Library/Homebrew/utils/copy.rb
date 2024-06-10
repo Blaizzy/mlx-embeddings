@@ -1,13 +1,13 @@
 # typed: true
 # frozen_string_literal: true
 
-require "extend/os/cp"
+require "extend/os/copy"
 require "fileutils"
 require "system_command"
 
 module Utils
   # Helper functions for copying files.
-  module Cp
+  module Copy
     class << self
       sig {
         params(
