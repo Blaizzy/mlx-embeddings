@@ -95,7 +95,7 @@ module Homebrew
           _, user, repo, pr = *url_match
           odie "Not a GitHub pull request: #{arg}" unless pr
 
-          git_repo = tap.git_repo
+          git_repo = tap.git_repository
           if !git_repo.default_origin_branch? && !args.branch_okay? && !args.no_commit? && !args.no_cherry_pick?
             origin_branch_name = git_repo.origin_branch_name
             opoo "Current branch is #{git_repo.branch_name}: do you need to pull inside #{origin_branch_name}?"
@@ -341,7 +341,7 @@ module Homebrew
 
       # TODO: fix test in `test/dev-cmd/pr-pull_spec.rb` and assume `cherry_picked: false`.
       def autosquash!(original_commit, tap:, reason: "", verbose: false, resolve: false, cherry_picked: true)
-        git_repo = tap.git_repo
+        git_repo = tap.git_repository
         original_head = git_repo.head_ref
 
         commits = Utils.safe_popen_read("git", "-C", tap.path, "rev-list",

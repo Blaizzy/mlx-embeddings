@@ -55,8 +55,8 @@ module Homebrew
 
     # Verifies the given bottle against a cryptographic attestation of build provenance.
     #
-    # The provenance is verified as originating from `signing_repo`, which is a `String`
-    # that should be formatted as a GitHub `owner/repo`.
+    # The provenance is verified as originating from `signing_repository`, which is a `String`
+    # that should be formatted as a GitHub `owner/repository`.
     #
     # Callers may additionally pass in `signing_workflow`, which will scope the attestation
     # down to an exact GitHub Actions workflow, in

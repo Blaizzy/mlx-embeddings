@@ -146,7 +146,7 @@ module Homebrew
 
         updated_taps = []
         Tap.installed.each do |tap|
-          next if !tap.git? || tap.git_repo.origin_url.nil?
+          next if !tap.git? || tap.git_repository.origin_url.nil?
           next if (tap.core_tap? || tap.core_cask_tap?) && !Homebrew::EnvConfig.no_install_from_api?
 
           if ENV["HOMEBREW_MIGRATE_LINUXBREW_FORMULAE"].present? && tap.core_tap? &&
@@ -321,7 +321,7 @@ module Homebrew
             next unless tap.installed?
 
             if tap.git_branch == "master" &&
-               (Date.parse(T.must(tap.git_repo.last_commit_date)) <= Date.today.prev_month)
+               (Date.parse(T.must(tap.git_repository.last_commit_date)) <= Date.today.prev_month)
               ohai "#{tap.name} is old and unneeded, untapping to save space..."
               tap.uninstall
             else

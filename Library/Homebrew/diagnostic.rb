@@ -127,7 +127,7 @@ module Homebrew
 
       sig { params(repository_path: GitRepository, desired_origin: String).returns(T.nilable(String)) }
       def examine_git_origin(repository_path, desired_origin)
-        return if !Utils::Git.available? || !repository_path.git_repo?
+        return if !Utils::Git.available? || !repository_path.git_repository?
 
         current_origin = repository_path.origin_url
 
@@ -156,7 +156,7 @@ module Homebrew
         return unless Utils::Git.available?
 
         repo = GitRepository.new(HOMEBREW_REPOSITORY)
-        return unless repo.git_repo?
+        return unless repo.git_repository?
 
         message = <<~EOS
           #{tap.full_name} was not tapped properly! Run:
@@ -528,14 +528,14 @@ module Homebrew
           core_tap.ensure_installed!
         end
 
-        broken_tap(core_tap) || examine_git_origin(core_tap.git_repo, Homebrew::EnvConfig.core_git_remote)
+        broken_tap(core_tap) || examine_git_origin(core_tap.git_repository, Homebrew::EnvConfig.core_git_remote)
       end
 
       def check_casktap_integrity
         core_cask_tap = CoreCaskTap.instance
         return unless core_cask_tap.installed?
 
-        broken_tap(core_cask_tap) || examine_git_origin(core_cask_tap.git_repo, core_cask_tap.remote)
+        broken_tap(core_cask_tap) || examine_git_origin(core_cask_tap.git_repository, core_cask_tap.remote)
       end
 
       sig { returns(T.nilable(String)) }
@@ -544,9 +544,9 @@ module Homebrew
         return unless Utils::Git.available?
 
         commands = Tap.installed.filter_map do |tap|
-          next if tap.git_repo.default_origin_branch?
+          next if tap.git_repository.default_origin_branch?
 
-          "git -C $(brew --repo #{tap.name}) checkout #{tap.git_repo.origin_branch_name}"
+          "git -C $(brew --repo #{tap.name}) checkout #{tap.git_repository.origin_branch_name}"
         end
 
         return if commands.blank?

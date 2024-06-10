@@ -289,8 +289,7 @@ class Formula
 
   private
 
-  # Allow full name logic to be re-used between names, aliases,
-  # and installed aliases.
+  # Allow full name logic to be re-used between names, aliases and installed aliases.
   def full_name_with_optional_tap(name)
     if name.nil? || @tap.nil? || @tap.core_tap?
       name

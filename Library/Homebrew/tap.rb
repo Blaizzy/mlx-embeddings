@@ -9,10 +9,10 @@ require "settings"
 
 # A {Tap} is used to extend the formulae provided by Homebrew core.
 # Usually, it's synced with a remote Git repository. And it's likely
-# a GitHub repository with the name of `user/homebrew-repo`. In such
-# cases, `user/repo` will be used as the {#name} of this {Tap}, where
-# {#user} represents the GitHub username and {#repo} represents the repository
-# name without the leading `homebrew-`.
+# a GitHub repository with the name of `user/homebrew-repository`. In such
+# cases, `user/repository` will be used as the {#name} of this {Tap}, where
+# {#user} represents the GitHub username and {#repository} represents the
+# repository name without the leading `homebrew-`.
 class Tap
   extend Cachable
 
@@ -160,11 +160,13 @@ class Tap
   # The repository name of this {Tap} without the leading `homebrew-`.
   #
   # @api public
-  attr_reader :repo
+  attr_reader :repository
+  # odeprecated: use repository instead.
+  alias repo repository
 
-  # The name of this {Tap}. It combines {#user} and {#repo} with a slash.
+  # The name of this {Tap}. It combines {#user} and {#repository} with a slash.
   # {#name} is always in lowercase.
-  # e.g. `user/repo`
+  # e.g. `user/repository`
   #
   # @api public
   attr_reader :name
@@ -174,14 +176,14 @@ class Tap
   def to_s = name
 
   # The full name of this {Tap}, including the `homebrew-` prefix.
-  # It combines {#user} and 'homebrew-'-prefixed {#repo} with a slash.
-  # e.g. `user/homebrew-repo`
+  # It combines {#user} and 'homebrew-'-prefixed {#repository} with a slash.
+  # e.g. `user/homebrew-repository`
   #
   # @api public
   attr_reader :full_name
 
   # The local path to this {Tap}.
-  # e.g. `/usr/local/Library/Taps/user/homebrew-repo`
+  # e.g. `/usr/local/Library/Taps/user/homebrew-repository`
   #
   # @api public
   sig { returns(Pathname) }
@@ -189,24 +191,24 @@ class Tap
 
   # The git repository of this {Tap}.
   sig { returns(GitRepository) }
-  attr_reader :git_repo
+  attr_reader :git_repository
 
   # Always use `Tap.fetch` instead of `Tap.new`.
   private_class_method :new
 
-  def initialize(user, repo)
+  def initialize(user, repository)
     @user = user
-    @repo = repo
-    @name = "#{@user}/#{@repo}".downcase
-    @full_name = "#{@user}/homebrew-#{@repo}"
+    @repository = repository
+    @name = "#{@user}/#{@repository}".downcase
+    @full_name = "#{@user}/homebrew-#{@repository}"
     @path = TAP_DIRECTORY/@full_name.downcase
-    @git_repo = GitRepository.new(@path)
+    @git_repository = GitRepository.new(@path)
   end
 
   # Clear internal cache.
   def clear_cache
     @remote = nil
-    @repo_var_suffix = nil
+    @repository_var_suffix = nil
     remove_instance_variable(:@private) if instance_variable_defined?(:@private)
 
     @formula_dir = nil
@@ -253,17 +255,17 @@ class Tap
   end
 
   # The remote path to this {Tap}.
-  # e.g. `https://github.com/user/homebrew-repo`
+  # e.g. `https://github.com/user/homebrew-repository`
   #
   # @api public
   def remote
     return default_remote unless installed?
 
-    @remote ||= git_repo.origin_url
+    @remote ||= git_repository.origin_url
   end
 
   # The remote repository name of this {Tap}.
-  # e.g. `user/homebrew-repo`
+  # e.g. `user/homebrew-repository`
   #
   # @api public
   sig { returns(T.nilable(String)) }
@@ -282,18 +284,20 @@ class Tap
   end
 
   sig { returns(String) }
-  def repo_var_suffix
-    @repo_var_suffix ||= path.to_s
-                             .delete_prefix(TAP_DIRECTORY.to_s)
-                             .tr("^A-Za-z0-9", "_")
-                             .upcase
+  def repository_var_suffix
+    @repository_var_suffix ||= path.to_s
+                                   .delete_prefix(TAP_DIRECTORY.to_s)
+                                   .tr("^A-Za-z0-9", "_")
+                                   .upcase
   end
+  # odeprecated: use repository_var_suffix instead.
+  alias repo_var_suffix repository_var_suffix
 
   # Check whether this {Tap} is a Git repository.
   #
   # @api public
   def git?
-    git_repo.git_repo?
+    git_repository.git_repository?
   end
 
   # Git branch for this {Tap}.
@@ -302,7 +306,7 @@ class Tap
   def git_branch
     raise TapUnavailableError, name unless installed?
 
-    git_repo.branch_name
+    git_repository.branch_name
   end
 
   # Git HEAD for this {Tap}.
@@ -311,7 +315,7 @@ class Tap
   def git_head
     raise TapUnavailableError, name unless installed?
 
-    @git_head ||= git_repo.head_ref
+    @git_head ||= git_repository.head_ref
   end
 
   # Time since last git commit for this {Tap}.
@@ -320,7 +324,7 @@ class Tap
   def git_last_commit
     raise TapUnavailableError, name unless installed?
 
-    git_repo.last_committed
+    git_repository.last_committed
   end
 
   # The issues URL of this {Tap}.
@@ -564,22 +568,22 @@ class Tap
     end
     return unless remote
 
-    current_upstream_head = T.must(git_repo.origin_branch_name)
-    return if requested_remote.blank? && git_repo.origin_has_branch?(current_upstream_head)
+    current_upstream_head = T.must(git_repository.origin_branch_name)
+    return if requested_remote.blank? && git_repository.origin_has_branch?(current_upstream_head)
 
     args = %w[fetch]
     args << "--quiet" if quiet
     args << "origin"
     args << "+refs/heads/*:refs/remotes/origin/*"
     safe_system "git", "-C", path, *args
-    git_repo.set_head_origin_auto
+    git_repository.set_head_origin_auto
 
-    new_upstream_head = T.must(git_repo.origin_branch_name)
+    new_upstream_head = T.must(git_repository.origin_branch_name)
     return if new_upstream_head == current_upstream_head
 
     safe_system "git", "-C", path, "config", "remote.origin.fetch", "+refs/heads/*:refs/remotes/origin/*"
-    git_repo.rename_branch old: current_upstream_head, new: new_upstream_head
-    git_repo.set_upstream_branch local: new_upstream_head, origin: new_upstream_head
+    git_repository.rename_branch old: current_upstream_head, new: new_upstream_head
+    git_repository.set_upstream_branch local: new_upstream_head, origin: new_upstream_head
 
     return if quiet
 

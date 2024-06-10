@@ -18,9 +18,9 @@ If a formula in your tap has the same name as a Homebrew/homebrew-core formula t
 
 ## Installing
 
-If it’s on GitHub, users can install any of your formulae with `brew install user/repo/formula`. Homebrew will automatically add your `github.com/user/homebrew-repo` tap before installing the formula. `user/repo/formula` points to the `github.com/user/homebrew-repo/**/formula.rb` file here.
+If it’s on GitHub, users can install any of your formulae with `brew install user/repo/formula`. Homebrew will automatically add your `github.com/user/homebrew-repository` tap before installing the formula. `user/repo/formula` points to the `github.com/user/homebrew-repo/**/formula.rb` file here.
 
-To install your tap without installing any formula at the same time, users can add it with the [`brew tap` command](Taps.md). If it’s on GitHub, they can use `brew tap user/repo`, where `user` is your GitHub username and `homebrew-repo` is your repository. If it’s hosted outside of GitHub, they have to use `brew tap user/repo <URL>`, where `user` and `repo` will be used to refer to your tap and `<URL>` is your Git clone URL.
+To install your tap without installing any formula at the same time, users can add it with the [`brew tap` command](Taps.md). If it’s on GitHub, they can use `brew tap user/repository`, where `user` is your GitHub username and `homebrew-repository` is your repository. If it’s hosted outside of GitHub, they have to use `brew tap user/repo <URL>`, where `user` and `repository` will be used to refer to your tap and `<URL>` is your Git clone URL.
 
 Users can then install your formulae either with `brew install foo` if there’s no core formula with the same name, or with `brew install user/repo/foo` to avoid conflicts.
 
