@@ -165,7 +165,10 @@ module Homebrew
           Formula.racks
         else
           racks = args.named.map { |n| Formulary.to_rack(n) }
-          racks.select(&:exist?)
+          racks.select do |rack|
+            Homebrew.failed = true unless rack.exist?
+            rack.exist?
+          end
         end
         if args.pinned?
           pinned_versions = {}
@@ -191,6 +194,7 @@ module Homebrew
           Cask::Caskroom.casks
         else
           filtered_args = args.named.dup.delete_if do |n|
+            Homebrew.failed = true unless Cask::Caskroom.path.join(n).exist?
             !Cask::Caskroom.path.join(n).exist?
           end
           # NamedAargs subclasses array
