@@ -153,7 +153,7 @@ module Homebrew
             system_command! "find", args: casks.map(&:caskroom_path) + find_args, print_stdout: true if casks.present?
           else
             kegs.each { |keg| PrettyListing.new keg } if kegs.present?
-            list_casks if casks.present?
+            Cask::List.list_casks(*casks, one: args.public_send(:"1?")) if casks.present?
           end
         end
       end
