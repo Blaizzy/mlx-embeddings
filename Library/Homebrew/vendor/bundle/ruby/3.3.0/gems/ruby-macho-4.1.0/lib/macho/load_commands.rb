@@ -65,6 +65,7 @@ module MachO
       (LC_REQ_DYLD | 0x33) => :LC_DYLD_EXPORTS_TRIE,
       (LC_REQ_DYLD | 0x34) => :LC_DYLD_CHAINED_FIXUPS,
       (LC_REQ_DYLD | 0x35) => :LC_FILESET_ENTRY,
+      0x36 => :LC_ATOM_INFO,
     }.freeze
 
     # association of symbol representations to load command constants
@@ -110,7 +111,7 @@ module MachO
       # "reserved for internal use only", no public struct
       :LC_PREPAGE => "LoadCommand",
       :LC_DYSYMTAB => "DysymtabCommand",
-      :LC_LOAD_DYLIB => "DylibCommand",
+      :LC_LOAD_DYLIB => "DylibUseCommand",
       :LC_ID_DYLIB => "DylibCommand",
       :LC_LOAD_DYLINKER => "DylinkerCommand",
       :LC_ID_DYLINKER => "DylinkerCommand",
@@ -122,7 +123,7 @@ module MachO
       :LC_SUB_LIBRARY => "SubLibraryCommand",
       :LC_TWOLEVEL_HINTS => "TwolevelHintsCommand",
       :LC_PREBIND_CKSUM => "PrebindCksumCommand",
-      :LC_LOAD_WEAK_DYLIB => "DylibCommand",
+      :LC_LOAD_WEAK_DYLIB => "DylibUseCommand",
       :LC_SEGMENT_64 => "SegmentCommand64",
       :LC_ROUTINES_64 => "RoutinesCommand64",
       :LC_UUID => "UUIDCommand",
@@ -153,6 +154,7 @@ module MachO
       :LC_DYLD_EXPORTS_TRIE => "LinkeditDataCommand",
       :LC_DYLD_CHAINED_FIXUPS => "LinkeditDataCommand",
       :LC_FILESET_ENTRY => "FilesetEntryCommand",
+      :LC_ATOM_INFO => "LinkeditDataCommand",
     }.freeze
 
     # association of segment name symbols to names
@@ -193,6 +195,20 @@ module MachO
       :SG_READ_ONLY => 0x10,
     }.freeze
 
+    # association of dylib use flag symbols to values
+    # @api private
+    DYLIB_USE_FLAGS = {
+      :DYLIB_USE_WEAK_LINK => 0x1,
+      :DYLIB_USE_REEXPORT => 0x2,
+      :DYLIB_USE_UPWARD => 0x4,
+      :DYLIB_USE_DELAYED_INIT => 0x8,
+    }.freeze
+
+    # the marker used to denote a newer style dylib use command.
+    # the value is the timestamp 24 January 1984 18:12:16
+    # @api private
+    DYLIB_USE_MARKER = 0x1a741800
+
     # The top-level Mach-O load command structure.
     #
     # This is the most generic load command -- only the type ID and size are
@@ -230,6 +246,13 @@ module MachO
 
         # cmd will be filled in, view and cmdsize will be left unpopulated
         klass_arity = klass.min_args - 3
+
+        # macOS 15 introduces a new dylib load command that adds a flags field to the end.
+        # It uses the same commands with it dynamically being created if the dylib has a flags field
+        if klass == DylibUseCommand && (args[1] != DYLIB_USE_MARKER || args.size <= DylibCommand.min_args - 3)
+          klass = DylibCommand
+          klass_arity = klass.min_args - 3
+        end
 
         raise LoadCommandCreationArityError.new(cmd_sym, klass_arity, args.size) if klass_arity > args.size
 
@@ -526,6 +549,23 @@ module MachO
       # @return [Integer] the library's compatibility version number
       field :compatibility_version, :uint32
 
+      # @example
+      #  puts "this dylib is weakly loaded" if dylib_command.flag?(:DYLIB_USE_WEAK_LINK)
+      # @param flag [Symbol] a dylib use command flag symbol
+      # @return [Boolean] true if `flag` applies to this dylib command
+      def flag?(flag)
+        case cmd
+        when LOAD_COMMAND_CONSTANTS[:LC_LOAD_WEAK_DYLIB]
+          flag == :DYLIB_USE_WEAK_LINK
+        when LOAD_COMMAND_CONSTANTS[:LC_REEXPORT_DYLIB]
+          flag == :DYLIB_USE_REEXPORT
+        when LOAD_COMMAND_CONSTANTS[:LC_LOAD_UPWARD_DYLIB]
+          flag == :DYLIB_USE_UPWARD
+        else
+          false
+        end
+      end
+
       # @param context [SerializationContext]
       #  the context
       # @return [String] the serialized fields of the load command
@@ -547,6 +587,65 @@ module MachO
           "timestamp" => timestamp,
           "current_version" => current_version,
           "compatibility_version" => compatibility_version,
+        }.merge super
+      end
+    end
+
+    # The newer format of load command representing some aspect of shared libraries,
+    # depending on filetype. Corresponds to LC_LOAD_DYLIB or LC_LOAD_WEAK_DYLIB.
+    class DylibUseCommand < DylibCommand
+      # @return [Integer] any flags associated with this dylib use command
+      field :flags, :uint32
+
+      alias marker timestamp
+
+      # Instantiates a new DylibCommand or DylibUseCommand.
+      # macOS 15 and later use a new format for dylib commands (DylibUseCommand),
+      # which is determined based on a special timestamp and the name offset.
+      # @param view [MachO::MachOView] the load command's raw view
+      # @return [DylibCommand] the new dylib load command
+      # @api private
+      def self.new_from_bin(view)
+        dylib_command = DylibCommand.new_from_bin(view)
+
+        if dylib_command.timestamp == DYLIB_USE_MARKER &&
+           dylib_command.name.to_i == DylibUseCommand.bytesize
+          super(view)
+        else
+          dylib_command
+        end
+      end
+
+      # @example
+      #  puts "this dylib is weakly loaded" if dylib_command.flag?(:DYLIB_USE_WEAK_LINK)
+      # @param flag [Symbol] a dylib use command flag symbol
+      # @return [Boolean] true if `flag` applies to this dylib command
+      def flag?(flag)
+        flag = DYLIB_USE_FLAGS[flag]
+
+        return false if flag.nil?
+
+        flags & flag == flag
+      end
+
+      # @param context [SerializationContext]
+      #  the context
+      # @return [String] the serialized fields of the load command
+      # @api private
+      def serialize(context)
+        format = Utils.specialize_format(self.class.format, context.endianness)
+        string_payload, string_offsets = Utils.pack_strings(self.class.bytesize,
+                                                            context.alignment,
+                                                            :name => name.to_s)
+        cmdsize = self.class.bytesize + string_payload.bytesize
+        [cmd, cmdsize, string_offsets[:name], marker, current_version,
+         compatibility_version, flags].pack(format) + string_payload
+      end
+
+      # @return [Hash] a hash representation of this {DylibUseCommand}
+      def to_h
+        {
+          "flags" => flags,
         }.merge super
       end
     end
@@ -958,7 +1057,7 @@ module MachO
     # the __LINKEDIT segment. Corresponds to LC_CODE_SIGNATURE,
     # LC_SEGMENT_SPLIT_INFO, LC_FUNCTION_STARTS, LC_DATA_IN_CODE,
     # LC_DYLIB_CODE_SIGN_DRS, LC_LINKER_OPTIMIZATION_HINT, LC_DYLD_EXPORTS_TRIE,
-    # or LC_DYLD_CHAINED_FIXUPS.
+    # LC_DYLD_CHAINED_FIXUPS, or LC_ATOM_INFO.
     class LinkeditDataCommand < LoadCommand
       # @return [Integer] offset to the data in the __LINKEDIT segment
       field :dataoff, :uint32
