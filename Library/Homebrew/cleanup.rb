@@ -107,7 +107,7 @@ module Homebrew
 
         version = if HOMEBREW_BOTTLES_EXTNAME_REGEX.match?(to_s)
           begin
-            Utils::Bottles.resolve_version(pathname)
+            Utils::Bottles.resolve_version(pathname).to_s
           rescue
             nil
           end
