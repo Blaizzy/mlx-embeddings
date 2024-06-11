@@ -244,8 +244,8 @@ RSpec/MultipleMemoizedHelpers:
 
 RSpec/DescribedClassModuleWrapping:
   Enabled: true
-RSpec/FilePath:
-  SpecSuffixOnly: true
+RSpec/SpecFilePathSuffix:
+  Enabled: true
 # Annoying to have these autoremoved.
 RSpec/Focus:
   AutoCorrect: false
