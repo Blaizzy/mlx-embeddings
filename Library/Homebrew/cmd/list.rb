@@ -153,7 +153,7 @@ module Homebrew
             system_command! "find", args: casks.map(&:caskroom_path) + find_args, print_stdout: true if casks.present?
           else
             kegs.each { |keg| PrettyListing.new keg } if kegs.present?
-            list_casks if casks.present?
+            Cask::List.list_casks(*casks, one: args.public_send(:"1?")) if casks.present?
           end
         end
       end
@@ -165,7 +165,10 @@ module Homebrew
           Formula.racks
         else
           racks = args.named.map { |n| Formulary.to_rack(n) }
-          racks.select(&:exist?)
+          racks.select do |rack|
+            Homebrew.failed = true unless rack.exist?
+            rack.exist?
+          end
         end
         if args.pinned?
           pinned_versions = {}
@@ -191,6 +194,7 @@ module Homebrew
           Cask::Caskroom.casks
         else
           filtered_args = args.named.dup.delete_if do |n|
+            Homebrew.failed = true unless Cask::Caskroom.path.join(n).exist?
             !Cask::Caskroom.path.join(n).exist?
           end
           # NamedAargs subclasses array
