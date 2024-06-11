@@ -945,7 +945,7 @@ module Homebrew
 
         taps = (Tap.to_a + [CoreCaskTap.instance]).uniq
 
-        add_info "Homebrew Cask Taps:", taps.filter_map do |tap|
+        taps_info = taps.filter_map do |tap|
           cask_count = begin
             tap.cask_files.count
           rescue
@@ -956,6 +956,7 @@ module Homebrew
 
           "#{tap.path} (#{Utils.pluralize("cask", cask_count, include_count: true)})"
         end
+        add_info "Homebrew Cask Taps:", taps_info
 
         taps_string = Utils.pluralize("tap", error_tap_paths.count)
         "Unable to read from cask #{taps_string}: #{error_tap_paths.to_sentence}" if error_tap_paths.present?
