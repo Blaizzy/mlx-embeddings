@@ -75,7 +75,7 @@ RSpec.describe Utils::Copy do
     end
 
     context "when running on Linux or macOS Ventura or earlier" do
-      include_context "with macOS version", "13"
+      include_context "with macOS version", "13" if OS.mac?
 
       include_examples "copies files", method_name
 
@@ -139,7 +139,7 @@ RSpec.describe Utils::Copy do
     end
 
     context "when running on Linux or macOS Ventura or earlier" do
-      include_context "with macOS version", "13"
+      include_context "with macOS version", "13" if OS.mac?
       include_examples "copies directory"
     end
   end
