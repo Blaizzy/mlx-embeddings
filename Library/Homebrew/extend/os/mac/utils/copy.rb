@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Utils
@@ -8,7 +8,7 @@ module Utils
         private
 
         # Use the lightweight `clonefile(2)` syscall if applicable.
-        SONOMA_FLAGS = ["-c"].freeze
+        SONOMA_FLAGS = T.let(["-c"].freeze, T::Array[String])
 
         sig { returns(T.nilable(T::Array[String])) }
         def extra_flags
