@@ -109,7 +109,8 @@ module Cask
           if target.writable?
             source.children.each { |child| FileUtils.move(child, target/child.basename) }
           else
-            ::Utils::Copy.recursive_with_attributes(source.children, target, force_command: true, sudo: true, command:)
+            ::Utils::Copy.recursive_with_attributes(source.children, target,
+                                                    force_command: true, sudo: true, command:)
           end
           Quarantine.copy_xattrs(source, target, command:)
           source.rmtree
