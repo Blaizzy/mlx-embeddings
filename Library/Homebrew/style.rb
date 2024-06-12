@@ -57,6 +57,7 @@ module Homebrew
         when ".yml"
           actionlint_files << path if path.realpath.to_s.include?("/.github/workflows/")
         else
+          ruby_files << path if path.tap?
           shell_files << path if path.realpath == HOMEBREW_BREW_FILE.realpath
         end
       end
