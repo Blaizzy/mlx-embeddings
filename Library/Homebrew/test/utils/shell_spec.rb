@@ -21,13 +21,13 @@ RSpec.describe Utils::Shell do
 
     it "returns /tmp/.zshrc for Zsh if ZDOTDIR is /tmp" do
       ENV["SHELL"] = "/bin/zsh"
-      ENV["ZDOTDIR"] = "/tmp"
+      ENV["HOMEBREW_ZDOTDIR"] = "/tmp"
       expect(described_class.profile).to eq("/tmp/.zshrc")
     end
 
     it "returns ~/.zshrc for Zsh" do
       ENV["SHELL"] = "/bin/zsh"
-      ENV["ZDOTDIR"] = nil
+      ENV["HOMEBREW_ZDOTDIR"] = nil
       expect(described_class.profile).to eq("~/.zshrc")
     end
 
