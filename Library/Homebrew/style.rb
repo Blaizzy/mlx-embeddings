@@ -44,9 +44,9 @@ module Homebrew
                               debug: false, verbose: false)
       raise ArgumentError, "Invalid output type: #{output_type.inspect}" if [:print, :json].exclude?(output_type)
 
-      ruby_files = []
-      shell_files = []
-      actionlint_files = []
+      ruby_files = T.let([], T::Array[Pathname])
+      shell_files = T.let([], T::Array[Pathname])
+      actionlint_files = T.let([], T::Array[Pathname])
       Array(files).map(&method(:Pathname))
                   .each do |path|
         case path.extname
@@ -57,8 +57,14 @@ module Homebrew
         when ".yml"
           actionlint_files << path if path.realpath.to_s.include?("/.github/workflows/")
         else
-          ruby_files << path if path.tap?
-          shell_files << path if path.realpath == HOMEBREW_BREW_FILE.realpath
+          ruby_files << path
+          shell_files += if [HOMEBREW_PREFIX, HOMEBREW_REPOSITORY].include?(path)
+            shell_scripts
+          else
+            path.glob("**/*.sh")
+                .reject { |path| path.to_s.include?("/vendor/") }
+          end
+          actionlint_files += (path/".github/workflows").glob("*.y{,a}ml")
         end
       end
 
