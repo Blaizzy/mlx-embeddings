@@ -188,7 +188,7 @@ A `strategy` block for `Git` is a bit different, as the block receives an array 
 livecheck do
   url :stable
   strategy :git do |tags|
-    tags.map { |tag| tag[/^(\d{4}-\d{2}-\d{2})$/i, 1]&.gsub(/\D/, "") }.compact
+    tags.filter_map { |tag| tag[/^(\d{4}-\d{2}-\d{2})$/i, 1]&.gsub(/\D/, "") }
   end
 end
 ```

@@ -73,9 +73,9 @@ module Homebrew
           Do something. Place a description here.
         EOS
         switch "-f", "--force",
-              description: "Force doing something in the command."
+               description: "Force doing something in the command."
         flag   "--file=",
-              description: "Specify a file to do something with in the command."
+               description: "Specify a file to do something with in the command."
         comma_array "--names",
                     description: "Add a list of names to the command."
 

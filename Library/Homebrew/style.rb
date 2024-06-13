@@ -144,7 +144,7 @@ module Homebrew
       files&.map!(&:expand_path)
       if files.blank? || files == [HOMEBREW_REPOSITORY]
         files = [HOMEBREW_LIBRARY_PATH]
-      elsif files.any? { |f| f.to_s.start_with? HOMEBREW_REPOSITORY/"docs" }
+      elsif files.any? { |f| f.to_s.start_with?(HOMEBREW_REPOSITORY/"docs") || (f.basename == "docs") }
         args << "--config" << (HOMEBREW_REPOSITORY/"docs/.rubocop.yml")
       elsif files.none? { |f| f.to_s.start_with? HOMEBREW_LIBRARY_PATH }
         args << "--config" << (HOMEBREW_LIBRARY/".rubocop.yml")
