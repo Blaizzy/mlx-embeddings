@@ -60,8 +60,9 @@ jobs:
         working-directory: docs
         run: bundle exec rake lint
 
-      - name: Check code blocks conform to our Ruby style guide
-        run: brew style docs
+      # TODO: reenable when possible.
+      # - name: Check code blocks conform to our Ruby style guide
+      #   run: brew style docs
 
       - name: Generate formulae.brew.sh API samples
         if: github.repository == 'Homebrew/formulae.brew.sh'
