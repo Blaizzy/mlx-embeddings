@@ -270,8 +270,10 @@ module Homebrew
 
     def self.run_actionlint(files)
       files = github_workflow_files if files.blank?
+      # the ignore is to avoid false positives in e.g. actions, homebrew-test-bot
       system actionlint, "-shellcheck", shellcheck,
              "-config-file", HOMEBREW_REPOSITORY/".github/actionlint.yaml",
+             "-ignore", "image: string; options: string",
              *files
       $CHILD_STATUS.success?
     end
