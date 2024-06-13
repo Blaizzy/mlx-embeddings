@@ -2107,6 +2107,25 @@ _brew_style() {
   __brew_complete_casks
 }
 
+_brew_tab() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  case "${cur}" in
+    -*)
+      __brewcomp "
+      --debug
+      --help
+      --installed-on-request
+      --no-installed-on-request
+      --quiet
+      --verbose
+      "
+      return
+      ;;
+    *) ;;
+  esac
+  __brew_complete_formulae
+}
+
 _brew_tap() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
   case "${cur}" in
@@ -2765,6 +2784,7 @@ _brew() {
     search) _brew_search ;;
     sh) _brew_sh ;;
     style) _brew_style ;;
+    tab) _brew_tab ;;
     tap) _brew_tap ;;
     tap-info) _brew_tap_info ;;
     tap-new) _brew_tap_new ;;

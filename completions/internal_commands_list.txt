@@ -90,6 +90,7 @@ setup-ruby
 sh
 shellenv
 style
+tab
 tap
 tap-info
 tap-new
