@@ -2,9 +2,6 @@ inherit_from: ../Library/.rubocop.yml
 
 AllCops:
   Exclude:
-    - Gemfile
-    - ".mdl*.rb"
-    - Rakefile
     - "_site/**/*"
     - Manpage.md
     - "vendor/**/*"
