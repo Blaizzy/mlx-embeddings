@@ -29,7 +29,7 @@ $LOAD_PATH.reject! { |path| path.start_with?(RbConfig::CONFIG["sitedir"]) }
 require "pathname"
 dir = __dir__ || raise("__dir__ is not defined")
 HOMEBREW_LIBRARY_PATH = Pathname(dir).parent.realpath.freeze
-HOMEBREW_USING_PORTABLE_RUBY = Pathname.new(RbConfig.ruby).to_s.include?("/vendor/portable-ruby/").freeze
+HOMEBREW_USING_PORTABLE_RUBY = RbConfig.ruby.include?("/vendor/portable-ruby/").freeze
 
 require_relative "../utils/gems"
 Homebrew.setup_gem_environment!(setup_path: false)

@@ -8,6 +8,7 @@
 # HOMEBREW_MACOS_VERSION_NUMERIC and HOMEBREW_PROCESSOR are set by brew.sh
 # shellcheck disable=SC2154
 source "${HOMEBREW_LIBRARY}/Homebrew/utils/lock.sh"
+source "${HOMEBREW_LIBRARY}/Homebrew/utils/ruby.sh"
 
 VENDOR_DIR="${HOMEBREW_LIBRARY}/Homebrew/vendor"
 
@@ -21,18 +22,18 @@ set_ruby_variables() {
        # use a x86_64 Portable Ruby.
        [[ "${VENDOR_PHYSICAL_PROCESSOR}" == "arm64" && "${HOMEBREW_PREFIX}" == "/usr/local" ]]
     then
-      ruby_FILENAME="portable-ruby-3.3.3.el_capitan.bottle.tar.gz"
+      ruby_FILENAME="portable-ruby-${HOMEBREW_PORTABLE_RUBY_VERSION}.el_capitan.bottle.tar.gz"
       ruby_SHA="a5ef040e054444a0eb2cbcc1032fed14702dfbe2e55b25e609f3ce643f23c4ee"
     elif [[ "${VENDOR_PHYSICAL_PROCESSOR}" == "arm64" ]]
     then
-      ruby_FILENAME="portable-ruby-3.3.3.arm64_big_sur.bottle.tar.gz"
+      ruby_FILENAME="portable-ruby-${HOMEBREW_PORTABLE_RUBY_VERSION}.arm64_big_sur.bottle.tar.gz"
       ruby_SHA="49847c7a13f7094b211f6d0025900dd23716be07dac894a3d6941d7696296306"
     fi
   elif [[ -n "${HOMEBREW_LINUX}" ]]
   then
     case "${VENDOR_PROCESSOR}" in
       x86_64)
-        ruby_FILENAME="portable-ruby-3.3.3.x86_64_linux.bottle.tar.gz"
+        ruby_FILENAME="portable-ruby-${HOMEBREW_PORTABLE_RUBY_VERSION}.x86_64_linux.bottle.tar.gz"
         ruby_SHA="40a1dbc25bb1a8bbdf0bba53d3f16c45416be12d4c6d48b4530f90b2a77d64ce"
         ;;
       *) ;;
@@ -59,7 +60,7 @@ set_ruby_variables() {
     fi
     ruby_URLs+=(
       "https://ghcr.io/v2/homebrew/portable-ruby/portable-ruby/blobs/sha256:${ruby_SHA}"
-      "https://github.com/Homebrew/homebrew-portable-ruby/releases/download/3.3.3/${ruby_FILENAME}"
+      "https://github.com/Homebrew/homebrew-portable-ruby/releases/download/${HOMEBREW_PORTABLE_RUBY_VERSION}/${ruby_FILENAME}"
     )
     ruby_URL="${ruby_URLs[0]}"
   fi
