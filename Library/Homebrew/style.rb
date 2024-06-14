@@ -274,6 +274,7 @@ module Homebrew
       system actionlint, "-shellcheck", shellcheck,
              "-config-file", HOMEBREW_REPOSITORY/".github/actionlint.yaml",
              "-ignore", "image: string; options: string",
+             "-ignore", "label .* is unknown",
              *files
       $CHILD_STATUS.success?
     end
