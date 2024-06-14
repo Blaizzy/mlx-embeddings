@@ -62,7 +62,7 @@ module Homebrew
             shell_scripts
           else
             path.glob("**/*.sh")
-                .reject { |path| path.to_s.include?("/vendor/") }
+                .reject { |path| path.to_s.include?("/vendor/") || path.directory? }
           end
           actionlint_files += (path/".github/workflows").glob("*.y{,a}ml")
         end
