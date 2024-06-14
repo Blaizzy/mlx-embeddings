@@ -29,26 +29,31 @@ module Utils
              .flat_map { |f| [f, *f.runtime_formula_dependencies].compact }
       end
 
-      # An array of all installed {Formula} without runtime {Formula}
+      # An array of all installed bottled {Formula} without runtime {Formula}
       # dependents for bottles and without build {Formula} dependents
       # for those built from source.
       # @private
       sig { params(formulae: T::Array[Formula]).returns(T::Array[Formula]) }
-      def formulae_with_no_formula_dependents(formulae)
-        dependents = T.let([], T::Array[Formula])
+      def bottled_formulae_with_no_formula_dependents(formulae)
+        formulae_to_keep = T.let([], T::Array[Formula])
         formulae.each do |formula|
-          dependents += formula.runtime_formula_dependencies
+          formulae_to_keep += formula.runtime_formula_dependencies
 
-          # Ignore build dependencies when the formula is a bottle
-          next if formula.any_installed_keg&.tab&.poured_from_bottle
+          if (tab = formula.any_installed_keg&.tab)
+            # Ignore build dependencies when the formula is a bottle
+            next if tab.poured_from_bottle
+
+            # Keep the formula if it was built from source
+            formulae_to_keep << formula
+          end
 
           formula.deps.select(&:build?).each do |dep|
-            dependents << dep.to_formula
+            formulae_to_keep << dep.to_formula
           rescue FormulaUnavailableError
             # do nothing
           end
         end
-        formulae - dependents
+        formulae - formulae_to_keep
       end
 
       # Recursive function that returns an array of {Formula} without
@@ -56,7 +61,7 @@ module Utils
       # @private
       sig { params(formulae: T::Array[Formula]).returns(T::Array[Formula]) }
       def unused_formulae_with_no_formula_dependents(formulae)
-        unused_formulae = formulae_with_no_formula_dependents(formulae).reject do |f|
+        unused_formulae = bottled_formulae_with_no_formula_dependents(formulae).reject do |f|
           f.any_installed_keg&.tab&.installed_on_request
         end
 

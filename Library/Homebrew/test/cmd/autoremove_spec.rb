@@ -11,13 +11,18 @@ RSpec.describe Homebrew::Cmd::Autoremove do
     let(:unused_formula) { Formula["testball2"] }
 
     before do
+      # Make testball1 poured from a bottle
       install_test_formula "testball1"
-      install_test_formula "testball2"
+      tab = Tab.for_name("testball1")
+      tab.poured_from_bottle = true
+      tab.write
 
-      # Make testball2 an unused dependency
+      # Make testball2 poured from a bottle and an unused dependency
+      install_test_formula "testball2"
       tab = Tab.for_name("testball2")
       tab.installed_on_request = false
       tab.installed_as_dependency = true
+      tab.poured_from_bottle = true
       tab.write
     end
 
