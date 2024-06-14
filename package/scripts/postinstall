@@ -61,7 +61,7 @@ then
 fi
 
 # create missing directories
-mkdir -vp Cellar Frameworks etc include lib opt sbin share var/homebrew/linked
+mkdir -vp Caskroom Cellar Frameworks etc include lib opt sbin share var/homebrew/linked
 
 # optionally define an install user at /var/tmp/.homebrew_pkg_user.plist
 homebrew_pkg_user_plist="/var/tmp/.homebrew_pkg_user.plist"
@@ -74,9 +74,12 @@ else
 fi
 
 # set permissions
+chmod ug=rwx Caskroom Cellar Frameworks bin etc include lib opt sbin share var var/homebrew var/homebrew/linked
 if [[ "${homebrew_directory}" == "/usr/local/Homebrew" ]]
 then
-  chown -R "${homebrew_pkg_user}:admin" Cellar Frameworks Homebrew bin etc include lib sbin share opt var
+  chown -h "${homebrew_pkg_user}:admin" bin bin/brew etc include lib opt sbin share var
+  chown -h -R "${homebrew_pkg_user}:admin" Caskroom Cellar Frameworks Homebrew var/homebrew
+  chown -h -R "${homebrew_pkg_user}" etc include share var
 else
   chown -R "${homebrew_pkg_user}:admin" .
 fi
