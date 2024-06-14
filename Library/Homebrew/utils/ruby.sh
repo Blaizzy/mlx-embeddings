@@ -1,11 +1,14 @@
 # When bumping, run `brew vendor-gems --update=--ruby`
 # When bumping to a new major/minor version, also update the bounds in the Gemfile
-export HOMEBREW_REQUIRED_RUBY_VERSION=3.3
+# HOMEBREW_LIBRARY set by bin/brew
+# shellcheck disable=SC2154
+export HOMEBREW_REQUIRED_RUBY_VERSION="3.3"
+HOMEBREW_PORTABLE_RUBY_VERSION="$(cat "${HOMEBREW_LIBRARY}/Homebrew/vendor/portable-ruby-version")"
 
 # Disable Ruby options we don't need.
 export HOMEBREW_RUBY_DISABLE_OPTIONS="--disable=gems,rubyopt"
 
-# HOMEBREW_LIBRARY is from the user environment
+# HOMEBREW_LIBRARY set by bin/brew
 # shellcheck disable=SC2154
 test_ruby() {
   if [[ ! -x "$1" ]]
@@ -88,7 +91,6 @@ setup-ruby-path() {
   local vendor_ruby_root
   local vendor_ruby_path
   local vendor_ruby_terminfo
-  local vendor_ruby_latest_version
   local vendor_ruby_current_version
   local ruby_exec
   local upgrade_fail
@@ -113,7 +115,6 @@ If there's no Homebrew Portable Ruby available for your processor:
   vendor_ruby_root="${vendor_dir}/portable-ruby/current"
   vendor_ruby_path="${vendor_ruby_root}/bin/ruby"
   vendor_ruby_terminfo="${vendor_ruby_root}/share/terminfo"
-  vendor_ruby_latest_version="$(cat "${vendor_dir}/portable-ruby-version")"
   vendor_ruby_current_version="$(readlink "${vendor_ruby_root}")"
 
   unset HOMEBREW_RUBY_PATH
@@ -127,7 +128,7 @@ If there's no Homebrew Portable Ruby available for your processor:
   then
     HOMEBREW_RUBY_PATH="${vendor_ruby_path}"
     TERMINFO_DIRS="${vendor_ruby_terminfo}"
-    if [[ "${vendor_ruby_current_version}" != "${vendor_ruby_latest_version}" ]]
+    if [[ "${vendor_ruby_current_version}" != "${HOMEBREW_PORTABLE_RUBY_VERSION}" ]]
     then
       brew vendor-install ruby || odie "${upgrade_fail}"
     fi
