@@ -14,7 +14,7 @@ if homebrew_bootsnap_enabled
   begin
     require "bootsnap"
   rescue LoadError
-    raise if ENV["HOMEBREW_BOOTSNAP_RETRY"]
+    raise if ENV["HOMEBREW_BOOTSNAP_RETRY"] || HOMEBREW_PORTABLE_RUBY
 
     Homebrew.install_bundler_gems!(groups: ["bootsnap"], only_warn_on_failure: true)
 

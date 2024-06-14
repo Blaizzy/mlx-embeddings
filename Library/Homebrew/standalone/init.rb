@@ -29,6 +29,7 @@ $LOAD_PATH.reject! { |path| path.start_with?(RbConfig::CONFIG["sitedir"]) }
 require "pathname"
 dir = __dir__ || raise("__dir__ is not defined")
 HOMEBREW_LIBRARY_PATH = Pathname(dir).parent.realpath.freeze
+HOMEBREW_PORTABLE_RUBY = Pathname.new(RbConfig.ruby).to_s.include?("/vendor/portable-ruby/").freeze
 
 require_relative "../utils/gems"
 Homebrew.setup_gem_environment!(setup_path: false)
@@ -39,14 +40,6 @@ if !gems_vendored && !ENV["HOMEBREW_SKIP_INITIAL_GEM_INSTALL"]
   ENV["HOMEBREW_SKIP_INITIAL_GEM_INSTALL"] = "1"
 end
 
-if Pathname.new(RbConfig.ruby).to_s.include?("/vendor/portable-ruby/")
-  ruby_version = RbConfig::CONFIG["ruby_version"]
-  ruby_path = "#{RbConfig::CONFIG["rubylibprefix"]}/gems/#{ruby_version}"
-
-  $LOAD_PATH.unshift "#{ruby_path}/extensions/#{Gem::Platform.local}/#{ruby_version}-static/debug-1.9.1"
-  $LOAD_PATH.unshift "#{ruby_path}/gems/debug-1.9.1/lib"
-end
-
 unless $LOAD_PATH.include?(HOMEBREW_LIBRARY_PATH.to_s)
   # Insert the path after any existing Homebrew paths (e.g. those inserted by tests and parent processes)
   last_homebrew_path_idx = $LOAD_PATH.rindex do |path|
@@ -55,6 +48,7 @@ unless $LOAD_PATH.include?(HOMEBREW_LIBRARY_PATH.to_s)
   $LOAD_PATH.insert(last_homebrew_path_idx + 1, HOMEBREW_LIBRARY_PATH.to_s)
 end
 require_relative "../vendor/bundle/bundler/setup"
+require "portable_ruby_gems" if HOMEBREW_PORTABLE_RUBY
 $LOAD_PATH.unshift "#{HOMEBREW_LIBRARY_PATH}/vendor/bundle/#{RUBY_ENGINE}/#{Gem.ruby_api_version}/gems/" \
                    "bundler-#{Homebrew::HOMEBREW_BUNDLER_VERSION}/lib"
 $LOAD_PATH.uniq!

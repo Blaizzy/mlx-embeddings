@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "rubygems"
+require "bundler"
 require "yaml"
 
 RSpec.describe "Tapioca Config", type: :system do
@@ -8,7 +8,11 @@ RSpec.describe "Tapioca Config", type: :system do
 
   it "only excludes dependencies" do
     exclusions = config.dig("gem", "exclude")
-    dependencies = Gem::Specification.all.map(&:name)
+    dependencies = Bundler::Definition.build(
+      HOMEBREW_LIBRARY_PATH/"Gemfile",
+      HOMEBREW_LIBRARY_PATH/"Gemfile.lock",
+      false,
+    ).resolve.names
     expect(exclusions - dependencies).to be_empty
   end
 end
