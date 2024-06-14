@@ -59,7 +59,7 @@ set_ruby_variables() {
     fi
     ruby_URLs+=(
       "https://ghcr.io/v2/homebrew/portable-ruby/portable-ruby/blobs/sha256:${ruby_SHA}"
-      "https://github.com/Homebrew/homebrew-portable-ruby/releases/download/3.3.2/${ruby_FILENAME}"
+      "https://github.com/Homebrew/homebrew-portable-ruby/releases/download/3.3.3/${ruby_FILENAME}"
     )
     ruby_URL="${ruby_URLs[0]}"
   fi

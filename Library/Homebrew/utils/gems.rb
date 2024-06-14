@@ -241,7 +241,7 @@ module Homebrew
 
     # Combine the passed groups with the ones stored in settings.
     groups |= (user_gem_groups & valid_gem_groups)
-    groups.delete("bootsnap") if HOMEBREW_PORTABLE_RUBY
+    groups.delete("bootsnap") if HOMEBREW_USING_PORTABLE_RUBY
     groups.sort!
 
     if (homebrew_bundle_user_cache = ENV.fetch("HOMEBREW_BUNDLE_USER_CACHE", nil))
