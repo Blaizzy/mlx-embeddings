@@ -54,7 +54,7 @@ RSpec.describe Homebrew::Livecheck::Strategy::GithubLatest do
       expect(github_latest.generate_input_values(github_urls[:repository_upload])).to eq(generated)
     end
 
-    it "returns an empty hash for a non-Github URL" do
+    it "returns an empty hash for a non-GitHub URL" do
       expect(github_latest.generate_input_values(non_github_url)).to eq({})
     end
   end

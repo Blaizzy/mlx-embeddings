@@ -56,7 +56,7 @@ RSpec.describe CurlGitHubPackagesDownloadStrategy do
       strategy.fetch
     end
 
-    context "with Github Packages authentication defined" do
+    context "with GitHub Packages authentication defined" do
       let(:authorization) { "Bearer dead-beef-cafe" }
 
       it "calls curl with the provided header value" do
