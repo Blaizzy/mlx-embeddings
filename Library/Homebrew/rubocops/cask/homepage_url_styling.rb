@@ -3,21 +3,24 @@
 
 require "forwardable"
 require "uri"
+require "rubocops/shared/homepage_helper"
 
 module RuboCop
   module Cop
     module Cask
-      # This cop checks that a cask's homepage ends with a slash
-      # if it does not have a path component.
-      class HomepageUrlTrailingSlash < Base
+      # This cop audits the `homepage` URL in casks.
+      class HomepageUrlStyling < Base
         include OnHomepageStanza
         include HelperFunctions
+        include HomepageHelper
         extend AutoCorrector
 
         MSG_NO_SLASH = "'%<url>s' must have a slash after the domain."
 
         def on_homepage_stanza(stanza)
-          url_node = stanza.stanza_node.first_argument
+          @name = cask_block.header.cask_token
+          desc_call = stanza.stanza_node
+          url_node = desc_call.first_argument
 
           url = if url_node.dstr_type?
             # Remove quotes from interpolated string.
@@ -25,6 +28,8 @@ module RuboCop
           else
             url_node.str_content
           end
+
+          audit_homepage(:cask, url, desc_call, url_node)
 
           return unless url&.match?(%r{^.+://[^/]+$})
 

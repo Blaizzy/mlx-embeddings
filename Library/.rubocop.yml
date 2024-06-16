@@ -29,8 +29,8 @@ Cask/Desc:
   Description: "Ensure that the desc stanza conforms to various content and style checks."
   Enabled: true
 
-Cask/HomepageUrlTrailingSlash:
-  Description: "Ensure that the homepage url has a slash after the domain name."
+Cask/HomepageUrlStyling:
+  Description: "Ensure that the homepage url has the correct format and styling."
   Enabled: true
 
 Cask/StanzaGrouping:
