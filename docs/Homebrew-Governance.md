@@ -64,7 +64,7 @@
 
 1. When a PLC seat is up for election or is vacant, any member may become a candidate for the PLC by providing a brief statement in the `#members` channel in Homebrew's Slack expressing relevant experience and intentions if elected no later than three weeks before the AGM. The PLC will maintain the candidate list until ballots are sent out one week before the AGM, during which time members should cast their votes. Candidates should deliver remarks in writing or verbally before or during the AGM but votes already cast are not changeable. The current PLC should vote on and publish a statement recommending their preferred candidates within the three-week period between the candidate deadline and the AGM.
 
-1. The PLC must report all minutes, participants in discussions and breakdowns of any votes cast to Homebrew members in the Homebrew/homebrew-governance-private GitHub repository no later than one week after the action has been taken. At the AGM, the PLC must present a summary of their activities and decisions since the last AGM. Financial statements can be viewed by anyone on the internet on Homebrew's OpenCollectives (<https://opencollective.com/brew> and <https://opencollective.com/homebrew>).
+1. The PLC must report all minutes, participants in discussions and breakdowns of any votes cast to Homebrew members in the Homebrew/homebrew-governance-private GitHub repository no later than one week after the action has been taken. At the AGM, the PLC must present a summary of their activities and decisions since the last AGM. Financial statements can be viewed by anyone on the internet on [Homebrew's OpenCollective](https://opencollective.com/homebrew).
 
 1. No more than two employees of the same employer may serve on the PLC.
 
