@@ -310,7 +310,6 @@ end
 
 RSpec::Matchers.define_negated_matcher :not_to_output, :output
 RSpec::Matchers.alias_matcher :have_failed, :be_failed
-RSpec::Matchers.define_negated_matcher :exclude, :include
 
 # Match consecutive elements in an array.
 RSpec::Matchers.define :array_including_cons do |*cons|

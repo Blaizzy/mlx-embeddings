@@ -1,8 +1,6 @@
 # typed: true
 # frozen_string_literal: true
 
-require "utils/copy"
-
 module UnpackStrategy
   # Strategy for unpacking LZMA archives.
   class Lzma
@@ -25,7 +23,7 @@ module UnpackStrategy
 
     sig { override.params(unpack_dir: Pathname, basename: Pathname, verbose: T::Boolean).returns(T.untyped) }
     def extract_to_dir(unpack_dir, basename:, verbose:)
-      Utils::Copy.with_attributes path, unpack_dir/basename
+      FileUtils.cp path, unpack_dir/basename, preserve: true
       quiet_flags = verbose ? [] : ["-q"]
       system_command! "unlzma",
                       args:    [*quiet_flags, "--", unpack_dir/basename],
