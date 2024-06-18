@@ -6,7 +6,6 @@ require "resource"
 require "metafiles"
 require "extend/file/atomic"
 require "system_command"
-require "utils/copy"
 
 module DiskUsageExtension
   sig { returns(Integer) }
@@ -227,7 +226,7 @@ class Pathname
     else
       dst.dirname.mkpath
       dst = yield(self, dst) if block_given?
-      Utils::Copy.with_attributes(self, dst)
+      FileUtils.cp(self, dst)
     end
   end
 
