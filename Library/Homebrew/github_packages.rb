@@ -384,6 +384,10 @@ class GitHubPackages
 
       local_file_size = File.size(local_file)
 
+      path_exec_files_string = if (path_exec_files = tag_hash["path_exec_files"].presence)
+        path_exec_files.join(",")
+      end
+
       descriptor_annotations_hash = {
         "org.opencontainers.image.ref.name" => tag,
         "sh.brew.bottle.cpu.variant"        => cpu_variant,
@@ -391,7 +395,10 @@ class GitHubPackages
         "sh.brew.bottle.glibc.version"      => glibc_version,
         "sh.brew.bottle.size"               => local_file_size.to_s,
         "sh.brew.tab"                       => tab.to_json,
+        "sh.brew.path_exec_files"           => path_exec_files_string,
       }.compact_blank
+
+      # TODO: upload/add tag_hash["all_files"] somewhere.
 
       annotations_hash = formula_annotations_hash.merge(descriptor_annotations_hash).merge(
         {
