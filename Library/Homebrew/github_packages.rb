@@ -323,7 +323,7 @@ class GitHubPackages
       processed_image_refs << manifest["annotations"]["org.opencontainers.image.ref.name"]
     end
 
-    manifests += bottle_hash["bottle"]["tags"].flat_map do |bottle_tag, tag_hash|
+    manifests += bottle_hash["bottle"]["tags"].map do |bottle_tag, tag_hash|
       bottle_tag = Utils::Bottles::Tag.from_symbol(bottle_tag.to_sym)
 
       tag = GitHubPackages.version_rebuild(version, rebuild, bottle_tag.to_s)
@@ -384,10 +384,6 @@ class GitHubPackages
 
       local_file_size = File.size(local_file)
 
-      path_exec_files_string = if (path_exec_files = tag_hash["path_exec_files"].presence)
-        path_exec_files.join(",")
-      end
-
       descriptor_annotations_hash = {
         "org.opencontainers.image.ref.name" => tag,
         "sh.brew.bottle.cpu.variant"        => cpu_variant,
@@ -395,7 +391,6 @@ class GitHubPackages
         "sh.brew.bottle.glibc.version"      => glibc_version,
         "sh.brew.bottle.size"               => local_file_size.to_s,
         "sh.brew.tab"                       => tab.to_json,
-        "sh.brew.path_exec_files"           => path_exec_files_string,
       }.compact_blank
 
       annotations_hash = formula_annotations_hash.merge(descriptor_annotations_hash).merge(
@@ -426,28 +421,13 @@ class GitHubPackages
       validate_schema!(IMAGE_MANIFEST_SCHEMA_URI, image_manifest)
       manifest_json_sha256, manifest_json_size = write_hash(blobs, image_manifest)
 
-      bottle_manifests = T.let([{
+      {
         mediaType:   "application/vnd.oci.image.manifest.v1+json",
         digest:      "sha256:#{manifest_json_sha256}",
         size:        manifest_json_size,
         platform:    platform_hash,
         annotations: descriptor_annotations_hash,
-      }], T::Array[T::Hash[Symbol, String]])
-
-      if (all_files = tag_hash["all_files"].presence)
-        all_files_json_sha256, all_files_size = write_hash(blobs, all_files)
-        bottle_manifests << {
-          mediaType:   "application/sh.brew.all_files+json",
-          digest:      "sha256:#{all_files_json_sha256}",
-          size:        all_files_size,
-          annotations: {
-            "org.opencontainers.image.ref.name" => tag,
-            "sh.brew.bottle.cpu.variant"        => cpu_variant,
-          }.compact_blank,
-        }
-      end
-
-      bottle_manifests
+      }
     end
 
     index_json_sha256, index_json_size = write_image_index(manifests, blobs, formula_annotations_hash)
