@@ -69,7 +69,7 @@ module Homebrew
       },
       HOMEBREW_BOOTSNAP:                         {
         description: "If set, use Bootsnap to speed up repeated `brew` calls. " \
-                     "A no-op when using Homebrew's vendored, relocatable Ruby on macOS (as it doesn't work).",
+                     "A no-op on Linux when not using Homebrew's vendored, relocatable Ruby.",
         boolean:     true,
       },
       HOMEBREW_BOTTLE_DOMAIN:                    {

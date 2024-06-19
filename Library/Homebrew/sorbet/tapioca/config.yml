@@ -4,7 +4,6 @@ gem:
   exclude:
     # These conflict with the rbi files provided by sorbet:
     - json
-    - msgpack
     # These aren't needed:
     - coderay
     - commander
