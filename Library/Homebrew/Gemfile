@@ -23,9 +23,6 @@ end
 group :ast, optional: true do
   gem "rubocop-ast", require: false
 end
-group :bootsnap, optional: true do
-  gem "bootsnap", require: false
-end
 group :formula_test, optional: true do
   gem "minitest", require: false
 end

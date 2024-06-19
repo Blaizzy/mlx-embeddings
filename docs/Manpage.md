@@ -3563,8 +3563,8 @@ command execution e.g. `$(cat file)`.
 
 `HOMEBREW_BOOTSNAP`
 
-: If set, use Bootsnap to speed up repeated `brew` calls. A no-op when using
-  Homebrew's vendored, relocatable Ruby on macOS (as it doesn't work).
+: If set, use Bootsnap to speed up repeated `brew` calls. A no-op on Linux when
+  not using Homebrew's vendored, relocatable Ruby.
 
 `HOMEBREW_BOTTLE_DOMAIN`
 
