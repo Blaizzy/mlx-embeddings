@@ -122,15 +122,20 @@ module Homebrew
         # e.g. Foo version 1.2.3 becomes FooAT123 and resides in Foo@1.2.3.rb.
         class_name = Formulary.class_s(name)
 
-        # Remove any existing version suffixes, as a new one will be added later
+        # The version can only contain digits with decimals in between.
+        version_string = version.to_s
+                                .sub(/\D*(.+?)\D*$/, "\\1")
+                                .gsub(/\D+/, ".")
+
+        # Remove any existing version suffixes, as a new one will be added later.
         name.sub!(/\b@(.*)\z\b/i, "")
-        versioned_name = Formulary.class_s("#{name}@#{version}")
+        versioned_name = Formulary.class_s("#{name}@#{version_string}")
         result.sub!("class #{class_name} < Formula", "class #{versioned_name} < Formula")
 
-        # Remove bottle blocks, they won't work.
+        # Remove bottle blocks, as they won't work.
         result.sub!(BOTTLE_BLOCK_REGEX, "")
 
-        path = destination_tap.path/"Formula/#{name}@#{version.to_s.downcase}.rb"
+        path = destination_tap.path/"Formula/#{name}@#{version_string}.rb"
         if path.exist?
           unless args.force?
             odie <<~EOS
