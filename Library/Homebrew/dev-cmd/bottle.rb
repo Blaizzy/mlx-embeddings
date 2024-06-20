@@ -628,6 +628,17 @@ module Homebrew
 
         return unless args.json?
 
+        if keg
+          keg_prefix = "#{keg}/"
+          path_exec_files = [keg/"bin", keg/"sbin"].select(&:exist?)
+                                                   .flat_map(&:children)
+                                                   .select(&:executable?)
+                                                   .map { |path| path.to_s.delete_prefix(keg_prefix) }
+          all_files = keg.find
+                         .select(&:file?)
+                         .map { |path| path.to_s.delete_prefix(keg_prefix) }
+        end
+
         json = {
           formula.full_name => {
             "formula" => {
@@ -652,10 +663,12 @@ module Homebrew
               "date"     => Pathname(filename.to_s).mtime.strftime("%F"),
               "tags"     => {
                 bottle_tag.to_s => {
-                  "filename"       => filename.url_encode,
-                  "local_filename" => filename.to_s,
-                  "sha256"         => sha256,
-                  "tab"            => tab.to_bottle_hash,
+                  "filename"        => filename.url_encode,
+                  "local_filename"  => filename.to_s,
+                  "sha256"          => sha256,
+                  "tab"             => tab.to_bottle_hash,
+                  "path_exec_files" => path_exec_files,
+                  "all_files"       => all_files,
                 },
               },
             },
