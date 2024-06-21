@@ -606,21 +606,30 @@ module Cask
       debug_messages = []
       debug_messages << "Plist #{plist_min_os}" if plist_min_os
       debug_messages << "Sparkle #{sparkle_min_os}" if sparkle_min_os
-      odebug "Minimum OS version: #{debug_messages.join(" | ")}" unless debug_messages.empty?
+      odebug "Detected minimum OS version: #{debug_messages.join(" | ")}" unless debug_messages.empty?
       min_os = [plist_min_os, sparkle_min_os].compact.max
 
       return if min_os.nil? || min_os <= HOMEBREW_MACOS_OLDEST_ALLOWED
 
-      cask_min_os = cask.depends_on.macos&.version
-      return if cask_min_os == min_os
+      cask_min_os = if cask.on_system_blocks_exist?
+        cask.on_system_block_min_os
+      else
+        cask.depends_on.macos&.minimum_version
+      end
+      odebug "Declared minimum OS version: #{cask_min_os&.to_sym}"
+      return if cask_min_os&.to_sym == min_os.to_sym
 
-      min_os_symbol = if cask_min_os.present?
-        cask_min_os.to_sym.inspect
+      min_os_definition = if cask_min_os.present?
+        if cask.on_system_blocks_exist?
+          "a block with a minimum OS version of #{cask.on_system_block_min_os.inspect}"
+        else
+          cask_min_os.to_sym.inspect
+        end
       else
         "no minimum OS version"
       end
       add_error "Upstream defined #{min_os.to_sym.inspect} as the minimum OS version " \
-                "and the cask defined #{min_os_symbol}",
+                "and the cask declared #{min_os_definition}",
                 strict_only: true
     end
 

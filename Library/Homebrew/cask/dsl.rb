@@ -95,6 +95,7 @@ module Cask
       :livecheck,
       :livecheckable?,
       :on_system_blocks_exist?,
+      :on_system_block_min_os,
       :depends_on_set_in_block?,
       *ORDINARY_ARTIFACT_CLASSES.map(&:dsl_key),
       *ACTIVATABLE_ARTIFACT_CLASSES.map(&:dsl_key),
@@ -104,7 +105,8 @@ module Cask
     extend Attrable
     include OnSystem::MacOSOnly
 
-    attr_reader :cask, :token, :deprecation_date, :deprecation_reason, :disable_date, :disable_reason
+    attr_reader :cask, :token, :deprecation_date, :deprecation_reason, :disable_date, :disable_reason,
+                :on_system_block_min_os
 
     attr_predicate :deprecated?, :disabled?, :livecheckable?, :on_system_blocks_exist?, :depends_on_set_in_block?
 
