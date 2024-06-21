@@ -358,9 +358,6 @@ module Cask
     end
 
     sig { returns(T::Boolean) }
-    def on_system_blocks_exist?; end
-
-    sig { returns(T::Boolean) }
     def deprecated?; end
 
     sig { returns(T::Boolean) }
@@ -368,6 +365,12 @@ module Cask
 
     sig { returns(T::Boolean) }
     def livecheckable?; end
+
+    sig { returns(T::Boolean) }
+    def on_system_blocks_exist?; end
+
+    sig { returns(T::Boolean) }
+    def depends_on_set_in_block?; end
   end
 end
 
