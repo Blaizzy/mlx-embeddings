@@ -95,6 +95,7 @@ module Cask
       :livecheck,
       :livecheckable?,
       :on_system_blocks_exist?,
+      :depends_on_set_in_block?,
       *ORDINARY_ARTIFACT_CLASSES.map(&:dsl_key),
       *ACTIVATABLE_ARTIFACT_CLASSES.map(&:dsl_key),
       *ARTIFACT_BLOCK_CLASSES.flat_map { |klass| [klass.dsl_key, klass.uninstall_dsl_key] },
@@ -105,7 +106,7 @@ module Cask
 
     attr_reader :cask, :token, :deprecation_date, :deprecation_reason, :disable_date, :disable_reason
 
-    attr_predicate :on_system_blocks_exist?, :deprecated?, :disabled?, :livecheckable?
+    attr_predicate :deprecated?, :disabled?, :livecheckable?, :on_system_blocks_exist?, :depends_on_set_in_block?
 
     def initialize(cask)
       @cask = cask
@@ -353,6 +354,7 @@ module Cask
     # @api public
     def depends_on(**kwargs)
       @depends_on ||= DSL::DependsOn.new
+      @depends_on_set_in_block = true if @called_in_on_system_block
       return @depends_on if kwargs.empty?
 
       begin
