@@ -1256,7 +1256,9 @@ on_request: installed_on_request?, options:)
 
   sig { void }
   def pour
-    if Homebrew::EnvConfig.verify_attestations? && formula.tap&.core_tap?
+    # We skip `gh` to avoid a bootstrapping cycle, in the off-chance a user attempts
+    # to explicitly `brew install gh` without already having a version for bootstrapping.
+    if Homebrew::EnvConfig.verify_attestations? && formula.tap&.core_tap? && formula.name != "gh"
       ohai "Verifying attestation for #{formula.name}"
       begin
         Homebrew::Attestation.check_core_attestation formula.bottle
