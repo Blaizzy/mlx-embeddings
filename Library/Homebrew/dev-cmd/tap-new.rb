@@ -84,7 +84,7 @@ module Homebrew
             test-bot:
               strategy:
                 matrix:
-                  os: [ubuntu-22.04, macos-13]
+                  os: [ubuntu-22.04, macos-13, macos-14]
               runs-on: ${{ matrix.os }}
               steps:
                 - name: Set up Homebrew
