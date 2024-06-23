@@ -567,6 +567,7 @@ module Homebrew
 
     def audit_eol
       return unless @online
+      return unless @core_tap
 
       return if formula.deprecated? || formula.disabled?
 
