@@ -14,36 +14,37 @@ VENDOR_DIR="${HOMEBREW_LIBRARY}/Homebrew/vendor"
 
 # Built from https://github.com/Homebrew/homebrew-portable-ruby.
 set_ruby_variables() {
-  if [[ -n "${HOMEBREW_MACOS}" ]]
+  # Handle the case where /usr/local/bin/brew is run under arm64.
+  # It's a x86_64 installation there (we refuse to install arm64 binaries) so
+  # use a x86_64 Portable Ruby.
+  if [[ -n "${HOMEBREW_MACOS}" && "${VENDOR_PHYSICAL_PROCESSOR}" == "arm64" && "${HOMEBREW_PREFIX}" == "/usr/local" ]]
   then
-    if [[ "${VENDOR_PHYSICAL_PROCESSOR}" == "x86_64" ]] ||
-       # Handle the case where /usr/local/bin/brew is run under arm64.
-       # It's a x86_64 installation there (we refuse to install arm64 binaries) so
-       # use a x86_64 Portable Ruby.
-       [[ "${VENDOR_PHYSICAL_PROCESSOR}" == "arm64" && "${HOMEBREW_PREFIX}" == "/usr/local" ]]
+    ruby_PROCESSOR="x86_64"
+    ruby_OS="darwin"
+  else
+    ruby_PROCESSOR="${VENDOR_PHYSICAL_PROCESSOR}"
+    if [[ -n "${HOMEBREW_MACOS}" ]]
     then
-      ruby_FILENAME="portable-ruby-${HOMEBREW_PORTABLE_RUBY_VERSION}.el_capitan.bottle.tar.gz"
-      ruby_SHA="a5ef040e054444a0eb2cbcc1032fed14702dfbe2e55b25e609f3ce643f23c4ee"
-    elif [[ "${VENDOR_PHYSICAL_PROCESSOR}" == "arm64" ]]
+      ruby_OS="darwin"
+    elif [[ -n "${HOMEBREW_LINUX}" ]]
     then
-      ruby_FILENAME="portable-ruby-${HOMEBREW_PORTABLE_RUBY_VERSION}.arm64_big_sur.bottle.tar.gz"
-      ruby_SHA="49847c7a13f7094b211f6d0025900dd23716be07dac894a3d6941d7696296306"
+      ruby_OS="linux"
     fi
-  elif [[ -n "${HOMEBREW_LINUX}" ]]
+  fi
+
+  ruby_PLATFORMINFO="${HOMEBREW_LIBRARY}/Homebrew/vendor/portable-ruby-${ruby_PROCESSOR}-${ruby_OS}"
+  if [[ -f "${ruby_PLATFORMINFO}" ]]
   then
-    case "${VENDOR_PROCESSOR}" in
-      x86_64)
-        ruby_FILENAME="portable-ruby-${HOMEBREW_PORTABLE_RUBY_VERSION}.x86_64_linux.bottle.tar.gz"
-        ruby_SHA="40a1dbc25bb1a8bbdf0bba53d3f16c45416be12d4c6d48b4530f90b2a77d64ce"
-        ;;
-      *) ;;
-    esac
+    # ruby_TAG and ruby_SHA will be set via the sourced file if it exists
+    # shellcheck disable=SC1090
+    source "${ruby_PLATFORMINFO}"
   fi
 
   # Dynamic variables can't be detected by shellcheck
   # shellcheck disable=SC2034
-  if [[ -n "${ruby_SHA}" && -n "${ruby_FILENAME}" ]]
+  if [[ -n "${ruby_TAG}" && -n "${ruby_SHA}" ]]
   then
+    ruby_FILENAME="portable-ruby-${HOMEBREW_PORTABLE_RUBY_VERSION}.${ruby_TAG}.bottle.tar.gz"
     ruby_URLs=()
     if [[ -n "${HOMEBREW_ARTIFACT_DOMAIN}" ]]
     then
@@ -283,6 +284,9 @@ homebrew-vendor-install() {
   local option
   local url_var
   local sha_var
+
+  unset VENDOR_PHYSICAL_PROCESSOR
+  unset VENDOR_PROCESSOR
 
   for option in "$@"
   do
