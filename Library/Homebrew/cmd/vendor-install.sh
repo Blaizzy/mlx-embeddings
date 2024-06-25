@@ -33,7 +33,7 @@ set_ruby_variables() {
   fi
 
   ruby_PLATFORMINFO="${HOMEBREW_LIBRARY}/Homebrew/vendor/portable-ruby-${ruby_PROCESSOR}-${ruby_OS}"
-  if [[ -f "${ruby_PLATFORMINFO}" ]]
+  if [[ -f "${ruby_PLATFORMINFO}" && -r "${ruby_PLATFORMINFO}" ]]
   then
     # ruby_TAG and ruby_SHA will be set via the sourced file if it exists
     # shellcheck disable=SC1090
