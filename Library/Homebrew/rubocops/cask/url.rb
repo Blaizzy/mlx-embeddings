@@ -1,6 +1,8 @@
 # typed: true
 # frozen_string_literal: true
 
+require "rubocops/shared/url_helper"
+
 module RuboCop
   module Cop
     module Cask
@@ -21,12 +23,16 @@ module RuboCop
         extend AutoCorrector
         extend Forwardable
         include OnUrlStanza
+        include UrlHelper
 
         def on_url_stanza(stanza)
           return if stanza.stanza_node.block_type?
 
           url_stanza = stanza.stanza_node.first_argument
           hash_node = stanza.stanza_node.last_argument
+
+          audit_url(:cask, [stanza.stanza_node], [], livecheck_url: false)
+
           return unless hash_node.hash_type?
 
           hash_node.each_pair do |key_node, value_node|
