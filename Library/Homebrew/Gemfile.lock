@@ -54,7 +54,7 @@ GEM
       sorbet-runtime (>= 0.5.9204)
     redcarpet (3.6.0)
     regexp_parser (2.9.2)
-    rexml (3.3.0)
+    rexml (3.3.1)
       strscan
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
@@ -148,7 +148,6 @@ GEM
 
 PLATFORMS
   aarch64-linux
-  arm-linux
   arm64-darwin
   x86_64-darwin
   x86_64-linux
