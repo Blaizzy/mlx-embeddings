@@ -611,7 +611,7 @@ module Cask
 
       return if min_os.nil? || min_os <= HOMEBREW_MACOS_OLDEST_ALLOWED
 
-      cask_min_os = if cask.on_system_blocks_exist?
+      cask_min_os = if cask.on_system_blocks_exist? && cask.on_system_block_min_os.present?
         cask.on_system_block_min_os
       else
         cask.depends_on.macos&.minimum_version
