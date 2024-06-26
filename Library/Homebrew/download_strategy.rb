@@ -518,10 +518,13 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
       [*parse_content_disposition.call("Content-Disposition: #{header}")]
     end
 
-    time = parsed_headers
-           .flat_map { |headers| [*headers["last-modified"]] }
-           .map { |t| t.match?(/^\d+$/) ? Time.at(t.to_i) : Time.parse(t) }
-           .last
+    time =  parsed_headers
+            .flat_map { |headers| [*headers["last-modified"]] }
+            .filter_map do |t|
+              t.match?(/^\d+$/) ? Time.at(t.to_i) : Time.parse(t)
+            rescue ArgumentError
+              nil
+            end
 
     file_size = parsed_headers
                 .flat_map { |headers| [*headers["content-length"]&.to_i] }
@@ -530,7 +533,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     is_redirection = url != final_url
     basename = filenames.last || parse_basename(final_url, search_query: !is_redirection)
 
-    @resolved_info_cache[url] = [final_url, basename, time, file_size, is_redirection]
+    @resolved_info_cache[url] = [final_url, basename, time.last, file_size, is_redirection]
   end
 
   def _fetch(url:, resolved_url:, timeout:)
