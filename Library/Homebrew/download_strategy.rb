@@ -522,7 +522,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
             .flat_map { |headers| [*headers["last-modified"]] }
             .filter_map do |t|
               t.match?(/^\d+$/) ? Time.at(t.to_i) : Time.parse(t)
-            rescue ArgumentError
+            rescue ArgumentError # When `Time.parse` gets a badly formatted date.
               nil
             end
 
