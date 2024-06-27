@@ -590,6 +590,14 @@ module Cask
             next
           end
 
+          odebug result.merged_output
+
+          unless /arm64|x86_64/.match?(result.merged_output)
+            add_error "Artifacts architecture is no longer supported by macOS!",
+                      location: cask.url.location
+            next
+          end
+
           supports_arm = result.merged_output.include?("arm64")
           mentions_rosetta = cask.caveats.include?("requires Rosetta 2")
 
