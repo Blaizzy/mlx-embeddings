@@ -562,6 +562,48 @@ module Cask
       yield artifacts, @tmpdir if block_given?
     end
 
+    sig { void }
+    def audit_rosetta
+      return unless online?
+      return if Homebrew::SimulateSystem.current_arch != :arm
+
+      odebug "Auditing Rosetta 2 requirement"
+
+      extract_artifacts do |artifacts, tmpdir|
+        artifacts.filter { |a| a.is_a?(Artifact::App) || a.is_a?(Artifact::Binary) }
+                 .each do |artifact|
+          path = tmpdir/artifact.source.relative_path_from(cask.staged_path)
+
+          result = case artifact
+          when Artifact::App
+            files = Dir[path/"Contents/MacOS/*"]
+            add_error "No binaries in App: #{artifact.source}", location: cask.url.location if files.empty?
+            system_command("lipo", args: ["-archs", files.first], print_stderr: false)
+          when Artifact::Binary
+            system_command("lipo", args: ["-archs", path], print_stderr: false)
+          else
+            add_error "Unknown artifact type: #{artifact.class}", location: cask.url.location
+          end
+
+          unless result.success?
+            add_error "Failed to determine artifact architecture!", location: cask.url.location
+            next
+          end
+
+          supports_arm = result.merged_output.include?("arm64")
+          mentions_rosetta = cask.caveats.include?("requires Rosetta 2")
+
+          if supports_arm && mentions_rosetta
+            add_error "Artifacts does not require Rosetta 2 but the caveats say otherwise!",
+                      location: cask.url.location
+          elsif !supports_arm && !mentions_rosetta
+            add_error "Artifacts require Rosetta 2 but this is not indicated by the caveats!",
+                      location: cask.url.location
+          end
+        end
+      end
+    end
+
     sig { returns(T.any(NilClass, T::Boolean, Symbol)) }
     def audit_livecheck_version
       return unless online?
