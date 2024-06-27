@@ -570,13 +570,19 @@ module Cask
       odebug "Auditing Rosetta 2 requirement"
 
       extract_artifacts do |artifacts, tmpdir|
+        is_container = artifacts.any? { |a| a.is_a?(Artifact::App) || a.is_a?(Artifact::Pkg) }
+
         artifacts.filter { |a| a.is_a?(Artifact::App) || a.is_a?(Artifact::Binary) }
                  .each do |artifact|
+          next if artifact.is_a?(Artifact::Binary) && is_container
+
           path = tmpdir/artifact.source.relative_path_from(cask.staged_path)
 
           result = case artifact
           when Artifact::App
-            files = Dir[path/"Contents/MacOS/*"]
+            files = Dir[path/"Contents/MacOS/*"].reject do |f|
+              !File.executable?(f) || File.directory?(f) || f.end_with?(".dylib")
+            end
             add_error "No binaries in App: #{artifact.source}", location: cask.url.location if files.empty?
             system_command("lipo", args: ["-archs", files.first], print_stderr: false)
           when Artifact::Binary
