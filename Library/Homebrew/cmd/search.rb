@@ -70,7 +70,7 @@ module Homebrew
         string_or_regex = Search.query_regexp(query)
 
         if args.desc?
-          if !args.eval_all? && !Homebrew::EnvConfig.eval_all?
+          if !args.eval_all? && !Homebrew::EnvConfig.eval_all? && Homebrew::EnvConfig.no_install_from_api?
             raise UsageError, "`brew search --desc` needs `--eval-all` passed or `HOMEBREW_EVAL_ALL` set!"
           end
 
