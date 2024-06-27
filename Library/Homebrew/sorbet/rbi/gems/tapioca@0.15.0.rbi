@@ -232,7 +232,7 @@ class RBI::TypedParam < ::T::Struct
   const :type, ::String
 
   class << self
-    # source://sorbet-runtime/0.5.11435/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.11447/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -781,11 +781,11 @@ class Tapioca::Commands::Annotations < ::Tapioca::Commands::CommandWithoutTracke
 
   private
 
-  # source://tapioca//lib/tapioca/commands/annotations.rb#193
+  # source://tapioca//lib/tapioca/commands/annotations.rb#197
   sig { params(name: ::String, content: ::String).returns(::String) }
   def add_header(name, content); end
 
-  # source://tapioca//lib/tapioca/commands/annotations.rb#213
+  # source://tapioca//lib/tapioca/commands/annotations.rb#217
   sig { params(name: ::String, content: ::String).returns(::String) }
   def apply_typed_override(name, content); end
 
@@ -794,18 +794,18 @@ class Tapioca::Commands::Annotations < ::Tapioca::Commands::CommandWithoutTracke
   def execute; end
 
   # source://tapioca//lib/tapioca/commands/annotations.rb#136
-  sig { params(repo_uris: T::Array[::String], gem_name: ::String).void }
-  def fetch_annotation(repo_uris, gem_name); end
+  sig { params(repo_uris: T::Array[::String], gem_info: ::Tapioca::GemInfo).void }
+  def fetch_annotation(repo_uris, gem_info); end
 
   # source://tapioca//lib/tapioca/commands/annotations.rb#113
-  sig { params(gem_names: T::Array[::String]).returns(T::Array[::String]) }
-  def fetch_annotations(gem_names); end
+  sig { params(project_gems: T::Array[::Tapioca::GemInfo]).returns(T::Array[::String]) }
+  def fetch_annotations(project_gems); end
 
-  # source://tapioca//lib/tapioca/commands/annotations.rb#152
+  # source://tapioca//lib/tapioca/commands/annotations.rb#156
   sig { params(repo_uri: ::String, path: ::String).returns(T.nilable(::String)) }
   def fetch_file(repo_uri, path); end
 
-  # source://tapioca//lib/tapioca/commands/annotations.rb#169
+  # source://tapioca//lib/tapioca/commands/annotations.rb#173
   sig { params(repo_uri: ::String, path: ::String).returns(T.nilable(::String)) }
   def fetch_http_file(repo_uri, path); end
 
@@ -817,31 +817,35 @@ class Tapioca::Commands::Annotations < ::Tapioca::Commands::CommandWithoutTracke
   sig { returns(T::Hash[::String, Tapioca::RepoIndex]) }
   def fetch_indexes; end
 
-  # source://tapioca//lib/tapioca/commands/annotations.rb#161
+  # source://tapioca//lib/tapioca/commands/annotations.rb#165
   sig { params(repo_uri: ::String, path: ::String).returns(T.nilable(::String)) }
   def fetch_local_file(repo_uri, path); end
 
+  # source://tapioca//lib/tapioca/commands/annotations.rb#229
+  sig { params(gem_version: ::Gem::Version, content: ::String).returns(::String) }
+  def filter_versions(gem_version, content); end
+
   # source://tapioca//lib/tapioca/commands/annotations.rb#50
-  sig { returns(T::Array[::String]) }
+  sig { returns(T::Array[::Tapioca::GemInfo]) }
   def list_gemfile_gems; end
 
-  # source://tapioca//lib/tapioca/commands/annotations.rb#225
+  # source://tapioca//lib/tapioca/commands/annotations.rb#237
   sig { params(gem_name: ::String, contents: T::Array[::String]).returns(T.nilable(::String)) }
   def merge_files(gem_name, contents); end
 
   # source://tapioca//lib/tapioca/commands/annotations.rb#60
-  sig { params(project_gems: T::Array[::String]).void }
+  sig { params(project_gems: T::Array[::Tapioca::GemInfo]).void }
   def remove_expired_annotations(project_gems); end
 
-  # source://tapioca//lib/tapioca/commands/annotations.rb#252
+  # source://tapioca//lib/tapioca/commands/annotations.rb#264
   sig { returns(T::Hash[::String, T.nilable(::String)]) }
   def repo_tokens; end
 
-  # source://tapioca//lib/tapioca/commands/annotations.rb#280
+  # source://tapioca//lib/tapioca/commands/annotations.rb#292
   sig { params(path: ::String, repo_uri: ::String, message: ::String).void }
   def say_http_error(path, repo_uri, message:); end
 
-  # source://tapioca//lib/tapioca/commands/annotations.rb#264
+  # source://tapioca//lib/tapioca/commands/annotations.rb#276
   sig { params(repo_uri: ::String).returns(T.nilable(::String)) }
   def token_for(repo_uri); end
 end
@@ -1151,7 +1155,7 @@ class Tapioca::ConfigHelper::ConfigError < ::T::Struct
   const :message_parts, T::Array[::Tapioca::ConfigHelper::ConfigErrorMessagePart]
 
   class << self
-    # source://sorbet-runtime/0.5.11435/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.11447/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -1162,7 +1166,7 @@ class Tapioca::ConfigHelper::ConfigErrorMessagePart < ::T::Struct
   const :colors, T::Array[::Symbol]
 
   class << self
-    # source://sorbet-runtime/0.5.11435/lib/types/struct.rb#13
+    # source://sorbet-runtime/0.5.11447/lib/types/struct.rb#13
     def inherited(s); end
   end
 end
@@ -2193,6 +2197,21 @@ module Tapioca::GemHelper
   def path_in_dir?(path, dir); end
 end
 
+# source://tapioca//lib/tapioca/gem_info.rb#5
+class Tapioca::GemInfo < ::T::Struct
+  const :name, ::String
+  const :version, ::Gem::Version
+
+  class << self
+    # source://tapioca//lib/tapioca/gem_info.rb#13
+    sig { params(spec: ::Bundler::LazySpecification).returns(::Tapioca::GemInfo) }
+    def from_spec(spec); end
+
+    # source://sorbet-runtime/0.5.11447/lib/types/struct.rb#13
+    def inherited(s); end
+  end
+end
+
 # source://tapioca//lib/tapioca/gemfile.rb#7
 class Tapioca::Gemfile
   # source://tapioca//lib/tapioca/gemfile.rb#27
@@ -2480,7 +2499,7 @@ class Tapioca::Loaders::Loader
   # @param engine [T.class_of(Rails::Engine)]
   # @return [Array<String>]
   #
-  # source://sorbet-runtime/0.5.11435/lib/types/private/methods/_methods.rb#257
+  # source://sorbet-runtime/0.5.11447/lib/types/private/methods/_methods.rb#257
   def eager_load_paths(*args, **_arg1, &blk); end
 
   # source://tapioca//lib/tapioca/loaders/loader.rb#188
@@ -3388,7 +3407,7 @@ module Tapioca::Static::SymbolLoader
 
     # @return [Array<T.class_of(Rails::Engine)>]
     #
-    # source://sorbet-runtime/0.5.11435/lib/types/private/methods/_methods.rb#257
+    # source://sorbet-runtime/0.5.11447/lib/types/private/methods/_methods.rb#257
     def engines(*args, **_arg1, &blk); end
 
     # source://tapioca//lib/tapioca/static/symbol_loader.rb#82
