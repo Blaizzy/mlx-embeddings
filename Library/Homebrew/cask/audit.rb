@@ -580,15 +580,14 @@ module Cask
             add_error "No binaries in App: #{artifact.source}", location: cask.url.location if files.empty?
             system_command("lipo", args: ["-archs", files.first], print_stderr: false)
           when Artifact::Binary
-            system_command("lipo", args: ["-archs", path], print_stderr: false)
+            binary_path = path.to_s.gsub(cask.appdir, tmpdir)
+            system_command("lipo", args: ["-archs", binary_path], print_stderr: true)
           else
             add_error "Unknown artifact type: #{artifact.class}", location: cask.url.location
           end
 
-          unless result.success?
-            add_error "Failed to determine artifact architecture!", location: cask.url.location
-            next
-          end
+          # binary stanza can contain shell scripts, so we just continue if lipo fails.
+          next unless result.success?
 
           odebug result.merged_output
 
