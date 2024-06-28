@@ -44,6 +44,16 @@ RSpec.describe Homebrew::DevCmd::Extract do
       expect(Formulary.factory(path).version).to eq "0.2"
     end
 
+    it "retrieves the most recent version of formula starting at the specified revision", :integration_test do
+      path = target[:path]/"Formula/testball@0.1.rb"
+      expect { brew "extract", "testball", target[:name], "--git-revision=HEAD~1" }
+        .to output(/^#{path}$/).to_stdout
+        .and not_to_output.to_stderr
+        .and be_a_success
+      expect(path).to exist
+      expect(Formulary.factory(path).version).to eq "0.1"
+    end
+
     it "retrieves the specified version of formula", :integration_test do
       path = target[:path]/"Formula/testball@0.1.rb"
       expect { brew "extract", "testball", target[:name], "--version=0.1" }
