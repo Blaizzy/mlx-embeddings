@@ -580,8 +580,8 @@ module Cask
 
           result = case artifact
           when Artifact::App
-            files = Dir[path/"Contents/MacOS/*"].reject do |f|
-              !File.executable?(f) || File.directory?(f) || f.end_with?(".dylib")
+            files = Dir[path/"Contents/MacOS/*"].select do |f|
+              File.executable?(f) && !File.directory?(f) && !f.end_with?(".dylib")
             end
             add_error "No binaries in App: #{artifact.source}", location: cask.url.location if files.empty?
             system_command("lipo", args: ["-archs", files.first], print_stderr: false)
