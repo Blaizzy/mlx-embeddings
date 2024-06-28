@@ -14,12 +14,14 @@ RSpec.describe Cask::CaskLoader::FromAPILoader, :cask do
 
     before do
       allow(Homebrew::API::Cask)
-        .to receive(:all_casks)
-        .and_return(casks_from_api_hash)
+        .to receive_messages(all_casks: casks_from_api_hash, all_renames: {})
+
+      # The call to `Cask::CaskLoader.load` above sets the Tap cache prematurely.
+      Tap.clear_cache
     end
   end
 
-  describe ".can_load?" do
+  describe ".try_new" do
     include_context "with API setup", "test-opera"
 
     context "when not using the API", :no_api do
@@ -34,15 +36,63 @@ RSpec.describe Cask::CaskLoader::FromAPILoader, :cask do
       end
 
       it "returns a loader for valid token" do
-        expect(described_class.try_new(token)).not_to be_nil
+        expect(described_class.try_new(token))
+          .to be_a(described_class)
+          .and have_attributes(token:)
       end
 
       it "returns a loader for valid full name" do
-        expect(described_class.try_new("homebrew/cask/#{token}")).not_to be_nil
+        expect(described_class.try_new("homebrew/cask/#{token}"))
+          .to be_a(described_class)
+          .and have_attributes(token:)
       end
 
       it "returns nil for full name with invalid tap" do
         expect(described_class.try_new("homebrew/foo/#{token}")).to be_nil
+      end
+
+      context "with core tap migration renames" do
+        let(:foo_tap) { Tap.fetch("homebrew", "foo") }
+
+        before do
+          foo_tap.path.mkpath
+        end
+
+        after do
+          FileUtils.rm_rf foo_tap.path
+        end
+
+        it "returns the core cask if the short name clashes with a tap migration rename" do
+          (foo_tap.path/"tap_migrations.json").write <<~JSON
+            { "#{token}": "homebrew/cask/#{token}-v2" }
+          JSON
+
+          expect(Cask::CaskLoader::FromNameLoader.try_new(token))
+            .to be_a(Cask::CaskLoader::FromNameLoader)
+            .and have_attributes(token:)
+        end
+
+        it "returns the tap migration rename by old token" do
+          old_token = "#{token}-old"
+          (foo_tap.path/"tap_migrations.json").write <<~JSON
+            { "#{old_token}": "homebrew/cask/#{token}" }
+          JSON
+
+          expect(Cask::CaskLoader::FromNameLoader.try_new(old_token))
+            .to be_a(described_class)
+            .and have_attributes(token:)
+        end
+
+        it "returns the tap migration rename by old full name" do
+          old_token = "#{token}-old"
+          (foo_tap.path/"tap_migrations.json").write <<~JSON
+            { "#{old_token}": "homebrew/cask/#{token}" }
+          JSON
+
+          expect(Cask::CaskLoader::FromTapLoader.try_new("#{foo_tap}/#{old_token}"))
+            .to be_a(described_class)
+            .and have_attributes(token:)
+        end
       end
     end
   end
