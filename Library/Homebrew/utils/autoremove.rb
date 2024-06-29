@@ -61,8 +61,8 @@ module Utils
       # @private
       sig { params(formulae: T::Array[Formula]).returns(T::Array[Formula]) }
       def unused_formulae_with_no_formula_dependents(formulae)
-        unused_formulae = bottled_formulae_with_no_formula_dependents(formulae).reject do |f|
-          f.any_installed_keg&.tab&.installed_on_request
+        unused_formulae = bottled_formulae_with_no_formula_dependents(formulae).select do |f|
+          f.any_installed_keg&.tab&.installed_on_request == false
         end
 
         unless unused_formulae.empty?
