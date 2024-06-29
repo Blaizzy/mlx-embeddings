@@ -230,7 +230,6 @@ module Homebrew
         when Resource
           RESOURCE_CHECKS
         end
-        return {} unless checks
 
         checks.each do |method_name|
           skip_hash = case method_name
