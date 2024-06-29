@@ -107,6 +107,13 @@ RSpec.describe Utils::Autoremove do
       expect(described_class.send(:unused_formulae_with_no_formula_dependents, formulae))
         .to match_array(formulae)
     end
+
+    specify "installed on request is null" do
+      allow(tab_from_keg).to receive(:installed_on_request).and_return(nil)
+
+      expect(described_class.send(:unused_formulae_with_no_formula_dependents, formulae))
+        .to eq([])
+    end
   end
 
   shared_context "with formulae and casks for dependency testing" do
