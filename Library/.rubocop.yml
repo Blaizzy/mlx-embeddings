@@ -327,6 +327,11 @@ Style/Documentation:
     - "**/{Formula,Casks}/**/*.rb"
     - "**/*.rbi"
 
+# This is impossible to fix if the line exceeds the maximum length.
+Style/EmptyMethod:
+  Exclude:
+    - "**/*.rbi"
+
 # This is quite a large change, so don't enforce this yet for formulae.
 # We should consider doing so in the future, but be aware of the impact on third-party taps.
 Style/FetchEnvVar:
