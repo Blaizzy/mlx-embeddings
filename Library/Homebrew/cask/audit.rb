@@ -673,9 +673,12 @@ module Cask
       end
       odebug "Declared minimum OS version: #{cask_min_os&.to_sym}"
       return if cask_min_os&.to_sym == min_os.to_sym
+      return if cask.on_system_blocks_exist? &&
+                OnSystem.arch_condition_met?(:arm) &&
+                cask_min_os < MacOSVersion.new("11")
 
       min_os_definition = if cask_min_os.present?
-        if cask.on_system_blocks_exist?
+        if cask.on_system_blocks_exist? && cask.on_system_block_min_os.present?
           "a block with a minimum OS version of #{cask.on_system_block_min_os.inspect}"
         else
           cask_min_os.to_sym.inspect
