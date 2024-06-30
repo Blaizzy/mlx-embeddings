@@ -231,7 +231,7 @@ module Hardware
       # Rust already defaults to the oldest supported cpu for each target-triplet
       # so it's safe to ignore generic archs such as :armv6 here.
       # Rust defaults to apple-m1 since Rust 1.71 for aarch64-apple-darwin.
-      @target_cpu ||= case (arch)
+      @target_cpu ||= case arch
       when :core
         :prescott
       when :native, :ivybridge, :sandybridge, :westmere, :nehalem, :core2
