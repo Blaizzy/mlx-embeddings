@@ -18,5 +18,8 @@ class Homebrew::DevCmd::Extract::Args < Homebrew::CLI::Args
   def force?; end
 
   sig { returns(T.nilable(String)) }
+  def git_revision; end
+
+  sig { returns(T.nilable(String)) }
   def version; end
 end

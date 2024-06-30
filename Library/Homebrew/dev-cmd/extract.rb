@@ -22,6 +22,8 @@ module Homebrew
           a formula from a tap that is not `homebrew/core` use its fully-qualified form of
           <user>`/`<repo>`/`<formula>.
         EOS
+        flag   "--git-revision=",
+               description: "Search for the specified <version> of <formula> starting at <revision> instead of HEAD."
         flag   "--version=",
                description: "Extract the specified <version> of <formula> instead of the most recent."
         switch "-f", "--force",
@@ -49,6 +51,7 @@ module Homebrew
         destination_tap.install unless destination_tap.installed?
 
         repo = source_tap.path
+        start_rev = args.git_revision || "HEAD"
         pattern = if source_tap.core_tap?
           [source_tap.new_formula_path(name), repo/"Formula/#{name}.rb"].uniq
         else
@@ -64,7 +67,7 @@ module Homebrew
           test_formula = T.let(nil, T.nilable(Formula))
           result = ""
           loop do
-            rev = rev.nil? ? "HEAD" : "#{rev}~1"
+            rev = rev.nil? ? start_rev : "#{rev}~1"
             rev, (path,) = Utils::Git.last_revision_commit_of_files(repo, pattern, before_commit: rev)
             if rev.nil? && source_tap.shallow?
               odie <<~EOS
@@ -99,13 +102,17 @@ module Homebrew
           odie "Could not find #{name}! The formula or version may not have existed." if test_formula.nil?
         else
           # Search in the root directory of `repository` as well as recursively in all of its subdirectories.
-          files = Dir[repo/"{,**/}"].filter_map do |dir|
-            Pathname.glob("#{dir}/#{name}.rb").find(&:file?)
+          files = if start_rev == "HEAD"
+            Dir[repo/"{,**/}"].filter_map do |dir|
+              Pathname.glob("#{dir}/#{name}.rb").find(&:file?)
+            end
+          else
+            []
           end
 
           if files.empty?
             ohai "Searching repository history"
-            rev, (path,) = Utils::Git.last_revision_commit_of_files(repo, pattern)
+            rev, (path,) = Utils::Git.last_revision_commit_of_files(repo, pattern, before_commit: start_rev)
             odie "Could not find #{name}! The formula or version may not have existed." if rev.nil?
             file = repo/path
             version = T.must(formula_at_revision(repo, name, file, rev)).version
