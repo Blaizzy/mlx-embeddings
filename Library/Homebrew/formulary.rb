@@ -759,7 +759,7 @@ module Formulary
 
     sig {
       params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
-        .returns(T.nilable(T.attached_class))
+        .returns(T.nilable(FormulaLoader))
     }
     def self.try_new(ref, from: T.unsafe(nil), warn: false)
       ref = ref.to_s
@@ -776,7 +776,11 @@ module Formulary
         {}
       end
 
-      new(name, path, tap:, **options)
+      if type == :migration && tap.core_tap? && (loader = FromAPILoader.try_new(name))
+        loader
+      else
+        new(name, path, tap:, **options)
+      end
     end
 
     sig { params(name: String, path: Pathname, tap: Tap, alias_name: String).void }
@@ -811,7 +815,7 @@ module Formulary
   class FromNameLoader < FromTapLoader
     sig {
       params(ref: T.any(String, Pathname, URI::Generic), from: Symbol, warn: T::Boolean)
-        .returns(T.nilable(T.attached_class))
+        .returns(T.nilable(FormulaLoader))
     }
     def self.try_new(ref, from: T.unsafe(nil), warn: false)
       return unless ref.is_a?(String)
