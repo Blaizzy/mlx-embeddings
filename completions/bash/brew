@@ -962,6 +962,7 @@ _brew_extract() {
       __brewcomp "
       --debug
       --force
+      --git-revision
       --help
       --quiet
       --verbose

@@ -2188,6 +2188,11 @@ not installed yet, attempt to install/clone the tap before continuing. To
 extract a formula from a tap that is not `homebrew/core` use its fully-qualified
 form of *`user`*`/`*`repo`*`/`*`formula`*.
 
+`--git-revision`
+
+: Search for the specified *`version`* of *`formula`* starting at *`revision`*
+  instead of HEAD.
+
 `--version`
 
 : Extract the specified *`version`* of *`formula`* instead of the most recent.

@@ -885,6 +885,7 @@ _brew_extract() {
   _arguments \
     '--debug[Display any debugging information]' \
     '--force[Overwrite the destination formula if it already exists]' \
+    '--git-revision[Search for the specified version of formula starting at revision instead of HEAD]' \
     '--help[Show this message]' \
     '--quiet[Make some output more quiet]' \
     '--verbose[Make some output more verbose]' \
