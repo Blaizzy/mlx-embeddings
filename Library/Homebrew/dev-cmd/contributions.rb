@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "abstract_command"
@@ -11,11 +11,11 @@ module Homebrew
   module DevCmd
     class Contributions < AbstractCommand
       PRIMARY_REPOS = %w[brew core cask].freeze
-      SUPPORTED_REPOS = [
+      SUPPORTED_REPOS = T.let([
         PRIMARY_REPOS,
         OFFICIAL_CMD_TAPS.keys.map { |t| t.delete_prefix("homebrew/") },
         OFFICIAL_CASK_TAPS.reject { |t| t == "cask" },
-      ].flatten.freeze
+      ].flatten.freeze, T::Array[String])
       MAX_REPO_COMMITS = 1000
 
       cmd_args do
@@ -55,7 +55,7 @@ module Homebrew
         elsif T.must(args.repositories).include?("all")
           SUPPORTED_REPOS
         else
-          args.repositories
+          T.must(args.repositories)
         end
 
         from = args.from.presence || Date.today.prev_year.iso8601
@@ -116,7 +116,7 @@ module Homebrew
         end
       end
 
-      sig { params(totals: Hash).returns(String) }
+      sig { params(totals: T::Hash[T.untyped, T.untyped]).returns(String) }
       def generate_csv(totals)
         CSV.generate do |csv|
           csv << %w[user repo author committer coauthor review total]
@@ -127,7 +127,7 @@ module Homebrew
         end
       end
 
-      sig { params(user: String, grand_total: Hash).returns(Array) }
+      sig { params(user: String, grand_total: T::Hash[Symbol, T.untyped]).returns(T::Array[T.any(String, Integer)]) }
       def grand_total_row(user, grand_total)
         [
           user,
@@ -140,6 +140,7 @@ module Homebrew
         ]
       end
 
+      sig { params(repos: T::Array[String], person: String, from: String).void }
       def scan_repositories(repos, person, from:)
         data = {}
 
@@ -168,7 +169,7 @@ module Homebrew
           data[repo] = {
             author:    author_commits,
             committer: committer_commits,
-            coauthor:  git_log_trailers_cmd(T.must(repo_path), person, "Co-authored-by", from:, to: args.to),
+            coauthor:  git_log_trailers_cmd(repo_path, person, "Co-authored-by", from:, to: args.to),
             review:    count_reviews(repo_full_name, person, from:, to: args.to),
           }
         end
@@ -176,7 +177,7 @@ module Homebrew
         data
       end
 
-      sig { params(results: Hash).returns(Hash) }
+      sig { params(results: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, Integer]) }
       def total(results)
         totals = { author: 0, committer: 0, coauthor: 0, review: 0 }
 
