@@ -116,7 +116,7 @@ module Homebrew
         end
       end
 
-      sig { params(totals: T::Hash[T.untyped, T.untyped]).returns(String) }
+      sig { params(totals: T::Hash[String, T::Hash[Symbol, Integer]]).returns(String) }
       def generate_csv(totals)
         CSV.generate do |csv|
           csv << %w[user repo author committer coauthor review total]
@@ -127,7 +127,14 @@ module Homebrew
         end
       end
 
-      sig { params(user: String, grand_total: T::Hash[Symbol, T.untyped]).returns(T::Array[T.any(String, Integer)]) }
+      sig {
+        params(
+          user:        String,
+          grand_total: T::Hash[Symbol, Integer],
+        ).returns(
+          [String, String, T.nilable(Integer), T.nilable(Integer), T.nilable(Integer), T.nilable(Integer), Integer],
+        )
+      }
       def grand_total_row(user, grand_total)
         [
           user,
