@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "abstract_command"
@@ -20,7 +20,7 @@ module Homebrew
     class Bottle < AbstractCommand
       include FileUtils
 
-      BOTTLE_ERB = <<-EOS.freeze
+      BOTTLE_ERB = T.let(<<-EOS.freeze, String)
   bottle do
     <% if [HOMEBREW_BOTTLE_DEFAULT_DOMAIN.to_s,
            "#{HOMEBREW_BOTTLE_DEFAULT_DOMAIN}/bottles"].exclude?(root_url) %>
@@ -39,9 +39,9 @@ module Homebrew
 
       MAXIMUM_STRING_MATCHES = 100
 
-      ALLOWABLE_HOMEBREW_REPOSITORY_LINKS = [
+      ALLOWABLE_HOMEBREW_REPOSITORY_LINKS = T.let([
         %r{#{Regexp.escape(HOMEBREW_LIBRARY)}/Homebrew/os/(mac|linux)/pkgconfig},
-      ].freeze
+      ].freeze, T::Array[Regexp])
 
       cmd_args do
         description <<~EOS
@@ -110,6 +110,10 @@ module Homebrew
         end
       end
 
+      sig {
+        params(tag: String, digest: String, cellar: T.any(Symbol, String), tag_column: Integer,
+               digest_column: Integer).returns(String)
+      }
       def generate_sha256_line(tag, digest, cellar, tag_column, digest_column)
         line = "sha256 "
         tag_column += line.length
@@ -125,6 +129,7 @@ module Homebrew
         %Q(#{line}"#{digest}")
       end
 
+      sig { params(bottle: BottleSpecification, root_url_using: T.nilable(String)).returns(String) }
       def bottle_output(bottle, root_url_using)
         cellars = bottle.checksums.filter_map do |checksum|
           cellar = checksum["cellar"]
@@ -153,12 +158,14 @@ module Homebrew
         erb.result(erb_binding).gsub(/^\s*$\n/, "")
       end
 
+      sig { params(filenames: T::Array[String]).returns(T::Array[T::Hash[String, T.untyped]]) }
       def parse_json_files(filenames)
         filenames.map do |filename|
           JSON.parse(File.read(filename))
         end
       end
 
+      sig { params(json_files: T::Array[T::Hash[String, T.untyped]]).returns(T::Hash[String, T.untyped]) }
       def merge_json_files(json_files)
         json_files.reduce({}) do |hash, json_file|
           json_file.each_value do |json_hash|
@@ -172,6 +179,10 @@ module Homebrew
         end
       end
 
+      sig {
+        params(old_keys: T::Array[String], old_bottle_spec: BottleSpecification,
+               new_bottle_hash: T::Hash[String, T.untyped]).returns(T::Array[T::Array[String]])
+      }
       def merge_bottle_spec(old_keys, old_bottle_spec, new_bottle_hash)
         mismatches = []
         checksums = []
@@ -214,16 +225,20 @@ module Homebrew
 
       private
 
+      sig {
+        params(string: String, keg: Keg, ignores: T::Array[String],
+               formula_and_runtime_deps_names: T.nilable(T::Array[String])).returns(T::Boolean)
+      }
       def keg_contain?(string, keg, ignores, formula_and_runtime_deps_names = nil)
         @put_string_exists_header, @put_filenames = nil
 
         print_filename = lambda do |str, filename|
           unless @put_string_exists_header
             opoo "String '#{str}' still exists in these files:"
-            @put_string_exists_header = true
+            @put_string_exists_header = T.let(true, T.nilable(T::Boolean))
           end
 
-          @put_filenames ||= []
+          @put_filenames ||= T.let([], T.nilable(T::Array[T.any(String, Pathname)]))
 
           return false if @put_filenames.include?(filename)
 
@@ -265,6 +280,7 @@ module Homebrew
         keg_contain_absolute_symlink_starting_with?(string, keg) || result
       end
 
+      sig { params(string: String, keg: Keg).returns(T::Boolean) }
       def keg_contain_absolute_symlink_starting_with?(string, keg)
         absolute_symlinks_start_with_string = []
         keg.find do |pn|
@@ -283,6 +299,7 @@ module Homebrew
         !absolute_symlinks_start_with_string.empty?
       end
 
+      sig { params(cellar: String).returns(T.nilable(T::Boolean)) }
       def cellar_parameter_needed?(cellar)
         default_cellars = [
           Homebrew::DEFAULT_MACOS_CELLAR,
@@ -292,6 +309,7 @@ module Homebrew
         cellar.present? && default_cellars.exclude?(cellar)
       end
 
+      sig { returns(T.nilable(T::Boolean)) }
       def sudo_purge
         return unless ENV["HOMEBREW_BOTTLE_SUDO_PURGE"]
 
@@ -354,6 +372,7 @@ module Homebrew
         [gnu_tar(gnu_tar_formula), reproducible_gnutar_args(mtime)].freeze
       end
 
+      sig { params(formula: T.untyped).returns(T::Array[T.untyped]) }
       def formula_ignores(formula)
         ignores = []
         cellar_regex = Regexp.escape(HOMEBREW_CELLAR)
@@ -384,6 +403,7 @@ module Homebrew
         ignores.compact
       end
 
+      sig { params(formula: Formula).void }
       def bottle_formula(formula)
         local_bottle_json = args.json? && formula.local_bottle_path.present?
 
@@ -453,7 +473,7 @@ module Homebrew
 
         if local_bottle_json
           bottle_path = formula.local_bottle_path
-          local_filename = bottle_path.basename.to_s
+          local_filename = bottle_path&.basename&.to_s
 
           tab_path = Utils::Bottles.receipt_path(bottle_path)
           raise "This bottle does not contain the file INSTALL_RECEIPT.json: #{bottle_path}" unless tab_path
@@ -529,11 +549,13 @@ module Homebrew
               Utils::Gzip.compress_with_options(relocatable_tar_path,
                                                 mtime:     tab.source_modified_time,
                                                 orig_name: relocatable_tar_path,
-                                                output:    bottle_path)
+                                                output:    T.must(bottle_path))
               sudo_purge
             end
 
-            ohai "Detecting if #{local_filename} is relocatable..." if bottle_path.size > 1 * 1024 * 1024
+            if bottle_path && bottle_path.size > 1 * 1024 * 1024
+              ohai "Detecting if #{local_filename} is relocatable..."
+            end
 
             prefix_check = if Homebrew.default_prefix?(prefix)
               File.join(prefix, "opt")
@@ -574,7 +596,7 @@ module Homebrew
             end
             puts if !relocatable && args.verbose?
           rescue Interrupt
-            ignore_interrupts { bottle_path.unlink if bottle_path.exist? }
+            ignore_interrupts { bottle_path.unlink if bottle_path&.exist? }
             raise
           ensure
             ignore_interrupts do
@@ -597,7 +619,7 @@ module Homebrew
           cellar
         end
         bottle.rebuild rebuild
-        sha256 = bottle_path.sha256
+        sha256 = bottle_path&.sha256
         bottle.sha256 cellar: bottle_cellar, bottle_tag.to_sym => sha256
 
         old_spec = formula.bottle_specification
@@ -606,7 +628,7 @@ module Homebrew
             old_spec.send(key) == bottle.send(key)
           end
           unless mismatches.empty?
-            bottle_path.unlink if bottle_path.exist?
+            bottle_path.unlink if bottle_path&.exist?
 
             mismatches.map! do |key|
               old_value = old_spec.send(key).inspect
@@ -681,6 +703,7 @@ module Homebrew
         json_path.write(JSON.pretty_generate(json))
       end
 
+      sig { returns(T::Hash[String, T.untyped]) }
       def merge
         bottles_hash = merge_json_files(parse_json_files(args.named))
 
@@ -750,7 +773,7 @@ module Homebrew
             end
           end
 
-          all_bottle_hash = T.let(nil, T.nilable(Hash))
+          all_bottle_hash = T.let(nil, T.nilable(T::Hash[String, T.untyped]))
           bottle_hash["bottle"]["tags"].each do |tag, tag_hash|
             filename = ::Bottle::Filename.new(
               formula_name,
@@ -801,7 +824,7 @@ module Homebrew
           checksums = old_checksums(formula, formula_ast, bottle_hash)
           update_or_add = checksums.nil? ? "add" : "update"
 
-          checksums&.each(&bottle.method(:sha256))
+          checksums&.each { |checksum| bottle.sha256(checksum) }
           output = bottle_output(bottle, args.root_url_using)
           puts output
 
@@ -835,8 +858,12 @@ module Homebrew
         end
       end
 
+      sig {
+        params(formula: Formula, formula_ast: Utils::AST::FormulaAST,
+               bottle_hash: T::Hash[String, T.untyped]).returns(T.nilable(T::Array[String]))
+      }
       def old_checksums(formula, formula_ast, bottle_hash)
-        bottle_node = formula_ast.bottle_block
+        bottle_node = T.cast(formula_ast.bottle_block, T.nilable(RuboCop::AST::BlockNode))
         return if bottle_node.nil?
         return [] unless args.keep_old?
 
