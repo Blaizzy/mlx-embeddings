@@ -434,7 +434,10 @@ module Homebrew
         new_url.gsub(%r{/(v?)#{Regexp.escape(partial_old_version)}/}, "/\\1#{partial_new_version}/")
       end
 
-      sig { params(formula: Formula, new_version: T.nilable(String), url: String, specs: Float).returns(T::Array[T.untyped]) }
+      sig {
+        params(formula: Formula, new_version: T.nilable(String), url: String,
+               specs: Float).returns(T::Array[T.untyped])
+      }
       def fetch_resource_and_forced_version(formula, new_version, url, **specs)
         resource = Resource.new
         resource.url(url, **specs)
@@ -459,13 +462,18 @@ module Homebrew
 
       sig { params(formula: Formula, tap_remote_repo: String).returns(T.nilable(T::Array[String])) }
       def check_open_pull_requests(formula, tap_remote_repo)
-        GitHub.check_for_duplicate_pull_requests(formula.name, tap_remote_repo,
-                                                 state: "open",
-                                                 file:  formula.path.relative_path_from(T.must(formula.tap).path).to_s,
-                                                 quiet: args.quiet?)
+        GitHub.check_for_duplicate_pull_requests(
+          formula.name, tap_remote_repo,
+          state: "open",
+          file:  formula.path.relative_path_from(T.must(formula.tap).path).to_s,
+          quiet: args.quiet?
+        )
       end
 
-      sig { params(formula: Formula, tap_remote_repo: String, version: T.nilable(String), url: T.nilable(String), tag: T.nilable(String)).void }
+      sig {
+        params(formula: Formula, tap_remote_repo: String, version: T.nilable(String), url: T.nilable(String),
+               tag: T.nilable(String)).void
+      }
       def check_new_version(formula, tap_remote_repo, version: nil, url: nil, tag: nil)
         if version.nil?
           specs = {}
@@ -493,14 +501,19 @@ module Homebrew
         odie "#{formula} should only be updated every #{throttled_rate} releases on multiples of #{throttled_rate}"
       end
 
-      sig { params(formula: Formula, tap_remote_repo: String, version: T.nilable(String)).returns(T.nilable(T::Array[String])) }
+      sig {
+        params(formula: Formula, tap_remote_repo: String,
+               version: T.nilable(String)).returns(T.nilable(T::Array[String]))
+      }
       def check_closed_pull_requests(formula, tap_remote_repo, version:)
         # if we haven't already found open requests, try for an exact match across closed requests
-        GitHub.check_for_duplicate_pull_requests(formula.name, tap_remote_repo,
-                                                 version:,
-                                                 state:   "closed",
-                                                 file:    formula.path.relative_path_from(T.must(formula.tap).path).to_s,
-                                                 quiet:   args.quiet?)
+        GitHub.check_for_duplicate_pull_requests(
+          formula.name, tap_remote_repo,
+          version:,
+          state:   "closed",
+          file:    formula.path.relative_path_from(T.must(formula.tap).path).to_s,
+          quiet:   args.quiet?
+        )
       end
 
       sig { params(formula: Formula, new_formula_version: String).returns(T.nilable(T::Array[String])) }

@@ -34,11 +34,14 @@ module Homebrew
       def run
         Formulary.enable_factory_cache!
 
-        @bottle_tag = T.let(if (tag = args.tag)
-          Utils::Bottles::Tag.from_symbol(tag.to_sym)
-        else
-          Utils::Bottles.tag
-        end, T.nilable(Utils::Bottles::Tag))
+        @bottle_tag = T.let(
+          if (tag = args.tag)
+            Utils::Bottles::Tag.from_symbol(tag.to_sym)
+          else
+            Utils::Bottles.tag
+          end,
+          T.nilable(Utils::Bottles::Tag),
+        )
 
         if args.lost?
           if args.named.present?
@@ -104,7 +107,9 @@ module Homebrew
 
       private
 
-      sig { params(all: T::Boolean).returns([T::Array[Formula], T::Array[Formula], T.nilable(T::Hash[Symbol, Integer])]) }
+      sig {
+        params(all: T::Boolean).returns([T::Array[Formula], T::Array[Formula], T.nilable(T::Hash[Symbol, Integer])])
+      }
       def formulae_all_installs_from_args(all)
         if args.named.present?
           formulae = all_formulae = args.named.to_formulae
@@ -152,7 +157,8 @@ module Homebrew
         formulae = Array(formulae).reject(&:deprecated?) if formulae.present?
         all_formulae = Array(all_formulae).reject(&:deprecated?) if all_formulae.present?
 
-        [T.let(formulae, T::Array[Formula]), T.let(all_formulae, T::Array[Formula]), T.let(T.must(formula_installs), T.nilable(T::Hash[Symbol, Integer]))]
+        [T.let(formulae, T::Array[Formula]), T.let(all_formulae, T::Array[Formula]),
+         T.let(T.must(formula_installs), T.nilable(T::Hash[Symbol, Integer]))]
       end
 
       sig { params(all_formulae: T.untyped).returns([T::Hash[String, T.untyped], T::Hash[String, T.untyped]]) }
@@ -191,7 +197,11 @@ module Homebrew
         puts "#{unbottled_formulae}/#{formulae.length} remaining."
       end
 
-      sig { params(formulae: T::Array[Formula], deps_hash: T::Hash[T.any(Symbol, String), T.untyped], noun: T.nilable(String), hash: T::Hash[T.any(Symbol, String), T.untyped], any_named_args: T::Boolean).returns(NilClass) }
+      sig {
+        params(formulae: T::Array[Formula], deps_hash: T::Hash[T.any(Symbol, String), T.untyped],
+               noun: T.nilable(String), hash: T::Hash[T.any(Symbol, String), T.untyped],
+               any_named_args: T::Boolean).returns(NilClass)
+      }
       def output_unbottled(formulae, deps_hash, noun, hash, any_named_args)
         ohai ":#{@bottle_tag} bottle status#{@sort}"
         any_found = T.let(false, T::Boolean)

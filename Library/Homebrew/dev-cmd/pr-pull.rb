@@ -243,7 +243,10 @@ module Homebrew
         end
       end
 
-      sig { params(old_contents: String, new_contents: String, subject_path: T.any(String, Pathname), reason: T.nilable(String)).returns(String) }
+      sig {
+        params(old_contents: String, new_contents: String, subject_path: T.any(String, Pathname),
+               reason: T.nilable(String)).returns(String)
+      }
       def determine_bump_subject(old_contents, new_contents, subject_path, reason: nil)
         subject_path = Pathname(subject_path)
         tap          = Tap.from_path(subject_path)
@@ -272,7 +275,10 @@ module Homebrew
 
       # Cherry picks a single commit that modifies a single file.
       # Potentially rewords this commit using {determine_bump_subject}.
-      sig { params(commit: String, file: String, git_repo: GitRepository, reason: T.nilable(String), verbose: T::Boolean, resolve: T::Boolean).void }
+      sig {
+        params(commit: String, file: String, git_repo: GitRepository, reason: T.nilable(String), verbose: T::Boolean,
+               resolve: T::Boolean).void
+      }
       def reword_package_commit(commit, file, git_repo:, reason: "", verbose: false, resolve: false)
         package_file = git_repo.pathname / file
         package_name = package_file.basename.to_s.chomp(".rb")
@@ -298,7 +304,10 @@ module Homebrew
       # Cherry picks multiple commits that each modify a single file.
       # Words the commit according to {determine_bump_subject} with the body
       # corresponding to all the original commit messages combined.
-      sig { params(commits: T::Array[String], file: String, git_repo: GitRepository, reason: T.nilable(String), verbose: T::Boolean, resolve: T::Boolean).void }
+      sig {
+        params(commits: T::Array[String], file: String, git_repo: GitRepository, reason: T.nilable(String),
+               verbose: T::Boolean, resolve: T::Boolean).void
+      }
       def squash_package_commits(commits, file, git_repo:, reason: "", verbose: false, resolve: false)
         odebug "Squashing #{file}: #{commits.join " "}"
 
@@ -346,7 +355,10 @@ module Homebrew
       end
 
       # TODO: fix test in `test/dev-cmd/pr-pull_spec.rb` and assume `cherry_picked: false`.
-      sig { params(original_commit: String, tap: Tap, reason: String, verbose: T::Boolean, resolve: T::Boolean, cherry_picked: T::Boolean).void }
+      sig {
+        params(original_commit: String, tap: Tap, reason: String, verbose: T::Boolean, resolve: T::Boolean,
+               cherry_picked: T::Boolean).void
+      }
       def autosquash!(original_commit, tap:, reason: "", verbose: false, resolve: false, cherry_picked: true)
         git_repo = tap.git_repository
         original_head = git_repo.head_ref
