@@ -35,7 +35,7 @@ class Vernier::Collector
   # source://vernier//lib/vernier/collector.rb#8
   def initialize(mode, options = T.unsafe(nil)); end
 
-  # source://vernier//lib/vernier/collector.rb#50
+  # source://vernier//lib/vernier/collector.rb#49
   def add_marker(name:, start:, finish:, thread: T.unsafe(nil), phase: T.unsafe(nil), data: T.unsafe(nil)); end
 
   # Get the current time.
@@ -44,25 +44,25 @@ class Vernier::Collector
   # integer nanoseconds.  It's the same time used by Vernier internals and
   # can be used to generate timestamps for custom markers.
   #
-  # source://vernier//lib/vernier/collector.rb#46
+  # source://vernier//lib/vernier/collector.rb#45
   def current_time; end
 
   # Record an interval with a category and name.  Yields to a block and
   # records the amount of time spent in the block as an interval marker.
   #
-  # source://vernier//lib/vernier/collector.rb#62
+  # source://vernier//lib/vernier/collector.rb#61
   def record_interval(category, name = T.unsafe(nil)); end
 
   def sample; end
   def stack_table; end
   def start; end
 
-  # source://vernier//lib/vernier/collector.rb#75
+  # source://vernier//lib/vernier/collector.rb#74
   def stop; end
 
   private
 
-  # source://vernier//lib/vernier/collector.rb#31
+  # source://vernier//lib/vernier/collector.rb#30
   def add_hook(hook); end
 
   def finish; end
@@ -172,7 +172,7 @@ class Vernier::Output::Firefox
   # source://vernier//lib/vernier/output/firefox.rb#106
   def data; end
 
-  # source://vernier//lib/vernier/output/firefox.rb#151
+  # source://vernier//lib/vernier/output/firefox.rb#153
   def marker_schema; end
 
   # Returns the value of attribute profile.
@@ -252,51 +252,56 @@ class Vernier::Output::Firefox::Categorizer::Category
   def subcategories; end
 end
 
-# source://vernier//lib/vernier/output/firefox.rb#206
+# source://vernier//lib/vernier/output/firefox.rb#208
 class Vernier::Output::Firefox::Thread
   # @return [Thread] a new instance of Thread
   #
-  # source://vernier//lib/vernier/output/firefox.rb#209
-  def initialize(ruby_thread_id, profile, categorizer, name:, tid:, samples:, weights:, markers:, started_at:, timestamps: T.unsafe(nil), sample_categories: T.unsafe(nil), stopped_at: T.unsafe(nil), allocations: T.unsafe(nil), is_main: T.unsafe(nil)); end
+  # source://vernier//lib/vernier/output/firefox.rb#211
+  def initialize(ruby_thread_id, profile, categorizer, name:, tid:, samples:, weights:, markers:, started_at:, timestamps: T.unsafe(nil), sample_categories: T.unsafe(nil), stopped_at: T.unsafe(nil), allocations: T.unsafe(nil), is_main: T.unsafe(nil), is_start: T.unsafe(nil)); end
 
-  # source://vernier//lib/vernier/output/firefox.rb#373
+  # source://vernier//lib/vernier/output/firefox.rb#390
   def allocations_table; end
 
-  # source://vernier//lib/vernier/output/firefox.rb#301
+  # source://vernier//lib/vernier/output/firefox.rb#318
   def data; end
 
-  # source://vernier//lib/vernier/output/firefox.rb#280
+  # source://vernier//lib/vernier/output/firefox.rb#297
   def filter_filenames(filenames); end
 
-  # source://vernier//lib/vernier/output/firefox.rb#454
+  # source://vernier//lib/vernier/output/firefox.rb#470
   def frame_table; end
 
-  # source://vernier//lib/vernier/output/firefox.rb#478
+  # source://vernier//lib/vernier/output/firefox.rb#494
   def func_table; end
 
-  # source://vernier//lib/vernier/output/firefox.rb#333
+  # Returns the value of attribute is_start.
+  #
+  # source://vernier//lib/vernier/output/firefox.rb#209
+  def is_start; end
+
+  # source://vernier//lib/vernier/output/firefox.rb#350
   def markers_table; end
 
   # Returns the value of attribute profile.
   #
-  # source://vernier//lib/vernier/output/firefox.rb#207
+  # source://vernier//lib/vernier/output/firefox.rb#209
   def profile; end
 
-  # source://vernier//lib/vernier/output/firefox.rb#392
+  # source://vernier//lib/vernier/output/firefox.rb#409
   def samples_table; end
 
-  # source://vernier//lib/vernier/output/firefox.rb#429
+  # source://vernier//lib/vernier/output/firefox.rb#445
   def stack_table; end
 
-  # source://vernier//lib/vernier/output/firefox.rb#503
+  # source://vernier//lib/vernier/output/firefox.rb#519
   def string_table; end
 
   private
 
-  # source://vernier//lib/vernier/output/firefox.rb#509
+  # source://vernier//lib/vernier/output/firefox.rb#525
   def gc_category; end
 
-  # source://vernier//lib/vernier/output/firefox.rb#513
+  # source://vernier//lib/vernier/output/firefox.rb#529
   def thread_category; end
 end
 
@@ -313,196 +318,205 @@ end
 
 # source://vernier//lib/vernier/result.rb#2
 class Vernier::Result
-  # source://vernier//lib/vernier/result.rb#57
+  # source://vernier//lib/vernier/result.rb#7
+  def _stack_table; end
+
+  # source://vernier//lib/vernier/result.rb#54
   def each_sample; end
 
-  # source://vernier//lib/vernier/result.rb#49
+  # source://vernier//lib/vernier/result.rb#46
   def elapsed_seconds; end
 
   # Returns the value of attribute end_time.
   #
-  # source://vernier//lib/vernier/result.rb#19
+  # source://vernier//lib/vernier/result.rb#15
   def end_time; end
 
   # Sets the attribute end_time
   #
   # @param value the value to set the attribute end_time to.
   #
-  # source://vernier//lib/vernier/result.rb#19
+  # source://vernier//lib/vernier/result.rb#15
   def end_time=(_arg0); end
-
-  # source://vernier//lib/vernier/result.rb#7
-  def frame_table; end
-
-  # source://vernier//lib/vernier/result.rb#11
-  def func_table; end
 
   # Returns the value of attribute hooks.
   #
-  # source://vernier//lib/vernier/result.rb#17
+  # source://vernier//lib/vernier/result.rb#13
   def hooks; end
 
   # Sets the attribute hooks
   #
   # @param value the value to set the attribute hooks to.
   #
-  # source://vernier//lib/vernier/result.rb#17
+  # source://vernier//lib/vernier/result.rb#13
   def hooks=(_arg0); end
 
-  # source://vernier//lib/vernier/result.rb#53
+  # source://vernier//lib/vernier/result.rb#50
   def inspect; end
 
-  # source://vernier//lib/vernier/result.rb#23
+  # source://vernier//lib/vernier/result.rb#20
   def main_thread; end
 
   # Returns the value of attribute markers.
   #
-  # source://vernier//lib/vernier/result.rb#15
+  # source://vernier//lib/vernier/result.rb#11
   def markers; end
 
   # Returns the value of attribute meta.
   #
-  # source://vernier//lib/vernier/result.rb#21
+  # source://vernier//lib/vernier/result.rb#17
   def meta; end
 
   # Sets the attribute meta
   #
   # @param value the value to set the attribute meta to.
   #
-  # source://vernier//lib/vernier/result.rb#21
+  # source://vernier//lib/vernier/result.rb#17
   def meta=(_arg0); end
+
+  # Returns the value of attribute mode.
+  #
+  # source://vernier//lib/vernier/result.rb#18
+  def mode; end
+
+  # Sets the attribute mode
+  #
+  # @param value the value to set the attribute mode to.
+  #
+  # source://vernier//lib/vernier/result.rb#18
+  def mode=(_arg0); end
 
   # Returns the value of attribute pid.
   #
-  # source://vernier//lib/vernier/result.rb#19
+  # source://vernier//lib/vernier/result.rb#15
   def pid; end
 
   # Sets the attribute pid
   #
   # @param value the value to set the attribute pid to.
   #
-  # source://vernier//lib/vernier/result.rb#19
+  # source://vernier//lib/vernier/result.rb#15
   def pid=(_arg0); end
 
-  # source://vernier//lib/vernier/result.rb#30
+  # source://vernier//lib/vernier/result.rb#27
   def sample_categories; end
 
-  # source://vernier//lib/vernier/result.rb#29
+  # source://vernier//lib/vernier/result.rb#26
   def samples; end
 
-  # source://vernier//lib/vernier/result.rb#149
+  # source://vernier//lib/vernier/result.rb#146
   def stack(idx); end
 
   # source://vernier//lib/vernier/result.rb#3
-  def stack_table; end
+  def stack_table=(stack_table); end
 
   # Realtime in nanoseconds since the unix epoch
   #
-  # source://vernier//lib/vernier/result.rb#33
+  # source://vernier//lib/vernier/result.rb#30
   def started_at; end
 
   # Returns the value of attribute threads.
   #
-  # source://vernier//lib/vernier/result.rb#20
+  # source://vernier//lib/vernier/result.rb#16
   def threads; end
 
   # Sets the attribute threads
   #
   # @param value the value to set the attribute threads to.
   #
-  # source://vernier//lib/vernier/result.rb#20
+  # source://vernier//lib/vernier/result.rb#16
   def threads=(_arg0); end
 
-  # source://vernier//lib/vernier/result.rb#40
+  # source://vernier//lib/vernier/result.rb#37
   def to_gecko(gzip: T.unsafe(nil)); end
 
-  # source://vernier//lib/vernier/result.rb#153
+  # source://vernier//lib/vernier/result.rb#150
   def total_bytes; end
 
   # TODO: remove these
   #
-  # source://vernier//lib/vernier/result.rb#28
+  # source://vernier//lib/vernier/result.rb#25
   def weights; end
 
-  # source://vernier//lib/vernier/result.rb#44
+  # source://vernier//lib/vernier/result.rb#41
   def write(out:); end
 end
 
-# source://vernier//lib/vernier/result.rb#66
+# source://vernier//lib/vernier/result.rb#63
 class Vernier::Result::BaseType
   # @return [BaseType] a new instance of BaseType
   #
-  # source://vernier//lib/vernier/result.rb#68
+  # source://vernier//lib/vernier/result.rb#65
   def initialize(result, idx); end
 
   # Returns the value of attribute idx.
   #
-  # source://vernier//lib/vernier/result.rb#67
+  # source://vernier//lib/vernier/result.rb#64
   def idx; end
 
-  # source://vernier//lib/vernier/result.rb#77
+  # source://vernier//lib/vernier/result.rb#74
   def inspect; end
 
   # Returns the value of attribute result.
   #
-  # source://vernier//lib/vernier/result.rb#67
+  # source://vernier//lib/vernier/result.rb#64
   def result; end
 
-  # source://vernier//lib/vernier/result.rb#73
+  # source://vernier//lib/vernier/result.rb#70
   def to_s; end
 end
 
-# source://vernier//lib/vernier/result.rb#97
+# source://vernier//lib/vernier/result.rb#94
 class Vernier::Result::Frame < ::Vernier::Result::BaseType
-  # source://vernier//lib/vernier/result.rb#99
+  # source://vernier//lib/vernier/result.rb#96
   def filename; end
 
-  # source://vernier//lib/vernier/result.rb#102
+  # source://vernier//lib/vernier/result.rb#99
   def func; end
 
-  # source://vernier//lib/vernier/result.rb#98
+  # source://vernier//lib/vernier/result.rb#95
   def label; end
 
-  # source://vernier//lib/vernier/result.rb#107
+  # source://vernier//lib/vernier/result.rb#104
   def line; end
 
-  # source://vernier//lib/vernier/result.rb#98
+  # source://vernier//lib/vernier/result.rb#95
   def name; end
 
-  # source://vernier//lib/vernier/result.rb#111
+  # source://vernier//lib/vernier/result.rb#108
   def to_s; end
 end
 
-# source://vernier//lib/vernier/result.rb#82
+# source://vernier//lib/vernier/result.rb#79
 class Vernier::Result::Func < ::Vernier::Result::BaseType
-  # source://vernier//lib/vernier/result.rb#88
+  # source://vernier//lib/vernier/result.rb#85
   def filename; end
 
-  # source://vernier//lib/vernier/result.rb#83
+  # source://vernier//lib/vernier/result.rb#80
   def label; end
 
-  # source://vernier//lib/vernier/result.rb#83
+  # source://vernier//lib/vernier/result.rb#80
   def name; end
 
-  # source://vernier//lib/vernier/result.rb#92
+  # source://vernier//lib/vernier/result.rb#89
   def to_s; end
 end
 
-# source://vernier//lib/vernier/result.rb#116
+# source://vernier//lib/vernier/result.rb#113
 class Vernier::Result::Stack < ::Vernier::Result::BaseType
-  # source://vernier//lib/vernier/result.rb#117
+  # source://vernier//lib/vernier/result.rb#114
   def each_frame; end
 
-  # source://vernier//lib/vernier/result.rb#136
+  # source://vernier//lib/vernier/result.rb#133
   def frames; end
 
-  # source://vernier//lib/vernier/result.rb#132
+  # source://vernier//lib/vernier/result.rb#129
   def leaf_frame; end
 
-  # source://vernier//lib/vernier/result.rb#128
+  # source://vernier//lib/vernier/result.rb#125
   def leaf_frame_idx; end
 
-  # source://vernier//lib/vernier/result.rb#140
+  # source://vernier//lib/vernier/result.rb#137
   def to_s; end
 end
 
@@ -511,6 +525,7 @@ class Vernier::StackTable
   # source://vernier//lib/vernier/stack_table.rb#25
   def backtrace(stack_idx); end
 
+  def convert(_arg0, _arg1); end
   def current_stack(*_arg0); end
   def frame_count; end
   def frame_func_idx(_arg0); end
