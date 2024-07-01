@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "abstract_command"
@@ -126,7 +126,7 @@ module Homebrew
                 cherry_pick_pr!(user, repo, pr, path: tap.path) unless args.no_cherry_pick?
                 if args.autosquash? && !args.dry_run?
                   autosquash!(original_commit, tap:, cherry_picked: !args.no_cherry_pick?,
-                              verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
+                              verbose: args.verbose?, resolve: args.resolve?, reason: T.must(args.message))
                 end
                 signoff!(git_repo, pull_request: pr, dry_run: args.dry_run?) unless args.clean?
               end
@@ -183,8 +183,9 @@ module Homebrew
       end
 
       # Separates a commit message into subject, body and trailers.
+      sig { params(message: String).returns([String, String, String]) }
       def separate_commit_message(message)
-        subject = message.lines.first.strip
+        subject = T.must(message.lines.first).strip
 
         # Skip the subject and separate lines that look like trailers (e.g. "Co-authored-by")
         # from lines that look like regular body text.
@@ -196,8 +197,9 @@ module Homebrew
         [subject, body, trailers]
       end
 
+      sig { params(git_repo: GitRepository, pull_request: T.nilable(String), dry_run: T::Boolean).void }
       def signoff!(git_repo, pull_request: nil, dry_run: false)
-        subject, body, trailers = separate_commit_message(git_repo.commit_message)
+        subject, body, trailers = separate_commit_message(T.must(git_repo.commit_message))
 
         if pull_request
           # This is a tap pull request and approving reviewers should also sign-off.
@@ -210,7 +212,7 @@ module Homebrew
 
           # Append the close message as well, unless the commit body already includes it.
           close_message = "Closes ##{pull_request}."
-          body += "\n\n#{close_message}" unless body.include? close_message
+          body.concat("\n\n#{close_message}") unless body.include?(close_message)
         end
 
         git_args = Utils::Git.git, "-C", git_repo.pathname, "commit", "--amend", "--signoff", "--allow-empty",
@@ -223,6 +225,7 @@ module Homebrew
         end
       end
 
+      sig { params(tap: Tap, subject_name: String, subject_path: Pathname, content: String).returns(T.untyped) }
       def get_package(tap, subject_name, subject_path, content)
         if subject_path.to_s.start_with?("#{tap.cask_dir}/")
           cask = begin
@@ -240,6 +243,7 @@ module Homebrew
         end
       end
 
+      sig { params(old_contents: String, new_contents: String, subject_path: T.any(String, Pathname), reason: T.nilable(String)).returns(String) }
       def determine_bump_subject(old_contents, new_contents, subject_path, reason: nil)
         subject_path = Pathname(subject_path)
         tap          = Tap.from_path(subject_path)
@@ -268,6 +272,7 @@ module Homebrew
 
       # Cherry picks a single commit that modifies a single file.
       # Potentially rewords this commit using {determine_bump_subject}.
+      sig { params(commit: String, file: String, git_repo: GitRepository, reason: T.nilable(String), verbose: T::Boolean, resolve: T::Boolean).void }
       def reword_package_commit(commit, file, git_repo:, reason: "", verbose: false, resolve: false)
         package_file = git_repo.pathname / file
         package_name = package_file.basename.to_s.chomp(".rb")
@@ -279,7 +284,7 @@ module Homebrew
         new_package = Utils::Git.file_at_commit(git_repo.to_s, file, "HEAD")
 
         bump_subject = determine_bump_subject(old_package, new_package, package_file, reason:).strip
-        subject, body, trailers = separate_commit_message(git_repo.commit_message)
+        subject, body, trailers = separate_commit_message(T.must(git_repo.commit_message))
 
         if subject != bump_subject && !subject.start_with?("#{package_name}:")
           safe_system("git", "-C", git_repo.pathname, "commit", "--amend", "-q",
@@ -293,6 +298,7 @@ module Homebrew
       # Cherry picks multiple commits that each modify a single file.
       # Words the commit according to {determine_bump_subject} with the body
       # corresponding to all the original commit messages combined.
+      sig { params(commits: T::Array[String], file: String, git_repo: GitRepository, reason: T.nilable(String), verbose: T::Boolean, resolve: T::Boolean).void }
       def squash_package_commits(commits, file, git_repo:, reason: "", verbose: false, resolve: false)
         odebug "Squashing #{file}: #{commits.join " "}"
 
@@ -304,7 +310,7 @@ module Homebrew
         messages = []
         trailers = []
         commits.each do |commit|
-          subject, body, trailer = separate_commit_message(git_repo.commit_message(commit))
+          subject, body, trailer = separate_commit_message(T.must(git_repo.commit_message(commit)))
           body = body.lines.map { |line| "  #{line.strip}" }.join("\n")
           messages << "* #{subject}\n#{body}".strip
           trailers << trailer
@@ -340,6 +346,7 @@ module Homebrew
       end
 
       # TODO: fix test in `test/dev-cmd/pr-pull_spec.rb` and assume `cherry_picked: false`.
+      sig { params(original_commit: String, tap: Tap, reason: String, verbose: T::Boolean, resolve: T::Boolean, cherry_picked: T::Boolean).void }
       def autosquash!(original_commit, tap:, reason: "", verbose: false, resolve: false, cherry_picked: true)
         git_repo = tap.git_repository
         original_head = git_repo.head_ref
@@ -403,13 +410,14 @@ module Homebrew
         end
       rescue
         opoo "Autosquash encountered an error; resetting to original state at #{original_head}"
-        system "git", "-C", tap.path, "reset", "--hard", original_head
-        system "git", "-C", tap.path, "cherry-pick", "--abort" if cherry_picked
+        system "git", "-C", tap.path.to_s, "reset", "--hard", T.must(original_head)
+        system "git", "-C", tap.path.to_s, "cherry-pick", "--abort" if cherry_picked
         raise
       end
 
       private
 
+      sig { params(user: String, repo: String, pull_request: String, path: T.any(String, Pathname)).void }
       def cherry_pick_pr!(user, repo, pull_request, path: ".")
         if args.dry_run?
           puts <<~EOS
@@ -427,6 +435,7 @@ module Homebrew
                                                                          resolve: args.resolve?)
       end
 
+      sig { params(tap: Tap, original_commit: String, labels: T::Array[String]).returns(T::Boolean) }
       def formulae_need_bottles?(tap, original_commit, labels)
         return false if args.dry_run?
 
@@ -437,6 +446,7 @@ module Homebrew
         end
       end
 
+      sig { params(tap: Tap, original_commit: String).returns(T::Array[String]) }
       def changed_packages(tap, original_commit)
         formulae = Utils.popen_read("git", "-C", tap.path, "diff-tree",
                                     "-r", "--name-only", "--diff-filter=AM",
@@ -473,6 +483,7 @@ module Homebrew
         formulae + casks
       end
 
+      sig { params(repo: String, pull_request: String).void }
       def pr_check_conflicts(repo, pull_request)
         long_build_pr_files = GitHub.issues(
           repo:, state: "open", labels: "no long build conflict",
