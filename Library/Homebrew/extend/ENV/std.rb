@@ -34,7 +34,7 @@ module Stdenv
     self["PKG_CONFIG_LIBDIR"] = determine_pkg_config_libdir
 
     self["MAKEFLAGS"] = "-j#{make_jobs}"
-    self["RUSTFLAGS"] = Hardware.rustflags_target_cpu
+    self["RUSTFLAGS"] = Hardware.rustflags_target_cpu(effective_arch)
 
     if HOMEBREW_PREFIX.to_s != "/usr/local"
       # /usr/local is already an -isystem and -L directory so we skip it
