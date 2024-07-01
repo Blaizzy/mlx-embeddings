@@ -22,9 +22,19 @@ module Homebrew
 
       if args.formula? || both
         ohai "Formulae"
-        CacheStoreDatabase.use(:descriptions) do |db|
-          cache_store = DescriptionCacheStore.new(db)
-          Descriptions.search(string_or_regex, search_type, cache_store, eval_all).print
+        if eval_all
+          CacheStoreDatabase.use(:descriptions) do |db|
+            cache_store = DescriptionCacheStore.new(db)
+            Descriptions.search(string_or_regex, search_type, cache_store, eval_all).print
+          end
+        else
+          unofficial = Tap.all.sum { |tap| tap.official? ? 0 : tap.formula_files.size }
+          if unofficial.positive?
+            opoo "Use `--eval-all` to search #{unofficial} additional " \
+                 "#{Utils.pluralize("formula", unofficial, plural: "e")} in third party taps."
+          end
+          descriptions = Homebrew::API::Formula.all_formulae.transform_values { |data| data["desc"] }
+          Descriptions.search(string_or_regex, search_type, descriptions, eval_all, cache_store_hash: true).print
         end
       end
       return if !args.cask? && !both
@@ -32,9 +42,19 @@ module Homebrew
       puts if both
 
       ohai "Casks"
-      CacheStoreDatabase.use(:cask_descriptions) do |db|
-        cache_store = CaskDescriptionCacheStore.new(db)
-        Descriptions.search(string_or_regex, search_type, cache_store, eval_all).print
+      if eval_all
+        CacheStoreDatabase.use(:cask_descriptions) do |db|
+          cache_store = CaskDescriptionCacheStore.new(db)
+          Descriptions.search(string_or_regex, search_type, cache_store, eval_all).print
+        end
+      else
+        unofficial = Tap.all.sum { |tap| tap.official? ? 0 : tap.cask_files.size }
+        if unofficial.positive?
+          opoo "Use `--eval-all` to search #{unofficial} additional " \
+               "#{Utils.pluralize("cask", unofficial)} in third party taps."
+        end
+        descriptions = Homebrew::API::Cask.all_casks.transform_values { |c| [c["name"].join(", "), c["desc"]] }
+        Descriptions.search(string_or_regex, search_type, descriptions, eval_all, cache_store_hash: true).print
       end
     end
 

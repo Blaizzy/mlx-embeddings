@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require "search"
+require "descriptions"
+require "cmd/desc"
 
 RSpec.describe Homebrew::Search do
   describe "#query_regexp" do
@@ -54,6 +56,36 @@ RSpec.describe Homebrew::Search do
         it "does not raise an error" do
           expect(described_class.search(collection, "foo")).to eq "foo" => nil
         end
+      end
+    end
+  end
+
+  describe "#search_descriptions" do
+    let(:args) { Homebrew::Cmd::Desc.new(["min_arg_placeholder"]).args }
+
+    context "with api" do
+      let(:api_formulae) do
+        { "testball" => { "desc" => "Some test" } }
+      end
+
+      let(:api_casks) do
+        { "testball" => { "desc" => "Some test", "name" => ["Test Ball"] } }
+      end
+
+      before do
+        allow(Homebrew::API::Formula).to receive(:all_formulae).and_return(api_formulae)
+        allow(Homebrew::API::Cask).to receive(:all_casks).and_return(api_casks)
+      end
+
+      it "searches formula descriptions" do
+        expect { described_class.search_descriptions(described_class.query_regexp("some"), args) }
+          .to output(/testball: Some test/).to_stdout
+      end
+
+      it "searches cask descriptions", :needs_macos do
+        expect { described_class.search_descriptions(described_class.query_regexp("ball"), args) }
+          .to output(/testball: \(Test Ball\) Some test/).to_stdout
+          .and not_to_output(/testball: Some test/).to_stdout
       end
     end
   end
