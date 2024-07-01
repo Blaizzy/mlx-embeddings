@@ -111,8 +111,8 @@ module Homebrew
       end
 
       sig {
-        params(tag: String, digest: String, cellar: T.any(Symbol, String), tag_column: Integer,
-               digest_column: Integer).returns(String)
+        params(tag: Symbol, digest: T.any(Checksum, String), cellar: T.nilable(T.any(String, Symbol)),
+               tag_column: Integer, digest_column: Integer).returns(String)
       }
       def generate_sha256_line(tag, digest, cellar, tag_column, digest_column)
         line = "sha256 "
@@ -299,7 +299,7 @@ module Homebrew
         !absolute_symlinks_start_with_string.empty?
       end
 
-      sig { params(cellar: String).returns(T.nilable(T::Boolean)) }
+      sig { params(cellar: T.nilable(T.any(String, Symbol))).returns(T.nilable(T::Boolean)) }
       def cellar_parameter_needed?(cellar)
         default_cellars = [
           Homebrew::DEFAULT_MACOS_CELLAR,
