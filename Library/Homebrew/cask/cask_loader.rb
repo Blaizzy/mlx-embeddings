@@ -84,8 +84,8 @@ module Cask
     # Loads a cask from a path.
     class FromPathLoader < AbstractContentLoader
       sig {
-        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
-          .returns(T.nilable(T.attached_class))
+        overridable.params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+                   .returns(T.nilable(T.attached_class))
       }
       def self.try_new(ref, warn: false)
         path = case ref
@@ -152,8 +152,8 @@ module Cask
     # Loads a cask from a URI.
     class FromURILoader < FromPathLoader
       sig {
-        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
-          .returns(T.nilable(T.attached_class))
+        override.params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+                .returns(T.nilable(T.attached_class))
       }
       def self.try_new(ref, warn: false)
         # Cache compiled regex
@@ -199,16 +199,22 @@ module Cask
       attr_reader :tap
 
       sig {
-        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
-          .returns(T.nilable(T.attached_class))
+        override(allow_incompatible: true) # rubocop:todo Sorbet/AllowIncompatibleOverride
+          .params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+          .returns(T.nilable(T.any(T.attached_class, FromAPILoader)))
       }
       def self.try_new(ref, warn: false)
         ref = ref.to_s
 
         return unless (token_tap_type = CaskLoader.tap_cask_token_type(ref, warn:))
 
-        token, tap, = token_tap_type
-        new("#{tap}/#{token}")
+        token, tap, type = token_tap_type
+
+        if type == :migration && tap.core_cask_tap? && (loader = FromAPILoader.try_new(token))
+          loader
+        else
+          new("#{tap}/#{token}")
+        end
       end
 
       sig { params(tapped_token: String).void }
@@ -441,8 +447,8 @@ module Cask
     # if the same token exists in multiple taps.
     class FromNameLoader < FromTapLoader
       sig {
-        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
-          .returns(T.nilable(T.attached_class))
+        override.params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+                .returns(T.nilable(T.any(T.attached_class, FromAPILoader)))
       }
       def self.try_new(ref, warn: false)
         return unless ref.is_a?(String)
@@ -452,7 +458,7 @@ module Cask
 
         # If it exists in the default tap, never treat it as ambiguous with another tap.
         if (core_cask_tap = CoreCaskTap.instance).installed? &&
-           (loader= super("#{core_cask_tap}/#{token}", warn:))&.path&.exist?
+           (loader = super("#{core_cask_tap}/#{token}", warn:))&.path&.exist?
           return loader
         end
 
@@ -473,8 +479,8 @@ module Cask
     # Loader which loads a cask from the installed cask file.
     class FromInstalledPathLoader < FromPathLoader
       sig {
-        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
-          .returns(T.nilable(T.attached_class))
+        override.params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+                .returns(T.nilable(T.attached_class))
       }
       def self.try_new(ref, warn: false)
         return unless ref.is_a?(String)
@@ -489,8 +495,8 @@ module Cask
     # Pseudo-loader which raises an error when trying to load the corresponding cask.
     class NullLoader < FromPathLoader
       sig {
-        params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
-          .returns(T.nilable(T.attached_class))
+        override.params(ref: T.any(String, Pathname, Cask, URI::Generic), warn: T::Boolean)
+                .returns(T.nilable(T.attached_class))
       }
       def self.try_new(ref, warn: false)
         return if ref.is_a?(Cask)
