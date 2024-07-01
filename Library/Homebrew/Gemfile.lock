@@ -142,13 +142,12 @@ GEM
     vernier (1.0.1)
     warning (1.4.0)
     yard (0.9.36)
-    yard-sorbet (0.8.1)
-      sorbet-runtime (>= 0.5)
-      yard (>= 0.9)
+    yard-sorbet (0.9.0)
+      sorbet-runtime
+      yard
 
 PLATFORMS
   aarch64-linux
-  arm-linux
   arm64-darwin
   x86_64-darwin
   x86_64-linux
