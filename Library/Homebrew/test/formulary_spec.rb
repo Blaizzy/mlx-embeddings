@@ -55,37 +55,10 @@ RSpec.describe Formulary do
   end
 
   describe "::factory" do
-    before do
-      formula_path.dirname.mkpath
-      formula_path.write formula_content
-    end
-
-    it "returns a Formula" do
-      expect(described_class.factory(formula_name)).to be_a(Formula)
-    end
-
-    it "returns a Formula when given a fully qualified name" do
-      expect(described_class.factory("homebrew/core/#{formula_name}")).to be_a(Formula)
-    end
-
-    it "raises an error if the Formula cannot be found" do
-      expect do
-        described_class.factory("not_existed_formula")
-      end.to raise_error(FormulaUnavailableError)
-    end
-
-    it "raises an error if ref is nil" do
-      expect do
-        described_class.factory(nil)
-      end.to raise_error(TypeError)
-    end
-
-    context "with sharded Formula directory" do
-      let(:formula_name) { "testball_sharded" }
-      let(:formula_path) do
-        core_tap = CoreTap.instance
-        (core_tap.formula_dir/formula_name[0]).mkpath
-        core_tap.new_formula_path(formula_name)
+    context "without the API" do
+      before do
+        formula_path.dirname.mkpath
+        formula_path.write formula_content
       end
 
       it "returns a Formula" do
@@ -95,180 +68,209 @@ RSpec.describe Formulary do
       it "returns a Formula when given a fully qualified name" do
         expect(described_class.factory("homebrew/core/#{formula_name}")).to be_a(Formula)
       end
-    end
 
-    context "when the Formula has the wrong class" do
-      let(:formula_name) { "giraffe" }
-      let(:formula_content) do
-        <<~RUBY
-          class Wrong#{described_class.class_s(formula_name)} < Formula
-          end
-        RUBY
-      end
-
-      it "raises an error" do
+      it "raises an error if the Formula cannot be found" do
         expect do
-          described_class.factory(formula_name)
-        end.to raise_error(TapFormulaClassUnavailableError)
-      end
-    end
-
-    it "returns a Formula when given a path" do
-      expect(described_class.factory(formula_path)).to be_a(Formula)
-    end
-
-    it "returns a Formula when given a URL", :needs_utils_curl, :no_api do
-      formula = described_class.factory("file://#{formula_path}")
-      expect(formula).to be_a(Formula)
-    end
-
-    context "when given a bottle" do
-      subject(:formula) { described_class.factory(bottle) }
-
-      it "returns a Formula" do
-        expect(formula).to be_a(Formula)
+          described_class.factory("not_existed_formula")
+        end.to raise_error(FormulaUnavailableError)
       end
 
-      it "calling #local_bottle_path on the returned Formula returns the bottle path" do
-        expect(formula.local_bottle_path).to eq(bottle.realpath)
-      end
-    end
-
-    context "when given an alias" do
-      subject(:formula) { described_class.factory("foo") }
-
-      let(:alias_dir) { CoreTap.instance.alias_dir }
-      let(:alias_path) { alias_dir/"foo" }
-
-      before do
-        alias_dir.mkpath
-        FileUtils.ln_s formula_path, alias_path
-      end
-
-      it "returns a Formula" do
-        expect(formula).to be_a(Formula)
-      end
-
-      it "calling #alias_path on the returned Formula returns the alias path" do
-        expect(formula.alias_path).to eq(alias_path)
-      end
-    end
-
-    context "with installed Formula" do
-      before do
-        # don't try to load/fetch gcc/glibc
-        allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)
-      end
-
-      let(:installed_formula) { described_class.factory(formula_path) }
-      let(:installer) { FormulaInstaller.new(installed_formula) }
-
-      it "returns a Formula when given a rack" do
-        installer.fetch
-        installer.install
-
-        f = described_class.from_rack(installed_formula.rack)
-        expect(f).to be_a(Formula)
-      end
-
-      it "returns a Formula when given a Keg" do
-        installer.fetch
-        installer.install
-
-        keg = Keg.new(installed_formula.prefix)
-        f = described_class.from_keg(keg)
-        expect(f).to be_a(Formula)
-      end
-    end
-
-    context "when migrating from a Tap" do
-      let(:tap) { Tap.fetch("homebrew", "foo") }
-      let(:another_tap) { Tap.fetch("homebrew", "bar") }
-      let(:tap_migrations_path) { tap.path/"tap_migrations.json" }
-      let(:another_tap_formula_path) { another_tap.path/"Formula/#{formula_name}.rb" }
-
-      before do
-        tap.path.mkpath
-        another_tap_formula_path.dirname.mkpath
-        another_tap_formula_path.write formula_content
-      end
-
-      after do
-        FileUtils.rm_rf tap.path
-        FileUtils.rm_rf another_tap.path
-      end
-
-      it "returns a Formula that has gone through a tap migration into homebrew/core" do
-        tap_migrations_path.write <<~EOS
-          {
-            "#{formula_name}": "homebrew/core"
-          }
-        EOS
-        formula = described_class.factory("#{tap}/#{formula_name}")
-        expect(formula).to be_a(Formula)
-        expect(formula.tap).to eq(CoreTap.instance)
-        expect(formula.path).to eq(formula_path)
-      end
-
-      it "returns a Formula that has gone through a tap migration into another tap" do
-        tap_migrations_path.write <<~EOS
-          {
-            "#{formula_name}": "#{another_tap}"
-          }
-        EOS
-        formula = described_class.factory("#{tap}/#{formula_name}")
-        expect(formula).to be_a(Formula)
-        expect(formula.tap).to eq(another_tap)
-        expect(formula.path).to eq(another_tap_formula_path)
-      end
-    end
-
-    context "when loading from Tap" do
-      let(:tap) { Tap.fetch("homebrew", "foo") }
-      let(:another_tap) { Tap.fetch("homebrew", "bar") }
-      let(:formula_path) { tap.path/"Formula/#{formula_name}.rb" }
-      let(:alias_name) { "bar" }
-      let(:alias_dir) { tap.alias_dir }
-      let(:alias_path) { alias_dir/alias_name }
-
-      before do
-        alias_dir.mkpath
-        FileUtils.ln_s formula_path, alias_path
-      end
-
-      it "returns a Formula when given a name" do
-        expect(described_class.factory(formula_name)).to be_a(Formula)
-      end
-
-      it "returns a Formula from an Alias path" do
-        expect(described_class.factory(alias_name)).to be_a(Formula)
-      end
-
-      it "returns a Formula from a fully qualified Alias path" do
-        expect(described_class.factory("#{tap.name}/#{alias_name}")).to be_a(Formula)
-      end
-
-      it "raises an error when the Formula cannot be found" do
+      it "raises an error if ref is nil" do
         expect do
-          described_class.factory("#{tap}/not_existed_formula")
-        end.to raise_error(TapFormulaUnavailableError)
+          described_class.factory(nil)
+        end.to raise_error(TypeError)
       end
 
-      it "returns a Formula when given a fully qualified name" do
-        expect(described_class.factory("#{tap}/#{formula_name}")).to be_a(Formula)
+      context "with sharded Formula directory" do
+        let(:formula_name) { "testball_sharded" }
+        let(:formula_path) do
+          core_tap = CoreTap.instance
+          (core_tap.formula_dir/formula_name[0]).mkpath
+          core_tap.new_formula_path(formula_name)
+        end
+
+        it "returns a Formula" do
+          expect(described_class.factory(formula_name)).to be_a(Formula)
+        end
+
+        it "returns a Formula when given a fully qualified name" do
+          expect(described_class.factory("homebrew/core/#{formula_name}")).to be_a(Formula)
+        end
       end
 
-      it "raises an error if a Formula is in multiple Taps" do
-        (another_tap.path/"Formula").mkpath
-        (another_tap.path/"Formula/#{formula_name}.rb").write formula_content
+      context "when the Formula has the wrong class" do
+        let(:formula_name) { "giraffe" }
+        let(:formula_content) do
+          <<~RUBY
+            class Wrong#{described_class.class_s(formula_name)} < Formula
+            end
+          RUBY
+        end
 
-        expect do
-          described_class.factory(formula_name)
-        end.to raise_error(TapFormulaAmbiguityError)
+        it "raises an error" do
+          expect do
+            described_class.factory(formula_name)
+          end.to raise_error(TapFormulaClassUnavailableError)
+        end
+      end
+
+      it "returns a Formula when given a path" do
+        expect(described_class.factory(formula_path)).to be_a(Formula)
+      end
+
+      it "returns a Formula when given a URL", :needs_utils_curl, :no_api do
+        formula = described_class.factory("file://#{formula_path}")
+        expect(formula).to be_a(Formula)
+      end
+
+      context "when given a bottle" do
+        subject(:formula) { described_class.factory(bottle) }
+
+        it "returns a Formula" do
+          expect(formula).to be_a(Formula)
+        end
+
+        it "calling #local_bottle_path on the returned Formula returns the bottle path" do
+          expect(formula.local_bottle_path).to eq(bottle.realpath)
+        end
+      end
+
+      context "when given an alias" do
+        subject(:formula) { described_class.factory("foo") }
+
+        let(:alias_dir) { CoreTap.instance.alias_dir }
+        let(:alias_path) { alias_dir/"foo" }
+
+        before do
+          alias_dir.mkpath
+          FileUtils.ln_s formula_path, alias_path
+        end
+
+        it "returns a Formula" do
+          expect(formula).to be_a(Formula)
+        end
+
+        it "calling #alias_path on the returned Formula returns the alias path" do
+          expect(formula.alias_path).to eq(alias_path)
+        end
+      end
+
+      context "with installed Formula" do
+        before do
+          # don't try to load/fetch gcc/glibc
+          allow(DevelopmentTools).to receive_messages(needs_libc_formula?: false, needs_compiler_formula?: false)
+        end
+
+        let(:installed_formula) { described_class.factory(formula_path) }
+        let(:installer) { FormulaInstaller.new(installed_formula) }
+
+        it "returns a Formula when given a rack" do
+          installer.fetch
+          installer.install
+
+          f = described_class.from_rack(installed_formula.rack)
+          expect(f).to be_a(Formula)
+        end
+
+        it "returns a Formula when given a Keg" do
+          installer.fetch
+          installer.install
+
+          keg = Keg.new(installed_formula.prefix)
+          f = described_class.from_keg(keg)
+          expect(f).to be_a(Formula)
+        end
+      end
+
+      context "when migrating from a Tap" do
+        let(:tap) { Tap.fetch("homebrew", "foo") }
+        let(:another_tap) { Tap.fetch("homebrew", "bar") }
+        let(:tap_migrations_path) { tap.path/"tap_migrations.json" }
+        let(:another_tap_formula_path) { another_tap.path/"Formula/#{formula_name}.rb" }
+
+        before do
+          tap.path.mkpath
+          another_tap_formula_path.dirname.mkpath
+          another_tap_formula_path.write formula_content
+        end
+
+        after do
+          FileUtils.rm_rf tap.path
+          FileUtils.rm_rf another_tap.path
+        end
+
+        it "returns a Formula that has gone through a tap migration into homebrew/core" do
+          tap_migrations_path.write <<~EOS
+            {
+              "#{formula_name}": "homebrew/core"
+            }
+          EOS
+          formula = described_class.factory("#{tap}/#{formula_name}")
+          expect(formula).to be_a(Formula)
+          expect(formula.tap).to eq(CoreTap.instance)
+          expect(formula.path).to eq(formula_path)
+        end
+
+        it "returns a Formula that has gone through a tap migration into another tap" do
+          tap_migrations_path.write <<~EOS
+            {
+              "#{formula_name}": "#{another_tap}"
+            }
+          EOS
+          formula = described_class.factory("#{tap}/#{formula_name}")
+          expect(formula).to be_a(Formula)
+          expect(formula.tap).to eq(another_tap)
+          expect(formula.path).to eq(another_tap_formula_path)
+        end
+      end
+
+      context "when loading from Tap" do
+        let(:tap) { Tap.fetch("homebrew", "foo") }
+        let(:another_tap) { Tap.fetch("homebrew", "bar") }
+        let(:formula_path) { tap.path/"Formula/#{formula_name}.rb" }
+        let(:alias_name) { "bar" }
+        let(:alias_dir) { tap.alias_dir }
+        let(:alias_path) { alias_dir/alias_name }
+
+        before do
+          alias_dir.mkpath
+          FileUtils.ln_s formula_path, alias_path
+        end
+
+        it "returns a Formula when given a name" do
+          expect(described_class.factory(formula_name)).to be_a(Formula)
+        end
+
+        it "returns a Formula from an Alias path" do
+          expect(described_class.factory(alias_name)).to be_a(Formula)
+        end
+
+        it "returns a Formula from a fully qualified Alias path" do
+          expect(described_class.factory("#{tap.name}/#{alias_name}")).to be_a(Formula)
+        end
+
+        it "raises an error when the Formula cannot be found" do
+          expect do
+            described_class.factory("#{tap}/not_existed_formula")
+          end.to raise_error(TapFormulaUnavailableError)
+        end
+
+        it "returns a Formula when given a fully qualified name" do
+          expect(described_class.factory("#{tap}/#{formula_name}")).to be_a(Formula)
+        end
+
+        it "raises an error if a Formula is in multiple Taps" do
+          (another_tap.path/"Formula").mkpath
+          (another_tap.path/"Formula/#{formula_name}.rb").write formula_content
+
+          expect do
+            described_class.factory(formula_name)
+          end.to raise_error(TapFormulaAmbiguityError)
+        end
       end
     end
 
-    context "when loading from the API" do
+    context "with the API" do
       def formula_json_contents(extra_items = {})
         {
           formula_name => {
@@ -496,25 +498,16 @@ RSpec.describe Formulary do
           FileUtils.rm_rf foo_tap.path
         end
 
-        it "returns the core formula if the short name clashes with a tap migration rename" do
-          (foo_tap.path/"tap_migrations.json").write <<~JSON
-            { "#{formula_name}": "homebrew/core/#{formula_name}-v2" }
-          JSON
-
-          expect(described_class::FromNameLoader.try_new(formula_name))
-            .to be_a(described_class::FromNameLoader)
-            .and have_attributes(name: formula_name)
-        end
-
         it "returns the tap migration rename by old formula_name" do
           old_formula_name = "#{formula_name}-old"
           (foo_tap.path/"tap_migrations.json").write <<~JSON
             { "#{old_formula_name}": "homebrew/core/#{formula_name}" }
           JSON
 
-          expect(described_class::FromNameLoader.try_new(old_formula_name))
-            .to be_a(described_class::FromAPILoader)
-            .and have_attributes(name: formula_name)
+          loader = described_class::FromNameLoader.try_new(old_formula_name)
+          expect(loader).to be_a(described_class::FromAPILoader)
+          expect(loader.name).to eq formula_name
+          expect(loader.path).not_to exist
         end
 
         it "returns the tap migration rename by old full name" do
@@ -523,9 +516,10 @@ RSpec.describe Formulary do
             { "#{old_formula_name}": "homebrew/core/#{formula_name}" }
           JSON
 
-          expect(described_class::FromTapLoader.try_new("#{foo_tap}/#{old_formula_name}"))
-            .to be_a(described_class::FromAPILoader)
-            .and have_attributes(name: formula_name)
+          loader = described_class::FromTapLoader.try_new("#{foo_tap}/#{old_formula_name}")
+          expect(loader).to be_a(described_class::FromAPILoader)
+          expect(loader.name).to eq formula_name
+          expect(loader.path).not_to exist
         end
       end
     end

@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 RSpec.describe Cask::CaskLoader::FromAPILoader, :cask do
-  shared_context "with API setup" do |new_token|
-    let(:token) { new_token }
-    let(:cask_from_source) { Cask::CaskLoader.load(token) }
+  shared_context "with API setup" do |local_token|
+    let(:api_token) { "#{local_token}-api" }
+    let(:cask_from_source) { Cask::CaskLoader.load(local_token) }
     let(:cask_json) do
       hash = cask_from_source.to_hash_with_variations
       json = JSON.pretty_generate(hash)
       JSON.parse(json)
     end
-    let(:casks_from_api_hash) { { cask_json["token"] => cask_json.except("token") } }
-    let(:api_loader) { described_class.new(token, from_json: cask_json) }
+    let(:casks_from_api_hash) { { api_token => cask_json.except("token") } }
+    let(:api_loader) { described_class.new(api_token, from_json: cask_json) }
 
     before do
       allow(Homebrew::API::Cask)
@@ -26,7 +26,7 @@ RSpec.describe Cask::CaskLoader::FromAPILoader, :cask do
 
     context "when not using the API", :no_api do
       it "returns false" do
-        expect(described_class.try_new(token)).to be_nil
+        expect(described_class.try_new(api_token)).to be_nil
       end
     end
 
@@ -36,19 +36,19 @@ RSpec.describe Cask::CaskLoader::FromAPILoader, :cask do
       end
 
       it "returns a loader for valid token" do
-        expect(described_class.try_new(token))
+        expect(described_class.try_new(api_token))
           .to be_a(described_class)
-          .and have_attributes(token:)
+          .and have_attributes(token: api_token)
       end
 
       it "returns a loader for valid full name" do
-        expect(described_class.try_new("homebrew/cask/#{token}"))
+        expect(described_class.try_new("homebrew/cask/#{api_token}"))
           .to be_a(described_class)
-          .and have_attributes(token:)
+          .and have_attributes(token: api_token)
       end
 
       it "returns nil for full name with invalid tap" do
-        expect(described_class.try_new("homebrew/foo/#{token}")).to be_nil
+        expect(described_class.try_new("homebrew/foo/#{api_token}")).to be_nil
       end
 
       context "with core tap migration renames" do
@@ -62,100 +62,92 @@ RSpec.describe Cask::CaskLoader::FromAPILoader, :cask do
           FileUtils.rm_rf foo_tap.path
         end
 
-        it "returns the core cask if the short name clashes with a tap migration rename" do
-          (foo_tap.path/"tap_migrations.json").write <<~JSON
-            { "#{token}": "homebrew/cask/#{token}-v2" }
-          JSON
-
-          expect(Cask::CaskLoader::FromNameLoader.try_new(token))
-            .to be_a(Cask::CaskLoader::FromNameLoader)
-            .and have_attributes(token:)
-        end
-
         it "returns the tap migration rename by old token" do
-          old_token = "#{token}-old"
+          old_token = "#{api_token}-old"
           (foo_tap.path/"tap_migrations.json").write <<~JSON
-            { "#{old_token}": "homebrew/cask/#{token}" }
+            { "#{old_token}": "homebrew/cask/#{api_token}" }
           JSON
 
-          expect(Cask::CaskLoader::FromNameLoader.try_new(old_token))
-            .to be_a(described_class)
-            .and have_attributes(token:)
+          loader = Cask::CaskLoader::FromNameLoader.try_new(old_token)
+          expect(loader).to be_a(described_class)
+          expect(loader.token).to eq api_token
+          expect(loader.path).not_to exist
         end
 
         it "returns the tap migration rename by old full name" do
-          old_token = "#{token}-old"
+          old_token = "#{api_token}-old"
           (foo_tap.path/"tap_migrations.json").write <<~JSON
-            { "#{old_token}": "homebrew/cask/#{token}" }
+            { "#{old_token}": "homebrew/cask/#{api_token}" }
           JSON
 
-          expect(Cask::CaskLoader::FromTapLoader.try_new("#{foo_tap}/#{old_token}"))
-            .to be_a(described_class)
-            .and have_attributes(token:)
+          loader = Cask::CaskLoader::FromTapLoader.try_new("#{foo_tap}/#{old_token}")
+          expect(loader).to be_a(described_class)
+          expect(loader.token).to eq api_token
+          expect(loader.path).not_to exist
         end
       end
     end
   end
 
   describe "#load" do
-    shared_examples "loads from API" do |cask_token, caskfile_only|
+    shared_examples "loads from API" do |cask_token, caskfile_only:|
       include_context "with API setup", cask_token
       let(:cask_from_api) { api_loader.load(config: nil) }
 
       it "loads from JSON API" do
         expect(cask_from_api).to be_a(Cask::Cask)
-        expect(cask_from_api.token).to eq(cask_token)
+        expect(cask_from_api.token).to eq(api_token)
         expect(cask_from_api.loaded_from_api?).to be(true)
         expect(cask_from_api.caskfile_only?).to be(caskfile_only)
       end
     end
 
     context "with a binary stanza" do
-      include_examples "loads from API", "with-binary", false
+      include_examples "loads from API", "with-binary", caskfile_only: false
     end
 
     context "with cask dependencies" do
-      include_examples "loads from API", "with-depends-on-cask-multiple", false
+      include_examples "loads from API", "with-depends-on-cask-multiple", caskfile_only: false
     end
 
     context "with formula dependencies" do
-      include_examples "loads from API", "with-depends-on-formula-multiple", false
+      include_examples "loads from API", "with-depends-on-formula-multiple", caskfile_only: false
     end
 
     context "with macos dependencies" do
-      include_examples "loads from API", "with-depends-on-macos-array", false
+      include_examples "loads from API", "with-depends-on-macos-array", caskfile_only: false
     end
 
     context "with an installer stanza" do
-      include_examples "loads from API", "with-installer-script", false
+      include_examples "loads from API", "with-installer-script", caskfile_only: false
     end
 
     context "with uninstall stanzas" do
-      include_examples "loads from API", "with-uninstall-multi", false
+      include_examples "loads from API", "with-uninstall-multi", caskfile_only: false
     end
 
     context "with a zap stanza" do
-      include_examples "loads from API", "with-zap", false
+      include_examples "loads from API", "with-zap", caskfile_only: false
     end
 
     context "with a preflight stanza" do
-      include_examples "loads from API", "with-preflight", true
+      include_examples "loads from API", "with-preflight", caskfile_only: true
     end
 
     context "with an uninstall-preflight stanza" do
-      include_examples "loads from API", "with-uninstall-preflight", true
+      include_examples "loads from API", "with-uninstall-preflight", caskfile_only: true
     end
 
     context "with a postflight stanza" do
-      include_examples "loads from API", "with-postflight", true
+      include_examples "loads from API", "with-postflight", caskfile_only: true
     end
 
     context "with an uninstall-postflight stanza" do
-      include_examples "loads from API", "with-uninstall-postflight", true
+      include_examples "loads from API", "with-uninstall-postflight", caskfile_only: true
     end
 
     context "with a language stanza" do
-      include_examples "loads from API", "with-languages", true
+      include_examples "loads from API", "with-languages", caskfile_only: true
     end
   end
 end

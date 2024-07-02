@@ -458,14 +458,14 @@ module Cask
 
         # If it exists in the default tap, never treat it as ambiguous with another tap.
         if (core_cask_tap = CoreCaskTap.instance).installed? &&
-           (loader = super("#{core_cask_tap}/#{token}", warn:))&.path&.exist?
-          return loader
+           (core_cask_loader = super("#{core_cask_tap}/#{token}", warn:))&.path&.exist?
+          return core_cask_loader
         end
 
         loaders = Tap.select { |tap| tap.installed? && !tap.core_cask_tap? }
                      .filter_map { |tap| super("#{tap}/#{token}", warn:) }
                      .uniq(&:path)
-                     .select { |tap| tap.path.exist? }
+                     .select { |loader| loader.is_a?(FromAPILoader) || loader.path.exist? }
 
         case loaders.count
         when 1
