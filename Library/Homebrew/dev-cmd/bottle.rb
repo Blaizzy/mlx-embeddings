@@ -299,7 +299,7 @@ module Homebrew
         !absolute_symlinks_start_with_string.empty?
       end
 
-      sig { params(cellar: T.nilable(T.any(String, Symbol))).returns(T.nilable(T::Boolean)) }
+      sig { params(cellar: T.nilable(T.any(String, Symbol))).returns(T::Boolean) }
       def cellar_parameter_needed?(cellar)
         default_cellars = [
           Homebrew::DEFAULT_MACOS_CELLAR,
