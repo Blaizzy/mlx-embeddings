@@ -42,6 +42,7 @@ module Homebrew
           end,
           T.nilable(Utils::Bottles::Tag),
         )
+        return unless @bottle_tag
 
         if args.lost?
           if args.named.present?
@@ -54,13 +55,13 @@ module Homebrew
           end
         end
 
-        os = T.must(@bottle_tag).system
-        arch = if Hardware::CPU::INTEL_ARCHS.include?(T.must(@bottle_tag).arch)
+        os = @bottle_tag.system
+        arch = if Hardware::CPU::INTEL_ARCHS.include?(@bottle_tag.arch)
           :intel
-        elsif Hardware::CPU::ARM_ARCHS.include?(T.must(@bottle_tag).arch)
+        elsif Hardware::CPU::ARM_ARCHS.include?(@bottle_tag.arch)
           :arm
         else
-          raise "Unknown arch #{T.must(@bottle_tag).arch}."
+          raise "Unknown arch #{@bottle_tag.arch}."
         end
 
         Homebrew::SimulateSystem.with(os:, arch:) do
@@ -101,7 +102,9 @@ module Homebrew
             ["installs", formula_installs]
           end
 
-          output_unbottled(formulae, deps_hash, noun, T.must(hash), args.named.present?)
+          return if hash.nil?
+
+          output_unbottled(formulae, deps_hash, noun, hash, args.named.present?)
         end
       end
 
@@ -158,7 +161,7 @@ module Homebrew
         all_formulae = Array(all_formulae).reject(&:deprecated?) if all_formulae.present?
 
         [T.let(formulae, T::Array[Formula]), T.let(all_formulae, T::Array[Formula]),
-         T.let(T.must(formula_installs), T.nilable(T::Hash[Symbol, Integer]))]
+         T.let(formula_installs, T.nilable(T::Hash[Symbol, Integer]))]
       end
 
       sig { params(all_formulae: T.untyped).returns([T::Hash[String, T.untyped], T::Hash[String, T.untyped]]) }
@@ -185,6 +188,8 @@ module Homebrew
 
       sig { params(formulae: T::Array[Formula]).returns(NilClass) }
       def output_total(formulae)
+        return unless @bottle_tag
+
         ohai "Unbottled :#{@bottle_tag} formulae"
         unbottled_formulae = 0
 
@@ -203,6 +208,8 @@ module Homebrew
                any_named_args: T::Boolean).returns(NilClass)
       }
       def output_unbottled(formulae, deps_hash, noun, hash, any_named_args)
+        return unless @bottle_tag
+
         ohai ":#{@bottle_tag} bottle status#{@sort}"
         any_found = T.let(false, T::Boolean)
 
@@ -215,7 +222,7 @@ module Homebrew
           end
 
           requirements = f.recursive_requirements
-          if T.must(@bottle_tag).linux?
+          if @bottle_tag.linux?
             if requirements.any? { |r| r.is_a?(MacOSRequirement) && !r.version }
               puts "#{Tty.bold}#{Tty.red}#{name}#{Tty.reset}: requires macOS" if any_named_args
               next
@@ -224,7 +231,7 @@ module Homebrew
             puts "#{Tty.bold}#{Tty.red}#{name}#{Tty.reset}: requires Linux" if any_named_args
             next
           else
-            macos_version = T.must(@bottle_tag).to_macos_version
+            macos_version = @bottle_tag.to_macos_version
             macos_satisfied = requirements.all? do |r|
               case r
               when MacOSRequirement
@@ -236,7 +243,7 @@ module Homebrew
 
                 Version.new(MacOS::Xcode.latest_version(macos: macos_version)) >= r.version
               when ArchRequirement
-                r.arch == T.must(@bottle_tag).arch
+                r.arch == @bottle_tag.arch
               else
                 true
               end

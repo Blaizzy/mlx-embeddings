@@ -126,7 +126,7 @@ module Homebrew
                 cherry_pick_pr!(user, repo, pr, path: tap.path) unless args.no_cherry_pick?
                 if args.autosquash? && !args.dry_run?
                   autosquash!(original_commit, tap:, cherry_picked: !args.no_cherry_pick?,
-                              verbose: args.verbose?, resolve: args.resolve?, reason: T.must(args.message))
+                              verbose: args.verbose?, resolve: args.resolve?, reason: args.message)
                 end
                 signoff!(git_repo, pull_request: pr, dry_run: args.dry_run?) unless args.clean?
               end
@@ -141,7 +141,7 @@ module Homebrew
                   user, repo, pr, workflow_id: workflow, artifact_pattern:
                 )
                 if args.ignore_missing_artifacts.present? &&
-                   T.must(args.ignore_missing_artifacts).include?(workflow) &&
+                   args.ignore_missing_artifacts&.include?(workflow) &&
                    workflow_run.first.blank?
                   # Ignore that workflow as it was not executed and we specified
                   # that we could skip it.
@@ -185,7 +185,8 @@ module Homebrew
       # Separates a commit message into subject, body and trailers.
       sig { params(message: String).returns([String, String, String]) }
       def separate_commit_message(message)
-        subject = T.must(message.lines.first).strip
+        first_line = message.lines.first
+        return ["", "", ""] unless first_line
 
         # Skip the subject and separate lines that look like trailers (e.g. "Co-authored-by")
         # from lines that look like regular body text.
@@ -194,12 +195,15 @@ module Homebrew
         trailers = trailers.uniq.join.strip
         body = body.join.strip.gsub(/\n{3,}/, "\n\n")
 
-        [subject, body, trailers]
+        [first_line.strip, body, trailers]
       end
 
       sig { params(git_repo: GitRepository, pull_request: T.nilable(String), dry_run: T::Boolean).void }
       def signoff!(git_repo, pull_request: nil, dry_run: false)
-        subject, body, trailers = separate_commit_message(T.must(git_repo.commit_message))
+        msg = git_repo.commit_message
+        return if msg.blank?
+
+        subject, body, trailers = separate_commit_message(msg)
 
         if pull_request
           # This is a tap pull request and approving reviewers should also sign-off.
@@ -290,7 +294,10 @@ module Homebrew
         new_package = Utils::Git.file_at_commit(git_repo.to_s, file, "HEAD")
 
         bump_subject = determine_bump_subject(old_package, new_package, package_file, reason:).strip
-        subject, body, trailers = separate_commit_message(T.must(git_repo.commit_message))
+        msg = git_repo.commit_message
+        return if msg.blank?
+
+        subject, body, trailers = separate_commit_message(msg)
 
         if subject != bump_subject && !subject.start_with?("#{package_name}:")
           safe_system("git", "-C", git_repo.pathname, "commit", "--amend", "-q",
@@ -319,7 +326,10 @@ module Homebrew
         messages = []
         trailers = []
         commits.each do |commit|
-          subject, body, trailer = separate_commit_message(T.must(git_repo.commit_message(commit)))
+          msg = git_repo.commit_message(commit)
+          next if msg.blank?
+
+          subject, body, trailer = separate_commit_message(msg)
           body = body.lines.map { |line| "  #{line.strip}" }.join("\n")
           messages << "* #{subject}\n#{body}".strip
           trailers << trailer
@@ -356,12 +366,11 @@ module Homebrew
 
       # TODO: fix test in `test/dev-cmd/pr-pull_spec.rb` and assume `cherry_picked: false`.
       sig {
-        params(original_commit: String, tap: Tap, reason: String, verbose: T::Boolean, resolve: T::Boolean,
+        params(original_commit: String, tap: Tap, reason: T.nilable(String), verbose: T::Boolean, resolve: T::Boolean,
                cherry_picked: T::Boolean).void
       }
       def autosquash!(original_commit, tap:, reason: "", verbose: false, resolve: false, cherry_picked: true)
         git_repo = tap.git_repository
-        original_head = git_repo.head_ref
 
         commits = Utils.safe_popen_read("git", "-C", tap.path, "rev-list",
                                         "--reverse", "#{original_commit}..HEAD").lines.map(&:strip)
@@ -421,8 +430,11 @@ module Homebrew
           end
         end
       rescue
+        original_head = git_repo&.head_ref
+        return if original_head.nil?
+
         opoo "Autosquash encountered an error; resetting to original state at #{original_head}"
-        system "git", "-C", tap.path.to_s, "reset", "--hard", T.must(original_head)
+        system "git", "-C", tap.path.to_s, "reset", "--hard", original_head
         system "git", "-C", tap.path.to_s, "cherry-pick", "--abort" if cherry_picked
         raise
       end

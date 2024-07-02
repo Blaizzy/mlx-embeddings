@@ -10,7 +10,7 @@ end
 module Homebrew
   module DevCmd
     class Contributions < AbstractCommand
-      PRIMARY_REPOS = %w[brew core cask].freeze
+      PRIMARY_REPOS = T.let(%w[brew core cask].freeze, T::Array[String])
       SUPPORTED_REPOS = T.let([
         PRIMARY_REPOS,
         OFFICIAL_CMD_TAPS.keys.map { |t| t.delete_prefix("homebrew/") },
@@ -50,12 +50,12 @@ module Homebrew
         results = {}
         grand_totals = {}
 
-        repos = if args.repositories.blank? || T.must(args.repositories).include?("primary")
+        repos = if args.repositories.blank? || args.repositories&.include?("primary")
           PRIMARY_REPOS
-        elsif T.must(args.repositories).include?("all")
+        elsif args.repositories&.include?("all")
           SUPPORTED_REPOS
         else
-          T.must(args.repositories)
+          args.repositories
         end
 
         from = args.from.presence || Date.today.prev_year.iso8601
@@ -147,8 +147,10 @@ module Homebrew
         ]
       end
 
-      sig { params(repos: T::Array[String], person: String, from: String).void }
+      sig { params(repos: T.nilable(T::Array[String]), person: String, from: String).void }
       def scan_repositories(repos, person, from:)
+        return if repos.blank?
+
         data = {}
 
         repos.each do |repo|

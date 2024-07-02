@@ -473,7 +473,9 @@ module Homebrew
 
         if local_bottle_json
           bottle_path = formula.local_bottle_path
-          local_filename = bottle_path&.basename&.to_s
+          return if bottle_path.blank?
+
+          local_filename = bottle_path.basename.to_s
 
           tab_path = Utils::Bottles.receipt_path(bottle_path)
           raise "This bottle does not contain the file INSTALL_RECEIPT.json: #{bottle_path}" unless tab_path
@@ -491,6 +493,7 @@ module Homebrew
         else
           tar_filename = filename.to_s.sub(/.gz$/, "")
           tar_path = Pathname.pwd/tar_filename
+          return if tar_path.blank?
 
           keg = Keg.new(formula.prefix)
         end
@@ -549,13 +552,11 @@ module Homebrew
               Utils::Gzip.compress_with_options(relocatable_tar_path,
                                                 mtime:     tab.source_modified_time,
                                                 orig_name: relocatable_tar_path,
-                                                output:    T.must(bottle_path))
+                                                output:    bottle_path)
               sudo_purge
             end
 
-            if bottle_path && bottle_path.size > 1 * 1024 * 1024
-              ohai "Detecting if #{local_filename} is relocatable..."
-            end
+            ohai "Detecting if #{local_filename} is relocatable..." if bottle_path.size > 1 * 1024 * 1024
 
             prefix_check = if Homebrew.default_prefix?(prefix)
               File.join(prefix, "opt")
@@ -596,7 +597,7 @@ module Homebrew
             end
             puts if !relocatable && args.verbose?
           rescue Interrupt
-            ignore_interrupts { bottle_path.unlink if bottle_path&.exist? }
+            ignore_interrupts { bottle_path.unlink if bottle_path.exist? }
             raise
           ensure
             ignore_interrupts do
@@ -619,7 +620,7 @@ module Homebrew
           cellar
         end
         bottle.rebuild rebuild
-        sha256 = bottle_path&.sha256
+        sha256 = bottle_path.sha256
         bottle.sha256 cellar: bottle_cellar, bottle_tag.to_sym => sha256
 
         old_spec = formula.bottle_specification
@@ -628,7 +629,7 @@ module Homebrew
             old_spec.send(key) == bottle.send(key)
           end
           unless mismatches.empty?
-            bottle_path.unlink if bottle_path&.exist?
+            bottle_path.unlink if bottle_path.exist?
 
             mismatches.map! do |key|
               old_value = old_spec.send(key).inspect

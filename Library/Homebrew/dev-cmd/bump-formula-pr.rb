@@ -429,8 +429,10 @@ module Homebrew
         return new_url if (old_version_parts = old_version.split(".")).length < 2
         return new_url if (new_version_parts = new_version.split(".")).length != old_version_parts.length
 
-        partial_old_version = T.must(old_version_parts[0..-2]).join(".")
-        partial_new_version = T.must(new_version_parts[0..-2]).join(".")
+        partial_old_version = old_version_parts[0..-2]&.join(".")
+        partial_new_version = new_version_parts[0..-2]&.join(".")
+        return new_url if partial_old_version.blank? || partial_new_version.blank?
+
         new_url.gsub(%r{/(v?)#{Regexp.escape(partial_old_version)}/}, "/\\1#{partial_new_version}/")
       end
 
@@ -462,10 +464,13 @@ module Homebrew
 
       sig { params(formula: Formula, tap_remote_repo: String).returns(T.nilable(T::Array[String])) }
       def check_open_pull_requests(formula, tap_remote_repo)
+        tap = formula.tap
+        return if tap.nil?
+
         GitHub.check_for_duplicate_pull_requests(
           formula.name, tap_remote_repo,
           state: "open",
-          file:  formula.path.relative_path_from(T.must(formula.tap).path).to_s,
+          file:  formula.path.relative_path_from(tap.path).to_s,
           quiet: args.quiet?
         )
       end
@@ -488,8 +493,11 @@ module Homebrew
 
       sig { params(formula: Formula, new_version: String).returns(NilClass) }
       def check_throttle(formula, new_version)
+        tap = formula.tap
+        return if tap.nil?
+
         throttled_rate = formula.livecheck.throttle
-        throttled_rate ||= if (rate = T.must(formula.tap).audit_exceptions.dig(:throttled_formulae, formula.name))
+        throttled_rate ||= if (rate = tap.audit_exceptions.dig(:throttled_formulae, formula.name))
           odisabled "throttled_formulae.json", "Livecheck#throttle"
           rate
         end
@@ -506,12 +514,15 @@ module Homebrew
                version: T.nilable(String)).returns(T.nilable(T::Array[String]))
       }
       def check_closed_pull_requests(formula, tap_remote_repo, version:)
+        tap = formula.tap
+        return if tap.nil?
+
         # if we haven't already found open requests, try for an exact match across closed requests
         GitHub.check_for_duplicate_pull_requests(
           formula.name, tap_remote_repo,
           version:,
           state:   "closed",
-          file:    formula.path.relative_path_from(T.must(formula.tap).path).to_s,
+          file:    formula.path.relative_path_from(tap.path).to_s,
           quiet:   args.quiet?
         )
       end
@@ -522,9 +533,12 @@ module Homebrew
         return if versioned_alias.nil?
 
         name, old_alias_version = versioned_alias.split("@")
-        new_alias_regex = (T.must(old_alias_version).split(".").length == 1) ? /^\d+/ : /^\d+\.\d+/
+        return if old_alias_version.blank?
+
+        new_alias_regex = (old_alias_version.split(".").length == 1) ? /^\d+/ : /^\d+\.\d+/
         new_alias_version, = *new_formula_version.to_s.match(new_alias_regex)
-        return if Version.new(T.must(new_alias_version)) <= Version.new(T.must(old_alias_version))
+        return if new_alias_version.blank?
+        return if Version.new(new_alias_version) <= Version.new(old_alias_version)
 
         [versioned_alias, "#{name}@#{new_alias_version}"]
       end
