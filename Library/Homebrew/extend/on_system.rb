@@ -131,9 +131,9 @@ module OnSystem
         return unless OnSystem.os_condition_met? os_condition, or_condition
 
         @on_system_block_min_os = if or_condition == :or_older
-          MacOSVersion.new(HOMEBREW_MACOS_OLDEST_ALLOWED).to_sym
+          @called_in_on_system_block ? @on_system_block_min_os : MacOSVersion.new(HOMEBREW_MACOS_OLDEST_ALLOWED)
         else
-          os_condition
+          MacOSVersion.from_symbol(os_condition)
         end
         @called_in_on_system_block = true
         result = block.call

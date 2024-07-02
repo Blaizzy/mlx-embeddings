@@ -666,11 +666,7 @@ module Cask
 
       return if min_os.nil? || min_os <= HOMEBREW_MACOS_OLDEST_ALLOWED
 
-      cask_min_os = if cask.on_system_blocks_exist? && cask.on_system_block_min_os.present?
-        cask.on_system_block_min_os
-      else
-        cask.depends_on.macos&.minimum_version
-      end
+      cask_min_os = [cask.on_system_block_min_os, cask.depends_on.macos&.minimum_version].compact.max
       odebug "Declared minimum OS version: #{cask_min_os&.to_sym}"
       return if cask_min_os&.to_sym == min_os.to_sym
       return if cask.on_system_blocks_exist? &&
@@ -678,8 +674,9 @@ module Cask
                 cask_min_os < MacOSVersion.new("11")
 
       min_os_definition = if cask_min_os.present?
-        if cask.on_system_blocks_exist? && cask.on_system_block_min_os.present?
-          "a block with a minimum OS version of #{cask.on_system_block_min_os.inspect}"
+        if cask.on_system_block_min_os.present? &&
+           cask.on_system_block_min_os > cask.depends_on.macos&.minimum_version
+          "a block with a minimum OS version of #{cask_min_os.to_sym.inspect}"
         else
           cask_min_os.to_sym.inspect
         end
@@ -687,7 +684,7 @@ module Cask
         "no minimum OS version"
       end
       add_error "Upstream defined #{min_os.to_sym.inspect} as the minimum OS version " \
-                "and the cask declared #{min_os_definition}",
+                "but the cask declared #{min_os_definition}",
                 strict_only: true
     end
 
