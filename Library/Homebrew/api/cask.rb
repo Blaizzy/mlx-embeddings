@@ -10,6 +10,8 @@ module Homebrew
     module Cask
       extend Cachable
 
+      DEFAULT_API_ENDPOINT = "cask.jws.json"
+
       private_class_method :cache
 
       sig { params(token: String).returns(Hash) }
@@ -36,6 +38,10 @@ module Homebrew
         download.fetch
         ::Cask::CaskLoader::FromPathLoader.new(download.symlink_location)
                                           .load(config: cask.config)
+      end
+
+      def self.cached_json_file_path
+        HOMEBREW_CACHE_API/DEFAULT_API_ENDPOINT
       end
 
       sig { returns(T::Boolean) }

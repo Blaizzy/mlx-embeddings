@@ -1932,4 +1932,42 @@ RSpec.describe Formula do
       expect { f.network_access_allowed?(:foo) }.to raise_error(ArgumentError)
     end
   end
+
+  describe "#specified_path" do
+    let(:klass) do
+      Class.new(described_class) do
+        url "https://brew.sh/foo-1.0.tar.gz"
+      end
+    end
+
+    let(:name) { "formula_name" }
+    let(:path) { Formulary.core_path(name) }
+    let(:spec) { :stable }
+    let(:alias_name) { "baz@1" }
+    let(:alias_path) { CoreTap.instance.alias_dir/alias_name }
+    let(:f) { klass.new(name, path, spec) }
+    let(:f_alias) { klass.new(name, path, spec, alias_path:) }
+
+    context "when loading from a formula file" do
+      it "returns the formula file path" do
+        expect(f.specified_path).to eq(path)
+      end
+    end
+
+    context "when loaded from an alias" do
+      it "returns the alias path" do
+        expect(f_alias.specified_path).to eq(alias_path)
+      end
+    end
+
+    context "when loaded from the API" do
+      before do
+        allow(f).to receive(:loaded_from_api?).and_return(true)
+      end
+
+      it "returns the API path" do
+        expect(f.specified_path).to eq(Homebrew::API::Formula.cached_json_file_path)
+      end
+    end
+  end
 end
