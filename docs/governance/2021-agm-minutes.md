@@ -12,8 +12,6 @@
   Greg Brimble moves to adopt the STV election method to elect the PLC and the Schulze method to elect the project leader. <https://github.com/Homebrew/brew/pull/10637>
 
   Motion carried unanimously.
-
-  <https://www.opavote.com/results/4758678377857024>
 - Shaun Jackman moves to suspend the rules requiring a three week waiting period and to adopt these election systems immediately.
   Motion carried unanimously.
 
@@ -29,8 +27,6 @@
 - 11:55–11:57 Election of the Project Leadership Committee
 
   Jonathan Chang and Issy Long are elected.
-
-  <https://www.opavote.com/results/5937355983683584>
 - 11:57–12:00 Election of the Project Leader
 
   Mike McQuaid elected by acclamation.
