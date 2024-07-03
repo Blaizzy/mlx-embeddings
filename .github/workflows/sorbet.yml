@@ -46,6 +46,7 @@ jobs:
       - name: Update RBI files
         id: update
         working-directory: ${{ steps.set-up-homebrew.outputs.repository-path }}
+        continue-on-error: true
         run: |
           if [[ "${GITHUB_EVENT_NAME}" != "pull_request" ]]
           then
