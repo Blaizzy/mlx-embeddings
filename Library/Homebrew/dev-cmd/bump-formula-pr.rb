@@ -145,10 +145,10 @@ module Homebrew
 
         old_mirrors = formula_spec.mirrors
         new_mirrors ||= args.mirror
-        new_mirror ||= determine_mirror(T.must(new_url))
-        new_mirrors ||= [new_mirror] if new_mirror.present?
-
-        check_for_mirrors(formula, old_mirrors, T.must(new_mirrors)) if new_url.present?
+        if new_url.present? && (new_mirror = determine_mirror(new_url))
+          new_mirrors ||= [new_mirror]
+          check_for_mirrors(formula, old_mirrors, new_mirrors)
+        end
 
         old_hash = formula_spec.checksum&.hexdigest
         new_hash = args.sha256
@@ -179,7 +179,7 @@ module Homebrew
               EOS
             end
             check_new_version(formula, tap_remote_repo, url: old_url, tag: new_tag) if new_version.blank?
-            resource_path, forced_version = fetch_resource_and_forced_version(formula, T.must(new_version), old_url,
+            resource_path, forced_version = fetch_resource_and_forced_version(formula, new_version, old_url,
                                                                               tag: new_tag)
             new_revision = Utils.popen_read("git", "-C", resource_path.to_s, "rev-parse", "-q", "--verify", "HEAD")
             new_revision = new_revision.strip
@@ -190,12 +190,14 @@ module Homebrew
         elsif new_url.blank? && new_version.blank?
           raise UsageError, "#{formula}: no `--url` or `--version` argument specified!"
         else
-          new_url ||= PyPI.update_pypi_url(old_url, T.must(new_version))
+          return unless new_version.present?
+
+          new_url ||= PyPI.update_pypi_url(old_url, new_version)
           if new_url.blank?
-            new_url = update_url(old_url, old_version, T.must(new_version))
+            new_url = update_url(old_url, old_version, new_version)
             if new_mirrors.blank? && old_mirrors.present?
               new_mirrors = old_mirrors.map do |old_mirror|
-                update_url(old_mirror, old_version, T.must(new_version))
+                update_url(old_mirror, old_version, new_version)
               end
             end
           end
@@ -207,7 +209,7 @@ module Homebrew
             EOS
           end
           check_new_version(formula, tap_remote_repo, url: new_url) if new_version.blank?
-          resource_path, forced_version = fetch_resource_and_forced_version(formula, T.must(new_version), new_url)
+          resource_path, forced_version = fetch_resource_and_forced_version(formula, new_version, new_url)
           Utils::Tar.validate_file(resource_path)
           new_hash = resource_path.sha256
         end
@@ -271,9 +273,9 @@ module Homebrew
 
         old_contents = formula.path.read
 
-        if new_mirrors.present?
+        if new_mirrors.present? && new_url.present?
           replacement_pairs << [
-            /^( +)(url "#{Regexp.escape(T.must(new_url))}"[^\n]*?\n)/m,
+            /^( +)(url "#{Regexp.escape(new_url)}"[^\n]*?\n)/m,
             "\\1\\2\\1mirror \"#{new_mirrors.join("\"\n\\1mirror \"")}\"\n",
           ]
         end
@@ -483,7 +485,9 @@ module Homebrew
         if version.nil?
           specs = {}
           specs[:tag] = tag if tag.present?
-          version = Version.detect(T.must(url), **specs).to_s
+          return if url.blank?
+
+          version = Version.detect(url, **specs).to_s
           return if version.blank?
         end
 
