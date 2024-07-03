@@ -558,7 +558,9 @@ module Homebrew
           end
           return
         end
-        FileUtils.mv T.must(alias_rename.first), T.must(alias_rename.last) if alias_rename.present?
+        if alias_rename && (source = alias_rename.first) && (destination = alias_rename.last)
+          FileUtils.mv source, destination
+        end
         failed_audit = false
         if args.no_audit?
           ohai "Skipping `brew audit`"
@@ -572,7 +574,9 @@ module Homebrew
         return unless failed_audit
 
         formula.path.atomic_write(old_contents)
-        FileUtils.mv T.must(alias_rename.last), T.must(alias_rename.first) if alias_rename.present?
+        if alias_rename && (source = alias_rename.first) && (destination = alias_rename.last)
+          FileUtils.mv source, destination
+        end
         odie "`brew audit` failed!"
       end
     end
