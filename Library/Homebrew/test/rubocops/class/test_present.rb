@@ -13,4 +13,14 @@ RSpec.describe RuboCop::Cop::FormulaAuditStrict::TestPresent do
       end
     RUBY
   end
+
+  it "reports no offenses when there is no test block and formula is disabled" do
+    expect_no_offenses(<<~RUBY)
+      class Foo < Formula
+        url 'https://brew.sh/foo-1.0.tgz'
+
+        disable! date: "2024-07-03", because: :unsupported
+      end
+    RUBY
+  end
 end

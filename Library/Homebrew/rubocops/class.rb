@@ -71,6 +71,7 @@ module RuboCop
       class TestPresent < FormulaCop
         def audit_formula(_node, class_node, _parent_class_node, body_node)
           return if find_block(body_node, :test)
+          return if find_node_method_by_name(body_node, :disable!)
 
           offending_node(class_node) if body_node.nil?
           problem "A `test do` test block should be added"
