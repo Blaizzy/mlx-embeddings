@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "abstract_command"
+require "formula"
 require "formulary"
 require "cask/cask_loader"
 
@@ -9,7 +10,6 @@ class String
   # @!visibility private
   sig { params(args: Integer).returns(Formula) }
   def f(*args)
-    require "formula"
     Formulary.factory(self, *args)
   end
 
@@ -76,7 +76,6 @@ module Homebrew
           require "irb"
         end
 
-        require "formula"
         require "keg"
         require "cask"
 
