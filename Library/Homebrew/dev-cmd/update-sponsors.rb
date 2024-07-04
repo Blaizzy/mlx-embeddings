@@ -26,7 +26,7 @@ module Homebrew
         named_sponsors = []
         logo_sponsors = []
         # FIXME: This T.let should be unnecessary https://github.com/sorbet/sorbet/issues/6894
-        largest_monthly_amount = T.let(0, T.untyped)
+        largest_monthly_amount = T.let(0, Integer)
 
         GitHub.sponsorships("Homebrew").each do |s|
           largest_monthly_amount = [s[:monthly_amount], s[:closest_tier_monthly_amount]].max
@@ -62,17 +62,17 @@ module Homebrew
 
       private
 
-      sig { params(sponsor: T::Hash[Symbol, T.untyped]).returns(T.nilable(String)) }
+      sig { params(sponsor: T::Hash[Symbol, String]).returns(T.nilable(String)) }
       def sponsor_name(sponsor)
         sponsor[:name] || sponsor[:login]
       end
 
-      sig { params(sponsor: T::Hash[Symbol, T.untyped]).returns(String) }
+      sig { params(sponsor: T::Hash[Symbol, String]).returns(String) }
       def sponsor_logo(sponsor)
         "https://github.com/#{sponsor[:login]}.png?size=64"
       end
 
-      sig { params(sponsor: T::Hash[Symbol, T.untyped]).returns(String) }
+      sig { params(sponsor: T::Hash[Symbol, String]).returns(String) }
       def sponsor_url(sponsor)
         "https://github.com/#{sponsor[:login]}"
       end

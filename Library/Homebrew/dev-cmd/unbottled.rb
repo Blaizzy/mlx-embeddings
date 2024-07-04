@@ -164,7 +164,9 @@ module Homebrew
          T.let(formula_installs, T.nilable(T::Hash[Symbol, Integer]))]
       end
 
-      sig { params(all_formulae: T.untyped).returns([T::Hash[String, T.untyped], T::Hash[String, T.untyped]]) }
+      sig {
+        params(all_formulae: T::Array[Formula]).returns([T::Hash[String, T.untyped], T::Hash[String, T.untyped]])
+      }
       def deps_uses_from_formulae(all_formulae)
         ohai "Populating dependency tree..."
 
@@ -186,7 +188,7 @@ module Homebrew
         [deps_hash, uses_hash]
       end
 
-      sig { params(formulae: T::Array[Formula]).returns(NilClass) }
+      sig { params(formulae: T::Array[Formula]).void }
       def output_total(formulae)
         return unless @bottle_tag
 
@@ -205,7 +207,7 @@ module Homebrew
       sig {
         params(formulae: T::Array[Formula], deps_hash: T::Hash[T.any(Symbol, String), T.untyped],
                noun: T.nilable(String), hash: T::Hash[T.any(Symbol, String), T.untyped],
-               any_named_args: T::Boolean).returns(NilClass)
+               any_named_args: T::Boolean).void
       }
       def output_unbottled(formulae, deps_hash, noun, hash, any_named_args)
         return unless @bottle_tag
@@ -279,7 +281,7 @@ module Homebrew
         puts "No unbottled dependencies found!"
       end
 
-      sig { returns(NilClass) }
+      sig { void }
       def output_lost_bottles
         ohai ":#{@bottle_tag} lost bottles"
 
