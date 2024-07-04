@@ -495,7 +495,7 @@ module Homebrew
         check_closed_pull_requests(formula, tap_remote_repo, version:)
       end
 
-      sig { params(formula: Formula, new_version: String).returns(NilClass) }
+      sig { params(formula: Formula, new_version: String).void }
       def check_throttle(formula, new_version)
         tap = formula.tap
         return if tap.nil?
