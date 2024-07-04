@@ -25,7 +25,6 @@ module Homebrew
       def run
         named_sponsors = []
         logo_sponsors = []
-        # FIXME: This T.let should be unnecessary https://github.com/sorbet/sorbet/issues/6894
         largest_monthly_amount = T.let(0, Integer)
 
         GitHub.sponsorships("Homebrew").each do |s|
