@@ -10,6 +10,8 @@ module Homebrew
     module Cask
       extend Cachable
 
+      DEFAULT_API_FILENAME = "cask.jws.json"
+
       private_class_method :cache
 
       sig { params(token: String).returns(Hash) }
@@ -38,9 +40,13 @@ module Homebrew
                                           .load(config: cask.config)
       end
 
+      def self.cached_json_file_path
+        HOMEBREW_CACHE_API/DEFAULT_API_FILENAME
+      end
+
       sig { returns(T::Boolean) }
       def self.download_and_cache_data!
-        json_casks, updated = Homebrew::API.fetch_json_api_file "cask.jws.json"
+        json_casks, updated = Homebrew::API.fetch_json_api_file DEFAULT_API_FILENAME
 
         cache["renames"] = {}
         cache["casks"] = json_casks.to_h do |json_cask|

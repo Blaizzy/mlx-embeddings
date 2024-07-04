@@ -249,7 +249,7 @@ module Homebrew
           formula.path.relative_path_from(T.must(formula.tap).path)
         when Cask::Cask
           cask = formula_or_cask
-          if cask.sourcefile_path.blank?
+          if cask.sourcefile_path.blank? || cask.sourcefile_path.extname != ".rb"
             return "#{cask.tap.default_remote}/blob/HEAD/#{cask.tap.relative_cask_path(cask.token)}"
           end
 
