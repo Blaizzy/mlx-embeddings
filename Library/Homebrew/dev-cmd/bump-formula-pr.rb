@@ -452,7 +452,7 @@ module Homebrew
         [resource.fetch, forced_version]
       end
 
-      sig { params(formula: Formula, contents: T.nilable(String)).returns(String) }
+      sig { params(formula: Formula, contents: T.nilable(String)).returns(Version) }
       def formula_version(formula, contents = nil)
         spec = :stable
         name = formula.name
@@ -531,7 +531,7 @@ module Homebrew
         )
       end
 
-      sig { params(formula: Formula, new_formula_version: String).returns(T.nilable(T::Array[String])) }
+      sig { params(formula: Formula, new_formula_version: Version).returns(T.nilable(T::Array[String])) }
       def alias_update_pair(formula, new_formula_version)
         versioned_alias = formula.aliases.grep(/^.*@\d+(\.\d+)?$/).first
         return if versioned_alias.nil?
