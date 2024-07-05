@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Homebrew
@@ -14,7 +14,7 @@ module Homebrew
           livecheckable:       T::Boolean,
           full_name:           T::Boolean,
           verbose:             T::Boolean,
-        ).returns(Hash)
+        ).returns(T::Hash[Symbol, T.untyped])
       }
       def package_or_resource_skip(package_or_resource, livecheckable, full_name: false, verbose: false)
         formula = package_or_resource if package_or_resource.is_a?(Formula)
@@ -51,7 +51,7 @@ module Homebrew
           _livecheckable: T::Boolean,
           full_name:      T::Boolean,
           verbose:        T::Boolean,
-        ).returns(Hash)
+        ).returns(T::Hash[Symbol, T.untyped])
       }
       def formula_head_only(formula, _livecheckable, full_name: false, verbose: false)
         return {} if !formula.head_only? || formula.any_version_installed?
@@ -71,7 +71,7 @@ module Homebrew
           livecheckable: T::Boolean,
           full_name:     T::Boolean,
           verbose:       T::Boolean,
-        ).returns(Hash)
+        ).returns(T::Hash[Symbol, T.untyped])
       }
       def formula_deprecated(formula, livecheckable, full_name: false, verbose: false)
         return {} if !formula.deprecated? || livecheckable
@@ -85,7 +85,7 @@ module Homebrew
           livecheckable: T::Boolean,
           full_name:     T::Boolean,
           verbose:       T::Boolean,
-        ).returns(Hash)
+        ).returns(T::Hash[Symbol, T.untyped])
       }
       def formula_disabled(formula, livecheckable, full_name: false, verbose: false)
         return {} if !formula.disabled? || livecheckable
@@ -99,7 +99,7 @@ module Homebrew
           livecheckable: T::Boolean,
           full_name:     T::Boolean,
           verbose:       T::Boolean,
-        ).returns(Hash)
+        ).returns(T::Hash[Symbol, T.untyped])
       }
       def formula_versioned(formula, livecheckable, full_name: false, verbose: false)
         return {} if !formula.versioned_formula? || livecheckable
@@ -113,7 +113,7 @@ module Homebrew
           livecheckable: T::Boolean,
           full_name:     T::Boolean,
           verbose:       T::Boolean,
-        ).returns(Hash)
+        ).returns(T::Hash[Symbol, T.untyped])
       }
       def cask_deprecated(cask, livecheckable, full_name: false, verbose: false)
         return {} if !cask.deprecated? || livecheckable
@@ -127,7 +127,7 @@ module Homebrew
           livecheckable: T::Boolean,
           full_name:     T::Boolean,
           verbose:       T::Boolean,
-        ).returns(Hash)
+        ).returns(T::Hash[Symbol, T.untyped])
       }
       def cask_disabled(cask, livecheckable, full_name: false, verbose: false)
         return {} if !cask.disabled? || livecheckable
@@ -142,7 +142,7 @@ module Homebrew
           full_name:      T::Boolean,
           verbose:        T::Boolean,
           extract_plist:  T::Boolean,
-        ).returns(Hash)
+        ).returns(T::Hash[Symbol, T.untyped])
       }
       def cask_extract_plist(cask, _livecheckable, full_name: false, verbose: false, extract_plist: false)
         return {} if extract_plist || cask.livecheck.strategy != :extract_plist
@@ -162,7 +162,7 @@ module Homebrew
           livecheckable: T::Boolean,
           full_name:     T::Boolean,
           verbose:       T::Boolean,
-        ).returns(Hash)
+        ).returns(T::Hash[Symbol, T.untyped])
       }
       def cask_version_latest(cask, livecheckable, full_name: false, verbose: false)
         return {} if !(cask.present? && cask.version&.latest?) || livecheckable
@@ -176,7 +176,7 @@ module Homebrew
           livecheckable: T::Boolean,
           full_name:     T::Boolean,
           verbose:       T::Boolean,
-        ).returns(Hash)
+        ).returns(T::Hash[Symbol, T.untyped])
       }
       def cask_url_unversioned(cask, livecheckable, full_name: false, verbose: false)
         return {} if !(cask.present? && cask.url&.unversioned?) || livecheckable
@@ -185,28 +185,28 @@ module Homebrew
       end
 
       # Skip conditions for formulae.
-      FORMULA_CHECKS = [
+      FORMULA_CHECKS = T.let([
         :package_or_resource_skip,
         :formula_head_only,
         :formula_deprecated,
         :formula_disabled,
         :formula_versioned,
-      ].freeze
+      ].freeze, T::Array[Symbol])
 
       # Skip conditions for casks.
-      CASK_CHECKS = [
+      CASK_CHECKS = T.let([
         :package_or_resource_skip,
         :cask_deprecated,
         :cask_disabled,
         :cask_extract_plist,
         :cask_version_latest,
         :cask_url_unversioned,
-      ].freeze
+      ].freeze, T::Array[Symbol])
 
       # Skip conditions for resources.
-      RESOURCE_CHECKS = [
+      RESOURCE_CHECKS = T.let([
         :package_or_resource_skip,
-      ].freeze
+      ].freeze, T::Array[Symbol])
 
       # If a formula/cask/resource should be skipped, we return a hash from
       # `Livecheck#status_hash`, which contains a `status` type and sometimes
@@ -217,7 +217,7 @@ module Homebrew
           full_name:           T::Boolean,
           verbose:             T::Boolean,
           extract_plist:       T::Boolean,
-        ).returns(Hash)
+        ).returns(T::Hash[Symbol, T.untyped])
       }
       def skip_information(package_or_resource, full_name: false, verbose: false, extract_plist: true)
         livecheckable = package_or_resource.livecheckable?
@@ -255,7 +255,7 @@ module Homebrew
           full_name:                         T::Boolean,
           verbose:                           T::Boolean,
           extract_plist:                     T::Boolean,
-        ).returns(T.nilable(Hash))
+        ).returns(T.nilable(T::Hash[Symbol, T.untyped]))
       }
       def referenced_skip_information(
         livecheck_package_or_resource,
@@ -298,7 +298,7 @@ module Homebrew
       end
 
       # Prints default livecheck output in relation to skip conditions.
-      sig { params(skip_hash: Hash).void }
+      sig { params(skip_hash: T::Hash[Symbol, T.untyped]).void }
       def print_skip_information(skip_hash)
         return unless skip_hash.is_a?(Hash)
 

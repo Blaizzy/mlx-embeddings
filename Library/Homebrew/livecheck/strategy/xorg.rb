@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Homebrew
@@ -56,7 +56,7 @@ module Homebrew
 
         # Used to cache page content, so we don't fetch the same pages
         # repeatedly.
-        @page_data = {}
+        @page_data = T.let({}, T::Hash[String, String])
 
         # Whether the strategy can be applied to the provided URL.
         #

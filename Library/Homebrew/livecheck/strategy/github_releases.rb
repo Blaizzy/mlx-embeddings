@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Homebrew
@@ -50,7 +50,7 @@ module Homebrew
         # Keys in the release JSON that could contain the version.
         # The tag name is checked first, to better align with the {Git}
         # strategy.
-        VERSION_KEYS = ["tag_name", "name"].freeze
+        VERSION_KEYS = T.let(["tag_name", "name"].freeze, T::Array[String])
 
         # Whether the strategy can be applied to the provided URL.
         #

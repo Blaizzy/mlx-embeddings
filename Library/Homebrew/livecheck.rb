@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "livecheck/constants"
@@ -22,15 +22,15 @@ class Livecheck
   sig { params(package_or_resource: T.any(Cask::Cask, T.class_of(Formula), Resource)).void }
   def initialize(package_or_resource)
     @package_or_resource = package_or_resource
-    @referenced_cask_name = nil
-    @referenced_formula_name = nil
-    @regex = nil
-    @skip = false
-    @skip_msg = nil
-    @strategy = nil
-    @strategy_block = nil
-    @throttle = nil
-    @url = nil
+    @referenced_cask_name = T.let(nil, T.nilable(String))
+    @referenced_formula_name = T.let(nil, T.nilable(String))
+    @regex = T.let(nil, T.nilable(Regexp))
+    @skip = T.let(false, T::Boolean)
+    @skip_msg = T.let(nil, T.nilable(String))
+    @strategy = T.let(nil, T.nilable(Symbol))
+    @strategy_block = T.let(nil, T.nilable(Proc))
+    @throttle = T.let(nil, T.nilable(Integer))
+    @url = T.let(nil, T.any(NilClass, String, Symbol))
   end
 
   # Sets the `@referenced_cask_name` instance variable to the provided `String`

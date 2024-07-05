@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 require "bundle_version"
@@ -20,7 +20,7 @@ module Homebrew
         URL_MATCH_REGEX = %r{^https?://}i
 
         # Common `os` values used in appcasts to refer to macOS.
-        APPCAST_MACOS_STRINGS = ["macos", "osx"].freeze
+        APPCAST_MACOS_STRINGS = T.let(["macos", "osx"].freeze, T::Array[String])
 
         # Whether the strategy can be applied to the provided URL.
         #
