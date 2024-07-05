@@ -37,7 +37,7 @@ module Homebrew
           puts_options(Formula.installed.sort)
         elsif args.command.present?
           cmd_options = Commands.command_options(T.must(args.command))
-          odie "Unknown command: #{args.command}" if cmd_options.nil?
+          odie "Unknown command: brew #{args.command}" if cmd_options.nil?
 
           if args.compact?
             puts cmd_options.sort.map(&:first) * " "

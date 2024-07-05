@@ -116,7 +116,7 @@ begin
       end
       # Check for cask explicitly because it's very common in old guides
       odie "`brew cask` is no longer a `brew` command. Use `brew <command> --cask` instead." if cmd == "cask"
-      odie "Unknown command: #{cmd}"
+      odie "Unknown command: brew #{cmd}"
     end
 
     # Unset HOMEBREW_HELP to avoid confusing the tap

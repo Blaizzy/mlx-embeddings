@@ -19,7 +19,7 @@ module Homebrew
       def run
         args.named.each do |cmd|
           path = Commands.path(cmd)
-          odie "Unknown command: #{cmd}" unless path
+          odie "Unknown command: brew #{cmd}" unless path
           puts path
         end
       end
