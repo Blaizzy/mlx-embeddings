@@ -1,4 +1,4 @@
-# typed: true
+# typed: strict
 # frozen_string_literal: true
 
 module Homebrew
@@ -23,14 +23,17 @@ module Homebrew
 
         # The default `strategy` block used to extract version information when
         # a `strategy` block isn't provided.
-        DEFAULT_BLOCK = proc do |json, regex|
+        DEFAULT_BLOCK = T.let(proc do |json, regex|
           json["versions"]&.map do |version|
             next if version["yanked"]
             next unless (match = version["num"]&.match(regex))
 
             match[1]
           end
-        end.freeze
+        end.freeze, T.proc.params(
+          arg0: T::Hash[String, T.untyped],
+          arg1: Regexp,
+        ).returns(T.any(String, T::Array[String])))
 
         # The `Regexp` used to determine if the strategy applies to the URL.
         URL_MATCH_REGEX = %r{
