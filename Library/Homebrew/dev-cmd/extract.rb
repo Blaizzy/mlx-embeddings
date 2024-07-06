@@ -13,7 +13,7 @@ module Homebrew
       BOTTLE_BLOCK_REGEX = /  bottle (?:do.+?end|:[a-z]+)\n\n/m
 
       cmd_args do
-        usage_banner "`extract` [`--version=`] [`--git-revision`] [`--force`] <formula> <tap>"
+        usage_banner "`extract` [`--version=`] [`--git-revision=`] [`--force`] <formula> <tap>"
         description <<~EOS
           Look through repository history to find the most recent version of <formula> and
           create a copy in <tap>. Specifically, the command will create the new
