@@ -2179,7 +2179,7 @@ provided.
 
 : Print the file path to be edited, without opening an editor.
 
-### `extract` \[`--version=`\] \[`--force`\] *`formula`* *`tap`*
+### `extract` \[`--version=`\] \[`--git-revision=`\] \[`--force`\] *`formula`* *`tap`*
 
 Look through repository history to find the most recent version of *`formula`*
 and create a copy in *`tap`*. Specifically, the command will create the new
