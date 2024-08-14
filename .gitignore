@@ -105,3 +105,8 @@ ENV/
 
 # IDE settings
 .vscode/
+test.ipynb
+.lisapro/*.py
+.lisapro/*.yml
+
+.DS_Store
