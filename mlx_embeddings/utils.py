@@ -6,13 +6,13 @@ import importlib
 import json
 import logging
 import shutil
-import time
 from pathlib import Path
 from textwrap import dedent
-from typing import Any, Callable, Dict, Generator, Optional, Tuple, Type, Union
+from typing import Any, Callable, Dict, Optional, Tuple, Type, Union
 
 import mlx.core as mx
 import mlx.nn as nn
+from mlx.utils import tree_flatten, tree_unflatten
 from huggingface_hub import snapshot_download
 from huggingface_hub.utils._errors import RepositoryNotFoundError
 from mlx.utils import tree_flatten
@@ -404,6 +404,50 @@ def save_config(
     with open(config_path, "w") as fid:
         json.dump(config, fid, indent=4)
 
+def dequantize_model(model: nn.Module) -> nn.Module:
+    """
+    Dequantize the quantized linear layers in the model.
+
+    Args:
+        model (nn.Module): The model with quantized linear layers.
+
+    Returns:
+        nn.Module: The model with dequantized layers.
+    """
+    de_quantize_layers = []
+    for name, module in model.named_modules():
+        if isinstance(module, nn.QuantizedLinear):
+            bias = "bias" in module
+            weight = module.weight
+            weight = mx.dequantize(
+                weight,
+                module.scales,
+                module.biases,
+                module.group_size,
+                module.bits,
+            ).astype(mx.float16)
+            output_dims, input_dims = weight.shape
+            linear = nn.Linear(input_dims, output_dims, bias=bias)
+            linear.weight = weight
+            if bias:
+                linear.bias = module.bias
+            de_quantize_layers.append((name, linear))
+        if isinstance(module, nn.QuantizedEmbedding):
+            weight = mx.dequantize(
+                module.weight,
+                module.scales,
+                module.biases,
+                module.group_size,
+                module.bits,
+            ).astype(mx.float16)
+            num_embeddings, dims = weight.shape
+            emb = nn.Embedding(num_embeddings, dims)
+            emb.weight = weight
+            de_quantize_layers.append((name, emb))
+
+    if len(de_quantize_layers) > 0:
+        model.update_modules(tree_unflatten(de_quantize_layers))
+    return model
 
 def convert(
     hf_path: str,
