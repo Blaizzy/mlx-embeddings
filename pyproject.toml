@@ -1,0 +1,82 @@
+[project]
+name = "mlx-embeddings"
+version = "0.0.1"
+dynamic = [
+    "dependencies",
+]
+description = "MLX-Embeddings is a package for running Vision and Language Embedding models locally on your Mac using MLX."
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = [
+    "mlx-embeddings",
+]
+license = {text = "GNU General Public License v3"}
+authors = [
+  {name = "Prince Canuma", email = "prince.gdt@gmail.com"},
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.entry-points."console_scripts"]
+mlx_embeddings = "mlx_embeddings.cli:main"
+
+[project.optional-dependencies]
+all = [
+    "mlx-embeddings[extra]",
+]
+
+extra = [
+    "pandas",
+]
+
+
+[tool]
+[tool.setuptools.packages.find]
+include = ["mlx_embeddings*"]
+exclude = ["docs*"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+
+[tool.distutils.bdist_wheel]
+universal = true
+
+
+[tool.bumpversion]
+current_version = "0.0.1"
+commit = true
+tag = true
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "mlx_embeddings/__init__.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
+
+[tool.flake8]
+exclude = [
+    "docs",
+]
+max-line-length = 88
+
+
+[project.urls]
+Homepage = "https://github.com/Blaizzy/mlx-embeddings"
+
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"

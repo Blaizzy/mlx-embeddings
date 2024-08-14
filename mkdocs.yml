@@ -1,0 +1,86 @@
+site_name: mlx-embeddings
+site_description: MLX-VLM is a package for running Vision LLMs l
+site_author: Blaizzy
+site_url: https://Blaizzy.github.io/mlx-embeddings
+repo_url: https://github.com/Blaizzy/mlx-embeddings
+
+copyright: "Copyright &copy; 2024 - 2024 Prince Canuma"
+
+theme:
+    palette:
+        - scheme: default
+          #   primary: blue
+          #   accent: indigo
+          toggle:
+              icon: material/toggle-switch-off-outline
+              name: Switch to dark mode
+        - scheme: slate
+          primary: indigo
+          accent: indigo
+          toggle:
+              icon: material/toggle-switch
+              name: Switch to light mode
+    name: material
+    icon:
+        repo: fontawesome/brands/github
+    # logo: assets/logo.png
+    # favicon: assets/favicon.png
+    features:
+        - navigation.instant
+        - navigation.tracking
+        - navigation.top
+        - search.highlight
+        - search.share
+    custom_dir: "docs/overrides"
+    font:
+        text: Google Sans
+        code: Regular
+
+plugins:
+    - search
+    - mkdocstrings
+    - git-revision-date
+    - git-revision-date-localized:
+          enable_creation_date: true
+          type: timeago
+    # - pdf-export
+    - mkdocs-jupyter:
+          include_source: True
+          ignore_h1_titles: True
+          execute: True
+          allow_errors: false
+          ignore: ["conf.py"]
+          execute_ignore: ["*ignore.ipynb"]
+          
+markdown_extensions:
+    - admonition
+    - abbr
+    - attr_list
+    - def_list
+    - footnotes
+    - meta
+    - md_in_html
+    - pymdownx.superfences
+    - pymdownx.highlight:
+          linenums: true
+    - toc:
+          permalink: true
+
+# extra:
+#     analytics:
+#         provider: google
+#         property: UA-XXXXXXXXX-X
+
+nav:
+    - Home: index.md
+    - Installation: installation.md
+    - Usage: usage.md
+    - Contributing: contributing.md
+    - FAQ: faq.md
+    - Changelog: changelog.md
+    - Report Issues: https://github.com/Blaizzy/mlx-embeddings/issues
+    - Examples:
+        - examples/intro.ipynb
+    - API Reference:
+          - mlx_embeddings module: mlx_embeddings.md
+          - common module: common.md
