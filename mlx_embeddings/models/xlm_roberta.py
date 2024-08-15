@@ -25,25 +25,8 @@ class ModelArgs(BaseModelArgs):
     type_vocab_size: int = 1
     output_past: bool = True
     pad_token_id: int = 1
-    hidden_act: str = "gelu"
     position_embedding_type: str = "absolute"
     pooling_config: dict = None
-
-
-def create_position_ids_from_input_ids(input_ids, padding_idx, past_key_values_length=0):
-    """
-    Replace non-padding symbols with their position numbers. Position numbers begin at padding_idx+1. Padding symbols
-    are ignored. This is modified from fairseq's `utils.make_positions`.
-
-    Args:
-        x: torch.Tensor x:
-
-    Returns: torch.Tensor
-    """
-    # The series of casts and type-conversions here are carefully balanced to both work with ONNX export and XLA.
-    mask = input_ids.ne(padding_idx).int()
-    incremental_indices = (torch.cumsum(mask, dim=1).type_as(mask) + past_key_values_length) * mask
-    return incremental_indices.long() + padding_idx
 
 
 class XLMRobertaEmbeddings(nn.Module):
@@ -61,7 +44,7 @@ class XLMRobertaEmbeddings(nn.Module):
         incremental_indices = (mx.cumsum(mask, axis=1) + past_key_values_length) * mask
         return incremental_indices + padding_idx
 
-    def __call__(self, input_ids, token_type_ids=None, position_ids=None, inputs_embeds=None, past_key_values_length=0):
+    def __call__(self, input_ids: mx.array, token_type_ids=None, position_ids=None, inputs_embeds=None, past_key_values_length=0) -> mx.array:
         if input_ids is not None:
             input_shape = input_ids.shape
         else:
@@ -110,7 +93,7 @@ class XLMRobertaSelfAttention(nn.Module):
         x = x.reshape(new_x_shape)
         return x.transpose(0, 2, 1, 3)
 
-    def __call__(self, x, attention_mask=None, head_mask=None, output_attentions=False):
+    def __call__(self, x: mx.array, attention_mask=None, head_mask=None, output_attentions=False):
         queries, keys, values = self.query(x), self.key(x), self.value(x)
 
         # Prepare the queries, keys and values for the attention computation
@@ -138,7 +121,6 @@ class XLMRobertaSelfAttention(nn.Module):
         outputs = (context_layer, attention_probs) if output_attentions else (context_layer,)
         return outputs
 
-# ... More classes and functions would follow, implementing the rest of the XLM-RoBERTa architecture ...
 
 class XLMRobertaSelfOutput(nn.Module):
     def __init__(self, config: ModelArgs):
@@ -162,7 +144,7 @@ class XLMRobertaAttention(nn.Module):
     def __call__(self, hidden_states, attention_mask=None, head_mask=None, output_attentions=False):
         self_outputs = self.self(hidden_states, attention_mask, head_mask, output_attentions)
         attention_output = self.output(self_outputs[0], hidden_states)
-        outputs = (attention_output,) + self_outputs[1:]  # add attentions if we output them
+        outputs = (attention_output,) + self_outputs[1:]
         return outputs
 
 
@@ -201,7 +183,7 @@ class XLMRobertaLayer(nn.Module):
         attention_output = attention_outputs[0]
         intermediate_output = self.intermediate(attention_output)
         layer_output = self.output(intermediate_output, attention_output)
-        outputs = (layer_output,) + attention_outputs[1:]  # add attentions if we output them
+        outputs = (layer_output,) + attention_outputs[1:]
         return outputs
 
 class XLMRobertaEncoder(nn.Module):
