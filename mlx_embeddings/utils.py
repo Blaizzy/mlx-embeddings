@@ -12,18 +12,15 @@ from typing import Any, Callable, Dict, Optional, Tuple, Type, Union
 
 import mlx.core as mx
 import mlx.nn as nn
-from mlx.utils import tree_flatten, tree_unflatten
 from huggingface_hub import snapshot_download
 from huggingface_hub.utils._errors import RepositoryNotFoundError
-from mlx.utils import tree_flatten
+from mlx.utils import tree_flatten, tree_unflatten
 from transformers import PreTrainedTokenizer
 
 from .tokenizer_utils import TokenizerWrapper, load_tokenizer
 
-
 # Constants
-MODEL_REMAPPING = {
-}
+MODEL_REMAPPING = {}
 
 MAX_FILE_SIZE_GB = 5
 
@@ -44,7 +41,7 @@ def _get_classes(config: dict):
     Returns:
         A tuple containing the Model class and the ModelArgs class.
     """
-    model_type = config["model_type"]
+    model_type = config["model_type"].replace("-", "_")
     model_type = MODEL_REMAPPING.get(model_type, model_type)
     try:
         arch = importlib.import_module(f"mlx_embeddings.models.{model_type}")
@@ -94,7 +91,6 @@ def get_model_path(path_or_hf_repo: str, revision: Optional[str] = None) -> Path
                 "https://huggingface.co/docs/huggingface_hub/en/guides/cli#huggingface-cli-login"
             ) from None
     return model_path
-
 
 
 def load_config(model_path: Path) -> dict:
@@ -213,9 +209,7 @@ def load(
     model_path = get_model_path(path_or_hf_repo)
 
     model = load_model(model_path, lazy, model_config)
-    if adapter_path is not None:
-        model = apply_lora_layers(model, adapter_path)
-        model.eval()
+
     tokenizer = load_tokenizer(model_path, tokenizer_config)
 
     return model, tokenizer
@@ -404,6 +398,7 @@ def save_config(
     with open(config_path, "w") as fid:
         json.dump(config, fid, indent=4)
 
+
 def dequantize_model(model: nn.Module) -> nn.Module:
     """
     Dequantize the quantized linear layers in the model.
@@ -448,6 +443,7 @@ def dequantize_model(model: nn.Module) -> nn.Module:
     if len(de_quantize_layers) > 0:
         model.update_modules(tree_unflatten(de_quantize_layers))
     return model
+
 
 def convert(
     hf_path: str,
