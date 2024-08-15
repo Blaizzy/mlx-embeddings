@@ -16,17 +16,18 @@ class TestModels(unittest.TestCase):
         batch_size = 1
         seq_length = 5
 
-
         model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
 
         inputs = mx.array([[0, 1, 2, 3, 4]])
         outputs = model(inputs)
-        self.assertEqual(outputs[0].shape, (batch_size, seq_length, model.config.hidden_size))
+        self.assertEqual(
+            outputs[0].shape, (batch_size, seq_length, model.config.hidden_size)
+        )
         self.assertEqual(outputs[0].dtype, mx.float32)
-
 
     def test_xlm_roberta_model(self):
         from mlx_embeddings.models import xlm_roberta
+
         config = xlm_roberta.ModelArgs(
             model_type="xlm-roberta",
             hidden_size=768,
@@ -44,7 +45,6 @@ class TestModels(unittest.TestCase):
             config.vocab_size,
             config.num_hidden_layers,
         )
-
 
 
 if __name__ == "__main__":

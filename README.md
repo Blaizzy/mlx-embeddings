@@ -50,6 +50,11 @@ To compare multiple texts using their embeddings:
 from sklearn.metrics.pairwise import cosine_similarity
 import matplotlib.pyplot as plt
 import seaborn as sns
+import mlx.core as mx
+from mlx_embeddings.utils import load
+
+# Load the model and tokenizer
+model, tokenizer = load("deepvk/USER-bge-m3")
 
 def get_embedding(text, model, tokenizer):
     input_ids = tokenizer.encode(text, return_tensors="mlx", padding=True, truncation=True, max_length=512)
@@ -87,6 +92,15 @@ plot_similarity_matrix(similarity_matrix, labels)
 For processing multiple texts at once:
 
 ```python
+from sklearn.metrics.pairwise import cosine_similarity
+import matplotlib.pyplot as plt
+import seaborn as sns
+import mlx.core as mx
+from mlx_embeddings.utils import load
+
+# Load the model and tokenizer
+model, tokenizer = load("deepvk/USER-bge-m3")
+
 def get_embedding(texts, model, tokenizer):
     inputs = tokenizer.batch_encode_plus(texts, return_tensors="mlx", padding=True, truncation=True, max_length=512)
     outputs = model(
