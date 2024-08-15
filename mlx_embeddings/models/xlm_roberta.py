@@ -4,7 +4,6 @@ from typing import Optional, Tuple
 
 import mlx.core as mx
 import mlx.nn as nn
-import torch
 
 from .base import BaseModelArgs
 
