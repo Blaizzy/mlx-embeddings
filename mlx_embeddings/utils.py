@@ -213,9 +213,7 @@ def load(
     model_path = get_model_path(path_or_hf_repo)
 
     model = load_model(model_path, lazy, model_config)
-    if adapter_path is not None:
-        model = apply_lora_layers(model, adapter_path)
-        model.eval()
+
     tokenizer = load_tokenizer(model_path, tokenizer_config)
 
     return model, tokenizer
