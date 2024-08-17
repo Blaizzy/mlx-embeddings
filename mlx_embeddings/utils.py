@@ -8,7 +8,7 @@ import logging
 import shutil
 from pathlib import Path
 from textwrap import dedent
-from typing import Any, Callable, Dict, Optional, Tuple, Type, Union
+from typing import Any, Callable, Dict, Optional, Tuple, Type, Union, List
 
 import mlx.core as mx
 import mlx.nn as nn
@@ -493,3 +493,47 @@ def convert(
 
     if upload_repo is not None:
         upload_to_hub(mlx_path, upload_repo, hf_path)
+
+
+def generate(
+    model: nn.Module,
+    tokenizer: TokenizerWrapper,
+    texts: Union[str, List[str]],
+    max_length: int = 512,
+    padding: bool = True,
+    truncation: bool = True
+) -> mx.array:
+    """
+    Generate embeddings for input text(s) using the provided model and tokenizer.
+
+    Args:
+        model (nn.Module): The MLX model for generating embeddings.
+        tokenizer (TokenizerWrapper): The tokenizer for preprocessing text.
+        texts (Union[str, List[str]]): A single text string or a list of text strings.
+
+    Returns:
+        mx.array: The generated embeddings.
+    """
+    if isinstance(texts, list):
+        inputs = tokenizer.batch_encode_plus(
+            texts,
+            return_tensors="mlx",
+            padding=padding,
+            truncation=truncation,
+            max_length=max_length
+        )
+        embeddings = model(
+            inputs["input_ids"],
+            attention_mask=inputs["attention_mask"]
+        )[0] # [batch_size, sequence_length, embedding_dim]
+        return embeddings
+    else:
+        input_ids = tokenizer.encode(
+            texts,
+            return_tensors="mlx",
+            truncation=truncation,
+            max_length=max_length
+        )
+        embeddings = model(input_ids)[0] # [1, sequence_length, embedding_dim]
+        return embeddings
+
