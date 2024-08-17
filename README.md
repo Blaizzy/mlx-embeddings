@@ -2,7 +2,7 @@
 
 [![image](https://img.shields.io/pypi/v/mlx-embeddings.svg)](https://pypi.python.org/pypi/mlx-embeddings)
 
-**MLX-Embeddings is a package for running Vision and Language Embedding models locally on your Mac using MLX.**
+**MLX-Embeddings is the best package for running Vision and Language Embedding models locally on your Mac using MLX.**
 
 - Free software: GNU General Public License v3
 
