@@ -1,2 +1,2 @@
-mlx>=0.14.1
-transformers[sentencepiece]>=4.39.3
+mlx>=0.16.3
+transformers[sentencepiece]>=4.44.0
