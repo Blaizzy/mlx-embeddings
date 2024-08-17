@@ -31,7 +31,7 @@ import mlx.core as mx
 from mlx_embeddings.utils import load
 
 # Load the model and tokenizer
-model, tokenizer = load("deepvk/USER-bge-m3")
+model, tokenizer = load("sentence-transformers/all-MiniLM-L6-v2")
 
 # Prepare the text
 text = "I like reading"
@@ -54,7 +54,7 @@ import mlx.core as mx
 from mlx_embeddings.utils import load
 
 # Load the model and tokenizer
-model, tokenizer = load("deepvk/USER-bge-m3")
+model, tokenizer = load("sentence-transformers/all-MiniLM-L6-v2")
 
 def get_embedding(text, model, tokenizer):
     input_ids = tokenizer.encode(text, return_tensors="mlx", padding=True, truncation=True, max_length=512)
@@ -99,7 +99,7 @@ import mlx.core as mx
 from mlx_embeddings.utils import load
 
 # Load the model and tokenizer
-model, tokenizer = load("deepvk/USER-bge-m3")
+model, tokenizer = load("sentence-transformers/all-MiniLM-L6-v2")
 
 def get_embedding(texts, model, tokenizer):
     inputs = tokenizer.batch_encode_plus(texts, return_tensors="mlx", padding=True, truncation=True, max_length=512)
@@ -138,6 +138,13 @@ similarity_matrix = compute_and_print_similarity(embeddings)
 labels = [f"Text {i+1}" for i in range(len(texts))]
 plot_similarity_matrix(similarity_matrix, labels)
 ```
+
+## Supported Models Archictectures
+MLX-Embeddings supports a variety of model architectures for text embedding tasks. Here's a breakdown of the currently supported architectures:
+- XLM-RoBERTa (Cross-lingual Language Model - Robustly Optimized BERT Approach)
+- BERT (Bidirectional Encoder Representations from Transformers)
+
+We're continuously working to expand our support for additional model architectures. Check our GitHub repository or documentation for the most up-to-date list of supported models and their specific versions.
 
 ## Contributing
 
