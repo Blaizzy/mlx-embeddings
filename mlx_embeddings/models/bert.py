@@ -7,6 +7,7 @@ import mlx.nn as nn
 
 from .base import BaseModelArgs
 
+
 @dataclass
 class ModelArgs(BaseModelArgs):
     model_type: str
@@ -16,10 +17,10 @@ class ModelArgs(BaseModelArgs):
     intermediate_size: int
     max_position_embeddings: int
     hidden_dropout_prob: float = 0.1
-    attention_probs_dropout_prob: float  = 0.1
+    attention_probs_dropout_prob: float = 0.1
     type_vocab_size: int = 2
-    initializer_range: float  = 0.02
-    layer_norm_eps: float  = 1e-12
+    initializer_range: float = 0.02
+    layer_norm_eps: float = 1e-12
     vocab_size: int = 30522
 
 
@@ -27,8 +28,12 @@ class BertEmbeddings(nn.Module):
     def __init__(self, config: ModelArgs):
         super().__init__()
         self.word_embeddings = nn.Embedding(config.vocab_size, config.hidden_size)
-        self.position_embeddings = nn.Embedding(config.max_position_embeddings, config.hidden_size)
-        self.token_type_embeddings = nn.Embedding(config.type_vocab_size, config.hidden_size)
+        self.position_embeddings = nn.Embedding(
+            config.max_position_embeddings, config.hidden_size
+        )
+        self.token_type_embeddings = nn.Embedding(
+            config.type_vocab_size, config.hidden_size
+        )
         self.LayerNorm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.dropout = nn.Dropout(config.hidden_dropout_prob)
 
@@ -48,6 +53,7 @@ class BertEmbeddings(nn.Module):
         embeddings = self.dropout(embeddings)
         return embeddings
 
+
 class BertSelfAttention(nn.Module):
     def __init__(self, config: ModelArgs):
         super().__init__()
@@ -62,7 +68,10 @@ class BertSelfAttention(nn.Module):
         self.dropout = nn.Dropout(config.attention_probs_dropout_prob)
 
     def transpose_for_scores(self, x):
-        new_x_shape = x.shape[:-1] + (self.num_attention_heads, self.attention_head_size)
+        new_x_shape = x.shape[:-1] + (
+            self.num_attention_heads,
+            self.attention_head_size,
+        )
         x = x.reshape(new_x_shape)
         return x.transpose(0, 2, 1, 3)
 
@@ -90,6 +99,7 @@ class BertSelfAttention(nn.Module):
 
         return context_layer
 
+
 class BertSelfOutput(nn.Module):
     def __init__(self, config: ModelArgs):
         super().__init__()
@@ -103,6 +113,7 @@ class BertSelfOutput(nn.Module):
         hidden_states = self.LayerNorm(hidden_states + input_tensor)
         return hidden_states
 
+
 class BertAttention(nn.Module):
     def __init__(self, config: ModelArgs):
         super().__init__()
@@ -114,6 +125,7 @@ class BertAttention(nn.Module):
         attention_output = self.output(self_outputs, hidden_states)
         return attention_output
 
+
 class BertIntermediate(nn.Module):
     def __init__(self, config: ModelArgs):
         super().__init__()
@@ -124,6 +136,7 @@ class BertIntermediate(nn.Module):
         hidden_states = self.dense(hidden_states)
         hidden_states = self.intermediate_act_fn(hidden_states)
         return hidden_states
+
 
 class BertOutput(nn.Module):
     def __init__(self, config: ModelArgs):
@@ -138,6 +151,7 @@ class BertOutput(nn.Module):
         hidden_states = self.LayerNorm(hidden_states + input_tensor)
         return hidden_states
 
+
 class BertLayer(nn.Module):
     def __init__(self, config: ModelArgs):
         super().__init__()
@@ -151,6 +165,7 @@ class BertLayer(nn.Module):
         layer_output = self.output(intermediate_output, attention_output)
         return layer_output
 
+
 class BertEncoder(nn.Module):
     def __init__(self, config: ModelArgs):
         super().__init__()
@@ -160,6 +175,7 @@ class BertEncoder(nn.Module):
         for layer_module in self.layer:
             hidden_states = layer_module(hidden_states, attention_mask)
         return hidden_states
+
 
 class BertPooler(nn.Module):
     def __init__(self, config: ModelArgs):
@@ -172,6 +188,7 @@ class BertPooler(nn.Module):
         pooled_output = self.dense(first_token_tensor)
         pooled_output = self.activation(pooled_output)
         return pooled_output
+
 
 class Model(nn.Module):
     def __init__(self, config: ModelArgs):

@@ -8,7 +8,7 @@ import logging
 import shutil
 from pathlib import Path
 from textwrap import dedent
-from typing import Any, Callable, Dict, Optional, Tuple, Type, Union, List
+from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
 import mlx.core as mx
 import mlx.nn as nn
@@ -501,7 +501,7 @@ def generate(
     texts: Union[str, List[str]],
     max_length: int = 512,
     padding: bool = True,
-    truncation: bool = True
+    truncation: bool = True,
 ) -> mx.array:
     """
     Generate embeddings for input text(s) using the provided model and tokenizer.
@@ -520,20 +520,17 @@ def generate(
             return_tensors="mlx",
             padding=padding,
             truncation=truncation,
-            max_length=max_length
+            max_length=max_length,
         )
         embeddings = model(
-            inputs["input_ids"],
-            attention_mask=inputs["attention_mask"]
-        )[0] # [batch_size, sequence_length, embedding_dim]
+            inputs["input_ids"], attention_mask=inputs["attention_mask"]
+        )[
+            0
+        ]  # [batch_size, sequence_length, embedding_dim]
         return embeddings
     else:
         input_ids = tokenizer.encode(
-            texts,
-            return_tensors="mlx",
-            truncation=truncation,
-            max_length=max_length
+            texts, return_tensors="mlx", truncation=truncation, max_length=max_length
         )
-        embeddings = model(input_ids)[0] # [1, sequence_length, embedding_dim]
+        embeddings = model(input_ids)[0]  # [1, sequence_length, embedding_dim]
         return embeddings
-
