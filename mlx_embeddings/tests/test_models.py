@@ -9,7 +9,7 @@ from mlx.utils import tree_map
 
 class TestModels(unittest.TestCase):
 
-    def xlm_roberta_test_runner(self, model, model_type, vocab_size, num_layers):
+    def model_test_runner(self, model, model_type, num_layers):
         self.assertEqual(model.config.model_type, model_type)
         self.assertEqual(len(model.encoder.layer), num_layers)
 
@@ -39,10 +39,29 @@ class TestModels(unittest.TestCase):
         )
         model = xlm_roberta.Model(config)
 
-        self.xlm_roberta_test_runner(
+        self.model_test_runner(
             model,
             config.model_type,
-            config.vocab_size,
+            config.num_hidden_layers,
+        )
+
+    def test_bert_model(self):
+        from mlx_embeddings.models import bert
+
+        config = bert.ModelArgs(
+            model_type="bert",
+            hidden_size=384,
+            num_hidden_layers=6,
+            intermediate_size=1536,
+            num_attention_heads=12,
+            max_position_embeddings=512,
+            vocab_size=30522,
+        )
+        model = bert.Model(config)
+
+        self.model_test_runner(
+            model,
+            config.model_type,
             config.num_hidden_layers,
         )
 
