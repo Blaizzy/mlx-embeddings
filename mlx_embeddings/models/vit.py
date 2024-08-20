@@ -21,6 +21,21 @@ class ModelArgs(BaseModelArgs):
     attention_probs_dropout_prob: float = 0.1
     num_labels: int = 1000
 
+def check_array_shape(arr):
+    shape = arr.shape
+
+    # Check if the shape has 4 dimensions
+    if len(shape) != 4:
+        return False
+
+    out_channels, kH, KW, _ = shape
+
+    # Check if out_channels is the largest, and kH and KW are the same
+    if (out_channels >= kH) and (out_channels >= KW) and (kH == KW):
+        return True
+    else:
+        return False
+
 class ViTPatchEmbeddings(nn.Module):
     def __init__(self, config: ModelArgs):
         super().__init__()
@@ -174,7 +189,7 @@ class ViTPooler(nn.Module):
         pooled_output = self.activation(pooled_output)
         return pooled_output
 
-class ViTModel(nn.Module):
+class Model(nn.Module):
     def __init__(self, config: ModelArgs):
         super().__init__()
         self.embeddings = ViTEmbeddings(config)
@@ -188,3 +203,23 @@ class ViTModel(nn.Module):
         sequence_output = self.layernorm(encoder_outputs)
         pooled_output = self.pooler(sequence_output)
         return sequence_output, pooled_output
+
+    def sanitize(self, weights):
+        sanitized_weights = {}
+        for k, v in weights.items():
+            if "position_ids" in k:
+                # Remove unused position_ids
+                continue
+            elif "embeddings.patch_embeddings.projection.weight" in k:
+                # PyTorch conv2d weight tensors have shape:
+                #   [out_channels, in_channels, kH, KW]
+                # MLX conv2d expects the weight be of shape:
+                #   [out_channels, kH, KW, in_channels]
+                if check_array_shape(v):
+                    sanitized_weights[k] = v
+                else:
+                    sanitized_weights[k] = v.transpose(0, 2, 3, 1)
+            else:
+                sanitized_weights[k] = v
+
+        return sanitized_weights
