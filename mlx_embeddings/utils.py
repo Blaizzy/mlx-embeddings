@@ -13,7 +13,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 import mlx.core as mx
 import mlx.nn as nn
 from huggingface_hub import snapshot_download
-from huggingface_hub.utils._errors import RepositoryNotFoundError
+from huggingface_hub.errors import RepositoryNotFoundError
 from mlx.utils import tree_flatten, tree_unflatten
 from transformers import PreTrainedTokenizer
 
