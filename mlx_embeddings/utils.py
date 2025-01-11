@@ -24,6 +24,10 @@ MODEL_REMAPPING = {}
 
 MAX_FILE_SIZE_GB = 5
 
+PIPELINES = [
+    "sentence-similarity",
+    "sentence-transformers",
+]
 
 class ModelNotFoundError(Exception):
     def __init__(self, message):
@@ -31,7 +35,7 @@ class ModelNotFoundError(Exception):
         super().__init__(self.message)
 
 
-def _get_classes(config: dict):
+def _get_classes(config: dict, pipeline: str = None):
     """
     Retrieve the model and model args classes based on the configuration.
 
@@ -50,7 +54,14 @@ def _get_classes(config: dict):
         logging.error(msg)
         raise ValueError(msg)
 
-    return arch.Model, arch.ModelArgs
+    if not pipeline or pipeline not in PIPELINES:
+        return arch.Model, arch.ModelArgs
+
+    if pipeline == "sentence-transformers":
+        return arch.ModelForSentenceTransformers, arch.ModelArgs
+    
+    if pipeline == "sentence-similarity":
+        return arch.ModelForSentenceSimilarity, arch.Model
 
 
 def get_model_path(path_or_hf_repo: str, revision: Optional[str] = None) -> Path:
@@ -100,7 +111,10 @@ def load_config(model_path: Path) -> dict:
     except FileNotFoundError:
         logging.error(f"Config file not found in {model_path}")
         raise
-    return config
+    
+    is_sentence_transformers = (model_path / "config_sentence_transformers.json").exists()
+    
+    return config, is_sentence_transformers
 
 
 def load_model(
@@ -108,6 +122,7 @@ def load_model(
     lazy: bool = False,
     model_config: dict = {},
     get_model_classes: Callable[[dict], Tuple[Type[nn.Module], Type]] = _get_classes,
+    pipeline: str = None,
 ) -> nn.Module:
     """
     Load and initialize the model from a given path.
@@ -131,7 +146,7 @@ def load_model(
         ValueError: If the model class or args class are not found or cannot be instantiated.
     """
 
-    config = load_config(model_path)
+    config, is_sentence_transformers = load_config(model_path)
     config.update(model_config)
 
     weight_files = glob.glob(str(model_path / "model*.safetensors"))
@@ -148,7 +163,13 @@ def load_model(
     for wf in weight_files:
         weights.update(mx.load(wf))
 
-    model_class, model_args_class = get_model_classes(config=config)
+    # automatically route to sentence-transformers pipeline if config_sentence_transformers.json exists
+    if is_sentence_transformers:
+        ### may need to be adjusted if more pipelines are added
+        if not pipeline or pipeline == "sentence-similarity":
+            pipeline = "sentence-transformers"
+
+    model_class, model_args_class = get_model_classes(config=config, pipeline=pipeline)
 
     model_args = model_args_class.from_dict(config)
     model = model_class(model_args)
@@ -184,6 +205,7 @@ def load(
     model_config={},
     adapter_path: Optional[str] = None,
     lazy: bool = False,
+    pipeline: str = None,
 ) -> Tuple[nn.Module, TokenizerWrapper]:
     """
     Load the model and tokenizer from a given path or a huggingface repository.
@@ -208,7 +230,7 @@ def load(
     """
     model_path = get_model_path(path_or_hf_repo)
 
-    model = load_model(model_path, lazy, model_config)
+    model = load_model(model_path, lazy, model_config, pipeline=pipeline)
 
     tokenizer = load_tokenizer(model_path, tokenizer_config)
 

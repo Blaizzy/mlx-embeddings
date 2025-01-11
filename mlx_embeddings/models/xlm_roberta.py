@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 import mlx.core as mx
 import mlx.nn as nn
 
-from .base import BaseModelArgs
+from .base import BaseModelArgs, compute_similarity
 
 
 @dataclass
@@ -324,6 +324,7 @@ class Model(nn.Module):
         token_type_ids=None,
         position_ids=None,
         head_mask=None,
+        return_dict: Optional[bool] = True,
     ):
 
         input_shape = input_ids.shape
@@ -344,4 +345,82 @@ class Model(nn.Module):
         pooled_output = (
             self.pooler(sequence_output) if self.pooler is not None else None
         )
-        return (sequence_output, pooled_output) + encoder_outputs[1:]
+
+        if not return_dict:
+            return (sequence_output, pooled_output) + encoder_outputs[1:]
+        
+        return {
+            "embeddings": pooled_output,
+            "last_hidden_states": sequence_output,
+            "hidden_states": encoder_outputs[1],
+            "attentions": encoder_outputs[2],
+        }
+    
+class ModelForSentenceSimilarity(Model):
+    """
+    Computes similarity scores between input sequences and reference sentences.
+    """
+    def __init__(self, config):
+        super().__init__(config)
+    
+    def __call__(
+        self,
+        input_ids,
+        reference_input_ids: Optional[mx.array] = None,  # Shape: [num_references, seq_len]
+        attention_mask: Optional[mx.array] = None,
+        reference_attention_mask: Optional[mx.array] = None,
+        position_ids: Optional[mx.array] = None,
+        similarity_scores: Optional[mx.array] = None,  # Shape: [batch_size, num_references]
+        return_dict: Optional[bool] = True,
+    ):
+        # Get embeddings for input batch
+        batch_outputs = super().__call__(
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            return_dict=True
+        )
+        batch_embeddings = batch_outputs["embeddings"]  # [batch_size, hidden_size]
+        
+        if reference_input_ids is not None:
+        
+            # Get embeddings for reference sentences
+            ref_outputs = super().__call__(
+                input_ids=reference_input_ids,
+                attention_mask=reference_attention_mask,
+                return_dict=True
+            )
+            reference_embeddings = ref_outputs["embeddings"]  # [num_references, hidden_size]
+            
+            # Compute similarities between batch and references
+            similarities = compute_similarity(
+                batch_embeddings,  # [batch_size, hidden_size]
+                reference_embeddings  # [num_references, hidden_size]
+            )  # Result: [batch_size, num_references]
+            
+            loss = None 
+            ### can remove all this if no training is planned
+            if similarity_scores is not None:
+                # MSE loss between computed similarities and target scores
+                # similarity_scores should be shape [batch_size, num_references]
+                loss = nn.losses.mse_loss(similarities, similarity_scores)
+        
+        else :
+            similarities = None
+            loss = None
+            
+        if not return_dict:
+            return (loss, similarities, batch_embeddings)
+            
+        return {
+            "loss": loss,
+            "similarities": similarities,  # [batch_size, num_references]
+            "embeddings": batch_embeddings,  # [batch_size, hidden_size]
+        }
+
+class ModelForSentenceTransformers(ModelForSentenceSimilarity):
+    """
+    Extends ModelForSentenceSimilarity to provide embeddings for input sequences.
+    This class is only meant to align with the ModernBERT model. Could just replace ModelForSentenceSimilarity.
+    """
+    def __init__(self, config: ModelArgs):
+        super().__init__(config)
