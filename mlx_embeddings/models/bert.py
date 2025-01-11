@@ -214,7 +214,7 @@ class Model(nn.Module):
 
         return {
             "embeddings": pooled_output,
-            "last_hidden_states": sequence_output,
+            "last_hidden_state": sequence_output,
         }
 
     def sanitize(self, weights):

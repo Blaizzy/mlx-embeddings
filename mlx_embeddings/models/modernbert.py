@@ -467,7 +467,7 @@ class Model(nn.Module):
 
         return {
             "embeddings": pooled,
-            "last_hidden_states": hidden_state,
+            "last_hidden_state": hidden_state,
         }
     
     def sanitize(self, weights):

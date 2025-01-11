@@ -23,18 +23,19 @@ pip install mlx-embeddings
 ## Usage
 
 ### Pipelines
-
-To facilitate compatibility between different model families, a `pipeline` abstraction was introduced. It mostly helps with the weight sanitization for now but more complex logic can be added (as an illustration, the `sentence-transformers` pipeline has a sentence similarity calculation baked in - see example below)  
-Pipelines are optional when loading the model ; not passing a pipeline would result in loading the generic Model class which returns pooled, unnormalized embeddings for the input tokens. 
+ 
+Pipelines are optional when loading the model ; not passing a pipeline results in loading the generic Model class which returns pooled, unnormalized embeddings for the input tokens.  
+For now, the pipeline abstraction mostly serves to deal with weight sanitization between different model families but more complex logic can be added. As an illustration, the `sentence-similarity` pipeline has a sentence similarity calculation baked in - see example below. 
 
 ### Single Item Embedding
 
 To generate an embedding for a single piece of text:
 
 <!-- script tested with:
-- sentence-transformers/all-MiniLM-L6-v2
-- answerdotai/ModernBERT-base
-- nomic-ai/modernbert-embed-base
+- sentence-transformers/all-MiniLM-L6-v2 (bert / sentence-transformers)
+- answerdotai/ModernBERT-base (modernbert)
+- nomic-ai/modernbert-embed-base (modernbert / sentence-transformers)
+- Snowflake/snowflake-arctic-embed-l-v2.0 (xlm-roberta / sentence-transformers)
 Under the hood, when loading a model, we identify if there is a sentence-transformers-config file (load_config in utils) in the repo and select the sentence-transformers pipeline accordingly. It seemed the cleanest way to make it work for all model families.
 -->
 ```python
@@ -54,14 +55,17 @@ embeddings = outputs["embeddings"] # [1, hidden_size], special case of [batch_si
 
 print(embeddings.shape) # [1, hidden_size]
 ```
-<!-- script tested with:
-- sentence-transformers/all-MiniLM-L6-v2
-- nomic-ai/modernbert-embed-base
--->
+
 ### Batch Processing and Multiple Texts Comparison
 
-To embed multiple texts and compare them using their embeddings:
+To embed multiple texts and compare them using their embeddings:  
 
+<!-- script tested with:
+- sentence-transformers/all-MiniLM-L6-v2 (bert / sentence-transformers)
+- nomic-ai/modernbert-embed-base (modernbert / sentence-transformers)
+- BAAI/bge-small-en-v1.5 (bert / sentence-transformers)
+- Snowflake/snowflake-arctic-embed-l-v2.0 (xlm-roberta / sentence-transformers)
+-->
 ```python
 from mlx_embeddings.utils import load
 import matplotlib.pyplot as plt
@@ -166,7 +170,7 @@ if similarities :
 
 ## Supported Models Archictectures
 MLX-Embeddings supports a variety of model architectures for text embedding tasks. Here's a breakdown of the currently supported architectures:
-- XLM-RoBERTa (Cross-lingual Language Model - Robustly Optimized BERT Approach) <!-- could not find a model that worked with the current implementation. problem comes from position_ids parameters in XLMRobertaEmbeddings but I did not look into it too much-->
+- XLM-RoBERTa (Cross-lingual Language Model - Robustly Optimized BERT Approach) <!-- could only make it work with Snowflake/snowflake-arctic-embed-l-v2.0. For others that I have tested, the problem comes from position_ids parameters in XLMRobertaEmbeddings but I did not look into it too much-->
 - BERT (Bidirectional Encoder Representations from Transformers)
 - ModernBERT (modernized bidirectional encoder-only Transformer model)
 
