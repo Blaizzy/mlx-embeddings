@@ -61,7 +61,7 @@ def _get_classes(config: dict, pipeline: str = None):
         return arch.ModelForSentenceTransformers, arch.ModelArgs
     
     if pipeline == "sentence-similarity":
-        return arch.ModelForSentenceSimilarity, arch.Model
+        return arch.ModelForSentenceSimilarity, arch.ModelArgs
 
 
 def get_model_path(path_or_hf_repo: str, revision: Optional[str] = None) -> Path:
