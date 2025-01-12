@@ -31,13 +31,6 @@ For now, the pipeline abstraction mostly serves to deal with weight sanitization
 
 To generate an embedding for a single piece of text:
 
-<!-- script tested with:
-- sentence-transformers/all-MiniLM-L6-v2 (bert / sentence-transformers)
-- answerdotai/ModernBERT-base (modernbert)
-- nomic-ai/modernbert-embed-base (modernbert / sentence-transformers)
-- Snowflake/snowflake-arctic-embed-l-v2.0 (xlm-roberta / sentence-transformers)
-Under the hood, when loading a model, we identify if there is a sentence-transformers-config file (load_config in utils) in the repo and select the sentence-transformers pipeline accordingly. It seemed the cleanest way to make it work for all model families.
--->
 ```python
 from mlx_embeddings.utils import load
 
@@ -51,29 +44,27 @@ text = "I like reading"
 # Tokenize and generate embedding
 input_ids = tokenizer.encode(text, return_tensors="mlx")
 outputs = model(input_ids) 
-embeddings = outputs["embeddings"] # [1, hidden_size], special case of [batch_size, hidden_size]
+pooled_output = outputs["pooled_output"] # [1, hidden_size], special case of [batch_size, hidden_size]
+embeddings = outputs["embeddings"] # [1, seq_length, hidden_size], special case of [batch_size, seq_length, hidden_size]
 
-print(embeddings.shape) # [1, hidden_size]
+print(pooled_output.shape, embeddings.shape ) # [1, hidden_size], [1, seq_length, hidden_size]
 ```
 
 ### Batch Processing and Multiple Texts Comparison
 
 To embed multiple texts and compare them using their embeddings:  
 
-<!-- script tested with:
-- sentence-transformers/all-MiniLM-L6-v2 (bert / sentence-transformers)
-- nomic-ai/modernbert-embed-base (modernbert / sentence-transformers)
-- BAAI/bge-small-en-v1.5 (bert / sentence-transformers)
-- Snowflake/snowflake-arctic-embed-l-v2.0 (xlm-roberta / sentence-transformers)
--->
 ```python
 from mlx_embeddings.utils import load
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load the model and tokenizer
-model_name = "nomic-ai/modernbert-embed-base"  
-model, tokenizer = load(model_name, pipeline="sentence-similarity") # if it's a sentence-transformers model, the pipeline will automatically switch to sentence-transformers when loading (in practice the pipeline can even be omitted)
+model_name = "sentence-transformers/all-MiniLM-L6-v2"  
+model, tokenizer = load(
+    model_name, 
+    pipeline="sentence-similarity"  # if it's a sentence-transformers model, the pipeline will automatically switch to sentence-similarity when loading (in practice the pipeline can even be omitted)
+)
 max_position_embeddings = getattr(model.config,"max_position_embeddings",512)
 
 texts = [
@@ -127,12 +118,13 @@ outputs = model(
 )
 
 # retrieve the pooled, unnormalized embeddings
-embeddings = outputs["embeddings"] # [batch_size, hidden_size]
+pooled_output = outputs["pooled_output"] # [batch_size, hidden_size]
+embeddings = outputs["embeddings"] # [batch_size, seq_length, hidden_size]
 
 # if you have passed reference texts, the model also outputs the similarity matrix between inputs (batch_size) and references (num_refs)
 # see similarity calculation in mlx-embeddings/models/base
 if similarities : 
-    similarity_matrix = outputs['similarities'] # by default returned as a dictionary (use embeddings=outputs[1] otherwise)
+    similarity_matrix = outputs['similarities'] # by default returned as a dictionary (use similarity_matrix=outputs[3] otherwise)
 
     print(f"inputs : {texts}")
     print("    ")
@@ -170,7 +162,7 @@ if similarities :
 
 ## Supported Models Archictectures
 MLX-Embeddings supports a variety of model architectures for text embedding tasks. Here's a breakdown of the currently supported architectures:
-- XLM-RoBERTa (Cross-lingual Language Model - Robustly Optimized BERT Approach) <!-- could only make it work with Snowflake/snowflake-arctic-embed-l-v2.0. For others that I have tested, the problem comes from position_ids parameters in XLMRobertaEmbeddings but I did not look into it too much-->
+- XLM-RoBERTa (Cross-lingual Language Model - Robustly Optimized BERT Approach)
 - BERT (Bidirectional Encoder Representations from Transformers)
 - ModernBERT (modernized bidirectional encoder-only Transformer model)
 

@@ -26,8 +26,9 @@ MAX_FILE_SIZE_GB = 5
 
 PIPELINES = [
     "sentence-similarity",
-    "sentence-transformers",
+    "non-sentence-transformers",
 ]
+
 
 class ModelNotFoundError(Exception):
     def __init__(self, message):
@@ -57,11 +58,12 @@ def _get_classes(config: dict, pipeline: str = None):
     if not pipeline or pipeline not in PIPELINES:
         return arch.Model, arch.ModelArgs
 
-    if pipeline == "sentence-transformers":
-        return arch.ModelForSentenceTransformers, arch.ModelArgs
-    
     if pipeline == "sentence-similarity":
         return arch.ModelForSentenceSimilarity, arch.ModelArgs
+
+    # edge case for modernBert models that are not sentence-transformers
+    if pipeline == "non-sentence-transformers":
+        return arch.ModelNonSentenceTransformers, arch.ModelArgs
 
 
 def get_model_path(path_or_hf_repo: str, revision: Optional[str] = None) -> Path:
@@ -111,9 +113,11 @@ def load_config(model_path: Path) -> dict:
     except FileNotFoundError:
         logging.error(f"Config file not found in {model_path}")
         raise
-    
-    is_sentence_transformers = (model_path / "config_sentence_transformers.json").exists()
-    
+
+    is_sentence_transformers = (
+        model_path / "config_sentence_transformers.json"
+    ).exists()
+
     return config, is_sentence_transformers
 
 
@@ -163,11 +167,14 @@ def load_model(
     for wf in weight_files:
         weights.update(mx.load(wf))
 
-    # automatically route to sentence-transformers pipeline if config_sentence_transformers.json exists
+    # automatically route to sentence-similarity pipeline if config_sentence_transformers.json exists
     if is_sentence_transformers:
         ### may need to be adjusted if more pipelines are added
-        if not pipeline or pipeline == "sentence-similarity":
-            pipeline = "sentence-transformers"
+        if not pipeline:
+            pipeline = "sentence-similarity"
+
+    if pipeline == "sentence-similarity" and not is_sentence_transformers:
+        pipeline = "non-sentence-transformers"
 
     model_class, model_args_class = get_model_classes(config=config, pipeline=pipeline)
 
