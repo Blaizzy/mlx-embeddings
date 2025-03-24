@@ -346,8 +346,8 @@ class Model(nn.Module):
         )
         return (sequence_output, pooled_output) + encoder_outputs[1:]
 
-     def sanitize(self, weights):
-         sanitized_weights = {}
+    def sanitize(self, weights):
+        sanitized_weights = {}
         for k, v in weights.items():
             if "position_ids" in k:
                 # Remove unused position_ids
