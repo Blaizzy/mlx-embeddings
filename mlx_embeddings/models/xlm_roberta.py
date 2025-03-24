@@ -345,3 +345,13 @@ class Model(nn.Module):
             self.pooler(sequence_output) if self.pooler is not None else None
         )
         return (sequence_output, pooled_output) + encoder_outputs[1:]
+
+    def sanitize(self, weights):
+        sanitized_weights = {}
+        for k, v in weights.items():
+            if "position_ids" in k:
+                # Remove unused position_ids
+                continue
+            else:
+                sanitized_weights[k] = v
+        return sanitized_weights
