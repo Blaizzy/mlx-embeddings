@@ -15,6 +15,7 @@ import mlx.nn as nn
 from huggingface_hub import snapshot_download
 from huggingface_hub.errors import RepositoryNotFoundError
 from mlx.utils import tree_flatten, tree_unflatten
+from mlx_vlm.utils import load_image, load_processor
 from transformers import PreTrainedTokenizer
 
 from .tokenizer_utils import TokenizerWrapper, load_tokenizer
@@ -50,7 +51,9 @@ def _get_classes(config: dict):
         logging.error(msg)
         raise ValueError(msg)
 
-    return arch.Model, arch.ModelArgs
+    if hasattr(arch, "TextConfig") and hasattr(arch, "VisionConfig"):
+        return arch.Model, arch.ModelArgs, arch.TextConfig, arch.VisionConfig
+    return arch.Model, arch.ModelArgs, None, None
 
 
 def get_model_path(path_or_hf_repo: str, revision: Optional[str] = None) -> Path:
@@ -103,6 +106,7 @@ def load_config(model_path: Path) -> dict:
     return config
 
 
+
 def load_model(
     model_path: Path,
     lazy: bool = False,
@@ -148,9 +152,15 @@ def load_model(
     for wf in weight_files:
         weights.update(mx.load(wf))
 
-    model_class, model_args_class = get_model_classes(config=config)
+    model_class, model_args_class, text_config, vision_config = get_model_classes(config=config)
 
     model_args = model_args_class.from_dict(config)
+
+    if text_config is not None:
+        model_args.text_config = text_config(**model_args.text_config)
+    if vision_config is not None:
+        model_args.vision_config = vision_config(**model_args.vision_config)
+
     model = model_class(model_args)
 
     if hasattr(model, "sanitize"):
@@ -210,7 +220,17 @@ def load(
 
     model = load_model(model_path, lazy, model_config)
 
-    tokenizer = load_tokenizer(model_path, tokenizer_config)
+    # Try to load tokenizer first, then fall back to processor if needed
+    tokenizer = None
+
+    # First attempt: load tokenizer
+    try:
+        if hasattr(model.config, "vision_config"):
+            tokenizer = load_processor(model_path, add_detokenizer=False, **tokenizer_config)
+        else:
+            tokenizer = load_tokenizer(model_path, tokenizer_config)
+    except Exception as tokenizer_error:
+        raise ValueError(f"Failed to initialize tokenizer or processor: {tokenizer_error}") from tokenizer_error
 
     return model, tokenizer
 
