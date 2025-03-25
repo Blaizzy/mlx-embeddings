@@ -533,7 +533,7 @@ class Model(nn.Module):
         logit_scale, logit_bias = self.logit_scale, self.logit_bias
         logits_per_text = logits_per_text * logit_scale.exp() + logit_bias
 
-        logits_per_image = logits_per_text.T
+        logits_per_image = logits_per_text.transpose(0, 2, 1)
 
         return {
             "logits_per_text": logits_per_text,
