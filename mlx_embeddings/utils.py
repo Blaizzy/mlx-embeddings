@@ -1,6 +1,7 @@
 # Copyright © 2023-2024 Apple Inc.
 
 import copy
+import re
 import glob
 import importlib
 import json
@@ -15,9 +16,8 @@ import mlx.nn as nn
 from huggingface_hub import snapshot_download
 from huggingface_hub.errors import RepositoryNotFoundError
 from mlx.utils import tree_flatten, tree_unflatten
-from mlx_vlm.utils import load_image, load_processor
-from transformers import PreTrainedTokenizer
-
+from mlx_vlm.utils import load_image
+from transformers import PreTrainedTokenizer, AutoProcessor
 from .tokenizer_utils import TokenizerWrapper, load_tokenizer
 
 # Constants
@@ -112,6 +112,7 @@ def load_model(
     lazy: bool = False,
     model_config: dict = {},
     get_model_classes: Callable[[dict], Tuple[Type[nn.Module], Type]] = _get_classes,
+    **kwargs,
 ) -> nn.Module:
     """
     Load and initialize the model from a given path.
@@ -160,6 +161,18 @@ def load_model(
         model_args.text_config = text_config(**model_args.text_config)
     if vision_config is not None:
         model_args.vision_config = vision_config(**model_args.vision_config)
+
+        # siglip models have a different image size
+
+        if "siglip" in config["model_type"]:
+            # Extract the image size
+            image_size = kwargs["path_to_repo"].split("-")[-1].split("/")[0]
+            # Extract the patch size
+            patch_size = kwargs["path_to_repo"].split("-")[-2].split("/")[0]
+            patch_size = re.search(r'\d+', patch_size).group() if re.search(r'\d+', patch_size) else patch_size
+
+            model_args.vision_config.image_size = int(image_size)
+            model_args.vision_config.patch_size = int(patch_size)
 
     model = model_class(model_args)
 
@@ -218,7 +231,7 @@ def load(
     """
     model_path = get_model_path(path_or_hf_repo)
 
-    model = load_model(model_path, lazy, model_config)
+    model = load_model(model_path, lazy, model_config, path_to_repo=path_or_hf_repo)
 
     # Try to load tokenizer first, then fall back to processor if needed
     tokenizer = None
@@ -226,7 +239,7 @@ def load(
     # First attempt: load tokenizer
     try:
         if hasattr(model.config, "vision_config"):
-            tokenizer = load_processor(model_path, add_detokenizer=False, **tokenizer_config)
+            tokenizer = AutoProcessor.from_pretrained(model_path)
         else:
             tokenizer = load_tokenizer(model_path, tokenizer_config)
     except Exception as tokenizer_error:
