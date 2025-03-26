@@ -41,6 +41,7 @@ class ModelArgs:
     vision_config: VisionConfig
     model_type: str = "siglip"
     output_hidden_states: bool = False
+    num_labels: int = 0
 
 
     @classmethod
@@ -193,8 +194,8 @@ class EncoderLayer(nn.Module):
         self.layer_norm2 = nn.LayerNorm(self.embed_dim, eps=config.layer_norm_eps)
 
     def __call__(self, x: mx.array, mask: Optional[mx.array] = None) -> mx.array:
-        r = self.layer_norm1(x)
-        r = self.self_attn(r, mask)
+
+        r = self.self_attn(self.layer_norm1(x), mask)
         h = x + r
         r = self.mlp(self.layer_norm2(h))
         return h + r
@@ -443,15 +444,20 @@ class Model(nn.Module):
     def __init__(self, config: ModelArgs):
         super().__init__()
         self.config = config
-        text_config = config.text_config
         vision_config = config.vision_config
-
-        # First, initialize the text and vision models with proper attention implementation
-        self.text_model = SiglipTextModel(text_config)
         self.vision_model = SiglipVisionModel(vision_config)
 
-        self.logit_scale = mx.zeros((1,))
-        self.logit_bias = mx.zeros((1,))
+        if config.num_labels > 0:
+            # Classifier head
+            self.classifier = (
+                nn.Linear(config.vision_config.hidden_size, config.num_labels) if config.num_labels > 0 else nn.Identity()
+            )
+        else:
+            text_config = config.text_config
+            self.text_model = SiglipTextModel(text_config)
+            self.logit_scale = mx.zeros((1,))
+            self.logit_bias = mx.zeros((1,))
+
 
 
     def get_text_features(
@@ -528,36 +534,54 @@ class Model(nn.Module):
             interpolate_pos_encoding=interpolate_pos_encoding,
         )
 
-        text_outputs = self.text_model(
-            input_ids=input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            output_hidden_states=output_hidden_states,
-        )
-
         image_embeds = vision_outputs[1]
-        text_embeds = text_outputs[1]
 
-        # normalized features
-        image_embeds = image_embeds / mx.linalg.norm(image_embeds, ord=2, axis=-1, keepdims=True)
-        text_embeds = text_embeds / mx.linalg.norm(text_embeds, ord=2, axis=-1, keepdims=True)
+        # classifier head
+        logits = None
+        if self.config.num_labels > 0:
+            # average pool the patch tokens
+            image_embeds_mean = mx.mean(image_embeds, axis=1)
+            # apply classifier
+            logits = self.classifier(image_embeds_mean)
 
-        # cosine similarity as logits
-        logits_per_text = mx.matmul(text_embeds, image_embeds.T)
+            return {
+                "logits": logits,
+                "text_embeds": text_embeds,
+                "image_embeds": image_embeds,
+                "text_model_output": text_outputs,
+                "vision_model_output": vision_outputs,
+            }
 
-        # Apply scale and bias
-        logits_per_text = logits_per_text * mx.exp(self.logit_scale) + self.logit_bias
+        else:
+            text_outputs = self.text_model(
+                input_ids=input_ids,
+                attention_mask=attention_mask,
+                position_ids=position_ids,
+                output_hidden_states=output_hidden_states,
+            )
 
-        logits_per_image = logits_per_text.T
+            text_embeds = text_outputs[1]
 
-        return {
-            "logits_per_text": logits_per_text,
-            "logits_per_image": logits_per_image,
-            "text_embeds": text_embeds,
-            "image_embeds": image_embeds,
-            "text_model_output": text_outputs,
-            "vision_model_output": vision_outputs,
-        }
+            # normalized features
+            image_embeds = image_embeds / mx.linalg.norm(image_embeds, ord=2, axis=-1, keepdims=True)
+            text_embeds = text_embeds / mx.linalg.norm(text_embeds, ord=2, axis=-1, keepdims=True)
+
+            # cosine similarity as logits
+            logits_per_text = mx.matmul(text_embeds, image_embeds.T)
+
+            # Apply scale and bias
+            logits_per_text = logits_per_text * mx.exp(self.logit_scale) + self.logit_bias
+
+            logits_per_image = logits_per_text.T
+
+            return {
+                "logits_per_text": logits_per_text,
+                "logits_per_image": logits_per_image,
+                "text_embeds": text_embeds,
+                "image_embeds": image_embeds,
+                "text_model_output": text_outputs,
+                "vision_model_output": vision_outputs,
+            }
 
     def sanitize(self, weights):
         sanitized_weights = {}
