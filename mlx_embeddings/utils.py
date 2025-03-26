@@ -314,9 +314,7 @@ def upload_to_hub(path: str, upload_repo: str, hf_path: str):
     api.upload_folder(
         folder_path=path,
         repo_id=upload_repo,
-        repo_type="model",
-        multi_commits=True,
-        multi_commits_verbose=True,
+        repo_type="model"
     )
     print(f"Upload successful, go to https://huggingface.co/{upload_repo} for details.")
 
@@ -481,7 +479,7 @@ def convert(
     model, config, tokenizer = fetch_from_hub(model_path, lazy=True)
 
     weights = dict(tree_flatten(model.parameters()))
-    dtype = mx.float16 if quantize else getattr(mx, dtype)
+    dtype = getattr(mx, dtype)
     weights = {k: v.astype(dtype) for k, v in weights.items()}
 
     if quantize and dequantize:
@@ -503,9 +501,11 @@ def convert(
     del model
     save_weights(mlx_path, weights, donate_weights=True)
 
-    py_files = glob.glob(str(model_path / "*.py"))
-    for file in py_files:
-        shutil.copy(file, mlx_path)
+    # Copy Python and JSON files from the model path to the MLX path
+    for pattern in ["*.py", "*.json"]:
+        files = glob.glob(str(model_path / pattern))
+        for file in files:
+            shutil.copy(file, mlx_path)
 
     tokenizer.save_pretrained(mlx_path)
 
