@@ -69,12 +69,14 @@ def check_array_shape(arr):
     else:
         return False
 
+
+
 class MHA(nn.Module):
     def __init__(
         self,
         dims: int,
         num_heads: int,
-        bias: bool = True,
+        bias: bool = False,
     ):
         super().__init__()
 
@@ -91,11 +93,11 @@ class MHA(nn.Module):
         self.in_proj = nn.Linear(dims, dims * 3, bias=bias)
         self.out_proj = nn.Linear(dims, dims, bias=bias)
 
-    def __call__(self, queries: mx.array, kv: mx.array, mask=None):
+    def __call__(self, queries: mx.array, keys: mx.array, values: mx.array, mask=None):
         B, L, D = queries.shape
 
-        qkv = self.in_proj(queries)
-        _, keys, values = mx.split(qkv, 3, axis=-1)
+        qkv = self.in_proj(keys)
+        queries, keys, values = mx.split(qkv, 3, axis=-1)
 
         num_heads = self.num_heads
         B, L, D = queries.shape
@@ -109,6 +111,7 @@ class MHA(nn.Module):
         )
         output = output.transpose(0, 2, 1, 3).reshape(B, L, -1)
         return self.out_proj(output)
+
 
 class Attention(nn.Module):
     def __init__(
@@ -165,9 +168,9 @@ class Attention(nn.Module):
 
 
 class MLP(nn.Module):
-    def __init__(self, config: ModelArgs):
+    def __init__(self, config: ModelArgs, approx: str = "none"):
         super().__init__()
-        self.activation_fn = nn.GELU(approx="precise")
+        self.activation_fn = nn.GELU(approx=approx)
         self.fc1 = nn.Linear(config.hidden_size, config.intermediate_size, bias=True)
         self.fc2 = nn.Linear(config.intermediate_size, config.hidden_size, bias=True)
 
@@ -179,27 +182,28 @@ class MLP(nn.Module):
 
 
 class EncoderLayer(nn.Module):
-    def __init__(self, config: ModelArgs):
+    def __init__(self, config: ModelArgs, approx: str = "none"):
         super().__init__()
         self.embed_dim = config.hidden_size
         self.self_attn = Attention(
             config.hidden_size, config.num_attention_heads, bias=True
         )
         self.layer_norm1 = nn.LayerNorm(self.embed_dim, eps=config.layer_norm_eps)
-        self.mlp = MLP(config)
+        self.mlp = MLP(config, approx=approx)
         self.layer_norm2 = nn.LayerNorm(self.embed_dim, eps=config.layer_norm_eps)
 
     def __call__(self, x: mx.array, mask: Optional[mx.array] = None) -> mx.array:
-        r = self.self_attn(self.layer_norm1(x), mask)
+        r = self.layer_norm1(x)
+        r = self.self_attn(r, mask)
         h = x + r
         r = self.mlp(self.layer_norm2(h))
         return h + r
 
 
 class Encoder(nn.Module):
-    def __init__(self, config: ModelArgs):
+    def __init__(self, config: ModelArgs, approx: str = "none"):
         super().__init__()
-        self.layers = [EncoderLayer(config) for _ in range(config.num_hidden_layers)]
+        self.layers = [EncoderLayer(config, approx=approx) for _ in range(config.num_hidden_layers)]
 
     def __call__(
         self,
@@ -208,15 +212,12 @@ class Encoder(nn.Module):
         mask: Optional[mx.array] = None,
     ) -> mx.array:
         encoder_states = (x,) if output_hidden_states else None
-        h = x
         for l in self.layers:
             x = l(x, mask=mask)
             if output_hidden_states:
                 encoder_states = encoder_states + (x,)
 
-            h = x[0]
-
-        return (h, encoder_states)
+        return (x, encoder_states)
 
 
 class VisionEmbeddings(nn.Module):
@@ -245,7 +246,9 @@ class VisionEmbeddings(nn.Module):
     def __call__(self, x: mx.array, interpolate_pos_encoding: bool = False) -> mx.array:
         _, _, height, width = x.shape
         patch_embeddings = self.patch_embedding(x)
-        patch_embeddings = mx.flatten(patch_embeddings, start_axis=1, end_axis=2)
+        patch_embeddings = mx.transpose(patch_embeddings, (0, 3, 1, 2))
+        patch_embeddings = mx.flatten(patch_embeddings, start_axis=2, end_axis=3)
+        patch_embeddings = mx.transpose(patch_embeddings, (0, 2, 1))
         position_ids = mx.array(np.arange(self.num_positions)[None, :])
         embeddings = patch_embeddings
         if interpolate_pos_encoding:
@@ -259,19 +262,21 @@ class VisionEmbeddings(nn.Module):
 class SiglipMultiheadAttentionPoolingHead(nn.Module):
     """Multihead Attention Pooling."""
 
-    def __init__(self, config: VisionConfig):
+    def __init__(self, config: VisionConfig, approx: str = "none"):
         super().__init__()
 
-        self.probe = mx.random.randint(-100, 100, (1, 1, config.hidden_size))
+        self.probe = mx.ones((1, 1, config.hidden_size))
         self.attention = MHA(config.hidden_size, config.num_attention_heads, bias=True)
         self.layernorm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
-        self.mlp = MLP(config)
+        self.mlp = MLP(config, approx=approx)
 
     def __call__(self, hidden_state):
         batch_size = hidden_state.shape[0]
-        probe = self.probe.repeat(batch_size, 1, 1)
+        # Repeat the probe for each item in the batch
+        # mx.repeat only takes one axis at a time, so we need to do it sequentially
+        probe = mx.repeat(self.probe, batch_size, axis=0)
 
-        hidden_state = self.attention(probe, hidden_state, hidden_state)[0]
+        hidden_state = self.attention(probe, hidden_state, hidden_state)
 
         residual = hidden_state
         hidden_state = self.layernorm(hidden_state)
@@ -284,12 +289,12 @@ class SiglipVisionTransformer(nn.Module):
     def __init__(self, config: VisionConfig):
         super().__init__()
         self.embeddings = VisionEmbeddings(config)
-        self.encoder = Encoder(config)
-        self.post_layernorm = nn.LayerNorm(config.hidden_size)
+        self.encoder = Encoder(config, approx="precise")
+        self.post_layernorm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
         self.use_head = True if not hasattr(config, "vision_use_head") else config.vision_use_head
 
         if self.use_head:
-            self.head = SiglipMultiheadAttentionPoolingHead(config)
+            self.head = SiglipMultiheadAttentionPoolingHead(config, approx="precise")
 
     def __call__(
         self,
@@ -299,13 +304,17 @@ class SiglipVisionTransformer(nn.Module):
     ) -> mx.array:
         x = self.embeddings(pixel_values, interpolate_pos_encoding=interpolate_pos_encoding)
 
-        encoder_outputs = self.encoder(
+        x, encoder_outputs = self.encoder(
             x=x, output_hidden_states=output_hidden_states, mask=None
         )
 
-        pooler_output = self.post_layernorm(encoder_outputs[0])
+        x = self.post_layernorm(x)
+        pooler_output = self.head(x) if self.use_head else None
 
-        return pooler_output, x, encoder_outputs[-1]
+        if output_hidden_states:
+            return x, pooler_output, encoder_outputs[1:]
+        else:
+            return x, pooler_output
 
 
 class SiglipVisionModel(nn.Module):
@@ -325,6 +334,9 @@ class SiglipVisionModel(nn.Module):
     def sanitize(self, weights):
         sanitized_weights = {}
         for k, v in weights.items():
+            if "position_ids" in k:
+                # Remove unused position_ids
+                continue
             if "patch_embedding.weight" in k:
                 # PyTorch conv2d weight tensors have shape:
                 #   [out_channels, in_channels, kH, KW]
@@ -339,6 +351,7 @@ class SiglipVisionModel(nn.Module):
 
         return sanitized_weights
 
+
 class SiglipTextEmbeddings(nn.Module):
     def __init__(self, config: TextConfig):
         super().__init__()
@@ -346,7 +359,6 @@ class SiglipTextEmbeddings(nn.Module):
 
         self.token_embedding = nn.Embedding(config.vocab_size, embed_dim)
         self.position_embedding = nn.Embedding(config.max_position_embeddings, embed_dim)
-
 
     def __call__(
         self,
@@ -364,7 +376,7 @@ class SiglipTextEmbeddings(nn.Module):
             )
 
         if position_ids is None:
-            position_ids = mx.expand_dims(mx.array(np.arange(seq_length)), 0)
+            position_ids = mx.array(np.arange(seq_length)[None, :])
 
         if inputs_embeds is None:
             inputs_embeds = self.token_embedding(input_ids)
@@ -391,22 +403,27 @@ class SiglipTextTransformer(nn.Module):
         self.config = config
         embed_dim = config.hidden_size
         self.embeddings = SiglipTextEmbeddings(config)
-        self.encoder = Encoder(config)
+        self.encoder = Encoder(config, approx="precise")
         self.final_layer_norm = nn.LayerNorm(embed_dim, eps=config.layer_norm_eps)
 
         self.head = nn.Linear(embed_dim, config.projection_size)
 
     def __call__(self, input_ids: mx.array, attention_mask: Optional[mx.array] = None, position_ids: Optional[mx.array] = None, output_hidden_states: Optional[bool] = None) -> mx.array:
+
+        input_shape = input_ids.shape
+        input_ids = input_ids.reshape(-1, input_shape[-1])
         x = self.embeddings(input_ids, position_ids)
         x, encoder_states = self.encoder(x, output_hidden_states, attention_mask)
-        x = self.final_layer_norm(x)[None, :, :]
-
+        x = self.final_layer_norm(x)
 
         # Assuming "sticky" EOS tokenization, last token is always EOS.
         pooled_output = x[:, -1, :]
         pooled_output = self.head(pooled_output)
 
-        return (x, pooled_output, encoder_states)
+        if output_hidden_states:
+            return x, pooled_output, encoder_states[1:]
+        else:
+            return x, pooled_output
 
 class SiglipTextModel(nn.Module):
     def __init__(self, config: ModelArgs):
@@ -433,8 +450,8 @@ class Model(nn.Module):
         self.text_model = SiglipTextModel(text_config)
         self.vision_model = SiglipVisionModel(vision_config)
 
-        self.logit_scale = mx.random.randint(-100, 100, (1,))
-        self.logit_bias = mx.random.randint(-100, 100, (1,))
+        self.logit_scale = mx.zeros((1,))
+        self.logit_bias = mx.zeros((1,))
 
 
     def get_text_features(
@@ -442,7 +459,6 @@ class Model(nn.Module):
         input_ids: Optional[mx.array] = None,
         attention_mask: Optional[mx.array] = None,
         position_ids: Optional[mx.array] = None,
-        output_attentions: Optional[bool] = None,
         output_hidden_states: Optional[bool] = None,
     ) -> mx.array:
 
@@ -527,13 +543,12 @@ class Model(nn.Module):
         text_embeds = text_embeds / mx.linalg.norm(text_embeds, ord=2, axis=-1, keepdims=True)
 
         # cosine similarity as logits
-        logits_per_text = mx.matmul(text_embeds, image_embeds.transpose(0, 2, 1))
+        logits_per_text = mx.matmul(text_embeds, image_embeds.T)
 
+        # Apply scale and bias
+        logits_per_text = logits_per_text * mx.exp(self.logit_scale) + self.logit_bias
 
-        logit_scale, logit_bias = self.logit_scale, self.logit_bias
-        logits_per_text = logits_per_text * logit_scale.exp() + logit_bias
-
-        logits_per_image = logits_per_text.transpose(0, 2, 1)
+        logits_per_image = logits_per_text.T
 
         return {
             "logits_per_text": logits_per_text,
