@@ -6,6 +6,7 @@ import mlx.core as mx
 import mlx.nn as nn
 import numpy as np
 
+
 @dataclass
 class TextConfig:
     vocab_size: int = 32000
@@ -22,6 +23,7 @@ class TextConfig:
         if self.projection_size is None:
             self.projection_size = self.hidden_size
 
+
 @dataclass
 class VisionConfig:
     image_size: int = 384
@@ -35,6 +37,7 @@ class VisionConfig:
     model_type: str = "siglip_vision_model"
     vision_use_head: bool = True
 
+
 @dataclass
 class ModelArgs:
     text_config: TextConfig
@@ -42,7 +45,6 @@ class ModelArgs:
     model_type: str = "siglip"
     output_hidden_states: bool = False
     num_labels: int = 0
-
 
     @classmethod
     def from_dict(cls, params):
@@ -69,7 +71,6 @@ def check_array_shape(arr):
         return True
     else:
         return False
-
 
 
 class MHA(nn.Module):
@@ -204,7 +205,9 @@ class EncoderLayer(nn.Module):
 class Encoder(nn.Module):
     def __init__(self, config: ModelArgs, approx: str = "none"):
         super().__init__()
-        self.layers = [EncoderLayer(config, approx=approx) for _ in range(config.num_hidden_layers)]
+        self.layers = [
+            EncoderLayer(config, approx=approx) for _ in range(config.num_hidden_layers)
+        ]
 
     def __call__(
         self,
@@ -240,9 +243,13 @@ class VisionEmbeddings(nn.Module):
         self.num_positions = self.num_patches
         self.position_embedding = nn.Embedding(self.num_positions, self.embed_dim)
 
-    def interpolate_pos_encoding(self, embeddings: mx.array, height: int, width: int) -> mx.array:
+    def interpolate_pos_encoding(
+        self, embeddings: mx.array, height: int, width: int
+    ) -> mx.array:
         # TODO: Implement this
-        raise NotImplementedError("Interpolation of positional encodings is not implemented for SigLIP")
+        raise NotImplementedError(
+            "Interpolation of positional encodings is not implemented for SigLIP"
+        )
 
     def __call__(self, x: mx.array, interpolate_pos_encoding: bool = False) -> mx.array:
         _, _, height, width = x.shape
@@ -291,8 +298,12 @@ class SiglipVisionTransformer(nn.Module):
         super().__init__()
         self.embeddings = VisionEmbeddings(config)
         self.encoder = Encoder(config, approx="precise")
-        self.post_layernorm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
-        self.use_head = True if not hasattr(config, "vision_use_head") else config.vision_use_head
+        self.post_layernorm = nn.LayerNorm(
+            config.hidden_size, eps=config.layer_norm_eps
+        )
+        self.use_head = (
+            True if not hasattr(config, "vision_use_head") else config.vision_use_head
+        )
 
         if self.use_head:
             self.head = SiglipMultiheadAttentionPoolingHead(config, approx="precise")
@@ -303,7 +314,9 @@ class SiglipVisionTransformer(nn.Module):
         output_hidden_states: Optional[bool] = None,
         interpolate_pos_encoding: bool = False,
     ) -> mx.array:
-        x = self.embeddings(pixel_values, interpolate_pos_encoding=interpolate_pos_encoding)
+        x = self.embeddings(
+            pixel_values, interpolate_pos_encoding=interpolate_pos_encoding
+        )
 
         x, encoder_outputs = self.encoder(
             x=x, output_hidden_states=output_hidden_states, mask=None
@@ -328,9 +341,14 @@ class SiglipVisionModel(nn.Module):
         self.vision_model = SiglipVisionTransformer(config)
 
     def __call__(
-        self, pixel_values: mx.array, output_hidden_states: Optional[bool] = None, interpolate_pos_encoding: bool = False
+        self,
+        pixel_values: mx.array,
+        output_hidden_states: Optional[bool] = None,
+        interpolate_pos_encoding: bool = False,
     ) -> mx.array:
-        return self.vision_model(pixel_values, output_hidden_states, interpolate_pos_encoding)
+        return self.vision_model(
+            pixel_values, output_hidden_states, interpolate_pos_encoding
+        )
 
     def sanitize(self, weights):
         sanitized_weights = {}
@@ -359,7 +377,9 @@ class SiglipTextEmbeddings(nn.Module):
         embed_dim = config.hidden_size
 
         self.token_embedding = nn.Embedding(config.vocab_size, embed_dim)
-        self.position_embedding = nn.Embedding(config.max_position_embeddings, embed_dim)
+        self.position_embedding = nn.Embedding(
+            config.max_position_embeddings, embed_dim
+        )
 
     def __call__(
         self,
@@ -367,7 +387,9 @@ class SiglipTextEmbeddings(nn.Module):
         position_ids: mx.array,
         inputs_embeds: Optional[mx.array] = None,
     ) -> mx.array:
-        seq_length = input_ids.shape[-1] if input_ids is not None else inputs_embeds.shape[-2]
+        seq_length = (
+            input_ids.shape[-1] if input_ids is not None else inputs_embeds.shape[-2]
+        )
         max_position_embedding = self.position_embedding.weight.shape[0]
 
         if seq_length > max_position_embedding:
@@ -409,7 +431,13 @@ class SiglipTextTransformer(nn.Module):
 
         self.head = nn.Linear(embed_dim, config.projection_size)
 
-    def __call__(self, input_ids: mx.array, attention_mask: Optional[mx.array] = None, position_ids: Optional[mx.array] = None, output_hidden_states: Optional[bool] = None) -> mx.array:
+    def __call__(
+        self,
+        input_ids: mx.array,
+        attention_mask: Optional[mx.array] = None,
+        position_ids: Optional[mx.array] = None,
+        output_hidden_states: Optional[bool] = None,
+    ) -> mx.array:
 
         input_shape = input_ids.shape
         input_ids = input_ids.reshape(-1, input_shape[-1])
@@ -426,6 +454,7 @@ class SiglipTextTransformer(nn.Module):
         else:
             return x, pooled_output
 
+
 class SiglipTextModel(nn.Module):
     def __init__(self, config: ModelArgs):
         super().__init__()
@@ -435,9 +464,16 @@ class SiglipTextModel(nn.Module):
 
         self.text_model = SiglipTextTransformer(config)
 
-    def __call__(self, input_ids: mx.array, attention_mask: Optional[mx.array] = None, position_ids: Optional[mx.array] = None, output_hidden_states: Optional[bool] = None) -> mx.array:
-        return self.text_model(input_ids, attention_mask, position_ids, output_hidden_states)
-
+    def __call__(
+        self,
+        input_ids: mx.array,
+        attention_mask: Optional[mx.array] = None,
+        position_ids: Optional[mx.array] = None,
+        output_hidden_states: Optional[bool] = None,
+    ) -> mx.array:
+        return self.text_model(
+            input_ids, attention_mask, position_ids, output_hidden_states
+        )
 
 
 class Model(nn.Module):
@@ -450,15 +486,15 @@ class Model(nn.Module):
         if config.num_labels > 0:
             # Classifier head
             self.classifier = (
-                nn.Linear(config.vision_config.hidden_size, config.num_labels) if config.num_labels > 0 else nn.Identity()
+                nn.Linear(config.vision_config.hidden_size, config.num_labels)
+                if config.num_labels > 0
+                else nn.Identity()
             )
         else:
             text_config = config.text_config
             self.text_model = SiglipTextModel(text_config)
             self.logit_scale = mx.zeros((1,))
             self.logit_bias = mx.zeros((1,))
-
-
 
     def get_text_features(
         self,
@@ -470,7 +506,9 @@ class Model(nn.Module):
 
         # Use SigLIP model's config for some fields (if specified) instead of those of vision & text components.
         output_hidden_states = (
-            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
+            output_hidden_states
+            if output_hidden_states is not None
+            else self.config.output_hidden_states
         )
 
         text_outputs = self.text_model(
@@ -496,11 +534,19 @@ class Model(nn.Module):
     ) -> mx.array:
 
         # Use SiglipModel's config for some fields (if specified) instead of those of vision & text components.
-        output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
-        output_hidden_states = (
-            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
+        output_attentions = (
+            output_attentions
+            if output_attentions is not None
+            else self.config.output_attentions
         )
-        return_dict = return_dict if return_dict is not None else self.config.use_return_dict
+        output_hidden_states = (
+            output_hidden_states
+            if output_hidden_states is not None
+            else self.config.output_hidden_states
+        )
+        return_dict = (
+            return_dict if return_dict is not None else self.config.use_return_dict
+        )
 
         vision_outputs = self.vision_model(
             pixel_values=pixel_values,
@@ -511,7 +557,6 @@ class Model(nn.Module):
         pooled_output = vision_outputs[1]
 
         return pooled_output
-
 
     def __call__(
         self,
@@ -525,7 +570,9 @@ class Model(nn.Module):
 
         # Use SigLIP model's config for some fields (if specified) instead of those of vision & text components.
         output_hidden_states = (
-            output_hidden_states if output_hidden_states is not None else self.config.output_hidden_states
+            output_hidden_states
+            if output_hidden_states is not None
+            else self.config.output_hidden_states
         )
 
         vision_outputs = self.vision_model(
@@ -563,14 +610,20 @@ class Model(nn.Module):
             text_embeds = text_outputs[1]
 
             # normalized features
-            image_embeds = image_embeds / mx.linalg.norm(image_embeds, ord=2, axis=-1, keepdims=True)
-            text_embeds = text_embeds / mx.linalg.norm(text_embeds, ord=2, axis=-1, keepdims=True)
+            image_embeds = image_embeds / mx.linalg.norm(
+                image_embeds, ord=2, axis=-1, keepdims=True
+            )
+            text_embeds = text_embeds / mx.linalg.norm(
+                text_embeds, ord=2, axis=-1, keepdims=True
+            )
 
             # cosine similarity as logits
             logits_per_text = mx.matmul(text_embeds, image_embeds.T)
 
             # Apply scale and bias
-            logits_per_text = logits_per_text * mx.exp(self.logit_scale) + self.logit_bias
+            logits_per_text = (
+                logits_per_text * mx.exp(self.logit_scale) + self.logit_bias
+            )
 
             logits_per_image = logits_per_text.T
 
@@ -596,8 +649,6 @@ class Model(nn.Module):
                 sanitized_weights["vision_model." + k] = v
             else:
                 sanitized_weights[k] = v
-
-
 
         if hasattr(self.text_model, "sanitize"):
             sanitized_weights = self.text_model.sanitize(sanitized_weights)

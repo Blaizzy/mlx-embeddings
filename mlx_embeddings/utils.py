@@ -1,11 +1,11 @@
 # Copyright © 2023-2024 Apple Inc.
 
 import copy
-import re
 import glob
 import importlib
 import json
 import logging
+import re
 import shutil
 from pathlib import Path
 from textwrap import dedent
@@ -17,7 +17,8 @@ from huggingface_hub import snapshot_download
 from huggingface_hub.errors import RepositoryNotFoundError
 from mlx.utils import tree_flatten, tree_unflatten
 from mlx_vlm.utils import load_image
-from transformers import PreTrainedTokenizer, AutoProcessor
+from transformers import AutoProcessor, PreTrainedTokenizer
+
 from .tokenizer_utils import TokenizerWrapper, load_tokenizer
 
 # Constants
@@ -106,7 +107,6 @@ def load_config(model_path: Path) -> dict:
     return config
 
 
-
 def load_model(
     model_path: Path,
     lazy: bool = False,
@@ -153,7 +153,9 @@ def load_model(
     for wf in weight_files:
         weights.update(mx.load(wf))
 
-    model_class, model_args_class, text_config, vision_config = get_model_classes(config=config)
+    model_class, model_args_class, text_config, vision_config = get_model_classes(
+        config=config
+    )
 
     model_args = model_args_class.from_dict(config)
 
@@ -169,7 +171,11 @@ def load_model(
             image_size = kwargs["path_to_repo"].split("-")[-1].split("/")[0]
             # Extract the patch size
             patch_size = kwargs["path_to_repo"].split("-")[-2].split("/")[0]
-            patch_size = re.search(r'\d+', patch_size).group() if re.search(r'\d+', patch_size) else patch_size
+            patch_size = (
+                re.search(r"\d+", patch_size).group()
+                if re.search(r"\d+", patch_size)
+                else patch_size
+            )
 
             model_args.vision_config.image_size = int(image_size)
             model_args.vision_config.patch_size = int(patch_size)
@@ -243,7 +249,9 @@ def load(
         else:
             tokenizer = load_tokenizer(model_path, tokenizer_config)
     except Exception as tokenizer_error:
-        raise ValueError(f"Failed to initialize tokenizer or processor: {tokenizer_error}") from tokenizer_error
+        raise ValueError(
+            f"Failed to initialize tokenizer or processor: {tokenizer_error}"
+        ) from tokenizer_error
 
     return model, tokenizer
 
@@ -324,11 +332,7 @@ def upload_to_hub(path: str, upload_repo: str, hf_path: str):
 
     api = HfApi()
     api.create_repo(repo_id=upload_repo, exist_ok=True)
-    api.upload_folder(
-        folder_path=path,
-        repo_id=upload_repo,
-        repo_type="model"
-    )
+    api.upload_folder(folder_path=path, repo_id=upload_repo, repo_type="model")
     print(f"Upload successful, go to https://huggingface.co/{upload_repo} for details.")
 
 
