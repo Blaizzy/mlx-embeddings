@@ -5,6 +5,7 @@ import glob
 import importlib
 import json
 import logging
+import re
 import shutil
 from pathlib import Path
 from textwrap import dedent
@@ -15,7 +16,8 @@ import mlx.nn as nn
 from huggingface_hub import snapshot_download
 from huggingface_hub.errors import RepositoryNotFoundError
 from mlx.utils import tree_flatten, tree_unflatten
-from transformers import PreTrainedTokenizer
+from mlx_vlm.utils import load_image
+from transformers import AutoProcessor, PreTrainedTokenizer
 
 from .tokenizer_utils import TokenizerWrapper, load_tokenizer
 
@@ -55,15 +57,17 @@ def _get_classes(config: dict, pipeline: str = None):
         logging.error(msg)
         raise ValueError(msg)
 
-    if not pipeline or pipeline not in PIPELINES:
-        return arch.Model, arch.ModelArgs
-
     if pipeline == "sentence-similarity":
         return arch.ModelForSentenceSimilarity, arch.ModelArgs
 
     # edge case for modernBert models that are not sentence-transformers
     if pipeline == "non-sentence-transformers":
         return arch.ModelNonSentenceTransformers, arch.ModelArgs
+    
+    if hasattr(arch, "TextConfig") and hasattr(arch, "VisionConfig"):
+        return arch.Model, arch.ModelArgs, arch.TextConfig, arch.VisionConfig
+    
+    return arch.Model, arch.ModelArgs, None, None
 
 
 def get_model_path(path_or_hf_repo: str, revision: Optional[str] = None) -> Path:
@@ -126,7 +130,7 @@ def load_model(
     lazy: bool = False,
     model_config: dict = {},
     get_model_classes: Callable[[dict], Tuple[Type[nn.Module], Type]] = _get_classes,
-    pipeline: str = None,
+    **kwargs,
 ) -> nn.Module:
     """
     Load and initialize the model from a given path.
@@ -167,6 +171,10 @@ def load_model(
     for wf in weight_files:
         weights.update(mx.load(wf))
 
+    pipeline = kwargs.get('pipeline', None)
+    text_config = kwargs.get('text_config', None)
+    vision_config = kwargs.get('vision_config', None)
+
     # automatically route to sentence-similarity pipeline if config_sentence_transformers.json exists
     if is_sentence_transformers:
         ### may need to be adjusted if more pipelines are added
@@ -179,6 +187,28 @@ def load_model(
     model_class, model_args_class = get_model_classes(config=config, pipeline=pipeline)
 
     model_args = model_args_class.from_dict(config)
+
+    if text_config is not None:
+        model_args.text_config = text_config(**model_args.text_config)
+    if vision_config is not None:
+        model_args.vision_config = vision_config(**model_args.vision_config)
+
+        # siglip models have a different image size
+
+        if "siglip" in config["model_type"]:
+            # Extract the image size
+            image_size = kwargs["path_to_repo"].split("-")[-1].split("/")[0]
+            # Extract the patch size
+            patch_size = kwargs["path_to_repo"].split("-")[-2].split("/")[0]
+            patch_size = (
+                re.search(r"\d+", patch_size).group()
+                if re.search(r"\d+", patch_size)
+                else patch_size
+            )
+
+            model_args.vision_config.image_size = int(image_size)
+            model_args.vision_config.patch_size = int(patch_size)
+
     model = model_class(model_args)
 
     if hasattr(model, "sanitize"):
@@ -237,9 +267,26 @@ def load(
     """
     model_path = get_model_path(path_or_hf_repo)
 
-    model = load_model(model_path, lazy, model_config, pipeline=pipeline)
+    model = load_model(
+        model_path, 
+        lazy, model_config, 
+        path_to_repo=path_or_hf_repo,
+        pipeline=pipeline
+    )
 
-    tokenizer = load_tokenizer(model_path, tokenizer_config)
+    # Try to load tokenizer first, then fall back to processor if needed
+    tokenizer = None
+
+    # First attempt: load tokenizer
+    try:
+        if hasattr(model.config, "vision_config"):
+            tokenizer = AutoProcessor.from_pretrained(model_path)
+        else:
+            tokenizer = load_tokenizer(model_path, tokenizer_config)
+    except Exception as tokenizer_error:
+        raise ValueError(
+            f"Failed to initialize tokenizer or processor: {tokenizer_error}"
+        ) from tokenizer_error
 
     return model, tokenizer
 
@@ -320,13 +367,7 @@ def upload_to_hub(path: str, upload_repo: str, hf_path: str):
 
     api = HfApi()
     api.create_repo(repo_id=upload_repo, exist_ok=True)
-    api.upload_folder(
-        folder_path=path,
-        repo_id=upload_repo,
-        repo_type="model",
-        multi_commits=True,
-        multi_commits_verbose=True,
-    )
+    api.upload_folder(folder_path=path, repo_id=upload_repo, repo_type="model")
     print(f"Upload successful, go to https://huggingface.co/{upload_repo} for details.")
 
 
@@ -490,7 +531,7 @@ def convert(
     model, config, tokenizer = fetch_from_hub(model_path, lazy=True)
 
     weights = dict(tree_flatten(model.parameters()))
-    dtype = mx.float16 if quantize else getattr(mx, dtype)
+    dtype = getattr(mx, dtype)
     weights = {k: v.astype(dtype) for k, v in weights.items()}
 
     if quantize and dequantize:
@@ -512,9 +553,11 @@ def convert(
     del model
     save_weights(mlx_path, weights, donate_weights=True)
 
-    py_files = glob.glob(str(model_path / "*.py"))
-    for file in py_files:
-        shutil.copy(file, mlx_path)
+    # Copy Python and JSON files from the model path to the MLX path
+    for pattern in ["*.py", "*.json"]:
+        files = glob.glob(str(model_path / pattern))
+        for file in files:
+            shutil.copy(file, mlx_path)
 
     tokenizer.save_pretrained(mlx_path)
 

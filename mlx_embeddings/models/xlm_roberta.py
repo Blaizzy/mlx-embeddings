@@ -362,6 +362,16 @@ class Model(nn.Module):
             "hidden_states": encoder_outputs[1] if output_hidden_states else None,
             "attentions": encoder_outputs[2] if output_attentions else None,
         }
+    
+    def sanitize(self, weights):
+        sanitized_weights = {}
+        for k, v in weights.items():
+            if "position_ids" in k:
+                # Remove unused position_ids
+                continue
+            else:
+                sanitized_weights[k] = v
+        return sanitized_weights
 
 
 class ModelForSentenceSimilarity(Model):
