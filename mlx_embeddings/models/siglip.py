@@ -6,6 +6,8 @@ import mlx.core as mx
 import mlx.nn as nn
 import numpy as np
 
+from .base import ViTModelOutput, normalize_embeddings
+
 
 @dataclass
 class TextConfig:
@@ -591,13 +593,11 @@ class Model(nn.Module):
             # apply classifier
             logits = self.classifier(image_embeds_mean)
 
-            return {
-                "logits": logits,
-                "text_embeds": text_embeds,
-                "image_embeds": image_embeds,
-                "text_model_output": text_outputs,
-                "vision_model_output": vision_outputs,
-            }
+            return ViTModelOutput(
+                logits=logits,
+                image_embeds=image_embeds,
+                vision_model_output=vision_outputs,
+            )
 
         else:
             text_outputs = self.text_model(
@@ -610,12 +610,8 @@ class Model(nn.Module):
             text_embeds = text_outputs[1]
 
             # normalized features
-            image_embeds = image_embeds / mx.linalg.norm(
-                image_embeds, ord=2, axis=-1, keepdims=True
-            )
-            text_embeds = text_embeds / mx.linalg.norm(
-                text_embeds, ord=2, axis=-1, keepdims=True
-            )
+            image_embeds = normalize_embeddings(image_embeds)
+            text_embeds = normalize_embeddings(text_embeds)
 
             # cosine similarity as logits
             logits_per_text = mx.matmul(text_embeds, image_embeds.T)
@@ -627,14 +623,14 @@ class Model(nn.Module):
 
             logits_per_image = logits_per_text.T
 
-            return {
-                "logits_per_text": logits_per_text,
-                "logits_per_image": logits_per_image,
-                "text_embeds": text_embeds,
-                "image_embeds": image_embeds,
-                "text_model_output": text_outputs,
-                "vision_model_output": vision_outputs,
-            }
+            return ViTModelOutput(
+                logits_per_text=logits_per_text,
+                logits_per_image=logits_per_image,
+                text_embeds=text_embeds,
+                image_embeds=image_embeds,
+                text_model_output=text_outputs,
+                vision_model_output=vision_outputs,
+            )
 
     def sanitize(self, weights):
         sanitized_weights = {}

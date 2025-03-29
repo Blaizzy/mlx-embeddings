@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 import mlx.core as mx
 import mlx.nn as nn
 
-from .base import BaseModelArgs
+from .base import BaseModelArgs, BaseModelOutput, mean_pooling, normalize_embeddings
 
 
 @dataclass
@@ -344,7 +344,17 @@ class Model(nn.Module):
         pooled_output = (
             self.pooler(sequence_output) if self.pooler is not None else None
         )
-        return (sequence_output, pooled_output) + encoder_outputs[1:]
+
+        # normalized features
+        text_embeds = mean_pooling(sequence_output, attention_mask)
+        text_embeds = normalize_embeddings(text_embeds)
+
+        return BaseModelOutput(
+            last_hidden_state=sequence_output,
+            text_embeds=text_embeds,
+            pooler_output=pooled_output,
+            hidden_states=encoder_outputs[1:],
+        )
 
     def sanitize(self, weights):
         sanitized_weights = {}
