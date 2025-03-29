@@ -5,6 +5,7 @@ from typing import Optional
 import mlx.core as mx
 import mlx.nn as nn
 import numpy as np
+
 from .base import ViTModelOutput, normalize_embeddings
 
 
@@ -558,8 +559,6 @@ class Model(nn.Module):
         pooled_output = vision_outputs[1]
 
         return pooled_output
-
-
 
     def __call__(
         self,

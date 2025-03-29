@@ -493,7 +493,9 @@ def convert(
 ):
     print("[INFO] Loading")
     model_path = get_model_path(hf_path, revision=revision)
-    model, config, tokenizer = fetch_from_hub(model_path, lazy=True, path_to_repo=hf_path)
+    model, config, tokenizer = fetch_from_hub(
+        model_path, lazy=True, path_to_repo=hf_path
+    )
 
     weights = dict(tree_flatten(model.parameters()))
     dtype = getattr(mx, dtype)
