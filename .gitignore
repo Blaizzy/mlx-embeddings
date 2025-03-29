@@ -110,3 +110,6 @@ test.ipynb
 .lisapro/*.yml
 
 .DS_Store
+
+# testing README scripts
+test_readme.py
