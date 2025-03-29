@@ -63,10 +63,10 @@ def _get_classes(config: dict, pipeline: str = None):
     # edge case for modernBert models that are not sentence-transformers
     if pipeline == "non-sentence-transformers":
         return arch.ModelNonSentenceTransformers, arch.ModelArgs
-    
+
     if hasattr(arch, "TextConfig") and hasattr(arch, "VisionConfig"):
         return arch.Model, arch.ModelArgs, arch.TextConfig, arch.VisionConfig
-    
+
     return arch.Model, arch.ModelArgs, None, None
 
 
@@ -171,9 +171,9 @@ def load_model(
     for wf in weight_files:
         weights.update(mx.load(wf))
 
-    pipeline = kwargs.get('pipeline', None)
-    text_config = kwargs.get('text_config', None)
-    vision_config = kwargs.get('vision_config', None)
+    pipeline = kwargs.get("pipeline", None)
+    text_config = kwargs.get("text_config", None)
+    vision_config = kwargs.get("vision_config", None)
 
     # automatically route to sentence-similarity pipeline if config_sentence_transformers.json exists
     if is_sentence_transformers:
@@ -268,10 +268,7 @@ def load(
     model_path = get_model_path(path_or_hf_repo)
 
     model = load_model(
-        model_path, 
-        lazy, model_config, 
-        path_to_repo=path_or_hf_repo,
-        pipeline=pipeline
+        model_path, lazy, model_config, path_to_repo=path_or_hf_repo, pipeline=pipeline
     )
 
     # Try to load tokenizer first, then fall back to processor if needed

@@ -302,3 +302,12 @@ class ModelForSentenceSimilarity(Model):
             "loss": loss,
             "similarities": similarities,  # [batch_size, num_references]
         }
+
+
+class ModelNonSentenceTransformers(ModelForSentenceSimilarity):
+    """
+    For compatibility with other model types.
+    """
+
+    def __init__(self, config: ModelArgs):
+        super().__init__(config)

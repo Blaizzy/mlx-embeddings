@@ -362,7 +362,7 @@ class Model(nn.Module):
             "hidden_states": encoder_outputs[1] if output_hidden_states else None,
             "attentions": encoder_outputs[2] if output_attentions else None,
         }
-    
+
     def sanitize(self, weights):
         sanitized_weights = {}
         for k, v in weights.items():
@@ -443,3 +443,12 @@ class ModelForSentenceSimilarity(Model):
             "loss": loss,
             "similarities": similarities,  # [batch_size, num_references]
         }
+
+
+class ModelNonSentenceTransformers(ModelForSentenceSimilarity):
+    """
+    For compatibility with other model types.
+    """
+
+    def __init__(self, config: ModelArgs):
+        super().__init__(config)

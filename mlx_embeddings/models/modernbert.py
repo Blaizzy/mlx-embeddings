@@ -333,10 +333,10 @@ class ModernBertModel(nn.Module):
 
     def _update_attention_mask(self, attention_mask):
         batch_size, seq_len = attention_mask.shape
-        
+
         additive_mask = mx.where(attention_mask == 1, 0.0, -1e9)
         additive_mask = additive_mask[:, None, None, :]
-        
+
         # Create the causal mask for global attention
         # (1, 1, seq_len, seq_len)
         global_attention_mask = mx.broadcast_to(
