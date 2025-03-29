@@ -210,8 +210,11 @@ class Model(nn.Module):
         pooled_output = self.pooler(sequence_output)
 
         # normalized features
-        text_embeds = mean_pooling(sequence_output, attention_mask)
-        text_embeds = normalize_embeddings(text_embeds)
+        if attention_mask is not None:
+            text_embeds = mean_pooling(sequence_output, attention_mask)
+            text_embeds = normalize_embeddings(text_embeds)
+        else:
+            text_embeds = None
 
         return BaseModelOutput(
             last_hidden_state=sequence_output,
