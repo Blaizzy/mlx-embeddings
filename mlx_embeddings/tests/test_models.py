@@ -19,7 +19,23 @@ class TestModels(unittest.TestCase):
         model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
 
         inputs = mx.array([[0, 1, 2, 3, 4]])
-        outputs = model(inputs)
+        outputs = model(inputs, return_dict=False)
+        self.assertEqual(
+            outputs[0].shape, (batch_size, seq_length, model.config.hidden_size)
+        )
+        self.assertEqual(outputs[0].dtype, mx.float32)
+
+    def modernbert_model_test_runner(self, model, model_type, num_layers):
+        self.assertEqual(model.config.model_type, model_type)
+        self.assertEqual(len(model.model.layers), num_layers)
+
+        batch_size = 1
+        seq_length = 5
+
+        model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
+
+        inputs = mx.array([[0, 1, 2, 3, 4]])
+        outputs = model(inputs, return_dict=False)
         self.assertEqual(
             outputs[0].shape, (batch_size, seq_length, model.config.hidden_size)
         )
@@ -153,6 +169,26 @@ class TestModels(unittest.TestCase):
         model = bert.Model(config)
 
         self.model_test_runner(
+            model,
+            config.model_type,
+            config.num_hidden_layers,
+        )
+
+    def test_modernbert_model(self):
+        from mlx_embeddings.models import modernbert
+
+        config = modernbert.ModelArgs(
+            model_type="modernbert",
+            hidden_size=768,
+            num_hidden_layers=22,
+            intermediate_size=1152,
+            num_attention_heads=12,
+            max_position_embeddings=8192,
+            vocab_size=50368,
+        )
+        model = modernbert.Model(config)
+
+        self.modernbert_model_test_runner(
             model,
             config.model_type,
             config.num_hidden_layers,
