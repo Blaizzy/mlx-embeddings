@@ -257,9 +257,9 @@ def load(
 
 
 def fetch_from_hub(
-    model_path: Path, lazy: bool = False
+    model_path: Path, lazy: bool = False, **kwargs
 ) -> Tuple[nn.Module, dict, PreTrainedTokenizer]:
-    model = load_model(model_path, lazy)
+    model = load_model(model_path, lazy, **kwargs)
     config = load_config(model_path)
     tokenizer = load_tokenizer(model_path)
     return model, config, tokenizer
@@ -493,7 +493,7 @@ def convert(
 ):
     print("[INFO] Loading")
     model_path = get_model_path(hf_path, revision=revision)
-    model, config, tokenizer = fetch_from_hub(model_path, lazy=True)
+    model, config, tokenizer = fetch_from_hub(model_path, lazy=True, path_to_repo=hf_path)
 
     weights = dict(tree_flatten(model.parameters()))
     dtype = getattr(mx, dtype)
