@@ -1,6 +1,6 @@
-import pytest
-import numpy as np
 import mlx.core as mx
+import numpy as np
+import pytest
 
 from mlx_embeddings.models.base import (
     BaseModelArgs,
@@ -59,7 +59,7 @@ class TestBaseModelOutput:
             last_hidden_state=mock_array,
             pooler_output=mock_array,
             text_embeds=mock_array,
-            hidden_states=mock_list
+            hidden_states=mock_list,
         )
         assert output.last_hidden_state is mock_array
         assert output.pooler_output is mock_array
@@ -88,7 +88,7 @@ class TestViTModelOutput:
             logits_per_text=mock_array,
             logits_per_image=mock_array,
             text_model_output=mock_array,
-            vision_model_output=mock_array
+            vision_model_output=mock_array,
         )
         assert output.logits is mock_array
         assert output.text_embeds is mock_array
@@ -114,10 +114,12 @@ class TestMeanPooling:
         np.testing.assert_allclose(result.tolist(), expected.tolist(), rtol=1e-5)
 
         # Test case 2: With masking
-        attention_mask = mx.array([
-            [1, 1, 0],  # Only first two tokens are valid
-            [1, 0, 0],  # Only first token is valid
-        ])
+        attention_mask = mx.array(
+            [
+                [1, 1, 0],  # Only first two tokens are valid
+                [1, 0, 0],  # Only first token is valid
+            ]
+        )
         result = mean_pooling(token_embeddings, attention_mask)
 
         # Manual calculation for verification

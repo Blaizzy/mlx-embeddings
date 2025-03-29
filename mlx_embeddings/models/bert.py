@@ -209,7 +209,6 @@ class Model(nn.Module):
         sequence_output = encoder_outputs
         pooled_output = self.pooler(sequence_output)
 
-
         # normalized features
         if attention_mask is not None:
             attention_mask = mx.squeeze(attention_mask, axis=(1, 2))

@@ -7,13 +7,14 @@ import sys
 import textwrap
 import time
 import traceback
+
 import mlx.core as mx
 import psutil
+import requests
+from PIL import Image
 from rich.console import Console
 from rich.panel import Panel
 from tqdm import tqdm
-from PIL import Image
-import requests
 from transformers import __version__ as transformers_version
 
 from mlx_embeddings import load
@@ -69,9 +70,7 @@ def test_model_loading(model_path):
         return None, None, True
 
 
-def test_generation(
-    model, processor
-):
+def test_generation(model, processor):
     try:
         console.print(f"[bold yellow]Testing embedding...")
         test_type = "Text embedding"
@@ -80,20 +79,37 @@ def test_generation(
             test_type = "ViT embedding"
             image_urls = [
                 "../mlx-embeddings/images/cats.jpg",  # cats
-                "../mlx-embeddings/images/desktop_setup.png"   # desktop setup
+                "../mlx-embeddings/images/desktop_setup.png",  # desktop setup
             ]
-            images = [Image.open(requests.get(url, stream=True).raw) if url.startswith("http") else Image.open(url) for url in image_urls]
+            images = [
+                (
+                    Image.open(requests.get(url, stream=True).raw)
+                    if url.startswith("http")
+                    else Image.open(url)
+                )
+                for url in image_urls
+            ]
 
             # Text descriptions
-            texts = ["a photo of cats", "a photo of a desktop setup", "a photo of a person"]
+            texts = [
+                "a photo of cats",
+                "a photo of a desktop setup",
+                "a photo of a person",
+            ]
 
             # Process all image-text pairs
             all_probs = []
 
             for i, image in enumerate(images):
                 # Process inputs for current image with all texts
-                inputs = processor(text=texts, images=image, padding="max_length", return_tensors="pt")
-                pixel_values = mx.array(inputs.pixel_values).transpose(0, 2, 3, 1).astype(mx.float32)
+                inputs = processor(
+                    text=texts, images=image, padding="max_length", return_tensors="pt"
+                )
+                pixel_values = (
+                    mx.array(inputs.pixel_values)
+                    .transpose(0, 2, 3, 1)
+                    .astype(mx.float32)
+                )
                 input_ids = mx.array(inputs.input_ids)
 
                 # Generate embeddings and calculate similarity
@@ -116,12 +132,17 @@ def test_generation(
             texts = [
                 "I like grapes",
                 "I like fruits",
-                "The slow green turtle crawls under the busy ant."
+                "The slow green turtle crawls under the busy ant.",
             ]
 
-
             # Process inputs
-            inputs = processor.batch_encode_plus(texts, return_tensors="mlx", padding=True, truncation=True, max_length=512)
+            inputs = processor.batch_encode_plus(
+                texts,
+                return_tensors="mlx",
+                padding=True,
+                truncation=True,
+                max_length=512,
+            )
             print(inputs["attention_mask"].shape)
             output = model(**inputs)
 
@@ -134,7 +155,6 @@ def test_generation(
 
             print("\nSimilarity matrix between texts:")
             print(similarity_matrix)
-
 
         console.print(f"[bold green]✓[/] {test_type} generation successful")
         return False
@@ -165,9 +185,7 @@ def main():
         if not error and model:
             print("\n")
             # Test vision-language generation
-            error |= test_generation(
-                model, processor
-            )
+            error |= test_generation(model, processor)
 
             print("\n")
 
