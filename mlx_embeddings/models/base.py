@@ -1,5 +1,8 @@
 import inspect
 from dataclasses import dataclass
+from typing import List, Optional
+
+import mlx.core as mx
 
 import mlx.core as mx
 
@@ -17,32 +20,36 @@ class BaseModelArgs:
         )
 
 
-def compute_similarity(
-    query_embeddings: mx.array, reference_embeddings: mx.array
-) -> mx.array:
-    """Computes cosine similarity between query embeddings and reference embeddings.
+@dataclass
+class BaseModelOutput:
+    last_hidden_state: Optional[mx.array] = None
+    pooler_output: Optional[mx.array] = None
+    text_embeds: Optional[mx.array] = None  # mean pooled and normalized embeddings
+    hidden_states: Optional[List[mx.array]] = None
 
-    Args:
-        query_embeddings: Shape [batch_size, hidden_size]
-            These are the embeddings we want to classify/compare
-        reference_embeddings: Shape [num_references, hidden_size]
-            These are our label descriptions or comparison sentences
 
-    Returns:
-        Similarity matrix of shape [batch_size, num_references]
-        Each row contains similarities between one query and all references
-    """
-    # Normalize embeddings
-    query_norm = mx.sqrt(mx.sum(query_embeddings**2, axis=-1, keepdims=True) + 1e-12)
-    ref_norm = mx.sqrt(mx.sum(reference_embeddings**2, axis=-1, keepdims=True) + 1e-12)
+@dataclass
+class ViTModelOutput:
+    logits: Optional[mx.array] = None
+    text_embeds: Optional[mx.array] = None
+    image_embeds: Optional[mx.array] = None
+    logits_per_text: Optional[mx.array] = None
+    logits_per_image: Optional[mx.array] = None
+    text_model_output: Optional[mx.array] = None
+    vision_model_output: Optional[mx.array] = None
 
-    query_embeddings = query_embeddings / query_norm  # [batch_size, hidden_size]
-    reference_embeddings = (
-        reference_embeddings / ref_norm
-    )  # [num_references, hidden_size]
 
-    # Compute similarities - results in [batch_size, num_references]
-    # Each row contains similarities between one input and all references
-    similarities = mx.matmul(query_embeddings, reference_embeddings.T)
+def mean_pooling(token_embeddings: mx.array, attention_mask: mx.array):
+    input_mask_expanded = mx.expand_dims(attention_mask, -1)
+    input_mask_expanded = mx.broadcast_to(
+        input_mask_expanded, token_embeddings.shape
+    ).astype(mx.float32)
+    sum_embeddings = mx.sum(token_embeddings * input_mask_expanded, axis=1)
+    sum_mask = mx.maximum(mx.sum(input_mask_expanded, axis=1), 1e-9)
+    return sum_embeddings / sum_mask
 
-    return similarities
+
+def normalize_embeddings(embeddings, p=2, axis=-1, keepdims=True, eps=1e-9):
+    return embeddings / mx.maximum(
+        mx.linalg.norm(embeddings, ord=p, axis=axis, keepdims=keepdims), eps
+    )

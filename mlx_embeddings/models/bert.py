@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 import mlx.core as mx
 import mlx.nn as nn
 
-from .base import BaseModelArgs, compute_similarity
+from .base import BaseModelArgs
 
 
 @dataclass
@@ -215,13 +215,7 @@ class Model(nn.Module):
         sequence_output = encoder_outputs
         pooled_output = self.pooler(sequence_output)
 
-        if not return_dict:
-            return (sequence_output, pooled_output)
-
-        return {
-            "pooled_output": pooled_output,
-            "embeddings": sequence_output,
-        }
+        return sequence_output, pooled_output
 
     def sanitize(self, weights):
         sanitized_weights = {}

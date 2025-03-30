@@ -37,9 +37,10 @@ class TestModels(unittest.TestCase):
         inputs = mx.array([[0, 1, 2, 3, 4]])
         outputs = model(inputs, return_dict=False)
         self.assertEqual(
-            outputs[0].shape, (batch_size, seq_length, model.config.hidden_size)
+            outputs.last_hidden_state.shape,
+            (batch_size, seq_length, model.config.hidden_size),
         )
-        self.assertEqual(outputs[0].dtype, mx.float32)
+        self.assertEqual(outputs.last_hidden_state.dtype, mx.float32)
 
     def vlm_model_test_runner(self, model, model_type, num_layers):
         self.assertEqual(model.config.model_type, model_type)
@@ -82,10 +83,10 @@ class TestModels(unittest.TestCase):
             else:
                 text_outputs = model(text_inputs)
                 self.assertEqual(
-                    text_outputs[0].shape,
+                    text_outputs.last_hidden_state.shape,
                     (batch_size, seq_length, model.config.hidden_size),
                 )
-                self.assertEqual(text_outputs[0].dtype, mx.float32)
+                self.assertEqual(text_outputs.last_hidden_state.dtype, mx.float32)
 
         # Test image-only input if supported
         if hasattr(model, "vision_config"):
@@ -115,24 +116,25 @@ class TestModels(unittest.TestCase):
             attention_mask=attention_mask,
             pixel_values=image_inputs,
         )
+
         self.assertEqual(
-            multimodal_outputs["text_model_output"][0].shape,
+            multimodal_outputs.text_model_output[0].shape,
             (batch_size, seq_length, model.config.text_config.hidden_size),
         )
         self.assertEqual(
-            multimodal_outputs["vision_model_output"][0].shape,
+            multimodal_outputs.vision_model_output[0].shape,
             (batch_size, image_size * 2, model.config.vision_config.hidden_size),
         )
         self.assertEqual(
-            multimodal_outputs["text_embeds"][0].shape,
-            (model.config.text_config.hidden_size,),
+            multimodal_outputs.text_embeds.shape,
+            (batch_size, model.config.text_config.hidden_size),
         )
         self.assertEqual(
-            multimodal_outputs["image_embeds"][0].shape,
-            (model.config.vision_config.hidden_size,),
+            multimodal_outputs.image_embeds.shape,
+            (batch_size, model.config.vision_config.hidden_size),
         )
-        self.assertEqual(multimodal_outputs["logits_per_image"][0].shape, (batch_size,))
-        self.assertEqual(multimodal_outputs["logits_per_text"][0].shape, (batch_size,))
+        self.assertEqual(multimodal_outputs.logits_per_image.shape, (batch_size, 1))
+        self.assertEqual(multimodal_outputs.logits_per_text.shape, (batch_size, 1))
 
     def test_xlm_roberta_model(self):
         from mlx_embeddings.models import xlm_roberta
