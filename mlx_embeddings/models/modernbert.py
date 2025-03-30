@@ -417,7 +417,6 @@ class Model(nn.Module):
             pooled = mean_pooling(hidden_state, attention_mask)
 
         # normalized features
-        # text_embeds = mean_pooling(sequence_output, attention_mask)
         text_embeds = normalize_embeddings(pooled)
 
         return BaseModelOutput(

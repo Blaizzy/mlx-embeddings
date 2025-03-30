@@ -163,11 +163,9 @@ def load_model(
     for wf in weight_files:
         weights.update(mx.load(wf))
 
-    text_config = kwargs.get("text_config", None)
-    vision_config = kwargs.get("vision_config", None)
-
-    model_class, model_args_class, _, _ = get_model_classes(
-        config=config, is_sentence_transformers=is_sentence_transformers
+    model_class, model_args_class, text_config, vision_config = get_model_classes(
+        config=config, 
+        is_sentence_transformers=is_sentence_transformers
     )
 
     model_args = model_args_class.from_dict(config)
