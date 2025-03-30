@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 import mlx.core as mx
 import mlx.nn as nn
 
-from .base import BaseModelArgs
+from .base import BaseModelArgs, BaseModelOutput, mean_pooling, normalize_embeddings
 
 
 @dataclass
@@ -198,24 +198,44 @@ class Model(nn.Module):
         self.encoder = BertEncoder(config)
         self.pooler = BertPooler(config)
 
-    def __call__(
-        self,
-        input_ids,
-        token_type_ids=None,
-        attention_mask=None,
-        return_dict: Optional[bool] = True,
-    ):
+    def get_extended_attention_mask(self, attention_mask):
+        if attention_mask.ndim == 3:
+            extended_attention_mask = attention_mask[:, None, :, :]
+        elif attention_mask.ndim == 2:
+            extended_attention_mask = attention_mask[:, None, None, :]
+        else:
+            raise ValueError(
+                f"Wrong shape for attention_mask (shape {attention_mask.shape})"
+            )
+
+        extended_attention_mask = (1.0 - extended_attention_mask) * -10000.0
+        return extended_attention_mask
+
+    def __call__(self, input_ids, token_type_ids=None, attention_mask=None):
+        batch_size, seq_len = input_ids.shape
         embedding_output = self.embeddings(input_ids, token_type_ids)
 
-        if attention_mask is not None:
-            attention_mask = attention_mask[:, None, None, :]
-            attention_mask = (1.0 - attention_mask) * -10000.0
+        if attention_mask is  None:
+            attention_mask = mx.ones((batch_size, seq_len))
 
-        encoder_outputs = self.encoder(embedding_output, attention_mask)
+        extended_attention_mask = self.get_extended_attention_mask(attention_mask)
+
+        encoder_outputs = self.encoder(embedding_output, extended_attention_mask)
         sequence_output = encoder_outputs
-        pooled_output = self.pooler(sequence_output)
+        pooled_output = (
+            self.pooler(sequence_output) if self.pooler is not None else None
+        )
 
-        return sequence_output, pooled_output
+        # normalized features
+        text_embeds = mean_pooling(sequence_output, attention_mask)
+        text_embeds = normalize_embeddings(text_embeds)
+
+        return BaseModelOutput(
+            last_hidden_state=sequence_output,
+            text_embeds=text_embeds,
+            pooler_output=pooled_output,
+            hidden_states=None,  # current architecture does not return all hidden states
+        )
 
     def sanitize(self, weights):
         sanitized_weights = {}
@@ -226,82 +246,3 @@ class Model(nn.Module):
             else:
                 sanitized_weights[k] = v
         return sanitized_weights
-
-
-class ModelForSentenceSimilarity(Model):
-    """
-    Computes similarity scores between input sequences and reference sentences.
-    """
-
-    def __init__(self, config):
-        super().__init__(config)
-
-    def __call__(
-        self,
-        input_ids,
-        reference_input_ids: Optional[
-            mx.array
-        ] = None,  # Shape: [num_references, seq_len]
-        attention_mask: Optional[mx.array] = None,
-        reference_attention_mask: Optional[mx.array] = None,
-        position_ids: Optional[mx.array] = None,
-        similarity_scores: Optional[
-            mx.array
-        ] = None,  # Shape: [batch_size, num_references]
-        return_dict: Optional[bool] = True,
-    ):
-        # Get embeddings for input batch
-        batch_outputs = super().__call__(
-            input_ids=input_ids, attention_mask=attention_mask, return_dict=True
-        )
-        batch_embeddings = batch_outputs[
-            "embeddings"
-        ]  # [batch_size, seq_length, hidden_size]
-        batch_pooled = batch_outputs["pooled_output"]  # [batch_size, hidden_size]
-
-        if reference_input_ids is not None:
-
-            # Get embeddings for reference sentences
-            ref_outputs = super().__call__(
-                input_ids=reference_input_ids,
-                attention_mask=reference_attention_mask,
-                return_dict=True,
-            )
-            reference_embeddings = ref_outputs[
-                "pooled_output"
-            ]  # [num_references, hidden_size]
-
-            # Compute similarities between batch and references
-            similarities = compute_similarity(
-                batch_pooled,  # [batch_size, hidden_size]
-                reference_embeddings,  # [num_references, hidden_size]
-            )  # returns [batch_size, num_references]
-
-            loss = None
-            if similarity_scores is not None:
-                # MSE loss between computed similarities and target scores
-                # similarity_scores should be shape [batch_size, num_references]
-                loss = nn.losses.mse_loss(similarities, similarity_scores)
-
-        else:
-            similarities = None
-            loss = None
-
-        if not return_dict:
-            return (batch_embeddings, batch_pooled, loss, similarities)
-
-        return {
-            "embeddings": batch_embeddings,  # [batch_size, seq_len, hidden_size]
-            "pooled_output": batch_pooled,  # [batch_size, hidden_size]
-            "loss": loss,
-            "similarities": similarities,  # [batch_size, num_references]
-        }
-
-
-class ModelNonSentenceTransformers(ModelForSentenceSimilarity):
-    """
-    For compatibility with other model types.
-    """
-
-    def __init__(self, config: ModelArgs):
-        super().__init__(config)

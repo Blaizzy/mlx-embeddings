@@ -26,11 +26,6 @@ MODEL_REMAPPING = {}
 
 MAX_FILE_SIZE_GB = 5
 
-PIPELINES = [
-    "sentence-similarity",
-    "non-sentence-transformers",
-]
-
 
 class ModelNotFoundError(Exception):
     def __init__(self, message):
@@ -38,7 +33,7 @@ class ModelNotFoundError(Exception):
         super().__init__(self.message)
 
 
-def _get_classes(config: dict, pipeline: str = None):
+def _get_classes(config: dict, is_sentence_transformers: bool):
     """
     Retrieve the model and model args classes based on the configuration.
 
@@ -57,12 +52,9 @@ def _get_classes(config: dict, pipeline: str = None):
         logging.error(msg)
         raise ValueError(msg)
 
-    if pipeline == "sentence-similarity":
-        return arch.ModelForSentenceSimilarity, arch.ModelArgs
-
     # edge case for modernBert models that are not sentence-transformers
-    if pipeline == "non-sentence-transformers":
-        return arch.ModelNonSentenceTransformers, arch.ModelArgs
+    if model_type == "modernbert" and is_sentence_transformers:
+        return arch.ModelSentenceTransformers, arch.ModelArgs, None, None
 
     if hasattr(arch, "TextConfig") and hasattr(arch, "VisionConfig"):
         return arch.Model, arch.ModelArgs, arch.TextConfig, arch.VisionConfig
@@ -171,20 +163,12 @@ def load_model(
     for wf in weight_files:
         weights.update(mx.load(wf))
 
-    pipeline = kwargs.get("pipeline", None)
     text_config = kwargs.get("text_config", None)
     vision_config = kwargs.get("vision_config", None)
 
-    # automatically route to sentence-similarity pipeline if config_sentence_transformers.json exists
-    if is_sentence_transformers:
-        ### may need to be adjusted if more pipelines are added
-        if not pipeline:
-            pipeline = "sentence-similarity"
-
-    if pipeline == "sentence-similarity" and not is_sentence_transformers:
-        pipeline = "non-sentence-transformers"
-
-    model_class, model_args_class = get_model_classes(config=config, pipeline=pipeline)
+    model_class, model_args_class, _, _ = get_model_classes(
+        config=config, is_sentence_transformers=is_sentence_transformers
+    )
 
     model_args = model_args_class.from_dict(config)
 
@@ -242,7 +226,6 @@ def load(
     model_config={},
     adapter_path: Optional[str] = None,
     lazy: bool = False,
-    pipeline: str = None,
 ) -> Tuple[nn.Module, TokenizerWrapper]:
     """
     Load the model and tokenizer from a given path or a huggingface repository.
@@ -267,9 +250,7 @@ def load(
     """
     model_path = get_model_path(path_or_hf_repo)
 
-    model = load_model(
-        model_path, lazy, model_config, path_to_repo=path_or_hf_repo, pipeline=pipeline
-    )
+    model = load_model(model_path, lazy, model_config, path_to_repo=path_or_hf_repo)
 
     # Try to load tokenizer first, then fall back to processor if needed
     tokenizer = None

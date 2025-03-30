@@ -19,11 +19,17 @@ class TestModels(unittest.TestCase):
         model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
 
         inputs = mx.array([[0, 1, 2, 3, 4]])
-        outputs = model(inputs, return_dict=False)
+        outputs = model(inputs)
         self.assertEqual(
-            outputs[0].shape, (batch_size, seq_length, model.config.hidden_size)
+            outputs.last_hidden_state.shape, 
+            (batch_size, seq_length, model.config.hidden_size)
         )
-        self.assertEqual(outputs[0].dtype, mx.float32)
+        self.assertEqual(outputs.last_hidden_state.dtype, mx.float32)
+        self.assertEqual(
+            outputs.text_embeds.shape, 
+            (batch_size, model.config.hidden_size)
+        )
+        self.assertEqual(outputs.text_embeds.dtype, mx.float32)
 
     def modernbert_model_test_runner(self, model, model_type, num_layers):
         self.assertEqual(model.config.model_type, model_type)
@@ -35,12 +41,18 @@ class TestModels(unittest.TestCase):
         model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
 
         inputs = mx.array([[0, 1, 2, 3, 4]])
-        outputs = model(inputs, return_dict=False)
+        outputs = model(inputs)
         self.assertEqual(
             outputs.last_hidden_state.shape,
             (batch_size, seq_length, model.config.hidden_size),
         )
         self.assertEqual(outputs.last_hidden_state.dtype, mx.float32)
+        self.assertEqual(outputs.last_hidden_state.dtype, mx.float32)
+        self.assertEqual(
+            outputs.text_embeds.shape, 
+            (batch_size, model.config.hidden_size)
+        )
+        self.assertEqual(outputs.text_embeds.dtype, mx.float32)
 
     def vlm_model_test_runner(self, model, model_type, num_layers):
         self.assertEqual(model.config.model_type, model_type)

@@ -39,57 +39,15 @@ text = "I like reading"
 # Tokenize and generate embedding
 input_ids = tokenizer.encode(text, return_tensors="mlx")
 outputs = model(input_ids)
-embeddings = outputs.last_hidden_state[:, 0, :]
+raw_embeds = outputs.last_hidden_state[:, 0, :] # CLS token
+text_embeds = ouputs.text_embeds # mean pooled and normalized embeddings
 ```
+
+Note : text-embeds use mean pooling for bert and xlm-robert. For modernbert, pooling strategy is set through the config file, defaulting to mean
 
 ### Batch Processing and Multiple Texts Comparison
 
 To embed multiple texts and compare them using their embeddings:  
-
-```python
-from sklearn.metrics.pairwise import cosine_similarity
-import matplotlib.pyplot as plt
-import seaborn as sns
-import mlx.core as mx
-from mlx_embeddings.utils import load
-
-# Load the model and tokenizer
-model, tokenizer = load("sentence-transformers/all-MiniLM-L6-v2")
-
-def get_embedding(text, model, tokenizer):
-    input_ids = tokenizer.encode(text, return_tensors="mlx", padding=True, truncation=True, max_length=512)
-    outputs = model(input_ids)
-    embeddings = outputs.last_hidden_state[:, 0, :][0]
-    return embeddings
-
-# Sample texts
-texts = [
-    "I like grapes",
-    "I like fruits",
-    "The slow green turtle crawls under the busy ant."
-]
-
-# Generate embeddings
-embeddings = [get_embedding(text, model, tokenizer) for text in texts]
-
-# Compute similarity
-similarity_matrix = cosine_similarity(embeddings)
-
-# Visualize results
-def plot_similarity_matrix(similarity_matrix, labels):
-    plt.figure(figsize=(5, 4))
-    sns.heatmap(similarity_matrix, annot=True, cmap='coolwarm', xticklabels=labels, yticklabels=labels)
-    plt.title('Similarity Matrix Heatmap')
-    plt.tight_layout()
-    plt.show()
-
-labels = [f"Text {i+1}" for i in range(len(texts))]
-plot_similarity_matrix(similarity_matrix, labels)
-```
-
-### Batch Processing
-
-For processing multiple texts at once:
 
 ```python
 from sklearn.metrics.pairwise import cosine_similarity
@@ -121,6 +79,14 @@ def compute_and_print_similarity(embeddings):
             print(f"Similarity between sequence {i+1} and sequence {j+1}: {similarity_matrix[i][j]:.4f}")
 
     return similarity_matrix
+
+# Visualize results
+def plot_similarity_matrix(similarity_matrix, labels):
+    plt.figure(figsize=(5, 4))
+    sns.heatmap(similarity_matrix, annot=True, cmap='coolwarm', xticklabels=labels, yticklabels=labels)
+    plt.title('Similarity Matrix Heatmap')
+    plt.tight_layout()
+    plt.show()
 
 # Sample texts
 texts = [

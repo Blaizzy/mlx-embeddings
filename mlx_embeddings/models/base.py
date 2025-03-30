@@ -4,8 +4,6 @@ from typing import List, Optional
 
 import mlx.core as mx
 
-import mlx.core as mx
-
 
 @dataclass
 class BaseModelArgs:

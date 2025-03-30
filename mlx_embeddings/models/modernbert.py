@@ -1,11 +1,11 @@
 import math
 from dataclasses import dataclass
-from typing import Any, Dict, Literal, Optional
+from typing import Dict, Literal, Optional
 
 import mlx.core as mx
 import mlx.nn as nn
 
-from .base import BaseModelArgs, compute_similarity
+from .base import BaseModelArgs, BaseModelOutput, mean_pooling, normalize_embeddings
 
 
 @dataclass
@@ -42,7 +42,7 @@ class ModelArgs(BaseModelArgs):
     # not directly  related to this project but consistent with original ModernBERT implementation
     # may be useful for future pipelines
     decoder_bias = (True,)
-    classifier_pooling: Literal["cls", "mean"] = "cls"
+    classifier_pooling: Literal["cls", "mean"] = "mean"
     classifier_dropout = 0.0  # for Sequence Classification
     classifier_bias = False  # for Sequence Classification
     sparse_prediction = True  # for MLM
@@ -364,9 +364,7 @@ class ModernBertModel(nn.Module):
 
         # Creating sliding window attention mask
         # Replacing non-window positions with large negative value
-        sliding_window_mask = mx.where(
-            window_mask, global_attention_mask, float("-inf")
-        )
+        sliding_window_mask = mx.where(window_mask, global_attention_mask, -1e9)
 
         return global_attention_mask, sliding_window_mask
 
@@ -374,7 +372,7 @@ class ModernBertModel(nn.Module):
 # classes for specific pipelines
 class Model(nn.Module):
     """
-    Computes pooled, unnormalized embeddings for input sequences using a ModernBERT model.
+    Computes pooled, normalized embeddings for input sequences using a ModernBERT model.
 
     Note : sanitization is a hack to align with other models here while downloading weights
     with the maskedlm config from HF (original modelBert model).
@@ -391,7 +389,7 @@ class Model(nn.Module):
         input_ids: mx.array,
         attention_mask: Optional[mx.array] = None,
         position_ids: Optional[mx.array] = None,
-        return_dict: Optional[bool] = True,
+        return_dict: Optional[bool] = False,
     ):
 
         if attention_mask is None:
@@ -416,18 +414,18 @@ class Model(nn.Module):
         if self.config.classifier_pooling == "cls":
             pooled = hidden_state[:, 0]
         elif self.config.classifier_pooling == "mean":
-            attention_mask = mx.expand_dims(attention_mask, -1)
-            pooled = mx.sum(hidden_state * attention_mask, axis=1) / mx.sum(
-                attention_mask, axis=1
-            )
+            pooled = mean_pooling(hidden_state, attention_mask)
 
-        if not return_dict:
-            return (hidden_state, pooled)
+        # normalized features
+        # text_embeds = mean_pooling(sequence_output, attention_mask)
+        text_embeds = normalize_embeddings(pooled)
 
-        return {
-            "embeddings": hidden_state,
-            "pooled_output": pooled,
-        }
+        return BaseModelOutput(
+            last_hidden_state=hidden_state,
+            text_embeds=text_embeds,
+            pooler_output=pooled,
+            hidden_states=encoder_outputs[1:],
+        )
 
     def sanitize(self, weights):
         sanitized_weights = {}
@@ -440,78 +438,13 @@ class Model(nn.Module):
         return sanitized_weights
 
 
-class ModelForSentenceSimilarity(Model):
+class ModelSentenceTransformers(Model):
     """
-    Computes similarity scores between input sequences and reference sentences.
+    Different santiization method for sentence transformers.
     """
 
     def __init__(self, config):
         super().__init__(config)
-
-    def __call__(
-        self,
-        input_ids,
-        reference_input_ids: Optional[
-            mx.array
-        ] = None,  # Shape: [num_references, seq_len]
-        attention_mask: Optional[mx.array] = None,
-        reference_attention_mask: Optional[mx.array] = None,
-        position_ids: Optional[mx.array] = None,
-        similarity_scores: Optional[
-            mx.array
-        ] = None,  # Shape: [batch_size, num_references]
-        return_dict: Optional[bool] = True,
-    ):
-        # Get embeddings for input batch
-        batch_outputs = super().__call__(
-            input_ids=input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,  ### ?
-            return_dict=True,
-        )
-        batch_embeddings = batch_outputs[
-            "embeddings"
-        ]  # [batch_size, seq_length, hidden_size]
-        batch_pooled = batch_outputs["pooled_output"]  # [batch_size, hidden_size]
-
-        if reference_input_ids is not None:
-
-            # Get embeddings for reference sentences
-            ref_outputs = super().__call__(
-                input_ids=reference_input_ids,
-                attention_mask=reference_attention_mask,
-                position_ids=position_ids,
-                return_dict=True,
-            )
-            reference_embeddings = ref_outputs[
-                "pooled_output"
-            ]  # [num_references, hidden_size]
-
-            # Compute similarities between batch and references
-            similarities = compute_similarity(
-                batch_pooled,  # [batch_size, hidden_size]
-                reference_embeddings,  # [num_references, hidden_size]
-            )  # returns [batch_size, num_references]
-
-            loss = None
-            if similarity_scores is not None:
-                # MSE loss between computed similarities and target scores
-                # similarity_scores should be shape [batch_size, num_references]
-                loss = nn.losses.mse_loss(similarities, similarity_scores)
-
-        else:
-            similarities = None
-            loss = None
-
-        if not return_dict:
-            return (batch_embeddings, batch_pooled, loss, similarities)
-
-        return {
-            "embeddings": batch_embeddings,  # [batch_size, seq_len, hidden_size]
-            "pooled_output": batch_pooled,  # [batch_size, hidden_size]
-            "loss": loss,
-            "similarities": similarities,  # [batch_size, num_references]
-        }
 
     def sanitize(self, weights):
         """Convert sentence transformer weights to ModernBERT format."""
@@ -520,26 +453,4 @@ class ModelForSentenceSimilarity(Model):
         for k, v in weights.items():
             new_key = "model." + k
             sanitized_weights[new_key] = v
-        return sanitized_weights
-
-
-class ModelNonSentenceTransformers(ModelForSentenceSimilarity):
-    """
-    Extends ModelForSentenceSimilarity to provide embeddings for input sequences.
-    This class sanitizes weights to align with the original ModernBERT model.
-    """
-
-    def __init__(self, config: ModelArgs):
-        super().__init__(config)
-
-    def sanitize(self, weights):
-        """Convert sentence transformer weights to ModernBERT format."""
-        sanitized_weights = {}
-
-        for k, v in weights.items():
-            if k in ["head.norm.weight", "head.dense.weight", "decoder.bias"]:
-                ### this is the hack
-                continue
-            else:
-                sanitized_weights[k] = v
         return sanitized_weights
