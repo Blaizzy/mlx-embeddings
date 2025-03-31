@@ -27,11 +27,11 @@ pip install mlx-embeddings
 To generate an embedding for a single piece of text:
 
 ```python
-import mlx.core as mx
 from mlx_embeddings.utils import load
 
 # Load the model and tokenizer
-model, tokenizer = load("sentence-transformers/all-MiniLM-L6-v2")
+model_name = "sentence-transformers/all-MiniLM-L6-v2"  
+model, tokenizer = load(model_name)
 
 # Prepare the text
 text = "I like reading"
@@ -39,57 +39,15 @@ text = "I like reading"
 # Tokenize and generate embedding
 input_ids = tokenizer.encode(text, return_tensors="mlx")
 outputs = model(input_ids)
-embeddings = outputs.last_hidden_state[:, 0, :]
+raw_embeds = outputs.last_hidden_state[:, 0, :] # CLS token
+text_embeds = ouputs.text_embeds # mean pooled and normalized embeddings
 ```
 
-### Comparing Multiple Texts
+Note : text-embeds use mean pooling for bert and xlm-robert. For modernbert, pooling strategy is set through the config file, defaulting to mean
 
-To compare multiple texts using their embeddings:
+### Batch Processing and Multiple Texts Comparison
 
-```python
-from sklearn.metrics.pairwise import cosine_similarity
-import matplotlib.pyplot as plt
-import seaborn as sns
-import mlx.core as mx
-from mlx_embeddings.utils import load
-
-# Load the model and tokenizer
-model, tokenizer = load("sentence-transformers/all-MiniLM-L6-v2")
-
-def get_embedding(text, model, tokenizer):
-    input_ids = tokenizer.encode(text, return_tensors="mlx", padding=True, truncation=True, max_length=512)
-    outputs = model(input_ids)
-    embeddings = outputs.last_hidden_state[:, 0, :][0]
-    return embeddings
-
-# Sample texts
-texts = [
-    "I like grapes",
-    "I like fruits",
-    "The slow green turtle crawls under the busy ant."
-]
-
-# Generate embeddings
-embeddings = [get_embedding(text, model, tokenizer) for text in texts]
-
-# Compute similarity
-similarity_matrix = cosine_similarity(embeddings)
-
-# Visualize results
-def plot_similarity_matrix(similarity_matrix, labels):
-    plt.figure(figsize=(5, 4))
-    sns.heatmap(similarity_matrix, annot=True, cmap='coolwarm', xticklabels=labels, yticklabels=labels)
-    plt.title('Similarity Matrix Heatmap')
-    plt.tight_layout()
-    plt.show()
-
-labels = [f"Text {i+1}" for i in range(len(texts))]
-plot_similarity_matrix(similarity_matrix, labels)
-```
-
-### Batch Processing
-
-For processing multiple texts at once:
+To embed multiple texts and compare them using their embeddings:  
 
 ```python
 from sklearn.metrics.pairwise import cosine_similarity
@@ -122,6 +80,14 @@ def compute_and_print_similarity(embeddings):
 
     return similarity_matrix
 
+# Visualize results
+def plot_similarity_matrix(similarity_matrix, labels):
+    plt.figure(figsize=(5, 4))
+    sns.heatmap(similarity_matrix, annot=True, cmap='coolwarm', xticklabels=labels, yticklabels=labels)
+    plt.title('Similarity Matrix Heatmap')
+    plt.tight_layout()
+    plt.show()
+
 # Sample texts
 texts = [
     "I like grapes",
@@ -141,6 +107,7 @@ plot_similarity_matrix(similarity_matrix, labels)
 MLX-Embeddings supports a variety of model architectures for text embedding tasks. Here's a breakdown of the currently supported architectures:
 - XLM-RoBERTa (Cross-lingual Language Model - Robustly Optimized BERT Approach)
 - BERT (Bidirectional Encoder Representations from Transformers)
+- ModernBERT (modernized bidirectional encoder-only Transformer model)
 
 We're continuously working to expand our support for additional model architectures. Check our GitHub repository or documentation for the most up-to-date list of supported models and their specific versions.
 

@@ -33,7 +33,7 @@ class ModelNotFoundError(Exception):
         super().__init__(self.message)
 
 
-def _get_classes(config: dict):
+def _get_classes(config: dict, is_sentence_transformers: bool):
     """
     Retrieve the model and model args classes based on the configuration.
 
@@ -52,8 +52,13 @@ def _get_classes(config: dict):
         logging.error(msg)
         raise ValueError(msg)
 
+    # edge case for modernBert models that are not sentence-transformers
+    if model_type == "modernbert" and is_sentence_transformers:
+        return arch.ModelSentenceTransformers, arch.ModelArgs, None, None
+
     if hasattr(arch, "TextConfig") and hasattr(arch, "VisionConfig"):
         return arch.Model, arch.ModelArgs, arch.TextConfig, arch.VisionConfig
+
     return arch.Model, arch.ModelArgs, None, None
 
 
@@ -104,7 +109,12 @@ def load_config(model_path: Path) -> dict:
     except FileNotFoundError:
         logging.error(f"Config file not found in {model_path}")
         raise
-    return config
+
+    is_sentence_transformers = (
+        model_path / "config_sentence_transformers.json"
+    ).exists()
+
+    return config, is_sentence_transformers
 
 
 def load_model(
@@ -136,7 +146,7 @@ def load_model(
         ValueError: If the model class or args class are not found or cannot be instantiated.
     """
 
-    config = load_config(model_path)
+    config, is_sentence_transformers = load_config(model_path)
     config.update(model_config)
 
     weight_files = glob.glob(str(model_path / "model*.safetensors"))
@@ -154,7 +164,7 @@ def load_model(
         weights.update(mx.load(wf))
 
     model_class, model_args_class, text_config, vision_config = get_model_classes(
-        config=config
+        config=config, is_sentence_transformers=is_sentence_transformers
     )
 
     model_args = model_args_class.from_dict(config)
