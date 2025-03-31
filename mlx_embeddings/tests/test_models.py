@@ -21,13 +21,12 @@ class TestModels(unittest.TestCase):
         inputs = mx.array([[0, 1, 2, 3, 4]])
         outputs = model(inputs)
         self.assertEqual(
-            outputs.last_hidden_state.shape, 
-            (batch_size, seq_length, model.config.hidden_size)
+            outputs.last_hidden_state.shape,
+            (batch_size, seq_length, model.config.hidden_size),
         )
         self.assertEqual(outputs.last_hidden_state.dtype, mx.float32)
         self.assertEqual(
-            outputs.text_embeds.shape, 
-            (batch_size, model.config.hidden_size)
+            outputs.text_embeds.shape, (batch_size, model.config.hidden_size)
         )
         self.assertEqual(outputs.text_embeds.dtype, mx.float32)
 
@@ -49,8 +48,7 @@ class TestModels(unittest.TestCase):
         self.assertEqual(outputs.last_hidden_state.dtype, mx.float32)
         self.assertEqual(outputs.last_hidden_state.dtype, mx.float32)
         self.assertEqual(
-            outputs.text_embeds.shape, 
-            (batch_size, model.config.hidden_size)
+            outputs.text_embeds.shape, (batch_size, model.config.hidden_size)
         )
         self.assertEqual(outputs.text_embeds.dtype, mx.float32)
 

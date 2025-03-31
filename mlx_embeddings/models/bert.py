@@ -215,7 +215,7 @@ class Model(nn.Module):
         batch_size, seq_len = input_ids.shape
         embedding_output = self.embeddings(input_ids, token_type_ids)
 
-        if attention_mask is  None:
+        if attention_mask is None:
             attention_mask = mx.ones((batch_size, seq_len))
 
         extended_attention_mask = self.get_extended_attention_mask(attention_mask)
