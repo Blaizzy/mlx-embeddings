@@ -198,29 +198,40 @@ class Model(nn.Module):
         self.encoder = BertEncoder(config)
         self.pooler = BertPooler(config)
 
+    def get_extended_attention_mask(self, attention_mask):
+        if attention_mask.ndim == 3:
+            extended_attention_mask = attention_mask[:, None, :, :]
+        elif attention_mask.ndim == 2:
+            extended_attention_mask = attention_mask[:, None, None, :]
+        else:
+            raise ValueError(
+                f"Wrong shape for attention_mask (shape {attention_mask.shape})"
+            )
+
+        extended_attention_mask = (1.0 - extended_attention_mask) * -10000.0
+        return extended_attention_mask
+
     def __call__(self, input_ids, token_type_ids=None, attention_mask=None):
+        batch_size, seq_len = input_ids.shape
         embedding_output = self.embeddings(input_ids, token_type_ids)
 
-        if attention_mask is not None:
-            attention_mask = attention_mask[:, None, None, :]
-            attention_mask = (1.0 - attention_mask) * -10000.0
+        if attention_mask is None:
+            attention_mask = mx.ones((batch_size, seq_len))
 
-        encoder_outputs = self.encoder(embedding_output, attention_mask)
+        extended_attention_mask = self.get_extended_attention_mask(attention_mask)
+
+        encoder_outputs = self.encoder(embedding_output, extended_attention_mask)
         sequence_output = encoder_outputs
         pooled_output = self.pooler(sequence_output)
 
         # normalized features
-        if attention_mask is not None:
-            attention_mask = mx.squeeze(attention_mask, axis=(1, 2))
-            text_embeds = mean_pooling(sequence_output, attention_mask)
-            text_embeds = normalize_embeddings(text_embeds)
-        else:
-            text_embeds = None
+        text_embeds = mean_pooling(sequence_output, attention_mask)
+        text_embeds = normalize_embeddings(text_embeds)
 
         return BaseModelOutput(
             last_hidden_state=sequence_output,
             text_embeds=text_embeds,
-            pooler_output=pooled_output,
+            pooler_output=pooled_output
         )
 
     def sanitize(self, weights):

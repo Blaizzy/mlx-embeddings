@@ -324,6 +324,8 @@ class Model(nn.Module):
         token_type_ids=None,
         position_ids=None,
         head_mask=None,
+        output_attentions=False,
+        output_hidden_states=False,
     ):
 
         input_shape = input_ids.shape
@@ -339,7 +341,12 @@ class Model(nn.Module):
         head_mask = self.get_head_mask(head_mask, self.config.num_hidden_layers)
 
         embedding_output = self.embeddings(input_ids, token_type_ids, position_ids)
-        encoder_outputs = self.encoder(embedding_output, extended_attention_mask)
+        encoder_outputs = self.encoder(
+            embedding_output,
+            extended_attention_mask,
+            output_attentions=output_attentions,
+            output_hidden_states=output_hidden_states,
+        )
         sequence_output = encoder_outputs[0]
         pooled_output = (
             self.pooler(sequence_output) if self.pooler is not None else None
