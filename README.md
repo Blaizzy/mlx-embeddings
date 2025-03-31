@@ -12,6 +12,14 @@
 - Support for single-item and batch processing
 - Utilities for comparing text similarities
 
+## Supported Models Archictectures
+MLX-Embeddings supports a variety of model architectures for text and image embedding tasks. Here's a breakdown of the currently supported architectures:
+- XLM-RoBERTa (Cross-lingual Language Model - Robustly Optimized BERT Approach)
+- BERT (Bidirectional Encoder Representations from Transformers)
+- SigLIP (a multimodal model, based on CLIP that uses sigmoid loss function)
+
+We're continuously working to expand our support for additional model architectures. Check our GitHub repository or documentation for the most up-to-date list of supported models and their specific versions.
+
 ## Installation
 
 You can install mlx-embeddings using pip:
@@ -136,13 +144,6 @@ similarity_matrix = compute_and_print_similarity(embeddings)
 labels = [f"Text {i+1}" for i in range(len(texts))]
 plot_similarity_matrix(similarity_matrix, labels)
 ```
-
-## Supported Models Archictectures
-MLX-Embeddings supports a variety of model architectures for text embedding tasks. Here's a breakdown of the currently supported architectures:
-- XLM-RoBERTa (Cross-lingual Language Model - Robustly Optimized BERT Approach)
-- BERT (Bidirectional Encoder Representations from Transformers)
-
-We're continuously working to expand our support for additional model architectures. Check our GitHub repository or documentation for the most up-to-date list of supported models and their specific versions.
 
 ## Vision Transformer Models
 
