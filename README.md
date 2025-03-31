@@ -196,7 +196,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load vision model and processor
-model, processor = load("google/siglip-so400m-patch14-384")
+model, processor = load("mlx-community/siglip-so400m-patch14-384")
 
 # Load multiple images
 image_urls = [
@@ -211,26 +211,36 @@ texts = ["a photo of cats", "a photo of a desktop setup", "a photo of a person"]
 # Process all image-text pairs
 all_probs = []
 
+
+# Process all image-text pairs in batch
+inputs = processor(text=texts, images=images, padding="max_length", return_tensors="pt")
+pixel_values = mx.array(inputs.pixel_values).transpose(0, 2, 3, 1).astype(mx.float32)
+input_ids = mx.array(inputs.input_ids)
+
+# Generate embeddings and calculate similarity
+outputs = model(pixel_values=pixel_values, input_ids=input_ids)
+logits_per_image = outputs.logits_per_image
+probs = mx.sigmoid(logits_per_image) # probabilities for this image
+all_probs.append(probs.tolist())
+
+
+# Print results for this image
 for i, image in enumerate(images):
-    # Process inputs for current image with all texts
-    inputs = processor(text=texts, images=image, padding="max_length", return_tensors="pt")
-    pixel_values = mx.array(inputs.pixel_values).transpose(0, 2, 3, 1).astype(mx.float32)
-    input_ids = mx.array(inputs.input_ids)
-
-    # Generate embeddings and calculate similarity
-    outputs = model(pixel_values=pixel_values, input_ids=input_ids)
-    logits_per_image = outputs.logits_per_image
-    probs = mx.sigmoid(logits_per_image)[0]  # probabilities for this image
-    all_probs.append(probs.tolist())
-
-    # Print results for this image
     print(f"Image {i+1}:")
     for j, text in enumerate(texts):
-        print(f"  {probs[j]:.1%} match with '{text}'")
+        print(f"  {probs[i][j]:.1%} match with '{text}'")
     print()
 
 # Visualize results with a heatmap
 def plot_similarity_matrix(probs_matrix, image_labels, text_labels):
+    # Convert to 2D numpy array if needed
+    import numpy as np
+    probs_matrix = np.array(probs_matrix)
+
+    # Ensure we have a 2D matrix for the heatmap
+    if probs_matrix.ndim > 2:
+        probs_matrix = probs_matrix.squeeze()
+
     plt.figure(figsize=(8, 5))
     sns.heatmap(probs_matrix, annot=True, cmap='viridis',
                 xticklabels=text_labels, yticklabels=image_labels,
@@ -238,6 +248,16 @@ def plot_similarity_matrix(probs_matrix, image_labels, text_labels):
     plt.title('Image-Text Match Probability')
     plt.tight_layout()
     plt.show()
+
+# Plot the images for reference
+plt.figure(figsize=(8, 5))
+for i, image in enumerate(images):
+    plt.subplot(1, len(images), i+1)
+    plt.imshow(image)
+    plt.title(f"Image {i+1}")
+    plt.axis('off')
+plt.tight_layout()
+plt.show()
 
 image_labels = [f"Image {i+1}" for i in range(len(images))]
 plot_similarity_matrix(all_probs, image_labels, texts)
