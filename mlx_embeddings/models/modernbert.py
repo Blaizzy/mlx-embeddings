@@ -1,6 +1,6 @@
 import math
 from dataclasses import dataclass
-from typing import Dict, Literal, Optional
+from typing import Any, Dict, Literal, Optional
 
 import mlx.core as mx
 import mlx.nn as nn
