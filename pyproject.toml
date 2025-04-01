@@ -1,6 +1,6 @@
 [project]
 name = "mlx-embeddings"
-version = "0.0.2"
+version = "0.0.3"
 dynamic = [
     "dependencies",
 ]
@@ -52,7 +52,7 @@ universal = true
 
 
 [tool.bumpversion]
-current_version = "0.0.2"
+current_version = "0.0.3"
 commit = true
 tag = true
 
@@ -62,7 +62,7 @@ search = 'version = "{current_version}"'
 replace = 'version = "{new_version}"'
 
 [[tool.bumpversion.files]]
-filename = "mlx_embeddings/__init__.py"
+filename = "mlx_embeddings/version.py"
 search = '__version__ = "{current_version}"'
 replace = '__version__ = "{new_version}"'
 
