@@ -231,7 +231,7 @@ class Model(nn.Module):
         return BaseModelOutput(
             last_hidden_state=sequence_output,
             text_embeds=text_embeds,
-            pooler_output=pooled_output
+            pooler_output=pooled_output,
         )
 
     def sanitize(self, weights):
