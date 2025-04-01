@@ -395,8 +395,9 @@ class Model(nn.Module):
         super().__init__()
         self.config = config
         self.model = ModernBertModel(config)
-        self.head = ModernBertPredictionHead(config)
-        self.decoder = nn.Linear(config.hidden_size, config.vocab_size, bias=config.decoder_bias)
+        if config.architectures == ["ModernBertForMaskedLM"]:
+            self.head = ModernBertPredictionHead(config)
+            self.decoder = nn.Linear(config.hidden_size, config.vocab_size, bias=config.decoder_bias)
 
     def __call__(
         self,
@@ -433,8 +434,10 @@ class Model(nn.Module):
             else:
                 raise ValueError(f"Invalid pooling strategy: {self.config.classifier_pooling}")
 
-        pooled_output = self.head(last_hidden_state)
-        pooled_output = self.decoder(pooled_output)
+        pooled_output = None
+        if self.config.architectures == ["ModernBertForMaskedLM"]:
+            pooled_output = self.head(last_hidden_state)
+            pooled_output = self.decoder(pooled_output)
 
         # normalized features
         text_embeds = normalize_embeddings(last_hidden_state)
@@ -449,7 +452,10 @@ class Model(nn.Module):
     def sanitize(self, weights):
         sanitized_weights = {}
         for k, v in weights.items():
-            if self.config.tie_word_embeddings and "decoder.bias" in k:
+            if self.config.architectures != ["ModernBertForMaskedLM"] and not k.startswith("model"):
+                new_key = "model." + k
+                sanitized_weights[new_key] = v
+            elif self.config.tie_word_embeddings and "decoder.bias" in k:
                 sanitized_weights["decoder.bias"] = v
                 sanitized_weights["decoder.weight"] = weights["model.embeddings.tok_embeddings.weight"]
             else:
