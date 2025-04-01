@@ -32,6 +32,8 @@ pip install mlx-embeddings
 
 ### Single Item Embedding
 
+
+#### Text Embedding
 To generate an embedding for a single piece of text:
 
 ```python
@@ -53,7 +55,31 @@ text_embeds = ouputs.text_embeds # mean pooled and normalized embeddings
 
 Note : text-embeds use mean pooling for bert and xlm-robert. For modernbert, pooling strategy is set through the config file, defaulting to mean
 
-### Batch Processing for Multiple Texts Comparison
+#### Masked Language Modeling
+
+To generate embeddings for masked language modeling tasks:
+
+```python
+from mlx_embeddings.utils import load
+
+# Load ModernBERT model and tokenizer
+model, tokenizer = load("answerdotai/ModernBERT-base")
+
+# Masked Language Modeling example
+text = "The capital of France is [MASK]."
+inputs = tokenizer.encode(text, return_tensors="mlx")
+outputs = model(inputs)
+
+# Get predictions for the masked token
+masked_index = inputs.tolist()[0].index(tokenizer.mask_token_id)
+predicted_token_id = mx.argmax(outputs.pooler_output[0, masked_index]).tolist()
+predicted_token = tokenizer.decode(predicted_token_id)
+print("Predicted token:", predicted_token)  # Should output: Paris
+```
+
+### Batch Processing
+
+#### Multiple Texts Comparison
 
 To embed multiple texts and compare them using their embeddings:
 
@@ -110,6 +136,38 @@ similarity_matrix = compute_and_print_similarity(embeddings)
 labels = [f"Text {i+1}" for i in range(len(texts))]
 plot_similarity_matrix(similarity_matrix, labels)
 ```
+
+#### Masked Language Modeling
+
+To get predictions for the masked token in multiple texts:
+
+```python
+import mlx.core as mx
+from mlx_embeddings.utils import load
+
+# Load the model and tokenizer
+model, tokenizer = load("answerdotai/ModernBERT-base")
+
+text = ["The capital of France is [MASK].", "The capital of Poland is [MASK]."]
+inputs = tokenizer.batch_encode_plus(text, return_tensors="mlx", padding=True, truncation=True, max_length=512)
+outputs = model(**inputs)
+
+# To get predictions for the mask:
+# Find mask token indices for each sequence in the batch
+# Find mask indices for all sequences in batch
+mask_indices = mx.array([ids.tolist().index(tokenizer.mask_token_id) for ids in inputs["input_ids"]])
+
+# Get predictions for all masked tokens at once
+batch_indices = mx.arange(len(mask_indices))
+predicted_token_ids = mx.argmax(outputs.pooler_output[batch_indices, mask_indices], axis=-1).tolist()
+
+# Decode the predicted tokens
+predicted_token = tokenizer.batch_decode(predicted_token_ids)
+
+print("Predicted token:", predicted_token)
+# Predicted token:  Paris, Warsaw
+```
+
 
 ## Vision Transformer Models
 
