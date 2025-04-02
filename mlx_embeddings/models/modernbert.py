@@ -468,7 +468,7 @@ class Model(nn.Module):
             ] and not k.startswith("model"):
                 new_key = "model." + k
                 sanitized_weights[new_key] = v
-            elif self.config.tie_word_embeddings and "decoder.bias" in k:
+            elif self.config.tie_word_embeddings and "decoder.bias" in k and "decoder.biases" not in k:
                 sanitized_weights["decoder.bias"] = v
                 sanitized_weights["decoder.weight"] = weights[
                     "model.embeddings.tok_embeddings.weight"
