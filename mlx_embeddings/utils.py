@@ -308,7 +308,7 @@ def upload_to_hub(path: str, upload_repo: str, hf_path: str, config: dict):
     # Determine appropriate example code based on model type
     if config.get("vision_config", None) is None:
         # Text-only model
-        text_example = '''
+        text_example = """
         # For text embeddings
         output = generate(model, processor, texts=["I like grapes", "I like fruits"])
         embeddings = output.text_embeds  # Normalized embeddings
@@ -318,21 +318,21 @@ def upload_to_hub(path: str, upload_repo: str, hf_path: str, config: dict):
 
         print("Similarity matrix between texts:")
         print(similarity_matrix)
-        '''
+        """
 
         if config.get("architectures", None) == "ModernBertForMaskedLM":
-            text_example = '''
+            text_example = """
             # For masked language modeling
             output = generate(model, processor, texts=["The capital of France is [MASK]."])\n
             mask_index = processor.encode("[MASK]", add_special_tokens=False)[0]\n
             predicted_token_id = mx.argmax(output.logits[0, mask_index], axis=-1)\n
             predicted_token = processor.decode([predicted_token_id.item()])
-            '''
+            """
 
         response = text_example
     else:
         # Vision-text model
-        response = '''
+        response = """
         # For image-text embeddings
         images = [
             "./images/cats.jpg",  # cats
@@ -348,7 +348,7 @@ def upload_to_hub(path: str, upload_repo: str, hf_path: str, config: dict):
             for j, text in enumerate(texts):
                 print(f"  {probs[i][j]:.1%} match with '{text}'")
             print()
-        '''
+        """
 
     card = ModelCard.load(hf_path)
     card.data.tags = ["mlx"] if card.data.tags is None else card.data.tags + ["mlx"]
@@ -581,6 +581,7 @@ def convert(
     if upload_repo is not None:
         upload_to_hub(mlx_path, upload_repo, hf_path, config)
 
+
 def load_images(images, processor, resize_shape=None):
     image_processor = (
         processor.image_processor if hasattr(processor, "image_processor") else None
@@ -588,17 +589,23 @@ def load_images(images, processor, resize_shape=None):
     if isinstance(images, str):
         images = [process_image(images, resize_shape, image_processor)]
     elif isinstance(images, list):
-        images = [process_image(image, resize_shape, image_processor) for image in images]
+        images = [
+            process_image(image, resize_shape, image_processor) for image in images
+        ]
     else:
         raise ValueError(f"Unsupported image type: {type(images)}")
     return images
 
 
-def prepare_inputs(processor, images, texts, max_length, padding, truncation, resize_shape=None):
+def prepare_inputs(
+    processor, images, texts, max_length, padding, truncation, resize_shape=None
+):
     # Preprocess image-text embeddings
     if images is not None:
         images = load_images(images, processor, resize_shape=resize_shape)
-        inputs = processor(text=texts, images=images, padding="max_length", return_tensors="mlx")
+        inputs = processor(
+            text=texts, images=images, padding="max_length", return_tensors="mlx"
+        )
 
     # Preprocess text embeddings
     elif isinstance(texts, str):
@@ -616,11 +623,12 @@ def prepare_inputs(processor, images, texts, max_length, padding, truncation, re
 
     return inputs
 
+
 def generate(
     model: nn.Module,
     processor: Union[PreTrainedTokenizer, TokenizerWrapper, AutoProcessor],
     texts: Union[str, List[str]],
-    images: Union[str, mx.array, List[str], List[mx.array]]=None,
+    images: Union[str, mx.array, List[str], List[mx.array]] = None,
     max_length: int = 512,
     padding: bool = True,
     truncation: bool = True,
@@ -639,7 +647,9 @@ def generate(
     """
 
     resize_shape = kwargs.get("resize_shape", None)
-    inputs = prepare_inputs(processor, images, texts, max_length, padding, truncation, resize_shape)
+    inputs = prepare_inputs(
+        processor, images, texts, max_length, padding, truncation, resize_shape
+    )
 
     # Generate embeddings
     if isinstance(inputs, mx.array):
