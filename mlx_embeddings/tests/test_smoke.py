@@ -125,21 +125,38 @@ def test_generation(model, processor):
                 print()
 
             assert len(all_probs) == len(images)
-        elif hasattr(model.config, "architectures") and model.config.architectures == ["ModernBertForMaskedLM"]:
+        elif hasattr(model.config, "architectures") and model.config.architectures == [
+            "ModernBertForMaskedLM"
+        ]:
             test_type = "Masked Language Modeling"
             texts = [
                 "The capital of France is [MASK].",
                 "The capital of Poland is [MASK].",
             ]
-            inputs = processor.batch_encode_plus(texts, return_tensors="mlx", padding=True, truncation=True, max_length=512)
+            inputs = processor.batch_encode_plus(
+                texts,
+                return_tensors="mlx",
+                padding=True,
+                truncation=True,
+                max_length=512,
+            )
             outputs = model(**inputs)
-            mask_indices = mx.array([ids.tolist().index(processor.mask_token_id) for ids in inputs["input_ids"]])
+            mask_indices = mx.array(
+                [
+                    ids.tolist().index(processor.mask_token_id)
+                    for ids in inputs["input_ids"]
+                ]
+            )
 
             # Get predictions for all masked tokens at once
             batch_indices = mx.arange(len(mask_indices))
-            predicted_token_ids = mx.argmax(outputs.pooler_output[batch_indices, mask_indices], axis=-1).tolist()
+            predicted_token_ids = mx.argmax(
+                outputs.pooler_output[batch_indices, mask_indices], axis=-1
+            ).tolist()
 
-            predicted_tokens = processor.batch_decode(predicted_token_ids, skip_special_tokens=True)
+            predicted_tokens = processor.batch_decode(
+                predicted_token_ids, skip_special_tokens=True
+            )
             print("Predicted tokens:", predicted_tokens)
 
         else:
