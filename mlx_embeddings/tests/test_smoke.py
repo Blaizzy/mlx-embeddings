@@ -17,7 +17,7 @@ from rich.panel import Panel
 from tqdm import tqdm
 from transformers import __version__ as transformers_version
 
-from mlx_embeddings import load
+from mlx_embeddings import generate, load
 from mlx_embeddings.utils import load_config
 from mlx_embeddings.version import __version__
 
@@ -77,17 +77,9 @@ def test_generation(model, processor):
 
         if hasattr(model.config, "vision_config"):
             test_type = "ViT embedding"
-            image_urls = [
+            images = [
                 "../mlx-embeddings/images/cats.jpg",  # cats
                 "../mlx-embeddings/images/desktop_setup.png",  # desktop setup
-            ]
-            images = [
-                (
-                    Image.open(requests.get(url, stream=True).raw)
-                    if url.startswith("http")
-                    else Image.open(url)
-                )
-                for url in image_urls
             ]
 
             # Text descriptions
@@ -102,19 +94,8 @@ def test_generation(model, processor):
 
             for i, image in enumerate(images):
                 # Process inputs for current image with all texts
-                inputs = processor(
-                    text=texts, images=image, padding="max_length", return_tensors="pt"
-                )
-                pixel_values = (
-                    mx.array(inputs.pixel_values)
-                    .transpose(0, 2, 3, 1)
-                    .astype(mx.float32)
-                )
-                input_ids = mx.array(inputs.input_ids)
-
-                # Generate embeddings and calculate similarity
-                outputs = model(pixel_values=pixel_values, input_ids=input_ids)
-                logits_per_image = outputs.logits_per_image
+                output = generate(model, processor, image, texts)
+                logits_per_image = output.logits_per_image
                 probs = mx.sigmoid(logits_per_image)[0]  # probabilities for this image
                 all_probs.append(probs.tolist())
 
@@ -140,7 +121,16 @@ def test_generation(model, processor):
                 truncation=True,
                 max_length=512,
             )
-            outputs = model(**inputs)
+
+            output = generate(
+                model,
+                processor,
+                None,
+                texts,
+                padding=True,
+                truncation=True,
+                max_length=512,
+            )
             mask_indices = mx.array(
                 [
                     ids.tolist().index(processor.mask_token_id)
@@ -151,7 +141,7 @@ def test_generation(model, processor):
             # Get predictions for all masked tokens at once
             batch_indices = mx.arange(len(mask_indices))
             predicted_token_ids = mx.argmax(
-                outputs.pooler_output[batch_indices, mask_indices], axis=-1
+                output.pooler_output[batch_indices, mask_indices], axis=-1
             ).tolist()
 
             predicted_tokens = processor.batch_decode(
@@ -169,15 +159,7 @@ def test_generation(model, processor):
             ]
 
             # Process inputs
-            inputs = processor.batch_encode_plus(
-                texts,
-                return_tensors="mlx",
-                padding=True,
-                truncation=True,
-                max_length=512,
-            )
-            print(inputs["attention_mask"].shape)
-            output = model(**inputs)
+            output = generate(model, processor, None, texts)
 
             assert output.text_embeds.shape == (len(texts), model.config.hidden_size)
 
