@@ -12,6 +12,14 @@
 - Support for single-item and batch processing
 - Utilities for comparing text similarities
 
+## Supported Models Archictectures
+MLX-Embeddings supports a variety of model architectures for text embedding tasks. Here's a breakdown of the currently supported architectures:
+- XLM-RoBERTa (Cross-lingual Language Model - Robustly Optimized BERT Approach)
+- BERT (Bidirectional Encoder Representations from Transformers)
+- ModernBERT (modernized bidirectional encoder-only Transformer model)
+
+We're continuously working to expand our support for additional model architectures. Check our GitHub repository or documentation for the most up-to-date list of supported models and their specific versions.
+
 ## Installation
 
 You can install mlx-embeddings using pip:
@@ -24,13 +32,15 @@ pip install mlx-embeddings
 
 ### Single Item Embedding
 
+
+#### Text Embedding
 To generate an embedding for a single piece of text:
 
 ```python
 from mlx_embeddings.utils import load
 
 # Load the model and tokenizer
-model_name = "sentence-transformers/all-MiniLM-L6-v2"  
+model_name = "sentence-transformers/all-MiniLM-L6-v2"
 model, tokenizer = load(model_name)
 
 # Prepare the text
@@ -45,9 +55,33 @@ text_embeds = ouputs.text_embeds # mean pooled and normalized embeddings
 
 Note : text-embeds use mean pooling for bert and xlm-robert. For modernbert, pooling strategy is set through the config file, defaulting to mean
 
-### Batch Processing and Multiple Texts Comparison
+#### Masked Language Modeling
 
-To embed multiple texts and compare them using their embeddings:  
+To generate embeddings for masked language modeling tasks:
+
+```python
+from mlx_embeddings.utils import load
+
+# Load ModernBERT model and tokenizer
+model, tokenizer = load("answerdotai/ModernBERT-base")
+
+# Masked Language Modeling example
+text = "The capital of France is [MASK]."
+inputs = tokenizer.encode(text, return_tensors="mlx")
+outputs = model(inputs)
+
+# Get predictions for the masked token
+masked_index = inputs.tolist()[0].index(tokenizer.mask_token_id)
+predicted_token_id = mx.argmax(outputs.pooler_output[0, masked_index]).tolist()
+predicted_token = tokenizer.decode(predicted_token_id)
+print("Predicted token:", predicted_token)  # Should output: Paris
+```
+
+### Batch Processing
+
+#### Multiple Texts Comparison
+
+To embed multiple texts and compare them using their embeddings:
 
 ```python
 from sklearn.metrics.pairwise import cosine_similarity
@@ -103,13 +137,37 @@ labels = [f"Text {i+1}" for i in range(len(texts))]
 plot_similarity_matrix(similarity_matrix, labels)
 ```
 
-## Supported Models Archictectures
-MLX-Embeddings supports a variety of model architectures for text embedding tasks. Here's a breakdown of the currently supported architectures:
-- XLM-RoBERTa (Cross-lingual Language Model - Robustly Optimized BERT Approach)
-- BERT (Bidirectional Encoder Representations from Transformers)
-- ModernBERT (modernized bidirectional encoder-only Transformer model)
+#### Masked Language Modeling
 
-We're continuously working to expand our support for additional model architectures. Check our GitHub repository or documentation for the most up-to-date list of supported models and their specific versions.
+To get predictions for the masked token in multiple texts:
+
+```python
+import mlx.core as mx
+from mlx_embeddings.utils import load
+
+# Load the model and tokenizer
+model, tokenizer = load("answerdotai/ModernBERT-base")
+
+text = ["The capital of France is [MASK].", "The capital of Poland is [MASK]."]
+inputs = tokenizer.batch_encode_plus(text, return_tensors="mlx", padding=True, truncation=True, max_length=512)
+outputs = model(**inputs)
+
+# To get predictions for the mask:
+# Find mask token indices for each sequence in the batch
+# Find mask indices for all sequences in batch
+mask_indices = mx.array([ids.tolist().index(tokenizer.mask_token_id) for ids in inputs["input_ids"]])
+
+# Get predictions for all masked tokens at once
+batch_indices = mx.arange(len(mask_indices))
+predicted_token_ids = mx.argmax(outputs.pooler_output[batch_indices, mask_indices], axis=-1).tolist()
+
+# Decode the predicted tokens
+predicted_token = tokenizer.batch_decode(predicted_token_ids)
+
+print("Predicted token:", predicted_token)
+# Predicted token:  Paris, Warsaw
+```
+
 
 ## Vision Transformer Models
 
@@ -150,7 +208,7 @@ print(f"{probs[0][0]:.1%} that image matches '{texts[0]}'")
 print(f"{probs[0][1]:.1%} that image matches '{texts[1]}'")
 ```
 
-### Batch Processing for Multiple Images
+### Batch Processing for Multiple Images comparison
 
 Process multiple images and compare them with text descriptions:
 
@@ -163,7 +221,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load vision model and processor
-model, processor = load("google/siglip-so400m-patch14-384")
+model, processor = load("mlx-community/siglip-so400m-patch14-384")
 
 # Load multiple images
 image_urls = [
@@ -178,26 +236,36 @@ texts = ["a photo of cats", "a photo of a desktop setup", "a photo of a person"]
 # Process all image-text pairs
 all_probs = []
 
+
+# Process all image-text pairs in batch
+inputs = processor(text=texts, images=images, padding="max_length", return_tensors="pt")
+pixel_values = mx.array(inputs.pixel_values).transpose(0, 2, 3, 1).astype(mx.float32)
+input_ids = mx.array(inputs.input_ids)
+
+# Generate embeddings and calculate similarity
+outputs = model(pixel_values=pixel_values, input_ids=input_ids)
+logits_per_image = outputs.logits_per_image
+probs = mx.sigmoid(logits_per_image) # probabilities for this image
+all_probs.append(probs.tolist())
+
+
+# Print results for this image
 for i, image in enumerate(images):
-    # Process inputs for current image with all texts
-    inputs = processor(text=texts, images=image, padding="max_length", return_tensors="pt")
-    pixel_values = mx.array(inputs.pixel_values).transpose(0, 2, 3, 1).astype(mx.float32)
-    input_ids = mx.array(inputs.input_ids)
-
-    # Generate embeddings and calculate similarity
-    outputs = model(pixel_values=pixel_values, input_ids=input_ids)
-    logits_per_image = outputs.logits_per_image
-    probs = mx.sigmoid(logits_per_image)[0]  # probabilities for this image
-    all_probs.append(probs.tolist())
-
-    # Print results for this image
     print(f"Image {i+1}:")
     for j, text in enumerate(texts):
-        print(f"  {probs[j]:.1%} match with '{text}'")
+        print(f"  {probs[i][j]:.1%} match with '{text}'")
     print()
 
 # Visualize results with a heatmap
 def plot_similarity_matrix(probs_matrix, image_labels, text_labels):
+    # Convert to 2D numpy array if needed
+    import numpy as np
+    probs_matrix = np.array(probs_matrix)
+
+    # Ensure we have a 2D matrix for the heatmap
+    if probs_matrix.ndim > 2:
+        probs_matrix = probs_matrix.squeeze()
+
     plt.figure(figsize=(8, 5))
     sns.heatmap(probs_matrix, annot=True, cmap='viridis',
                 xticklabels=text_labels, yticklabels=image_labels,
@@ -205,6 +273,16 @@ def plot_similarity_matrix(probs_matrix, image_labels, text_labels):
     plt.title('Image-Text Match Probability')
     plt.tight_layout()
     plt.show()
+
+# Plot the images for reference
+plt.figure(figsize=(8, 5))
+for i, image in enumerate(images):
+    plt.subplot(1, len(images), i+1)
+    plt.imshow(image)
+    plt.title(f"Image {i+1}")
+    plt.axis('off')
+plt.tight_layout()
+plt.show()
 
 image_labels = [f"Image {i+1}" for i in range(len(images))]
 plot_similarity_matrix(all_probs, image_labels, texts)

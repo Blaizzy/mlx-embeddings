@@ -222,9 +222,7 @@ class Model(nn.Module):
 
         encoder_outputs = self.encoder(embedding_output, extended_attention_mask)
         sequence_output = encoder_outputs
-        pooled_output = (
-            self.pooler(sequence_output) if self.pooler is not None else None
-        )
+        pooled_output = self.pooler(sequence_output)
 
         # normalized features
         text_embeds = mean_pooling(sequence_output, attention_mask)
@@ -234,7 +232,6 @@ class Model(nn.Module):
             last_hidden_state=sequence_output,
             text_embeds=text_embeds,
             pooler_output=pooled_output,
-            hidden_states=None,  # current architecture does not return all hidden states
         )
 
     def sanitize(self, weights):

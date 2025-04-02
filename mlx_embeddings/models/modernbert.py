@@ -1,6 +1,6 @@
 import math
-from dataclasses import dataclass
-from typing import Dict, Literal, Optional
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Literal, Optional
 
 import mlx.core as mx
 import mlx.nn as nn
@@ -28,8 +28,6 @@ class ModelArgs(BaseModelArgs):
     embedding_dropout: float = 0.0
     mlp_bias: bool = False
     mlp_dropout: float = 0.0
-    initializer_range = 0.02  # relevant for MLX?
-    initializer_cutoff_factor = 2.0  # relevant for MLX?
     pad_token_id = 50283
     eos_token_id = 50282
     bos_token_id = 50281
@@ -37,6 +35,8 @@ class ModelArgs(BaseModelArgs):
     sep_token_id = 50282
     output_hidden_states: bool = False
     use_return_dict: bool = True
+    tie_word_embeddings: bool = True
+    architectures: List[str] = field(default_factory=lambda: ["ModernBertForMaskedLM"])
 
     # pipeline args, mostly for classification
     # not directly  related to this project but consistent with original ModernBERT implementation
@@ -50,6 +50,7 @@ class ModelArgs(BaseModelArgs):
     is_regression: Optional[bool] = None  # for Sequence Classification
     label2id: Optional[Dict[str, int]] = None  # for Sequence Classification
     id2label: Optional[Dict[int, str]] = None  # for Sequence Classification
+    pipeline_config: Optional[Dict[str, Any]] = None  # for Sequence Classification
 
     @property
     def num_labels(self) -> int:  # for Sequence Classification
@@ -109,7 +110,7 @@ class ModernBertMLP(nn.Module):
         self.Wi = nn.Linear(
             config.hidden_size, config.intermediate_size * 2, bias=config.mlp_bias
         )
-        self.act = nn.GELU()
+        self.act = nn.GELU(approx="precise")
         self.drop = nn.Dropout(p=config.mlp_dropout)
         self.Wo = nn.Linear(
             int(config.intermediate_size), config.hidden_size, bias=config.mlp_bias
@@ -141,6 +142,7 @@ class ModernBertAttention(nn.Module):
         self.attention_dropout = config.attention_dropout
         self.num_heads = config.num_attention_heads
         self.head_dim = config.hidden_size // config.num_attention_heads
+        self.scale = self.head_dim**-0.5
         self.all_head_size = self.head_dim * self.num_heads
         self.Wqkv = nn.Linear(
             config.hidden_size, 3 * self.all_head_size, bias=config.attention_bias
@@ -189,6 +191,7 @@ class ModernBertAttention(nn.Module):
         query, key, value = mx.split(
             qkv, indices_or_sections=3, axis=2
         )  # each [batch_size, nheads, 1, seqlen, headdim]
+
         query = query.squeeze(2)  # [batch_size, nheads, seqlen, headdim]
         key = key.squeeze(2)  # [batch_size, nheads, seqlen, headdim]
         value = value.squeeze(2)  # [batch_size, nheads, seqlen, headdim]
@@ -201,10 +204,8 @@ class ModernBertAttention(nn.Module):
         if self.local_attention != (-1, -1):
             attention_mask = sliding_window_mask
 
-        # Computing attention using MLX's SDPA
-        scale = 1.0 / math.sqrt(query.shape[-1])
         attn_output = mx.fast.scaled_dot_product_attention(
-            query, key, value, scale=scale, mask=attention_mask
+            query, key, value, scale=self.scale, mask=attention_mask
         )
 
         # Reshaping and apply output projection
@@ -296,11 +297,9 @@ class ModernBertModel(nn.Module):
 
         batch_size, seq_len = input_ids.shape[:2]
 
-        if attention_mask is None:
-            attention_mask = mx.ones((batch_size, seq_len))
-
         if position_ids is None:
-            position_ids = mx.arange(seq_len, dtype=mx.int32)[None, :]
+            position_ids = mx.arange(seq_len, dtype=mx.int32)
+            position_ids = mx.repeat(position_ids, batch_size, axis=0)
 
         # get attention mask and sliding window mask
         attention_mask, sliding_window_mask = self._update_attention_mask(
@@ -332,6 +331,7 @@ class ModernBertModel(nn.Module):
         }
 
     def _update_attention_mask(self, attention_mask):
+        dtype = attention_mask.dtype
         batch_size, seq_len = attention_mask.shape
 
         additive_mask = mx.where(attention_mask == 1, 0.0, -1e9)
@@ -366,7 +366,23 @@ class ModernBertModel(nn.Module):
         # Replacing non-window positions with large negative value
         sliding_window_mask = mx.where(window_mask, global_attention_mask, -1e9)
 
-        return global_attention_mask, sliding_window_mask
+        return global_attention_mask.astype(dtype), sliding_window_mask.astype(dtype)
+
+
+class ModernBertPredictionHead(nn.Module):
+    def __init__(self, config: ModelArgs):
+        super().__init__()
+        self.config = config
+        self.dense = nn.Linear(
+            config.hidden_size, config.hidden_size, config.classifier_bias
+        )
+        self.act = nn.GELU(approx="precise")
+        self.norm = nn.LayerNorm(
+            config.hidden_size, eps=config.norm_eps, bias=config.norm_bias
+        )
+
+    def __call__(self, hidden_states: mx.array) -> mx.array:
+        return self.norm(self.act(self.dense(hidden_states)))
 
 
 # classes for specific pipelines
@@ -383,6 +399,11 @@ class Model(nn.Module):
         super().__init__()
         self.config = config
         self.model = ModernBertModel(config)
+        if config.architectures == ["ModernBertForMaskedLM"]:
+            self.head = ModernBertPredictionHead(config)
+            self.decoder = nn.Linear(
+                config.hidden_size, config.vocab_size, bias=config.decoder_bias
+            )
 
     def __call__(
         self,
@@ -394,7 +415,10 @@ class Model(nn.Module):
 
         if attention_mask is None:
             batch_size, seq_len = input_ids.shape
-            attention_mask = mx.ones((batch_size, seq_len))
+            attention_mask = mx.ones(
+                (batch_size, seq_len),
+                dtype=self.model.embeddings.tok_embeddings.weight.dtype,
+            )
 
         # Get embeddings and encoder outputs as before
         encoder_outputs = self.model(
@@ -404,34 +428,51 @@ class Model(nn.Module):
             output_hidden_states=None,  # only last_hidden_state is returned
             return_dict=return_dict,
         )
-        hidden_state = (
+        last_hidden_state = (
             encoder_outputs["last_hidden_state"]
             if isinstance(encoder_outputs, dict)
             else encoder_outputs[0]
         )
 
         # Pooling strategy using config
-        if self.config.classifier_pooling == "cls":
-            pooled = hidden_state[:, 0]
-        elif self.config.classifier_pooling == "mean":
-            pooled = mean_pooling(hidden_state, attention_mask)
+        if self.config.architectures != ["ModernBertForMaskedLM"]:
+            if self.config.classifier_pooling == "cls":
+                last_hidden_state = last_hidden_state[:, 0]
+            elif self.config.classifier_pooling == "mean":
+                last_hidden_state = mean_pooling(last_hidden_state, attention_mask)
+            else:
+                raise ValueError(
+                    f"Invalid pooling strategy: {self.config.classifier_pooling}"
+                )
+
+        pooled_output = None
+        if self.config.architectures == ["ModernBertForMaskedLM"]:
+            pooled_output = self.head(last_hidden_state)
+            pooled_output = self.decoder(pooled_output)
 
         # normalized features
-        text_embeds = normalize_embeddings(pooled)
+        text_embeds = normalize_embeddings(last_hidden_state)
 
         return BaseModelOutput(
-            last_hidden_state=hidden_state,
+            last_hidden_state=last_hidden_state,
             text_embeds=text_embeds,
-            pooler_output=pooled,
+            pooler_output=pooled_output,
             hidden_states=encoder_outputs[1:],
         )
 
     def sanitize(self, weights):
         sanitized_weights = {}
         for k, v in weights.items():
-            if k in ["head.norm.weight", "head.dense.weight", "decoder.bias"]:
-                ### this is the hack
-                continue
+            if self.config.architectures != [
+                "ModernBertForMaskedLM"
+            ] and not k.startswith("model"):
+                new_key = "model." + k
+                sanitized_weights[new_key] = v
+            elif self.config.tie_word_embeddings and "decoder.bias" in k:
+                sanitized_weights["decoder.bias"] = v
+                sanitized_weights["decoder.weight"] = weights[
+                    "model.embeddings.tok_embeddings.weight"
+                ]
             else:
                 sanitized_weights[k] = v
         return sanitized_weights
