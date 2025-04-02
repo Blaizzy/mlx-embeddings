@@ -569,6 +569,16 @@ class Model(nn.Module):
         output_hidden_states: Optional[bool] = None,
         interpolate_pos_encoding: bool = False,
     ) -> mx.array:
+        if pixel_values is not None:
+            dtype = (
+                self.vision_model.vision_model.embeddings.patch_embedding.weight.dtype
+            )
+            if isinstance(pixel_values, mx.array):
+                pixel_values = pixel_values.transpose(0, 2, 3, 1).astype(dtype)
+            else:
+                pixel_values = (
+                    mx.array(pixel_values).transpose(0, 2, 3, 1).astype(dtype)
+                )
 
         # Use SigLIP model's config for some fields (if specified) instead of those of vision & text components.
         output_hidden_states = (
