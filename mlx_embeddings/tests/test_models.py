@@ -23,14 +23,35 @@ class TestModels(unittest.TestCase):
 
         inputs = mx.array([[0, 1, 2, 3, 4]])
         outputs = model(inputs)
-        self.assertEqual(
-            outputs.last_hidden_state.shape,
-            (batch_size, seq_length, model.config.hidden_size),
-        )
         self.assertEqual(outputs.last_hidden_state.dtype, mx.float32)
-        self.assertEqual(
-            outputs.text_embeds.shape, (batch_size, model.config.hidden_size)
+
+        # Check if model is ModernBertModel
+        is_modern_bert = (
+            hasattr(model.config, "architectures")
+            and model.config.architectures[0] == "ModernBertModel"
         )
+
+        # Check if model is ModernBertForMaskedLM
+        is_masked_lm = (
+            hasattr(model.config, "architectures")
+            and model.config.architectures[0] == "ModernBertForMaskedLM"
+        )
+
+        # Verify last_hidden_state shape
+        expected_hidden_shape = (
+            (batch_size, model.config.hidden_size)
+            if is_modern_bert
+            else (batch_size, seq_length, model.config.hidden_size)
+        )
+        self.assertEqual(outputs.last_hidden_state.shape, expected_hidden_shape)
+
+        # Verify text_embeds shape
+        expected_embeds_shape = (
+            (batch_size, seq_length, model.config.hidden_size)
+            if is_masked_lm
+            else (batch_size, model.config.hidden_size)
+        )
+        self.assertEqual(outputs.text_embeds.shape, expected_embeds_shape)
         self.assertEqual(outputs.text_embeds.dtype, mx.float32)
 
     def vlm_model_test_runner(self, model, model_type, num_layers):
@@ -167,10 +188,32 @@ class TestModels(unittest.TestCase):
             config.num_hidden_layers,
         )
 
-    def test_modernbert_model(self):
+    def test_modernbert_model_mask_token(self):
         from mlx_embeddings.models import modernbert
 
         config = modernbert.ModelArgs(
+            architectures=["ModernBertForMaskedLM"],
+            model_type="modernbert",
+            hidden_size=768,
+            num_hidden_layers=22,
+            intermediate_size=1152,
+            num_attention_heads=12,
+            max_position_embeddings=8192,
+            vocab_size=50368,
+        )
+        model = modernbert.Model(config)
+
+        self.model_test_runner(
+            model,
+            config.model_type,
+            config.num_hidden_layers,
+        )
+
+    def test_modernbert_model_embeddings(self):
+        from mlx_embeddings.models import modernbert
+
+        config = modernbert.ModelArgs(
+            architectures=["ModernBertModel"],
             model_type="modernbert",
             hidden_size=768,
             num_hidden_layers=22,
