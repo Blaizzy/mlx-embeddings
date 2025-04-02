@@ -104,7 +104,7 @@ class TestModels(unittest.TestCase):
         if hasattr(model, "vision_config"):
             # Get image size from vision config
             image_size = model.vision_config.image_size
-            # Create dummy image tensor [batch_size, channels, height, width]
+            # Create dummy image tensor [batch_size, height, width, channels]
             image_inputs = mx.random.normal((batch_size, 3, image_size, image_size))
 
             if hasattr(model, "get_image_features"):
@@ -120,7 +120,7 @@ class TestModels(unittest.TestCase):
         text_inputs = mx.array([[0, 1, 2, 3, 4]])
         attention_mask = mx.ones((batch_size, seq_length))
         image_size = model.config.vision_config.image_size
-        image_inputs = mx.random.normal((batch_size, image_size, image_size, 3))
+        image_inputs = mx.random.normal((batch_size, 3, image_size, image_size))
 
         # Only try this if the model has a method that accepts both inputs
         multimodal_outputs = model(
