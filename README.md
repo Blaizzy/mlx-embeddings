@@ -40,7 +40,7 @@ To generate an embedding for a single piece of text:
 from mlx_embeddings.utils import load
 
 # Load the model and tokenizer
-model_name = "sentence-transformers/all-MiniLM-L6-v2"
+model_name = "mlx-community/all-MiniLM-L6-v2-4bit"
 model, tokenizer = load(model_name)
 
 # Prepare the text
@@ -63,7 +63,7 @@ To generate embeddings for masked language modeling tasks:
 from mlx_embeddings.utils import load
 
 # Load ModernBERT model and tokenizer
-model, tokenizer = load("answerdotai/ModernBERT-base")
+model, tokenizer = load("mlx-community/answerdotai-ModernBERT-base-4bit")
 
 # Masked Language Modeling example
 text = "The capital of France is [MASK]."
@@ -91,7 +91,7 @@ import mlx.core as mx
 from mlx_embeddings.utils import load
 
 # Load the model and tokenizer
-model, tokenizer = load("sentence-transformers/all-MiniLM-L6-v2")
+model, tokenizer = load("mlx-community/all-MiniLM-L6-v2-4bit")
 
 def get_embedding(texts, model, tokenizer):
     inputs = tokenizer.batch_encode_plus(texts, return_tensors="mlx", padding=True, truncation=True, max_length=512)
@@ -146,7 +146,7 @@ import mlx.core as mx
 from mlx_embeddings.utils import load
 
 # Load the model and tokenizer
-model, tokenizer = load("answerdotai/ModernBERT-base")
+model, tokenizer = load("mlx-community/answerdotai-ModernBERT-base-4bit")
 
 text = ["The capital of France is [MASK].", "The capital of Poland is [MASK]."]
 inputs = tokenizer.batch_encode_plus(text, return_tensors="mlx", padding=True, truncation=True, max_length=512)
@@ -184,7 +184,7 @@ import requests
 from PIL import Image
 
 # Load vision model and processor
-model, processor = load("google/siglip-so400m-patch14-384")
+model, processor = load("mlx-community/siglip-so400m-patch14-384")
 
 # Load an image
 url = "http://images.cocodataset.org/val2017/000000039769.jpg"
