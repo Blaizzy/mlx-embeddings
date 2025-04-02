@@ -16,7 +16,7 @@ import mlx.nn as nn
 from huggingface_hub import snapshot_download
 from huggingface_hub.errors import RepositoryNotFoundError
 from mlx.utils import tree_flatten, tree_unflatten
-from mlx_vlm.utils import load_image
+from mlx_vlm.utils import process_image
 from transformers import AutoProcessor, PreTrainedTokenizer
 
 from .tokenizer_utils import TokenizerWrapper, load_tokenizer
@@ -290,7 +290,7 @@ def make_shards(weights: dict, max_file_size_gb: int = MAX_FILE_SIZE_GB) -> list
     return shards
 
 
-def upload_to_hub(path: str, upload_repo: str, hf_path: str):
+def upload_to_hub(path: str, upload_repo: str, hf_path: str, config: dict):
     """
     Uploads the model to Hugging Face hub.
 
@@ -305,6 +305,51 @@ def upload_to_hub(path: str, upload_repo: str, hf_path: str):
 
     from . import __version__
 
+    # Determine appropriate example code based on model type
+    if config.get("vision_config", None) is None:
+        # Text-only model
+        text_example = """
+        # For text embeddings
+        output = generate(model, processor, texts=["I like grapes", "I like fruits"])
+        embeddings = output.text_embeds  # Normalized embeddings
+
+        # Compute dot product between normalized embeddings
+        similarity_matrix = mx.matmul(embeddings, embeddings.T)
+
+        print("Similarity matrix between texts:")
+        print(similarity_matrix)
+        """
+
+        if config.get("architectures", None) == "ModernBertForMaskedLM":
+            text_example = """
+            # For masked language modeling
+            output = generate(model, processor, texts=["The capital of France is [MASK]."])\n
+            mask_index = processor.encode("[MASK]", add_special_tokens=False)[0]\n
+            predicted_token_id = mx.argmax(output.logits[0, mask_index], axis=-1)\n
+            predicted_token = processor.decode([predicted_token_id.item()])
+            """
+
+        response = text_example
+    else:
+        # Vision-text model
+        response = """
+        # For image-text embeddings
+        images = [
+            "./images/cats.jpg",  # cats
+        ]
+        texts = ["a photo of cats", "a photo of a desktop setup", "a photo of a person"]
+
+        # Process all image-text pairs
+        outputs = generate(model, processor, texts, images=images)
+        logits_per_image = outputs.logits_per_image
+        probs = mx.sigmoid(logits_per_image) # probabilities for this image
+        for i, image in enumerate(images):
+            print(f"Image {i+1}:")
+            for j, text in enumerate(texts):
+                print(f"  {probs[i][j]:.1%} match with '{text}'")
+            print()
+        """
+
     card = ModelCard.load(hf_path)
     card.data.tags = ["mlx"] if card.data.tags is None else card.data.tags + ["mlx"]
     card.text = dedent(
@@ -316,14 +361,16 @@ def upload_to_hub(path: str, upload_repo: str, hf_path: str):
         ## Use with mlx
 
         ```bash
-        pip install mlx-lm
+        pip install mlx-embeddings
         ```
 
         ```python
-        from mlx_lm import load, generate
+        from mlx_embeddings import load, generate
+        import mlx.core as mx
 
         model, tokenizer = load("{upload_repo}")
-        response = generate(model, tokenizer, prompt="hello", verbose=True)
+        {response}
+
         ```
         """
     )
@@ -532,16 +579,60 @@ def convert(
     save_config(config, config_path=mlx_path / "config.json")
 
     if upload_repo is not None:
-        upload_to_hub(mlx_path, upload_repo, hf_path)
+        upload_to_hub(mlx_path, upload_repo, hf_path, config)
+
+
+def load_images(images, processor, resize_shape=None):
+    image_processor = (
+        processor.image_processor if hasattr(processor, "image_processor") else None
+    )
+    if isinstance(images, str):
+        images = [process_image(images, resize_shape, image_processor)]
+    elif isinstance(images, list):
+        images = [
+            process_image(image, resize_shape, image_processor) for image in images
+        ]
+    else:
+        raise ValueError(f"Unsupported image type: {type(images)}")
+    return images
+
+
+def prepare_inputs(
+    processor, images, texts, max_length, padding, truncation, resize_shape=None
+):
+    # Preprocess image-text embeddings
+    if images is not None:
+        images = load_images(images, processor, resize_shape=resize_shape)
+        inputs = processor(
+            text=texts, images=images, padding="max_length", return_tensors="mlx"
+        )
+
+    # Preprocess text embeddings
+    elif isinstance(texts, str):
+        inputs = processor.encode(texts, return_tensors="mlx")
+    elif isinstance(texts, list):
+        inputs = processor.batch_encode_plus(
+            texts,
+            return_tensors="mlx",
+            padding=padding,
+            truncation=truncation,
+            max_length=max_length,
+        )
+    else:
+        raise ValueError(f"Unsupported input type: {type(texts)}")
+
+    return inputs
 
 
 def generate(
     model: nn.Module,
-    tokenizer: TokenizerWrapper,
+    processor: Union[PreTrainedTokenizer, TokenizerWrapper, AutoProcessor],
     texts: Union[str, List[str]],
+    images: Union[str, mx.array, List[str], List[mx.array]] = None,
     max_length: int = 512,
     padding: bool = True,
     truncation: bool = True,
+    **kwargs,
 ) -> mx.array:
     """
     Generate embeddings for input text(s) using the provided model and tokenizer.
@@ -554,23 +645,16 @@ def generate(
     Returns:
         mx.array: The generated embeddings.
     """
-    if isinstance(texts, list):
-        inputs = tokenizer.batch_encode_plus(
-            texts,
-            return_tensors="mlx",
-            padding=padding,
-            truncation=truncation,
-            max_length=max_length,
-        )
-        embeddings = model(
-            inputs["input_ids"], attention_mask=inputs["attention_mask"]
-        )[
-            0
-        ]  # [batch_size, sequence_length, embedding_dim]
-        return embeddings
+
+    resize_shape = kwargs.get("resize_shape", None)
+    inputs = prepare_inputs(
+        processor, images, texts, max_length, padding, truncation, resize_shape
+    )
+
+    # Generate embeddings
+    if isinstance(inputs, mx.array):
+        outputs = model(inputs)
     else:
-        input_ids = tokenizer.encode(
-            texts, return_tensors="mlx", truncation=truncation, max_length=max_length
-        )
-        embeddings = model(input_ids)[0]  # [1, sequence_length, embedding_dim]
-        return embeddings
+        outputs = model(**inputs)
+
+    return outputs
