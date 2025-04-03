@@ -81,9 +81,9 @@ def get_model_path(path_or_hf_repo: str, revision: Optional[str] = None) -> Path
                         "*.json",
                         "*.safetensors",
                         "*.py",
-                        "tokenizer.model",
                         "*.tiktoken",
                         "*.txt",
+                        "*.model",
                     ],
                 )
             )
@@ -166,20 +166,22 @@ def load_model(
         model_args.vision_config = vision_config(**model_args.vision_config)
 
         # siglip models have a different image size
-
         if "siglip" in config["model_type"]:
             # Extract the image size
-            image_size = kwargs["path_to_repo"].split("-")[-1].split("/")[0]
+            image_size = re.search(
+                r"patch\d+-(\d+)(?:-|$)", kwargs["path_to_repo"]
+            ).group(1)
             # Extract the patch size
-            patch_size = kwargs["path_to_repo"].split("-")[-2].split("/")[0]
+            patch_size = re.search(r"patch(\d+)", kwargs["path_to_repo"]).group(1)
             patch_size = (
                 re.search(r"\d+", patch_size).group()
                 if re.search(r"\d+", patch_size)
                 else patch_size
             )
-
-            model_args.vision_config.image_size = int(image_size)
-            model_args.vision_config.patch_size = int(patch_size)
+            if model_args.vision_config.image_size != int(image_size):
+                model_args.vision_config.image_size = int(image_size)
+            if model_args.vision_config.patch_size != int(patch_size):
+                model_args.vision_config.patch_size = int(patch_size)
 
     model = model_class(model_args)
 

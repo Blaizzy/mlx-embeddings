@@ -34,6 +34,13 @@ def parse_args():
         required=True,
         help="Path to file containing model paths, one per line",
     )
+    parser.add_argument(
+        "--images",
+        type=str,
+        nargs="+",
+        required=False,
+        help="Path to file containing image paths, one per line",
+    )
     return parser.parse_args()
 
 
@@ -70,17 +77,13 @@ def test_model_loading(model_path):
         return None, None, True
 
 
-def test_generation(model, processor):
+def test_generation(model, processor, images):
     try:
         console.print(f"[bold yellow]Testing embedding...")
         test_type = "Text embedding"
 
         if hasattr(model.config, "vision_config"):
             test_type = "ViT embedding"
-            images = [
-                "../mlx-embeddings/images/cats.jpg",  # cats
-                "../mlx-embeddings/images/desktop_setup.png",  # desktop setup
-            ]
 
             # Text descriptions
             texts = [
@@ -94,7 +97,7 @@ def test_generation(model, processor):
 
             for i, image in enumerate(images):
                 # Process inputs for current image with all texts
-                output = generate(model, processor, image, texts)
+                output = generate(model, processor, texts=texts, images=image)
                 logits_per_image = output.logits_per_image
                 probs = mx.sigmoid(logits_per_image)[0]  # probabilities for this image
                 all_probs.append(probs.tolist())
@@ -125,8 +128,7 @@ def test_generation(model, processor):
             output = generate(
                 model,
                 processor,
-                None,
-                texts,
+                texts=texts,
                 padding=True,
                 truncation=True,
                 max_length=512,
@@ -159,7 +161,7 @@ def test_generation(model, processor):
             ]
 
             # Process inputs
-            output = generate(model, processor, None, texts)
+            output = generate(model, processor, texts=texts)
 
             assert output.text_embeds.shape == (len(texts), model.config.hidden_size)
 
@@ -200,7 +202,7 @@ def main():
         if not error and model:
             print("\n")
             # Test vision-language generation
-            error |= test_generation(model, processor)
+            error |= test_generation(model, processor, args.images)
 
             print("\n")
 
