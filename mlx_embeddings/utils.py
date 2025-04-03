@@ -168,7 +168,9 @@ def load_model(
         # siglip models have a different image size
         if "siglip" in config["model_type"]:
             # Extract the image size
-            image_size = re.search(r"patch\d+-(\d+)(?:-|$)", kwargs["path_to_repo"]).group(1)
+            image_size = re.search(
+                r"patch\d+-(\d+)(?:-|$)", kwargs["path_to_repo"]
+            ).group(1)
             # Extract the patch size
             patch_size = re.search(r"patch(\d+)", kwargs["path_to_repo"]).group(1)
             patch_size = (
@@ -242,7 +244,6 @@ def load(
 
     # Try to load tokenizer first, then fall back to processor if needed
     tokenizer = None
-
 
     # First attempt: load tokenizer
     try:

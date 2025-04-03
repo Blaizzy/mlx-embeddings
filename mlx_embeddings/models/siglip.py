@@ -647,7 +647,9 @@ class Model(nn.Module):
         for k, v in weights.items():
             if k.startswith("text_model") and not k.startswith("text_model.text_model"):
                 sanitized_weights["text_model." + k] = v
-            elif k.startswith("vision_model") and not k.startswith("vision_model.vision_model"):
+            elif k.startswith("vision_model") and not k.startswith(
+                "vision_model.vision_model"
+            ):
                 if "in_proj_bias" in k:
                     k = k.replace("in_proj_bias", "in_proj.bias")
                 if "in_proj_weight" in k:
