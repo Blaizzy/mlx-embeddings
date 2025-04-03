@@ -176,9 +176,10 @@ def load_model(
                 if re.search(r"\d+", patch_size)
                 else patch_size
             )
-
-            model_args.vision_config.image_size = int(image_size)
-            model_args.vision_config.patch_size = int(patch_size)
+            if model_args.vision_config.image_size != int(image_size):
+                model_args.vision_config.image_size = int(image_size)
+            if model_args.vision_config.patch_size != int(patch_size):
+                model_args.vision_config.patch_size = int(patch_size)
 
     model = model_class(model_args)
 

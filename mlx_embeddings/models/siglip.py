@@ -14,9 +14,9 @@ class TextConfig:
     vocab_size: int = 32000
     max_position_embeddings: int = 64
     hidden_size: int = 768
-    intermediate_size: int = 4304
-    num_attention_heads: int = 16
-    num_hidden_layers: int = 27
+    intermediate_size: int = 3072
+    num_attention_heads: int = 12
+    num_hidden_layers: int = 12
     layer_norm_eps: float = 1e-6
     projection_size: Optional[int] = None
     model_type: str = "siglip_text_model"
@@ -28,13 +28,13 @@ class TextConfig:
 
 @dataclass
 class VisionConfig:
-    image_size: int = 384
-    patch_size: int = 14
+    image_size: int = 224
+    patch_size: int = 16
     num_channels: int = 3
-    hidden_size: int = 1152
-    intermediate_size: int = 4304
-    num_attention_heads: int = 16
-    num_hidden_layers: int = 27
+    hidden_size: int = 768
+    intermediate_size: int = 3072
+    num_attention_heads: int = 12
+    num_hidden_layers: int = 12
     layer_norm_eps: float = 1e-6
     model_type: str = "siglip_vision_model"
     vision_use_head: bool = True
