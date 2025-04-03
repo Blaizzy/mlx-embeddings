@@ -81,9 +81,9 @@ def get_model_path(path_or_hf_repo: str, revision: Optional[str] = None) -> Path
                         "*.json",
                         "*.safetensors",
                         "*.py",
-                        "tokenizer.model",
                         "*.tiktoken",
                         "*.txt",
+                        "*.model",
                     ],
                 )
             )
@@ -166,12 +166,11 @@ def load_model(
         model_args.vision_config = vision_config(**model_args.vision_config)
 
         # siglip models have a different image size
-
         if "siglip" in config["model_type"]:
             # Extract the image size
-            image_size = kwargs["path_to_repo"].split("-")[-1].split("/")[0]
+            image_size = re.search(r"patch\d+-(\d+)(?:-|$)", kwargs["path_to_repo"]).group(1)
             # Extract the patch size
-            patch_size = kwargs["path_to_repo"].split("-")[-2].split("/")[0]
+            patch_size = re.search(r"patch(\d+)", kwargs["path_to_repo"]).group(1)
             patch_size = (
                 re.search(r"\d+", patch_size).group()
                 if re.search(r"\d+", patch_size)
@@ -242,6 +241,7 @@ def load(
 
     # Try to load tokenizer first, then fall back to processor if needed
     tokenizer = None
+
 
     # First attempt: load tokenizer
     try:
