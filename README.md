@@ -50,7 +50,7 @@ text = "I like reading"
 input_ids = tokenizer.encode(text, return_tensors="mlx")
 outputs = model(input_ids)
 raw_embeds = outputs.last_hidden_state[:, 0, :] # CLS token
-text_embeds = ouputs.text_embeds # mean pooled and normalized embeddings
+text_embeds = outputs.text_embeds # mean pooled and normalized embeddings
 ```
 
 Note : text-embeds use mean pooling for bert and xlm-robert. For modernbert, pooling strategy is set through the config file, defaulting to mean
