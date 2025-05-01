@@ -64,7 +64,7 @@ class ModelArgs(BaseModelArgs):
         if self.is_regression:
             return 1
 
-        if self.pipeline_config.get("binary_sigmoid", False):
+        if self.pipeline_config and self.pipeline_config.get("binary_sigmoid", False):
             return 1
 
         if self.id2label is None:
@@ -404,6 +404,26 @@ class Model(nn.Module):
             self.decoder = nn.Linear(
                 config.hidden_size, config.vocab_size, bias=config.decoder_bias
             )
+        elif config.architectures == ["ModernBertForSequenceClassification"]:
+            self.num_labels = config.num_labels
+            self.is_regression = config.is_regression
+            self.head = ModernBertPredictionHead(config)
+            self.drop = nn.Dropout(p=config.classifier_dropout)
+            self.classifier = nn.Linear(
+                config.hidden_size,
+                config.num_labels,
+                bias=True,  ### bias=config.classifier_bias removed because mismatch with HF checkpoint
+            )
+
+    def _process_outputs(self, logits: mx.array) -> mx.array:
+        """Apply the appropriate activation function to the logits for classification tasks."""
+        if self.is_regression:
+            return logits  # No activation for regression
+        elif self.num_labels == 1:
+            return mx.sigmoid(logits)  # Binary classification
+        else:
+            # Using softmax for multi-class classification
+            return mx.softmax(logits, axis=-1)
 
     def __call__(
         self,
@@ -449,6 +469,11 @@ class Model(nn.Module):
         if self.config.architectures == ["ModernBertForMaskedLM"]:
             pooled_output = self.head(last_hidden_state)
             pooled_output = self.decoder(pooled_output)
+        elif self.config.architectures == ["ModernBertForSequenceClassification"]:
+            pooled_output = self.head(last_hidden_state)
+            pooled_output = self.drop(pooled_output)
+            pooled_output = self.classifier(pooled_output)
+            pooled_output = self._process_outputs(pooled_output)
 
         # normalized features
         text_embeds = normalize_embeddings(last_hidden_state)
@@ -463,9 +488,11 @@ class Model(nn.Module):
     def sanitize(self, weights):
         sanitized_weights = {}
         for k, v in weights.items():
-            if self.config.architectures != [
-                "ModernBertForMaskedLM"
-            ] and not k.startswith("model"):
+            if (
+                self.config.architectures != ["ModernBertForMaskedLM"]
+                and self.config.architectures != ["ModernBertForSequenceClassification"]
+                and not k.startswith("model")
+            ):
                 new_key = "model." + k
                 sanitized_weights[new_key] = v
             elif (
