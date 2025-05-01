@@ -77,6 +77,33 @@ predicted_token = tokenizer.decode(predicted_token_id)
 print("Predicted token:", predicted_token)  # Should output: Paris
 ```
 
+#### Sequence classification
+```python
+from mlx_embeddings.utils import load
+
+# Load ModernBERT model and tokenizer
+model, tokenizer = load(
+    "NousResearch/Minos-v1",
+)
+
+id2label=model.config.id2label
+
+# Masked Language Modeling example
+text = "<|user|> Explain the theory of relativity in simple terms. <|assistant|> Imagine space and time are like a stretchy fabric. Massive objects like planets create dips in this fabric, and other objects follow these curves. That's gravity! Also, the faster you move, the slower time passes for you compared to someone standing still"
+inputs = tokenizer.encode(text, return_tensors="mlx")
+outputs = model(inputs)
+
+# Get predictions for the masked token
+predictions = outputs.pooler_output[0] # Shape: (num_label,)
+print(text)
+
+# Print results
+print("\nTop predictions for classification:")
+for idx, logit in enumerate(predictions.tolist()):
+    label = id2label[str(idx)]
+    print(f"{label}: {logit:.3f}")
+```
+
 ### Batch Processing
 
 #### Multiple Texts Comparison
