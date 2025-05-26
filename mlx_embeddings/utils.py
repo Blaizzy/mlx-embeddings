@@ -22,7 +22,9 @@ from transformers import AutoProcessor, PreTrainedTokenizer
 from .tokenizer_utils import TokenizerWrapper, load_tokenizer
 
 # Constants
-MODEL_REMAPPING = {}
+MODEL_REMAPPING = {
+    "colqwen2-5": "colqwen2_5",
+}
 
 MAX_FILE_SIZE_GB = 5
 
@@ -51,6 +53,10 @@ def _get_classes(config: dict):
         msg = f"Model type {model_type} not supported."
         logging.error(msg)
         raise ValueError(msg)
+
+    # Special handling for ColQwen2_5
+    if model_type == "colqwen2_5":
+        return arch.Model, arch.ColQwen2_5Config, None, None
 
     if hasattr(arch, "TextConfig") and hasattr(arch, "VisionConfig"):
         return arch.Model, arch.ModelArgs, arch.TextConfig, arch.VisionConfig
@@ -438,6 +444,24 @@ def save_weights(
         )
 
 
+def get_class_predicate(skip_vision, weights=None):
+    if skip_vision:
+        return lambda p, m: hasattr(m, "to_quantized") and not (
+            "vision_model" in p or "vision_tower" in p
+        )
+    else:
+        if weights:
+            return lambda p, m: (
+                hasattr(m, "to_quantized")
+                and m.weight.shape[-1] % 64 == 0
+                and f"{p}.scales" in weights
+            )
+        else:
+            return (
+                lambda _, m: hasattr(m, "to_quantized") and m.weight.shape[-1] % 64 == 0
+            )
+
+
 def quantize_model(
     model: nn.Module, config: dict, q_group_size: int, q_bits: int
 ) -> Tuple:
@@ -454,7 +478,12 @@ def quantize_model(
         Tuple: Tuple containing quantized weights and config.
     """
     quantized_config = copy.deepcopy(config)
-    nn.quantize(model, q_group_size, q_bits)
+    nn.quantize(
+        model,
+        q_group_size,
+        q_bits,
+        class_predicate=get_class_predicate(skip_vision=True),
+    )
     quantized_config["quantization"] = {"group_size": q_group_size, "bits": q_bits}
     quantized_weights = dict(tree_flatten(model.parameters()))
 
