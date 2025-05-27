@@ -438,8 +438,30 @@ def save_weights(
         )
 
 
+def get_class_predicate(skip_vision, weights=None):
+    if skip_vision:
+        return lambda p, m: hasattr(m, "to_quantized") and not (
+            "vision_model" in p or "vision_tower" in p
+        )
+    else:
+        if weights:
+            return lambda p, m: (
+                hasattr(m, "to_quantized")
+                and m.weight.shape[-1] % 64 == 0
+                and f"{p}.scales" in weights
+            )
+        else:
+            return (
+                lambda _, m: hasattr(m, "to_quantized") and m.weight.shape[-1] % 64 == 0
+            )
+
+
 def quantize_model(
-    model: nn.Module, config: dict, q_group_size: int, q_bits: int
+    model: nn.Module,
+    config: dict,
+    q_group_size: int,
+    q_bits: int,
+    skip_vision: bool = True,
 ) -> Tuple:
     """
     Applies quantization to the model weights.
@@ -454,7 +476,12 @@ def quantize_model(
         Tuple: Tuple containing quantized weights and config.
     """
     quantized_config = copy.deepcopy(config)
-    nn.quantize(model, q_group_size, q_bits)
+    nn.quantize(
+        model,
+        q_group_size,
+        q_bits,
+        class_predicate=get_class_predicate(skip_vision=skip_vision),
+    )
     quantized_config["quantization"] = {"group_size": q_group_size, "bits": q_bits}
     quantized_weights = dict(tree_flatten(model.parameters()))
 
@@ -540,6 +567,7 @@ def convert(
     upload_repo: str = None,
     revision: Optional[str] = None,
     dequantize: bool = False,
+    skip_vision: bool = True,
 ):
     print("[INFO] Loading")
     model_path = get_model_path(hf_path, revision=revision)
@@ -557,7 +585,9 @@ def convert(
     if quantize:
         print("[INFO] Quantizing")
         model.load_weights(list(weights.items()))
-        weights, config = quantize_model(model, config, q_group_size, q_bits)
+        weights, config = quantize_model(
+            model, config, q_group_size, q_bits, skip_vision=skip_vision
+        )
 
     if dequantize:
         print("[INFO] Dequantizing")
