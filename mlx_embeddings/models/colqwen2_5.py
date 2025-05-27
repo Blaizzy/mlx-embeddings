@@ -7,18 +7,22 @@ It follows the ColPali approach, eliminating the need for OCR pipelines.
 """
 
 import inspect
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import Any, Dict, Optional
 
 import mlx.core as mx
 import mlx.nn as nn
 import numpy as np
+from mlx_vlm.models.qwen2_5_vl import Model as Qwen2_5VLModel
+from mlx_vlm.models.qwen2_5_vl import ModelConfig, TextConfig, VisionConfig
 
 from .base import ViTModelOutput, normalize_embeddings
 
 
 @dataclass
-class ColQwen2_5Config:
+class ModelArgs:
+    text_config: Dict[str, Any]  # Keep as dict for utils.py compatibility
+    vision_config: Dict[str, Any]  # Keep as dict for utils.py compatibility
     vlm_config: Dict[str, Any]
     embedding_dim: int = 128
     initializer_range: float = 0.02
@@ -26,12 +30,32 @@ class ColQwen2_5Config:
 
     @classmethod
     def from_dict(cls, params):
+        # Extract vlm_config
+        vlm_config = params.get("vlm_config", {})
+
+        # Extract and clean text_config and vision_config
+        text_config_raw = vlm_config.get("text_config", {})
+        vision_config_raw = vlm_config.get("vision_config", {})
+
+        # Use the Config classes' from_dict methods to filter parameters,
+        # then convert back to clean dictionaries using asdict()
+        text_config = (
+            asdict(TextConfig.from_dict(text_config_raw)) if text_config_raw else {}
+        )
+        vision_config = (
+            asdict(VisionConfig.from_dict(vision_config_raw))
+            if vision_config_raw
+            else {}
+        )
+
+        # Create the ModelArgs with the cleaned configs
         return cls(
-            **{
-                k: v
-                for k, v in params.items()
-                if k in inspect.signature(cls).parameters
-            }
+            text_config=text_config,
+            vision_config=vision_config,
+            vlm_config=vlm_config,
+            embedding_dim=params.get("embedding_dim", 128),
+            initializer_range=params.get("initializer_range", 0.02),
+            model_type=params.get("model_type", "colqwen2_5"),
         )
 
     def __post_init__(self):
@@ -43,13 +67,11 @@ class ColQwen2_5Config:
 
 
 class Model(nn.Module):
-    def __init__(self, config: ColQwen2_5Config):
+    def __init__(self, config: ModelArgs):
         super().__init__()
         self.config = config
 
         # Import Qwen2_5VL model from mlx-vlm
-        from mlx_vlm.models.qwen2_5_vl import Model as Qwen2_5VLModel
-        from mlx_vlm.models.qwen2_5_vl import ModelConfig, TextConfig, VisionConfig
 
         # Create VLM config from the dictionary
         vlm_config = ModelConfig.from_dict(config.vlm_config)
@@ -292,7 +314,7 @@ class Model(nn.Module):
             config_dict = json.load(f)
 
         # Create config object
-        config = ColQwen2_5Config.from_dict(config_dict)
+        config = ModelArgs.from_dict(config_dict)
 
         # Create model
         model = Model(config)

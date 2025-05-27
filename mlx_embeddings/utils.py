@@ -22,9 +22,7 @@ from transformers import AutoProcessor, PreTrainedTokenizer
 from .tokenizer_utils import TokenizerWrapper, load_tokenizer
 
 # Constants
-MODEL_REMAPPING = {
-    "colqwen2-5": "colqwen2_5",
-}
+MODEL_REMAPPING = {}
 
 MAX_FILE_SIZE_GB = 5
 
@@ -53,10 +51,6 @@ def _get_classes(config: dict):
         msg = f"Model type {model_type} not supported."
         logging.error(msg)
         raise ValueError(msg)
-
-    # Special handling for ColQwen2_5
-    if model_type == "colqwen2_5":
-        return arch.Model, arch.ColQwen2_5Config, None, None
 
     if hasattr(arch, "TextConfig") and hasattr(arch, "VisionConfig"):
         return arch.Model, arch.ModelArgs, arch.TextConfig, arch.VisionConfig
@@ -463,7 +457,11 @@ def get_class_predicate(skip_vision, weights=None):
 
 
 def quantize_model(
-    model: nn.Module, config: dict, q_group_size: int, q_bits: int
+    model: nn.Module,
+    config: dict,
+    q_group_size: int,
+    q_bits: int,
+    skip_vision: bool = True,
 ) -> Tuple:
     """
     Applies quantization to the model weights.
@@ -482,7 +480,7 @@ def quantize_model(
         model,
         q_group_size,
         q_bits,
-        class_predicate=get_class_predicate(skip_vision=True),
+        class_predicate=get_class_predicate(skip_vision=skip_vision),
     )
     quantized_config["quantization"] = {"group_size": q_group_size, "bits": q_bits}
     quantized_weights = dict(tree_flatten(model.parameters()))
@@ -569,6 +567,7 @@ def convert(
     upload_repo: str = None,
     revision: Optional[str] = None,
     dequantize: bool = False,
+    skip_vision: bool = True,
 ):
     print("[INFO] Loading")
     model_path = get_model_path(hf_path, revision=revision)
@@ -586,7 +585,9 @@ def convert(
     if quantize:
         print("[INFO] Quantizing")
         model.load_weights(list(weights.items()))
-        weights, config = quantize_model(model, config, q_group_size, q_bits)
+        weights, config = quantize_model(
+            model, config, q_group_size, q_bits, skip_vision=skip_vision
+        )
 
     if dequantize:
         print("[INFO] Dequantizing")
