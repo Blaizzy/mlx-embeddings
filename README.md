@@ -315,6 +315,59 @@ image_labels = [f"Image {i+1}" for i in range(len(images))]
 plot_similarity_matrix(all_probs, image_labels, texts)
 ```
 
+### Late Interaction Multimodal Retrival Models (ColPali/ColQwen)
+
+```python
+import mlx.core as mx
+from mlx_embeddings.utils import load
+import requests
+from PIL import Image
+import torch
+
+# Load vision model and processor
+model, processor = load("qnguyen3/colqwen2.5-v0.2-mlx")
+
+# Load an image
+
+url_1 = "https://upload.wikimedia.org/wikipedia/commons/8/89/US-original-Declaration-1776.jpg"
+image_1 = Image.open(url_1)
+
+url_2 = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Romeoandjuliet1597.jpg/500px-Romeoandjuliet1597.jpg"
+image_2 = Image.open(url_2)
+
+# Create text descriptions to compare with the image
+texts = ["how many percent of data are books?", "evaluation results between models"]
+
+# Process inputs - text and images need to be processed separately for ColQwen2.5
+text_inputs = processor(text=texts, padding=True, return_tensors="pt")
+image_inputs = processor(images=[image_1, image_2], padding=True, return_tensors="pt")
+
+# Convert to MLX arrays
+text_input_ids = mx.array(text_inputs.input_ids)
+
+image_input_ids = mx.array(image_inputs.input_ids)
+pixel_values = mx.array(image_inputs.pixel_values)
+image_grid_thw = mx.array(image_inputs.image_grid_thw)
+
+text_embeddings = model(input_ids=text_input_ids)
+image_embeddings = model(
+    input_ids=image_input_ids, 
+    pixel_values=pixel_values, 
+    image_grid_thw=image_grid_thw,
+)
+
+print(text_embeddings.text_embeds.shape)
+print(image_embeddings.image_embeds.shape)
+
+## convert to torch
+import torch
+text_embeddings = torch.tensor(text_embeddings.text_embeds)
+image_embeddings = torch.tensor(image_embeddings.image_embeds)
+
+scores = processor.score_retrieval(text_embeddings, image_embeddings)
+print(scores)
+```
+
 ## Contributing
 
 Contributions to MLX-Embeddings are welcome! Please refer to our contribution guidelines for more information.
