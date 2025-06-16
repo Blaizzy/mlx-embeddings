@@ -118,15 +118,20 @@ import mlx.core as mx
 from mlx_embeddings.utils import load
 
 # Load the model and tokenizer
-model, tokenizer = load("mlx-community/all-MiniLM-L6-v2-4bit")
+model_name ="mlx-community/all-MiniLM-L6-v2-4bit"
+model, tokenizer = load(model_name)
 
 def get_embedding(texts, model, tokenizer):
-    inputs = tokenizer.batch_encode_plus(texts, return_tensors="mlx", padding=True, truncation=True, max_length=512)
+    max_position_embeddings = getattr(model.config,"max_position_embeddings",512)
+    inputs = tokenizer.batch_encode_plus(
+        texts, return_tensors="mlx", 
+        padding=True, truncation=True, 
+        max_length=max_position_embeddings)
     outputs = model(
         inputs["input_ids"],
         attention_mask=inputs["attention_mask"]
     )
-    return outputs.text_embeds # mean pooled and normalized embeddings
+    return outputs.text_embeds.astype(mx.float32) # np (used by sklearn, can't process bfloat16)
 
 def compute_and_print_similarity(embeddings):
     B, _ = embeddings.shape
@@ -145,7 +150,7 @@ def compute_and_print_similarity(embeddings):
 def plot_similarity_matrix(similarity_matrix, labels):
     plt.figure(figsize=(5, 4))
     sns.heatmap(similarity_matrix, annot=True, cmap='coolwarm', xticklabels=labels, yticklabels=labels)
-    plt.title('Similarity Matrix Heatmap')
+    plt.title(f'Similarity Matrix Heatmap - {model_name}')
     plt.tight_layout()
     plt.show()
 
@@ -175,8 +180,10 @@ from mlx_embeddings.utils import load
 # Load the model and tokenizer
 model, tokenizer = load("mlx-community/answerdotai-ModernBERT-base-4bit")
 
+max_position_embeddings = getattr(model.config,"max_position_embeddings",512)
+
 text = ["The capital of France is [MASK].", "The capital of Poland is [MASK]."]
-inputs = tokenizer.batch_encode_plus(text, return_tensors="mlx", padding=True, truncation=True, max_length=512)
+inputs = tokenizer.batch_encode_plus(text, return_tensors="mlx", padding=True, truncation=True, max_length=max_position_embeddings )
 outputs = model(**inputs)
 
 # To get predictions for the mask:

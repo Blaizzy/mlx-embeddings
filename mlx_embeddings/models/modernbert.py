@@ -385,7 +385,6 @@ class ModernBertPredictionHead(nn.Module):
         return self.norm(self.act(self.dense(hidden_states)))
 
 
-# classes for specific pipelines
 class Model(nn.Module):
     """
     Computes pooled, normalized embeddings for input sequences using a ModernBERT model.
@@ -455,28 +454,24 @@ class Model(nn.Module):
         )
 
         # Pooling strategy using config
-        if self.config.architectures != ["ModernBertForMaskedLM"]:
-            if self.config.classifier_pooling == "cls":
-                last_hidden_state = last_hidden_state[:, 0]
-            elif self.config.classifier_pooling == "mean":
-                last_hidden_state = mean_pooling(last_hidden_state, attention_mask)
-            else:
-                raise ValueError(
-                    f"Invalid pooling strategy: {self.config.classifier_pooling}"
-                )
+        if self.config.classifier_pooling == "cls":
+            pooled_embeddings = last_hidden_state[:, 0]
+        else:
+            # Fallback to last token pooling
+            pooled_embeddings = mean_pooling(last_hidden_state, attention_mask)
+
+        # normalized features
+        text_embeds = normalize_embeddings(pooled_embeddings)
 
         pooled_output = None
         if self.config.architectures == ["ModernBertForMaskedLM"]:
             pooled_output = self.head(last_hidden_state)
             pooled_output = self.decoder(pooled_output)
         elif self.config.architectures == ["ModernBertForSequenceClassification"]:
-            pooled_output = self.head(last_hidden_state)
+            pooled_output = self.head(pooled_embeddings)
             pooled_output = self.drop(pooled_output)
             pooled_output = self.classifier(pooled_output)
             pooled_output = self._process_outputs(pooled_output)
-
-        # normalized features
-        text_embeds = normalize_embeddings(last_hidden_state)
 
         return BaseModelOutput(
             last_hidden_state=last_hidden_state,
@@ -493,6 +488,7 @@ class Model(nn.Module):
                 and self.config.architectures != ["ModernBertForSequenceClassification"]
                 and not k.startswith("model")
             ):
+                # this is the sentence transformers model
                 new_key = "model." + k
                 sanitized_weights[new_key] = v
             elif (
@@ -506,22 +502,4 @@ class Model(nn.Module):
                 ]
             else:
                 sanitized_weights[k] = v
-        return sanitized_weights
-
-
-class ModelSentenceTransformers(Model):
-    """
-    Different santiization method for sentence transformers.
-    """
-
-    def __init__(self, config):
-        super().__init__(config)
-
-    def sanitize(self, weights):
-        """Convert sentence transformer weights to ModernBERT format."""
-        sanitized_weights = {}
-
-        for k, v in weights.items():
-            new_key = "model." + k
-            sanitized_weights[new_key] = v
         return sanitized_weights

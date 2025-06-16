@@ -47,6 +47,16 @@ def mean_pooling(token_embeddings: mx.array, attention_mask: mx.array):
     return sum_embeddings / sum_mask
 
 
+def last_token_pooling(
+    token_embeddings: mx.array, attention_mask: mx.array
+) -> mx.array:
+    sequence_lengths = mx.sum(attention_mask, axis=1).astype(mx.int32)
+    last_token_indices = sequence_lengths - 1
+    batch_size = token_embeddings.shape[0]
+    pooled_embeddings = token_embeddings[mx.arange(batch_size), last_token_indices]
+    return pooled_embeddings
+
+
 def normalize_embeddings(embeddings, p=2, axis=-1, keepdims=True, eps=1e-9):
     return embeddings / mx.maximum(
         mx.linalg.norm(embeddings, ord=p, axis=axis, keepdims=keepdims), eps
