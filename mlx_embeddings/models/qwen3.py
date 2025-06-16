@@ -1,12 +1,17 @@
 # Copyright © 2023-2024 Apple Inc.
 
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 import mlx.core as mx
 import mlx.nn as nn
 
-from .base import BaseModelArgs, BaseModelOutput, last_token_pooling, normalize_embeddings
+from .base import (
+    BaseModelArgs,
+    BaseModelOutput,
+    last_token_pooling,
+    normalize_embeddings,
+)
 
 
 @dataclass
@@ -33,8 +38,10 @@ class ModelArgs(BaseModelArgs):
     max_window_layers: Optional[int] = 28
     architectures: List[str] = field(default_factory=lambda: ["Qwen3Model"])
 
-    initializer_range: Optional[float] = 0.02 # Only needed in case of initializing weights
-    
+    initializer_range: Optional[float] = (
+        0.02  # Only needed in case of initializing weights
+    )
+
 
 class Attention(nn.Module):
     def __init__(self, config: ModelArgs):
@@ -55,16 +62,18 @@ class Attention(nn.Module):
 
         self.q_norm = nn.RMSNorm(head_dim, eps=config.rms_norm_eps)
         self.k_norm = nn.RMSNorm(head_dim, eps=config.rms_norm_eps)
-        self.rope =  nn.RoPE(dims=head_dim, base=config.rope_theta)
+        self.rope = nn.RoPE(dims=head_dim, base=config.rope_theta)
 
     def __call__(
-        self,
-        hidden_states: mx.array,
-        attention_mask: Optional[mx.array] = None
+        self, hidden_states: mx.array, attention_mask: Optional[mx.array] = None
     ) -> mx.array:
         B, L, D = hidden_states.shape
 
-        queries, keys, values = self.q_proj(hidden_states), self.k_proj(hidden_states), self.v_proj(hidden_states)
+        queries, keys, values = (
+            self.q_proj(hidden_states),
+            self.k_proj(hidden_states),
+            self.v_proj(hidden_states),
+        )
 
         queries = self.q_norm(queries.reshape(B, L, self.n_heads, -1)).transpose(
             0, 2, 1, 3
@@ -86,7 +95,7 @@ class Attention(nn.Module):
         output = output.transpose(0, 2, 1, 3).reshape(B, L, -1)
 
         hidden_states = self.o_proj(output)
-        
+
         return (hidden_states,)
 
 
@@ -115,11 +124,11 @@ class TransformerBlock(nn.Module):
         self.config = config
 
     def __call__(
-        self,
-        hidden_states: mx.array,
-        attention_mask: Optional[mx.array] = None
+        self, hidden_states: mx.array, attention_mask: Optional[mx.array] = None
     ) -> mx.array:
-        attention_output = self.self_attn(self.input_layernorm(hidden_states), attention_mask)
+        attention_output = self.self_attn(
+            self.input_layernorm(hidden_states), attention_mask
+        )
         hidden_states = hidden_states + attention_output[0]
         mlp_output = self.mlp(self.post_attention_layernorm(hidden_states))
         hidden_states = mlp_output + hidden_states
@@ -152,16 +161,12 @@ class Qwen3Model(nn.Module):
             # Reshape padding mask from (B, L) to (B, 1, 1, L) to be broadcastable
             padding_mask = attention_mask[:, None, None, :]
             additive_padding_mask = mx.where(padding_mask == 0, -1e9, 0.0).astype(dtype)
-            
+
             causal_mask = causal_mask + additive_padding_mask
-            
+
         return causal_mask.astype(dtype)
 
-    def __call__(
-        self,
-        input_ids: mx.array,
-        attention_mask: mx.array = None
-    ):
+    def __call__(self, input_ids: mx.array, attention_mask: mx.array = None):
         attention_mask = self._update_attention_mask(
             attention_mask,
         )
@@ -177,6 +182,7 @@ class Qwen3Model(nn.Module):
         return {
             "last_hidden_state": hidden_states,
         }
+
 
 # Placeholder for prediction head Qwen3ForMaskedLM or Qwen3ForSequenceClassification models
 class Qwen3PredictionHead(nn.Module):
@@ -194,6 +200,7 @@ class Qwen3PredictionHead(nn.Module):
     def __call__(self, hidden_states: mx.array) -> mx.array:
         return self.norm(self.act(self.dense(hidden_states)))
 
+
 class Model(nn.Module):
     def __init__(self, config: ModelArgs):
         super().__init__()
@@ -201,12 +208,10 @@ class Model(nn.Module):
         self.model_type = config.model_type
         self.model = Qwen3Model(config)
 
-        # These are placeholders 
+        # These are placeholders
         # afaik, there is no Qwen3ForMaskedLM or Qwen3ForSequenceClassification models out there yet)
         if config.architectures == ["Qwen3ForMaskedLM"]:
-            raise NotImplementedError(
-                "Qwen3ForMaskedLM is not implemented yet."
-            )
+            raise NotImplementedError("Qwen3ForMaskedLM is not implemented yet.")
             self.head = Qwen3PredictionHead(config)
             self.decoder = nn.Linear(
                 config.hidden_size, config.vocab_size, bias=config.decoder_bias
@@ -236,11 +241,7 @@ class Model(nn.Module):
             # Using softmax for multi-class classification
             return mx.softmax(logits, axis=-1)
 
-    def __call__(
-        self,
-        input_ids: mx.array,
-        attention_mask: mx.array = None
-    ):
+    def __call__(self, input_ids: mx.array, attention_mask: mx.array = None):
         if attention_mask is None:
             batch_size, seq_len = input_ids.shape
             attention_mask = mx.ones(
@@ -250,12 +251,10 @@ class Model(nn.Module):
 
         out = self.model(input_ids, attention_mask)
         last_hidden_state = (
-            out["last_hidden_state"]
-            if isinstance(out, dict)
-            else out[0]
+            out["last_hidden_state"] if isinstance(out, dict) else out[0]
         )
 
-        # pooling for AR models such as Qwen3 leverages the last token 
+        # pooling for AR models such as Qwen3 leverages the last token
         pooled_embeddings = last_token_pooling(last_hidden_state, attention_mask)
 
         text_embeds = normalize_embeddings(pooled_embeddings)
