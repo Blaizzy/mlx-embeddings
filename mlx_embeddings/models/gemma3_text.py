@@ -8,22 +8,6 @@ from mlx_lm.models.base import create_attention_mask
 from .base import BaseModelOutput, mean_pooling, normalize_embeddings
 
 
-
-def create_bidirectional_window_mask(
-    T: int,
-    sliding_window: int,
-    offset: int = 0
-) -> mx.array:
-
-    q_indices = mx.arange(offset, offset + T)[:, None]
-    k_indices = mx.arange(offset, offset + T)[None, :]
-
-    # Bidirectional window: tokens can attend within sliding_window // 2 distance
-    mask = mx.abs(q_indices - k_indices) <= sliding_window // 2
-    return mask
-
-
-
 class Gemma3Model(nn.Module):
     def __init__(self, args: ModelArgs):
         super().__init__()
@@ -57,16 +41,8 @@ class Gemma3Model(nn.Module):
         if mask is None:
             j = self.config.sliding_window_pattern
             full_mask = create_attention_mask(h, cache[j - 1 : j])
-            T = h.shape[1]
-            if T > 1:
-                offset = 0
-                if cache[0] is not None:
-                    offset = cache[0].offset
-                sliding_window_mask = create_bidirectional_window_mask(
-                    T, self.config.sliding_window, offset
-                )
-            else:
-                sliding_window_mask = None
+            sliding_window_mask = create_attention_mask(h, cache)
+
 
         for i, (layer, c) in enumerate(zip(self.layers, cache)):
             is_global = (
@@ -115,7 +91,6 @@ class Model(nn.Module):
         extended_attention_mask = self.get_extended_attention_mask(
             attention_mask, inputs.shape
         )
-
 
         out = self.model(inputs, extended_attention_mask)
 
