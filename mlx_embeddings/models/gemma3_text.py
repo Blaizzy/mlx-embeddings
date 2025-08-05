@@ -3,9 +3,86 @@ from typing import Optional
 import mlx.core as mx
 import mlx.nn as nn
 
-from mlx_lm.models.gemma3_text import ModelArgs, Gemma3Model
+from mlx_lm.models.gemma3_text import ModelArgs, TransformerBlock, RMSNorm
+from mlx_lm.models.base import create_attention_mask
 from .base import BaseModelOutput, mean_pooling, normalize_embeddings
 
+
+
+def create_bidirectional_window_mask(
+    T: int,
+    sliding_window: int,
+    offset: int = 0
+) -> mx.array:
+
+    q_indices = mx.arange(offset, offset + T)[:, None]
+    k_indices = mx.arange(offset, offset + T)[None, :]
+
+    # Bidirectional window: tokens can attend within sliding_window // 2 distance
+    mask = mx.abs(q_indices - k_indices) <= sliding_window // 2
+    return mask
+
+
+
+class Gemma3Model(nn.Module):
+    def __init__(self, args: ModelArgs):
+        super().__init__()
+        self.config = args
+        self.vocab_size = args.vocab_size
+        self.num_hidden_layers = args.num_hidden_layers
+        assert self.vocab_size > 0
+        self.embed_tokens = nn.Embedding(args.vocab_size, args.hidden_size)
+        self.layers = [
+            TransformerBlock(args=args, layer_idx=layer_idx)
+            for layer_idx in range(args.num_hidden_layers)
+        ]
+        self.norm = RMSNorm(args.hidden_size, eps=args.rms_norm_eps)
+
+    def __call__(
+        self,
+        inputs: mx.array,
+        mask: mx.array = None,
+        cache=None,
+        input_embeddings: Optional[mx.array] = None,
+    ):
+        if input_embeddings is not None:
+            h = input_embeddings
+        else:
+            h = self.embed_tokens(inputs)
+        h *= mx.array(self.config.hidden_size**0.5, mx.bfloat16).astype(h.dtype)
+
+        if cache is None:
+            cache = [None] * len(self.layers)
+
+        if mask is None:
+            j = self.config.sliding_window_pattern
+            full_mask = create_attention_mask(h, cache[j - 1 : j])
+            T = h.shape[1]
+            if T > 1:
+                offset = 0
+                if cache[0] is not None:
+                    offset = cache[0].offset
+                sliding_window_mask = create_bidirectional_window_mask(
+                    T, self.config.sliding_window, offset
+                )
+            else:
+                sliding_window_mask = None
+
+        for i, (layer, c) in enumerate(zip(self.layers, cache)):
+            is_global = (
+                i % self.config.sliding_window_pattern
+                == self.config.sliding_window_pattern - 1
+            )
+
+            local_mask = mask
+            if mask is None and is_global:
+                local_mask = full_mask
+            elif mask is None:
+                local_mask = sliding_window_mask
+
+            h = layer(h, local_mask, c)
+
+        return self.norm(h)
 
 class Model(nn.Module):
     def __init__(self, config: ModelArgs):
@@ -24,8 +101,6 @@ class Model(nn.Module):
             raise ValueError(
                 f"Wrong shape for attention_mask (shape {attention_mask.shape})"
             )
-
-        extended_attention_mask = (1.0 - extended_attention_mask) * -10000.0
         return extended_attention_mask
 
     def __call__(
@@ -40,6 +115,7 @@ class Model(nn.Module):
         extended_attention_mask = self.get_extended_attention_mask(
             attention_mask, inputs.shape
         )
+
 
         out = self.model(inputs, extended_attention_mask)
 
