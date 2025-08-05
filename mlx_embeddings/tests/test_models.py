@@ -297,20 +297,20 @@ class TestModels(unittest.TestCase):
 
         # Test SigLIP2-specific features
         import mlx.core as mx
-        
+
         batch_size = 2
         image_size = config.vision_config.image_size  # Use the config's image_size
         seq_len = 64
-        
+
         # Test with pixel_attention_mask and spatial_shapes (SigLIP2 naflex features)
         pixel_values = mx.random.normal((batch_size, image_size, image_size, 3))
         input_ids = mx.array([[1, 2, 3, 4, 5] + [0] * (seq_len - 5)] * batch_size)
         attention_mask = mx.ones((batch_size, seq_len))
-        
+
         # SigLIP2 specific parameters
         pixel_attention_mask = mx.ones((batch_size, image_size, image_size))
         spatial_shapes = mx.array([[image_size, image_size]] * batch_size)
-        
+
         # Test forward pass with SigLIP2 parameters
         outputs = model(
             input_ids=input_ids,
@@ -319,7 +319,7 @@ class TestModels(unittest.TestCase):
             pixel_attention_mask=pixel_attention_mask,
             spatial_shapes=spatial_shapes,
         )
-        
+
         # Verify outputs have expected shapes
         self.assertIsNotNone(outputs.logits_per_image)
         self.assertIsNotNone(outputs.logits_per_text)

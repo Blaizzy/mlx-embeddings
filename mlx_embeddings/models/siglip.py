@@ -276,20 +276,20 @@ class VisionEmbeddings(nn.Module):
         )
 
     def __call__(
-        self, 
-        x: mx.array, 
+        self,
+        x: mx.array,
         interpolate_pos_encoding: bool = False,
-        pixel_attention_mask: Optional[mx.array] = None
+        pixel_attention_mask: Optional[mx.array] = None,
     ) -> mx.array:
         _, _, height, width = x.shape
         patch_embeddings = self.patch_embedding(x)
         patch_embeddings = mx.transpose(patch_embeddings, (0, 3, 1, 2))
         patch_embeddings = mx.flatten(patch_embeddings, start_axis=2, end_axis=3)
         patch_embeddings = mx.transpose(patch_embeddings, (0, 2, 1))
-        
+
         # Handle variable sequence length for SigLIP2 naflex variants
         batch_size, seq_len, embed_dim = patch_embeddings.shape
-        
+
         # If we have fewer patches than expected, pad to num_positions
         if seq_len < self.num_positions:
             padding_size = self.num_positions - seq_len
@@ -297,8 +297,8 @@ class VisionEmbeddings(nn.Module):
             patch_embeddings = mx.concatenate([patch_embeddings, padding], axis=1)
         elif seq_len > self.num_positions:
             # Truncate if we have more patches than expected
-            patch_embeddings = patch_embeddings[:, :self.num_positions, :]
-        
+            patch_embeddings = patch_embeddings[:, : self.num_positions, :]
+
         position_ids = mx.array(np.arange(self.num_positions)[None, :])
         embeddings = patch_embeddings
         if interpolate_pos_encoding:
@@ -359,9 +359,9 @@ class SiglipVisionTransformer(nn.Module):
         spatial_shapes: Optional[mx.array] = None,
     ) -> mx.array:
         x = self.embeddings(
-            pixel_values, 
+            pixel_values,
             interpolate_pos_encoding=interpolate_pos_encoding,
-            pixel_attention_mask=pixel_attention_mask
+            pixel_attention_mask=pixel_attention_mask,
         )
 
         # For SigLIP2, we accept pixel_attention_mask but don't process it yet
@@ -399,11 +399,11 @@ class SiglipVisionModel(nn.Module):
         spatial_shapes: Optional[mx.array] = None,
     ) -> mx.array:
         return self.vision_model(
-            pixel_values, 
-            output_hidden_states, 
+            pixel_values,
+            output_hidden_states,
             interpolate_pos_encoding,
             pixel_attention_mask,
-            spatial_shapes
+            spatial_shapes,
         )
 
     def sanitize(self, weights):
