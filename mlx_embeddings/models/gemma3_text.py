@@ -2,9 +2,9 @@ from typing import Optional
 
 import mlx.core as mx
 import mlx.nn as nn
-
-from mlx_lm.models.gemma3_text import ModelArgs, TransformerBlock, RMSNorm
 from mlx_lm.models.base import create_attention_mask
+from mlx_lm.models.gemma3_text import ModelArgs, RMSNorm, TransformerBlock
+
 from .base import BaseModelOutput, mean_pooling, normalize_embeddings
 
 
@@ -33,8 +33,9 @@ class Gemma3Model(nn.Module):
             h = input_embeddings
         else:
             h = self.embed_tokens(inputs)
-        h *= mx.array(self.config.hidden_size**0.5, self.embed_tokens.weight.dtype).astype(h.dtype)
-
+        h *= mx.array(
+            self.config.hidden_size**0.5, self.embed_tokens.weight.dtype
+        ).astype(h.dtype)
 
         if cache is None:
             cache = [None] * len(self.layers)
@@ -43,7 +44,6 @@ class Gemma3Model(nn.Module):
             j = self.config.sliding_window_pattern
             full_mask = create_attention_mask(h, cache[j - 1 : j])
             sliding_window_mask = create_attention_mask(h, cache)
-
 
         for i, (layer, c) in enumerate(zip(self.layers, cache)):
             is_global = (
@@ -61,6 +61,7 @@ class Gemma3Model(nn.Module):
 
         return self.norm(h)
 
+
 class Model(nn.Module):
     def __init__(self, config: ModelArgs):
         super().__init__()
@@ -68,13 +69,14 @@ class Model(nn.Module):
         self.model_type = config.model_type
         self.model = Gemma3Model(config)
 
-
     def get_extended_attention_mask(self, attention_mask, input_shape):
         if attention_mask.ndim == 3:
             extended_attention_mask = attention_mask[:, None, :, :]
         elif attention_mask.ndim == 2:
             extended_attention_mask = attention_mask[:, None, None, :]
-            extended_attention_mask = mx.repeat(extended_attention_mask, attention_mask.shape[-1], -2)
+            extended_attention_mask = mx.repeat(
+                extended_attention_mask, attention_mask.shape[-1], -2
+            )
 
         else:
             raise ValueError(
@@ -107,7 +109,6 @@ class Model(nn.Module):
             pooler_output=None,
         )
 
-
     def sanitize(self, weights):
         return {
             f"model.{k}" if not k.startswith("model") else k: v
@@ -117,5 +118,3 @@ class Model(nn.Module):
     @property
     def layers(self):
         return self.model.layers
-
-
