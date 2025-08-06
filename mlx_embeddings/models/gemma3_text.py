@@ -33,7 +33,8 @@ class Gemma3Model(nn.Module):
             h = input_embeddings
         else:
             h = self.embed_tokens(inputs)
-        h *= mx.array(self.config.hidden_size**0.5, mx.bfloat16).astype(h.dtype)
+        h *= mx.array(self.config.hidden_size**0.5, self.embed_tokens.weight.dtype).astype(h.dtype)
+
 
         if cache is None:
             cache = [None] * len(self.layers)
@@ -73,6 +74,8 @@ class Model(nn.Module):
             extended_attention_mask = attention_mask[:, None, :, :]
         elif attention_mask.ndim == 2:
             extended_attention_mask = attention_mask[:, None, None, :]
+            extended_attention_mask = mx.repeat(extended_attention_mask, attention_mask.shape[-1], -2)
+
         else:
             raise ValueError(
                 f"Wrong shape for attention_mask (shape {attention_mask.shape})"
@@ -114,3 +117,5 @@ class Model(nn.Module):
     @property
     def layers(self):
         return self.model.layers
+
+
