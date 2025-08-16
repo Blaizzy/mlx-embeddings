@@ -260,6 +260,95 @@ class TestModels(unittest.TestCase):
             config.text_config.num_hidden_layers,
         )
 
+    def test_siglip2_model(self):
+        """Test SigLIP2 with new parameters including num_patches for dynamic resolution."""
+        from mlx_embeddings.models import siglip
+
+        # Test SigLIP2 with num_patches specified (new SigLIP2 feature)
+        config = siglip.ModelArgs(
+            model_type="siglip",
+            text_config=siglip.TextConfig(
+                hidden_size=768,
+                num_hidden_layers=12,
+                intermediate_size=3072,
+                num_attention_heads=12,
+                max_position_embeddings=64,
+                vocab_size=32000,
+            ),
+            vision_config=siglip.VisionConfig(
+                hidden_size=768,
+                num_hidden_layers=12,
+                intermediate_size=3072,
+                num_attention_heads=12,
+                image_size=512,  # Same as original SigLIP test
+                patch_size=16,
+                num_patches=1024,  # SigLIP2 feature: (512//16)**2 = 1024
+                max_num_patches=1024,  # SigLIP2 naflex feature
+            ),
+        )
+        model = siglip.Model(config)
+
+        # Test basic functionality
+        self.vlm_model_test_runner(
+            model,
+            config.model_type,
+            config.text_config.num_hidden_layers,
+        )
+
+        # Test SigLIP2-specific features
+        import mlx.core as mx
+
+        batch_size = 2
+        image_size = config.vision_config.image_size  # Use the config's image_size
+        seq_len = 64
+
+        # Test with pixel_attention_mask and spatial_shapes (SigLIP2 naflex features)
+        pixel_values = mx.random.normal((batch_size, image_size, image_size, 3))
+        input_ids = mx.array([[1, 2, 3, 4, 5] + [0] * (seq_len - 5)] * batch_size)
+        attention_mask = mx.ones((batch_size, seq_len))
+
+        # SigLIP2 specific parameters
+        pixel_attention_mask = mx.ones((batch_size, image_size, image_size))
+        spatial_shapes = mx.array([[image_size, image_size]] * batch_size)
+
+        # Test forward pass with SigLIP2 parameters
+        outputs = model(
+            input_ids=input_ids,
+            pixel_values=pixel_values,
+            attention_mask=attention_mask,
+            pixel_attention_mask=pixel_attention_mask,
+            spatial_shapes=spatial_shapes,
+        )
+
+        # Verify outputs have expected shapes
+        self.assertIsNotNone(outputs.logits_per_image)
+        self.assertIsNotNone(outputs.logits_per_text)
+        self.assertEqual(outputs.logits_per_image.shape, (batch_size, batch_size))
+        self.assertEqual(outputs.logits_per_text.shape, (batch_size, batch_size))
+
+    def test_qwen3_model(self):
+        from mlx_embeddings.models import qwen3
+
+        config = qwen3.ModelArgs(
+            model_type="qwen3",
+            hidden_size=1024,
+            num_hidden_layers=28,
+            intermediate_size=3072,
+            num_attention_heads=16,
+            num_key_value_heads=8,
+            head_dim=128,
+            max_position_embeddings=32768,
+            vocab_size=151669,
+            rope_theta=1000000,
+        )
+        model = qwen3.Model(config)
+
+        self.model_test_runner(
+            model,
+            config.model_type,
+            config.num_hidden_layers,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
