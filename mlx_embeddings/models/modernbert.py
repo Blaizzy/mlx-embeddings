@@ -321,6 +321,10 @@ class ModernBertModel(nn.Module):
 
             hidden_states = layer_outputs[0]
 
+        if output_hidden_states: 
+            all_hidden_states = all_hidden_states + (hidden_states,)
+
+
         hidden_states = self.final_norm(hidden_states)
 
         if not return_dict:
@@ -431,6 +435,7 @@ class Model(nn.Module):
         attention_mask: Optional[mx.array] = None,
         position_ids: Optional[mx.array] = None,
         return_dict: Optional[bool] = False,
+        output_hidden_states: Optional[bool] = False 
     ):
 
         if attention_mask is None:
@@ -445,7 +450,7 @@ class Model(nn.Module):
             input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
-            output_hidden_states=None,  # only last_hidden_state is returned
+            output_hidden_states=output_hidden_states,  
             return_dict=return_dict,
         )
         last_hidden_state = (
@@ -478,12 +483,20 @@ class Model(nn.Module):
         # normalized features
         text_embeds = normalize_embeddings(last_hidden_state)
 
-        return BaseModelOutput(
-            last_hidden_state=last_hidden_state,
-            text_embeds=text_embeds,
-            pooler_output=pooled_output,
-            hidden_states=encoder_outputs[1:],
-        )
+        if return_dict: 
+            return {
+                'last_hidden_state' : last_hidden_state,
+                'text_embeds' : text_embeds,
+                'pooler_output' : pooled_output, 
+                'hidden_states' : encoder_outputs['hidden_states']
+            }
+        else:
+            return BaseModelOutput(
+                last_hidden_state=last_hidden_state,
+                text_embeds=text_embeds,
+                pooler_output=pooled_output,
+                hidden_states=encoder_outputs[1:],
+            )
 
     def sanitize(self, weights):
         sanitized_weights = {}
