@@ -140,7 +140,7 @@ def load_model(
     config = load_config(model_path)
     config.update(model_config)
 
-    weight_files = glob.glob(str(model_path / "model*.safetensors"))
+    weight_files = glob.glob(str(model_path / "**/model*.safetensors"), recursive=True)
 
     if not weight_files:
         # Try weight for back-compat
@@ -152,7 +152,16 @@ def load_model(
 
     weights = {}
     for wf in weight_files:
-        weights.update(mx.load(wf))
+        loaded_weights = mx.load(wf)
+        if Path(wf).parent != model_path:
+            folder_name = Path(wf).parent.name
+            renamed_weights = {}
+            for key, value in loaded_weights.items():
+                new_key = f"{folder_name}.{key}"
+                renamed_weights[new_key] = value
+            weights.update(renamed_weights)
+        else:
+            weights.update(loaded_weights)
 
     model_class, model_args_class, text_config, vision_config = get_model_classes(
         config=config
