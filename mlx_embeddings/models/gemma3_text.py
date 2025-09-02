@@ -1,4 +1,5 @@
 from typing import Optional
+import re
 
 import mlx.core as mx
 import mlx.nn as nn
@@ -68,6 +69,10 @@ class Model(nn.Module):
         self.config = config
         self.model_type = config.model_type
         self.model = Gemma3Model(config)
+        self.dense = [
+            nn.Linear(config.hidden_size, config.hidden_size * 4, bias=False),
+            nn.Linear(config.hidden_size * 4, config.hidden_size, bias=False),
+        ]
 
     def get_extended_attention_mask(self, attention_mask, input_shape):
         if attention_mask.ndim == 3:
@@ -99,6 +104,9 @@ class Model(nn.Module):
 
         out = self.model(inputs, extended_attention_mask)
 
+        for dense in self.dense:
+            out = dense(out)
+
         # normalized features
         text_embeds = mean_pooling(out, attention_mask)
         text_embeds = normalize_embeddings(text_embeds)
@@ -110,10 +118,22 @@ class Model(nn.Module):
         )
 
     def sanitize(self, weights):
-        return {
-            f"model.{k}" if not k.startswith("model") else k: v
-            for k, v in weights.items()
-        }
+        sanitized_weights = {}
+        for k, v in weights.items():
+            if "linear" not in k and "dense" not in k:
+                new_key = f"model.{k}" if not k.startswith("model") else k
+                sanitized_weights[new_key] = v
+            elif "dense" not in k:
+                key_id = "0" if v.shape[0] > v.shape[1] else "1"
+                new_key = re.sub(r'\d+_Dense\.linear', f'dense.{key_id}', k)
+                sanitized_weights[new_key] = v
+            else:
+                sanitized_weights[k] = v
+
+        return sanitized_weights
+
+
+
 
     @property
     def layers(self):
