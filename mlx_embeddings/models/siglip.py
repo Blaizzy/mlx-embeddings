@@ -38,6 +38,9 @@ class VisionConfig:
     layer_norm_eps: float = 1e-6
     model_type: str = "siglip_vision_model"
     vision_use_head: bool = True
+    # SigLIP2 parameters
+    num_patches: Optional[int] = None  # For SigLIP2, defaults to 256
+    max_num_patches: Optional[int] = None  # For naflex variants
 
 
 @dataclass
@@ -46,6 +49,8 @@ class ModelArgs:
     vision_config: VisionConfig
     model_type: str = "siglip"
     output_hidden_states: bool = False
+    output_attentions: bool = False
+    use_return_dict: bool = True
     num_labels: int = 0
 
     @classmethod
@@ -164,6 +169,19 @@ class Attention(nn.Module):
         keys = keys.reshape(B, S, num_heads, -1).transpose(0, 2, 1, 3)
         values = values.reshape(B, S, num_heads, -1).transpose(0, 2, 1, 3)
 
+        # Process attention mask for multi-head attention if provided
+        if mask is not None:
+            if mask.ndim == 2:
+                # mask shape: (batch_size, seq_len) -> (batch_size, 1, 1, seq_len)
+                mask = mask[:, None, None, :]
+            elif mask.ndim == 3:
+                # mask shape: (batch_size, seq_len, seq_len) -> (batch_size, 1, seq_len, seq_len)
+                mask = mask[:, None, :, :]
+            # For boolean masks, convert to additive mask
+            if mask.dtype == mx.bool_:
+                # Convert boolean mask to additive mask (True -> 0.0, False -> -inf)
+                mask = mx.where(mask, 0.0, -mx.inf)
+
         output = mx.fast.scaled_dot_product_attention(
             queries, keys, values, scale=self.scale, mask=mask
         )
@@ -241,7 +259,11 @@ class VisionEmbeddings(nn.Module):
             stride=self.patch_size,
         )
 
-        self.num_patches = (self.image_size // self.patch_size) ** 2
+        # For SigLIP2, use num_patches if provided, otherwise calculate from image_size
+        if config.num_patches is not None:
+            self.num_patches = config.num_patches
+        else:
+            self.num_patches = (self.image_size // self.patch_size) ** 2
         self.num_positions = self.num_patches
         self.position_embedding = nn.Embedding(self.num_positions, self.embed_dim)
 
@@ -253,12 +275,30 @@ class VisionEmbeddings(nn.Module):
             "Interpolation of positional encodings is not implemented for SigLIP"
         )
 
-    def __call__(self, x: mx.array, interpolate_pos_encoding: bool = False) -> mx.array:
+    def __call__(
+        self,
+        x: mx.array,
+        interpolate_pos_encoding: bool = False,
+        pixel_attention_mask: Optional[mx.array] = None,
+    ) -> mx.array:
         _, _, height, width = x.shape
         patch_embeddings = self.patch_embedding(x)
         patch_embeddings = mx.transpose(patch_embeddings, (0, 3, 1, 2))
         patch_embeddings = mx.flatten(patch_embeddings, start_axis=2, end_axis=3)
         patch_embeddings = mx.transpose(patch_embeddings, (0, 2, 1))
+
+        # Handle variable sequence length for SigLIP2 naflex variants
+        batch_size, seq_len, embed_dim = patch_embeddings.shape
+
+        # If we have fewer patches than expected, pad to num_positions
+        if seq_len < self.num_positions:
+            padding_size = self.num_positions - seq_len
+            padding = mx.zeros((batch_size, padding_size, embed_dim))
+            patch_embeddings = mx.concatenate([patch_embeddings, padding], axis=1)
+        elif seq_len > self.num_positions:
+            # Truncate if we have more patches than expected
+            patch_embeddings = patch_embeddings[:, : self.num_positions, :]
+
         position_ids = mx.array(np.arange(self.num_positions)[None, :])
         embeddings = patch_embeddings
         if interpolate_pos_encoding:
@@ -315,13 +355,21 @@ class SiglipVisionTransformer(nn.Module):
         pixel_values: mx.array,
         output_hidden_states: Optional[bool] = None,
         interpolate_pos_encoding: bool = False,
+        pixel_attention_mask: Optional[mx.array] = None,
+        spatial_shapes: Optional[mx.array] = None,
     ) -> mx.array:
         x = self.embeddings(
-            pixel_values, interpolate_pos_encoding=interpolate_pos_encoding
+            pixel_values,
+            interpolate_pos_encoding=interpolate_pos_encoding,
+            pixel_attention_mask=pixel_attention_mask,
         )
 
+        # For SigLIP2, we accept pixel_attention_mask but don't process it yet
+        # This maintains API compatibility while keeping the original behavior
+        attention_mask = None
+
         x, encoder_outputs = self.encoder(
-            x=x, output_hidden_states=output_hidden_states, mask=None
+            x=x, output_hidden_states=output_hidden_states, mask=attention_mask
         )
 
         x = self.post_layernorm(x)
@@ -347,9 +395,15 @@ class SiglipVisionModel(nn.Module):
         pixel_values: mx.array,
         output_hidden_states: Optional[bool] = None,
         interpolate_pos_encoding: bool = False,
+        pixel_attention_mask: Optional[mx.array] = None,
+        spatial_shapes: Optional[mx.array] = None,
     ) -> mx.array:
         return self.vision_model(
-            pixel_values, output_hidden_states, interpolate_pos_encoding
+            pixel_values,
+            output_hidden_states,
+            interpolate_pos_encoding,
+            pixel_attention_mask,
+            spatial_shapes,
         )
 
     def sanitize(self, weights):
@@ -533,7 +587,23 @@ class Model(nn.Module):
         output_hidden_states: Optional[bool] = None,
         return_dict: Optional[bool] = None,
         interpolate_pos_encoding: bool = False,
+        pixel_attention_mask: Optional[mx.array] = None,
+        spatial_shapes: Optional[mx.array] = None,
     ) -> mx.array:
+
+        if pixel_values is not None:
+            dtype = (
+                self.vision_model.vision_model.embeddings.patch_embedding.weight.dtype
+            )
+            if not isinstance(pixel_values, mx.array):
+                pixel_values = mx.array(pixel_values)
+
+            # MLX Conv2d expects NHWC, but processors usually output NCHW.
+            # If the input looks like NCHW, we transpose it.
+            if pixel_values.ndim == 4 and pixel_values.shape[1] == 3:
+                pixel_values = pixel_values.transpose(0, 2, 3, 1)
+
+            pixel_values = pixel_values.astype(dtype)
 
         # Use SiglipModel's config for some fields (if specified) instead of those of vision & text components.
         output_attentions = (
@@ -554,6 +624,8 @@ class Model(nn.Module):
             pixel_values=pixel_values,
             output_hidden_states=output_hidden_states,
             interpolate_pos_encoding=interpolate_pos_encoding,
+            pixel_attention_mask=pixel_attention_mask,
+            spatial_shapes=spatial_shapes,
         )
 
         pooled_output = vision_outputs[1]
@@ -568,17 +640,22 @@ class Model(nn.Module):
         position_ids: Optional[mx.array] = None,
         output_hidden_states: Optional[bool] = None,
         interpolate_pos_encoding: bool = False,
+        pixel_attention_mask: Optional[mx.array] = None,
+        spatial_shapes: Optional[mx.array] = None,
     ) -> mx.array:
         if pixel_values is not None:
             dtype = (
                 self.vision_model.vision_model.embeddings.patch_embedding.weight.dtype
             )
-            if isinstance(pixel_values, mx.array):
-                pixel_values = pixel_values.transpose(0, 2, 3, 1).astype(dtype)
-            else:
-                pixel_values = (
-                    mx.array(pixel_values).transpose(0, 2, 3, 1).astype(dtype)
-                )
+            if not isinstance(pixel_values, mx.array):
+                pixel_values = mx.array(pixel_values)
+
+            # MLX Conv2d expects NHWC, but processors usually output NCHW.
+            # If the input looks like NCHW, we transpose it.
+            if pixel_values.ndim == 4 and pixel_values.shape[1] == 3:
+                pixel_values = pixel_values.transpose(0, 2, 3, 1)
+
+            pixel_values = pixel_values.astype(dtype)
 
         # Use SigLIP model's config for some fields (if specified) instead of those of vision & text components.
         output_hidden_states = (
@@ -591,6 +668,8 @@ class Model(nn.Module):
             pixel_values=pixel_values,
             output_hidden_states=output_hidden_states,
             interpolate_pos_encoding=interpolate_pos_encoding,
+            pixel_attention_mask=pixel_attention_mask,
+            spatial_shapes=spatial_shapes,
         )
 
         image_embeds = vision_outputs[1]

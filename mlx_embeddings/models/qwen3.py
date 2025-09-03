@@ -1,289 +1,509 @@
-# Copyright © 2023-2024 Apple Inc.
-
+import logging
+import math
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Union
 
 import mlx.core as mx
 import mlx.nn as nn
 
-from .base import (
-    BaseModelArgs,
-    BaseModelOutput,
-    last_token_pooling,
-    normalize_embeddings,
-)
+from .base import BaseModelArgs, BaseModelOutput, last_token_pool, normalize_embeddings
 
 
 @dataclass
 class ModelArgs(BaseModelArgs):
-    model_type: str
-    hidden_size: int
-    num_hidden_layers: int
-    intermediate_size: int
-    num_attention_heads: int
-    rms_norm_eps: float
-    vocab_size: int
-    num_key_value_heads: int
-    max_position_embeddings: int
-    rope_theta: float
-    head_dim: int
-    tie_word_embeddings: bool
+    # Core architecture
+    model_type: str = "qwen3"
+    hidden_size: int = 1024
+    num_hidden_layers: int = 28
+    intermediate_size: int = 3072
+    num_attention_heads: int = 16
+    num_key_value_heads: Optional[int] = None
+    head_dim: Optional[int] = None
+    max_position_embeddings: int = 32768
+    vocab_size: int = 151669
+
+    # Normalization and regularization
+    rms_norm_eps: float = 1e-6
+    attention_dropout: float = 0.0
+    hidden_dropout: float = 0.0
+
+    # RoPE configuration
+    rope_theta: float = 1000000.0
     rope_scaling: Optional[Dict[str, Union[float, str]]] = None
 
-    attention_bias: Optional[bool] = False
-    attention_dropout: Optional[float] = 0.0
+    # Attention configuration
+    attention_bias: bool = False
+    use_sliding_window: bool = False
+    sliding_window: Optional[int] = None
+    max_window_layers: Optional[int] = 28
+
+    # Model behavior
+    tie_word_embeddings: bool = False
+    hidden_act: str = "silu"
+
+    # Token IDs
     bos_token_id: Optional[int] = None
     eos_token_id: Optional[int] = None
-    hidden_act: Optional[str] = "silu"
-    max_window_layers: Optional[int] = 28
+    pad_token_id: Optional[int] = None
+
+    # Architecture variants (for potential future use)
     architectures: List[str] = field(default_factory=lambda: ["Qwen3Model"])
 
-    initializer_range: Optional[float] = (
-        0.02  # Only needed in case of initializing weights
-    )
+    # Initialization
+    initializer_range: float = 0.02
+
+    def __post_init__(self):
+        """Validate and set derived parameters."""
+        if self.num_key_value_heads is None:
+            self.num_key_value_heads = self.num_attention_heads
+
+        if self.head_dim is None:
+            if self.hidden_size % self.num_attention_heads != 0:
+                raise ValueError(
+                    f"hidden_size ({self.hidden_size}) must be divisible by "
+                    f"num_attention_heads ({self.num_attention_heads})"
+                )
+            self.head_dim = self.hidden_size // self.num_attention_heads
 
 
-class Attention(nn.Module):
+class Qwen3MLP(nn.Module):
+    """
+    Multi-Layer Perceptron (MLP) for Qwen3 with SwiGLU activation.
+
+    Implements the SwiGLU activation function: SiLU(gate_proj(x)) * up_proj(x)
+    This is a gated activation that has been shown to improve performance
+    compared to standard activations like ReLU or GELU.
+    """
+
     def __init__(self, config: ModelArgs):
         super().__init__()
+        self.config = config
 
-        dim = config.hidden_size
-        self.n_heads = n_heads = config.num_attention_heads
-        assert config.num_key_value_heads is not None
-        self.n_kv_heads = n_kv_heads = config.num_key_value_heads
+        # Three linear projections for SwiGLU
+        self.gate_proj = nn.Linear(
+            config.hidden_size, config.intermediate_size, bias=False
+        )
+        self.up_proj = nn.Linear(
+            config.hidden_size, config.intermediate_size, bias=False
+        )
+        self.down_proj = nn.Linear(
+            config.intermediate_size, config.hidden_size, bias=False
+        )
 
-        head_dim = config.head_dim
-        self.scale = head_dim**-0.5
+    def __call__(self, x: mx.array) -> mx.array:
+        """
+        Forward pass with SwiGLU activation.
 
-        self.q_proj = nn.Linear(dim, n_heads * head_dim, bias=False)
-        self.k_proj = nn.Linear(dim, n_kv_heads * head_dim, bias=False)
-        self.v_proj = nn.Linear(dim, n_kv_heads * head_dim, bias=False)
-        self.o_proj = nn.Linear(n_heads * head_dim, dim, bias=False)
+        Args:
+            x: Input tensor, shape (..., hidden_size)
 
-        self.q_norm = nn.RMSNorm(head_dim, eps=config.rms_norm_eps)
-        self.k_norm = nn.RMSNorm(head_dim, eps=config.rms_norm_eps)
-        self.rope = nn.RoPE(dims=head_dim, base=config.rope_theta)
+        Returns:
+            Output tensor, shape (..., hidden_size)
+        """
+        # SwiGLU: SiLU(gate_proj(x)) * up_proj(x)
+        gate = self.gate_proj(x)
+        up = self.up_proj(x)
+        return self.down_proj(nn.silu(gate) * up)
+
+
+class Qwen3Attention(nn.Module):
+    """
+    Multi-head attention mechanism for Qwen3 with query/key normalization.
+
+    - Grouped query attention
+    - Query and key normalization
+    - RoPE (Rotary Position Embedding) support
+    - Fallback attention computation
+    """
+
+    def __init__(self, config: ModelArgs):
+        super().__init__()
+        self.config = config
+        self.hidden_size = config.hidden_size
+        self.num_heads = config.num_attention_heads
+        self.head_dim = config.head_dim
+        self.num_key_value_heads = config.num_key_value_heads
+        self.num_key_value_groups = self.num_heads // self.num_key_value_heads
+        self.max_position_embeddings = config.max_position_embeddings
+        self.rope_theta = config.rope_theta
+
+        # Validate configuration
+        if self.hidden_size % self.num_heads != 0:
+            raise ValueError(
+                f"hidden_size ({self.hidden_size}) must be divisible by "
+                f"num_attention_heads ({self.num_heads})"
+            )
+
+        if self.num_heads % self.num_key_value_heads != 0:
+            raise ValueError(
+                f"num_attention_heads ({self.num_heads}) must be divisible by "
+                f"num_key_value_heads ({self.num_key_value_heads})"
+            )
+
+        # Projection layers
+        self.q_proj = nn.Linear(
+            self.hidden_size, self.num_heads * self.head_dim, bias=config.attention_bias
+        )
+        self.k_proj = nn.Linear(
+            self.hidden_size,
+            self.num_key_value_heads * self.head_dim,
+            bias=config.attention_bias,
+        )
+        self.v_proj = nn.Linear(
+            self.hidden_size,
+            self.num_key_value_heads * self.head_dim,
+            bias=config.attention_bias,
+        )
+        self.o_proj = nn.Linear(
+            self.num_heads * self.head_dim, self.hidden_size, bias=config.attention_bias
+        )
+
+        # Query and key normalization for training stability
+        self.q_norm = nn.RMSNorm(self.head_dim, eps=config.rms_norm_eps)
+        self.k_norm = nn.RMSNorm(self.head_dim, eps=config.rms_norm_eps)
+
+        # Rotary position embeddings
+        self.rotary_emb = nn.RoPE(
+            self.head_dim,
+            traditional=False,
+            base=self.rope_theta,
+        )
 
     def __call__(
-        self, hidden_states: mx.array, attention_mask: Optional[mx.array] = None
+        self,
+        hidden_states: mx.array,
+        attention_mask: Optional[mx.array] = None,
+        **kwargs,
     ) -> mx.array:
-        B, L, D = hidden_states.shape
+        """
+        Forward pass for Qwen3 attention.
 
-        queries, keys, values = (
-            self.q_proj(hidden_states),
-            self.k_proj(hidden_states),
-            self.v_proj(hidden_states),
+        Args:
+            hidden_states: Input hidden states, shape (batch_size, seq_len, hidden_size)
+            attention_mask: Attention mask, shape (batch_size, 1, seq_len, seq_len)
+
+        Returns:
+            Attention output, shape (batch_size, seq_len, hidden_size)
+        """
+        bsz, q_len, _ = hidden_states.shape
+
+        # Project to query, key, value
+        query_states = self.q_proj(hidden_states)
+        key_states = self.k_proj(hidden_states)
+        value_states = self.v_proj(hidden_states)
+
+        # Reshape for multi-head attention: (batch, seq_len, num_heads, head_dim)
+        query_states = query_states.reshape(
+            bsz, q_len, self.num_heads, self.head_dim
+        ).transpose(0, 2, 1, 3)
+        key_states = key_states.reshape(
+            bsz, q_len, self.num_key_value_heads, self.head_dim
+        ).transpose(0, 2, 1, 3)
+        value_states = value_states.reshape(
+            bsz, q_len, self.num_key_value_heads, self.head_dim
+        ).transpose(0, 2, 1, 3)
+
+        # Apply query and key normalization for training stability
+        query_states = self.q_norm(query_states)
+        key_states = self.k_norm(key_states)
+
+        # Apply rotary position embeddings
+        query_states = self.rotary_emb(query_states)
+        key_states = self.rotary_emb(key_states)
+
+        # Expand key/value states for grouped query attention if needed
+        if self.num_key_value_groups > 1:
+            key_states = mx.repeat(key_states, self.num_key_value_groups, axis=1)
+            value_states = mx.repeat(value_states, self.num_key_value_groups, axis=1)
+
+        # Compute attention with MLX's scaled_dot_product_attention
+        scale = 1.0 / math.sqrt(self.head_dim)
+
+        try:
+            # Use MLX's fast scaled dot product attention with correct signature
+            attn_output = mx.fast.scaled_dot_product_attention(
+                query_states, key_states, value_states, scale=scale, mask=attention_mask
+            )
+        except Exception as e:
+            # Fallback to manual attention computation
+            logging.warning(f"Fast attention failed, using fallback: {e}")
+
+            attn_weights = (query_states @ key_states.transpose(0, 1, 3, 2)) * scale
+
+            if attention_mask is not None:
+                attn_weights = attn_weights + attention_mask
+
+            attn_weights = mx.softmax(attn_weights, axis=-1)
+            attn_output = attn_weights @ value_states
+
+        # Reshape back to (batch_size, seq_len, hidden_size)
+        attn_output = attn_output.transpose(0, 2, 1, 3).reshape(
+            bsz, q_len, self.num_heads * self.head_dim
         )
 
-        queries = self.q_norm(queries.reshape(B, L, self.n_heads, -1)).transpose(
-            0, 2, 1, 3
-        )
+        # Final output projection
+        attn_output = self.o_proj(attn_output)
 
-        keys = self.k_norm(keys.reshape(B, L, self.n_kv_heads, -1)).transpose(
-            0, 2, 1, 3
-        )
-
-        values = values.reshape(B, L, self.n_kv_heads, -1).transpose(0, 2, 1, 3)
-
-        queries = self.rope(queries)
-        keys = self.rope(keys)
-
-        output = mx.fast.scaled_dot_product_attention(
-            queries, keys, values, scale=self.scale, mask=attention_mask
-        )
-
-        output = output.transpose(0, 2, 1, 3).reshape(B, L, -1)
-
-        hidden_states = self.o_proj(output)
-
-        return (hidden_states,)
+        return attn_output
 
 
-class MLP(nn.Module):
-    def __init__(self, dim, hidden_dim):
-        super().__init__()
-        self.gate_proj = nn.Linear(dim, hidden_dim, bias=False)
-        self.down_proj = nn.Linear(hidden_dim, dim, bias=False)
-        self.up_proj = nn.Linear(dim, hidden_dim, bias=False)
+class Qwen3DecoderLayer(nn.Module):
+    """
+    Single decoder layer for Qwen3 transformer.
 
-    def __call__(self, x) -> mx.array:
-        return self.down_proj(nn.silu(self.gate_proj(x)) * self.up_proj(x))
+    Implements the standard transformer decoder layer with:
+    - Pre-normalization (RMSNorm before attention and MLP)
+    - Residual connections
+    - Self-attention mechanism
+    - Feed-forward network (MLP)
+    """
 
-
-class TransformerBlock(nn.Module):
     def __init__(self, config: ModelArgs):
         super().__init__()
-        self.num_attention_heads = config.num_attention_heads
         self.hidden_size = config.hidden_size
-        self.self_attn = Attention(config)
-        self.mlp = MLP(config.hidden_size, config.intermediate_size)
+
+        # Self-attention mechanism
+        self.self_attn = Qwen3Attention(config)
+
+        # Feed-forward network
+        self.mlp = Qwen3MLP(config)
+
+        # Layer normalization (pre-norm architecture)
         self.input_layernorm = nn.RMSNorm(config.hidden_size, eps=config.rms_norm_eps)
         self.post_attention_layernorm = nn.RMSNorm(
             config.hidden_size, eps=config.rms_norm_eps
         )
-        self.config = config
 
     def __call__(
-        self, hidden_states: mx.array, attention_mask: Optional[mx.array] = None
+        self,
+        hidden_states: mx.array,
+        attention_mask: Optional[mx.array] = None,
+        **kwargs,
     ) -> mx.array:
-        attention_output = self.self_attn(
-            self.input_layernorm(hidden_states), attention_mask
+        """
+        Forward pass for decoder layer.
+
+        Args:
+            hidden_states: Input hidden states, shape (batch_size, seq_len, hidden_size)
+            attention_mask: Attention mask for self-attention
+
+        Returns:
+            Output hidden states, shape (batch_size, seq_len, hidden_size)
+        """
+        # Self-attention with pre-normalization and residual connection
+        residual = hidden_states
+        hidden_states = self.input_layernorm(hidden_states)
+        hidden_states = self.self_attn(
+            hidden_states,
+            attention_mask=attention_mask,
         )
-        hidden_states = hidden_states + attention_output[0]
-        mlp_output = self.mlp(self.post_attention_layernorm(hidden_states))
-        hidden_states = mlp_output + hidden_states
-        return (hidden_states,)
+        hidden_states = residual + hidden_states
+
+        # Feed-forward network with pre-normalization and residual connection
+        residual = hidden_states
+        hidden_states = self.post_attention_layernorm(hidden_states)
+        hidden_states = self.mlp(hidden_states)
+        hidden_states = residual + hidden_states
+
+        return hidden_states
 
 
 class Qwen3Model(nn.Module):
+    """
+    Qwen3 transformer model
+
+    Full transformer decoder stack with:
+    - Token embeddings
+    - Multiple decoder layers
+    - Final layer normalization
+    - Causal attention masking
+    """
+
     def __init__(self, config: ModelArgs):
         super().__init__()
         self.config = config
         self.vocab_size = config.vocab_size
-        self.num_hidden_layers = config.num_hidden_layers
-        assert self.vocab_size > 0
+        self.hidden_size = config.hidden_size
+
+        # Token embeddings
         self.embed_tokens = nn.Embedding(config.vocab_size, config.hidden_size)
+
+        # Decoder layers
         self.layers = [
-            TransformerBlock(config=config) for _ in range(config.num_hidden_layers)
+            Qwen3DecoderLayer(config) for _ in range(config.num_hidden_layers)
         ]
+
+        # Final layer normalization
         self.norm = nn.RMSNorm(config.hidden_size, eps=config.rms_norm_eps)
 
-    def _update_attention_mask(self, attention_mask: Optional[mx.array] = None):
+    def _create_causal_mask(self, seq_length: int, dtype: mx.Dtype) -> mx.array:
         """
-        Creates a causal mask and combines it with the padding mask.
+        Create a causal attention mask for autoregressive generation.
+
+        Args:
+            seq_length: Sequence length
+            dtype: Data type for the mask
+
+        Returns:
+            Causal mask of shape (1, 1, seq_length, seq_length)
         """
-        dtype = attention_mask.dtype
-        B, L = attention_mask.shape
+        # Create lower triangular mask (causal mask)
+        mask = mx.tril(mx.ones((seq_length, seq_length), dtype=mx.bool_))
+        # Convert to additive mask (0 for valid positions, -inf for masked)
+        mask = mx.where(mask, 0.0, -mx.inf).astype(dtype)
+        # Add batch and head dimensions: (1, 1, seq_len, seq_len)
+        return mx.expand_dims(mask, axis=(0, 1))
 
-        causal_mask = mx.triu(mx.full((L, L), -1e9, dtype), k=1)
+    def __call__(
+        self,
+        input_ids: mx.array,
+        attention_mask: Optional[mx.array] = None,
+        **kwargs,
+    ) -> mx.array:
+        """
+        Forward pass through the model
 
-        if attention_mask is not None:
-            # Reshape padding mask from (B, L) to (B, 1, 1, L) to be broadcastable
-            padding_mask = attention_mask[:, None, None, :]
-            additive_padding_mask = mx.where(padding_mask == 0, -1e9, 0.0).astype(dtype)
+        Args:
+            input_ids: Input token IDs, shape (batch_size, seq_len)
+            attention_mask: Attention mask, shape (batch_size, seq_len) or (batch_size, 1, seq_len, seq_len)
 
-            causal_mask = causal_mask + additive_padding_mask
+        Returns:
+            Hidden states, shape (batch_size, seq_len, hidden_size)
+        """
+        batch_size, seq_length = input_ids.shape
 
-        return causal_mask.astype(dtype)
-
-    def __call__(self, input_ids: mx.array, attention_mask: mx.array = None):
-        attention_mask = self._update_attention_mask(
-            attention_mask,
-        )
-
+        # Get token embeddings
         hidden_states = self.embed_tokens(input_ids)
 
-        for layer in self.layers:
-            layer_outputs = layer(hidden_states, attention_mask)
-            hidden_states = layer_outputs[0]
+        # Create or process attention mask
+        if attention_mask is None:
+            # Create causal mask for autoregressive generation
+            attention_mask = self._create_causal_mask(seq_length, hidden_states.dtype)
+        elif attention_mask.ndim == 2:
+            # Convert padding mask to additive mask and combine with causal mask
+            # attention_mask shape: (batch_size, seq_len) -> (batch_size, 1, 1, seq_len)
+            padding_mask = attention_mask[:, None, None, :]
+            padding_mask = mx.where(padding_mask == 0, -mx.inf, 0.0).astype(
+                hidden_states.dtype
+            )
 
+            # Create causal mask
+            causal_mask = self._create_causal_mask(seq_length, hidden_states.dtype)
+
+            # Combine masks (broadcast padding mask to match causal mask shape)
+            attention_mask = causal_mask + padding_mask
+
+        # Apply transformer layers
+        for layer in self.layers:
+            hidden_states = layer(
+                hidden_states,
+                attention_mask=attention_mask,
+            )
+
+        # Apply final layer normalization
         hidden_states = self.norm(hidden_states)
 
-        return {
-            "last_hidden_state": hidden_states,
-        }
-
-
-# Placeholder for prediction head Qwen3ForMaskedLM or Qwen3ForSequenceClassification models
-class Qwen3PredictionHead(nn.Module):
-    def __init__(self, config: ModelArgs):
-        super().__init__()
-        self.config = config
-        self.dense = nn.Linear(
-            config.hidden_size, config.hidden_size, config.classifier_bias
-        )
-        self.act = nn.GELU(approx="precise")
-        self.norm = nn.LayerNorm(
-            config.hidden_size, eps=config.norm_eps, bias=config.norm_bias
-        )
-
-    def __call__(self, hidden_states: mx.array) -> mx.array:
-        return self.norm(self.act(self.dense(hidden_states)))
+        return hidden_states
 
 
 class Model(nn.Module):
+    """
+    Qwen3 model for embedding generation
+
+    The main model class that wraps the core Qwen3Model and adds
+    embedding-specific functionality like last token pooling and normalization
+    """
+
     def __init__(self, config: ModelArgs):
         super().__init__()
         self.config = config
         self.model_type = config.model_type
+
+        # Core transformer model
         self.model = Qwen3Model(config)
 
-        # These are placeholders
-        # afaik, there is no Qwen3ForMaskedLM or Qwen3ForSequenceClassification models out there yet)
-        if config.architectures == ["Qwen3ForMaskedLM"]:
-            raise NotImplementedError("Qwen3ForMaskedLM is not implemented yet.")
-            self.head = Qwen3PredictionHead(config)
-            self.decoder = nn.Linear(
-                config.hidden_size, config.vocab_size, bias=config.decoder_bias
-            )
+    def __call__(
+        self,
+        input_ids: mx.array,
+        attention_mask: Optional[mx.array] = None,
+    ) -> BaseModelOutput:
+        """
+        Forward pass for embedding generation
 
-        elif config.architectures == ["Qwen3ForSequenceClassification"]:
-            raise NotImplementedError(
-                "Qwen3ForSequenceClassification is not implemented yet."
-            )
-            self.num_labels = config.num_labels
-            self.is_regression = config.is_regression
-            self.head = Qwen3PredictionHead(config)
-            self.drop = nn.Dropout(p=config.classifier_dropout)
-            self.classifier = nn.Linear(
-                config.hidden_size,
-                config.num_labels,
-                bias=True,  ### bias=config.classifier_bias removed because mismatch with HF checkpoint
-            )
+        Args:
+            input_ids: Input token IDs, shape (batch_size, seq_len)
+            attention_mask: Attention mask, shape (batch_size, seq_len)
 
-    def _process_outputs(self, logits: mx.array) -> mx.array:
-        """Apply the appropriate activation function to the logits for classification tasks."""
-        if self.is_regression:
-            return logits  # No activation for regression
-        elif self.num_labels == 1:
-            return mx.sigmoid(logits)  # Binary classification
-        else:
-            # Using softmax for multi-class classification
-            return mx.softmax(logits, axis=-1)
+        Returns:
+            BaseModelOutput containing:
+                - text_embeds: Normalized embeddings from last token pooling
+                - last_hidden_state: Full sequence hidden states
+        """
+        # Validate inputs
+        if input_ids.ndim != 2:
+            raise ValueError(f"input_ids must be 2D, got shape {input_ids.shape}")
 
-    def __call__(self, input_ids: mx.array, attention_mask: mx.array = None):
+        batch_size, seq_len = input_ids.shape
+
+        # Create default attention mask if not provided
         if attention_mask is None:
-            batch_size, seq_len = input_ids.shape
-            attention_mask = mx.ones(
-                (batch_size, seq_len),
-                dtype=self.model.embed_tokens.weight.dtype,
+            attention_mask = mx.ones((batch_size, seq_len), dtype=mx.int32)
+        elif attention_mask.shape != (batch_size, seq_len):
+            raise ValueError(
+                f"attention_mask shape {attention_mask.shape} doesn't match "
+                f"input_ids shape {input_ids.shape}"
             )
 
-        out = self.model(input_ids, attention_mask)
-        last_hidden_state = (
-            out["last_hidden_state"] if isinstance(out, dict) else out[0]
-        )
+        # Forward pass through the transformer
+        last_hidden_state = self.model(input_ids, attention_mask=attention_mask)
 
-        # pooling for AR models such as Qwen3 leverages the last token
-        pooled_embeddings = last_token_pooling(last_hidden_state, attention_mask)
+        # Apply last token pooling for embeddings (best for autoregressive models)
+        pooled_output = last_token_pool(last_hidden_state, attention_mask)
 
-        text_embeds = normalize_embeddings(pooled_embeddings)
-
-        pooled_output = None
-        # placeholder for masked LM and sequence classification heads
-        if self.config.architectures == ["Qwen3ForMaskedLM"]:
-            pooled_output = self.head(last_hidden_state)
-            pooled_output = self.decoder(pooled_output)
-        elif self.config.architectures == ["Qwen3ForSequenceClassification"]:
-            pooled_output = self.head(pooled_embeddings)
-            pooled_output = self.drop(pooled_output)
-            pooled_output = self.classifier(pooled_output)
-            pooled_output = self._process_outputs(pooled_output)
+        # Normalize embeddings for downstream tasks
+        text_embeds = normalize_embeddings(pooled_output)
 
         return BaseModelOutput(
-            last_hidden_state=last_hidden_state,
-            text_embeds=text_embeds,
-            pooler_output=pooled_output,
+            text_embeds=text_embeds, last_hidden_state=last_hidden_state
         )
 
-    def sanitize(self, weights):
-        # no need for lm_head.weight in Qwen3 for embedding models
+    def sanitize(self, weights: dict) -> dict:
+        """
+        Sanitize weights for loading from different checkpoint formats
+
+        Handles parameter name transformations between different model formats
+        and ensures compatibility with the MLX model structure
+
+        Args:
+            weights: Dictionary of model weights
+
+        Returns:
+            Sanitized weights dictionary
+        """
         sanitized_weights = {}
-        for k, v in weights.items():
-            # Filter out the language model head, which is not used for embeddings.
-            if "lm_head.weight" in k:
+
+        for key, value in weights.items():
+            # Skip language model head weights (not used for embeddings)
+            if "lm_head.weight" in key:
                 continue
 
-            new_key = f"model.{k}"
-            sanitized_weights[new_key] = v
+            # Handle different checkpoint formats
+            new_key = key
+
+            # Map common parameter naming patterns
+            if key.startswith("transformer."):
+                # Some checkpoints use "transformer." prefix
+                new_key = key.replace("transformer.", "model.")
+            elif key.startswith("model."):
+                # Already has correct prefix
+                new_key = key
+            elif not key.startswith("model.") and "." in key:
+                # Add model prefix for transformer parameters
+                new_key = f"model.{key}"
+            else:
+                # Keep as is for other parameters
+                new_key = key
+
+            sanitized_weights[new_key] = value
+
         return sanitized_weights
