@@ -24,13 +24,7 @@ class TestModels(unittest.TestCase):
         inputs = mx.array([[0, 1, 2, 3, 4]])
         outputs = model(inputs)
 
-        is_qwen3 = (
-            hasattr(model.config, "model_type") and model.config.model_type == "qwen3"
-        )
-        if is_qwen3:
-            self.assertEqual(outputs.last_hidden_state.dtype, mx.bfloat16)
-        else:
-            self.assertEqual(outputs.last_hidden_state.dtype, mx.float32)
+        self.assertEqual(outputs.last_hidden_state.dtype, mx.float32)
 
         # Verify last_hidden_state shape
         expected_hidden_shape = (batch_size, seq_length, model.config.hidden_size)
@@ -39,9 +33,6 @@ class TestModels(unittest.TestCase):
         # Verify text_embeds shape
         expected_embeds_shape = (batch_size, model.config.hidden_size)
         self.assertEqual(outputs.text_embeds.shape, expected_embeds_shape)
-        # if is_qwen3:
-        #     self.assertEqual(outputs.text_embeds.dtype, mx.bfloat16)
-        # else:
         self.assertEqual(outputs.text_embeds.dtype, mx.float32)
 
     def vlm_model_test_runner(self, model, model_type, num_layers):
