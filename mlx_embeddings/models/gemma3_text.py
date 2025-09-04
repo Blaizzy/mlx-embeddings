@@ -1,5 +1,5 @@
-from typing import Optional
 import re
+from typing import Optional
 
 import mlx.core as mx
 import mlx.nn as nn
@@ -125,15 +125,12 @@ class Model(nn.Module):
                 sanitized_weights[new_key] = v
             elif "dense" not in k:
                 key_id = "0" if v.shape[0] > v.shape[1] else "1"
-                new_key = re.sub(r'\d+_Dense\.linear', f'dense.{key_id}', k)
+                new_key = re.sub(r"\d+_Dense\.linear", f"dense.{key_id}", k)
                 sanitized_weights[new_key] = v
             else:
                 sanitized_weights[k] = v
 
         return sanitized_weights
-
-
-
 
     @property
     def layers(self):
