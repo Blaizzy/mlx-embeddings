@@ -6,34 +6,7 @@ from typing import Dict, List, Optional, Union
 import mlx.core as mx
 import mlx.nn as nn
 
-from .base import BaseModelArgs, BaseModelOutput, normalize_embeddings
-
-
-def last_token_pool(
-    last_hidden_states: mx.array, attention_mask: Optional[mx.array] = None
-) -> mx.array:
-    """
-    Last token pooling implementation
-
-    Args:
-        last_hidden_states: Hidden states from the model, shape (batch_size, seq_len, hidden_size)
-        attention_mask: Attention mask, shape (batch_size, seq_len). If None, uses last position.
-
-    Returns:
-        Pooled embeddings, shape (batch_size, hidden_size)
-    """
-    if attention_mask is None:
-        return last_hidden_states[:, -1]
-
-    # Check if we have left padding (all sequences end with valid tokens)
-    left_padding = attention_mask[:, -1].sum() == attention_mask.shape[0]
-    if left_padding:
-        return last_hidden_states[:, -1]
-    else:
-        # Find the last valid token position for each sequence
-        sequence_lengths = attention_mask.sum(axis=1) - 1
-        batch_size = last_hidden_states.shape[0]
-        return last_hidden_states[mx.arange(batch_size), sequence_lengths]
+from .base import BaseModelArgs, BaseModelOutput, last_token_pool, normalize_embeddings
 
 
 @dataclass
