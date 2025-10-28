@@ -4,11 +4,10 @@ from typing import Optional
 import mlx.core as mx
 import mlx.nn as nn
 from mlx_lm.models.base import create_attention_mask, create_ssm_mask
-from mlx_lm.models.lfm2 import ModelArgs, Lfm2DecoderLayer
-from mlx_lm.models.cache import KVCache, ArraysCache
+from mlx_lm.models.cache import ArraysCache, KVCache
+from mlx_lm.models.lfm2 import Lfm2DecoderLayer, ModelArgs
 
 from .base import BaseModelOutput, mean_pooling, normalize_embeddings
-
 
 
 class Lfm2Model(nn.Module):
@@ -43,7 +42,6 @@ class Lfm2Model(nn.Module):
             h = input_embeddings
         else:
             h = self.embed_tokens(inputs)
-
 
         cache = [None] * len(self.layers)
 
@@ -91,7 +89,6 @@ class Model(nn.Module):
         if attention_mask is None:
             attention_mask = mx.ones(inputs.shape)
 
-
         out = self.model(inputs, cache=self.make_cache)
 
         for dense in self.dense:
@@ -100,7 +97,6 @@ class Model(nn.Module):
         out = out * attention_mask[:, :, None]
         text_embeds = mx.softmax(out, axis=-1)
         text_embeds = mx.argmax(text_embeds, axis=1)
-
 
         return BaseModelOutput(
             last_hidden_state=out,
@@ -111,7 +107,6 @@ class Model(nn.Module):
     def sanitize(self, weights):
         sanitized_weights = {}
         for k, v in weights.items():
-
 
             if "linear" not in k and "dense" not in k:
                 new_key = f"model.{k}" if not k.startswith("model") else k
