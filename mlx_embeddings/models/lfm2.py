@@ -35,7 +35,6 @@ class Lfm2Model(nn.Module):
         self,
         inputs: mx.array,
         cache=None,
-        mask=None,
         input_embeddings: Optional[mx.array] = None,
     ):
         if input_embeddings is not None:
@@ -43,7 +42,8 @@ class Lfm2Model(nn.Module):
         else:
             h = self.embed_tokens(inputs)
 
-        cache = [None] * len(self.layers)
+        if cache is None:
+            cache = [None] * len(self.layers)
 
         attn_mask = create_attention_mask(h, cache[self.fa_idx])
         conv_mask = create_ssm_mask(h, cache[self.conv_idx])
@@ -53,7 +53,6 @@ class Lfm2Model(nn.Module):
             h = layer(h, mask, cache=c)
 
         return self.embedding_norm(h)
-
 
 class Model(nn.Module):
     def __init__(self, config: ModelArgs):
@@ -94,14 +93,17 @@ class Model(nn.Module):
         for dense in self.dense:
             out = dense(out)
 
-        out = out * attention_mask[:, :, None]
-        text_embeds = mx.softmax(out, axis=-1)
-        text_embeds = mx.argmax(text_embeds, axis=1)
+        text_embeds = normalize_embeddings(out)
+
+        # Mask pad tokens
+        text_embeds = text_embeds * attention_mask[:, :, None]
+
+        pooled = mean_pooling(text_embeds, attention_mask)
 
         return BaseModelOutput(
-            last_hidden_state=out,
+            last_hidden_state=text_embeds,
             text_embeds=text_embeds,
-            pooler_output=None,
+            pooler_output=pooled,
         )
 
     def sanitize(self, weights):
