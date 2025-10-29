@@ -9,7 +9,14 @@ from mlx.utils import tree_map
 
 class TestModels(unittest.TestCase):
 
-    def model_test_runner(self, model, model_type, num_layers,  last_hidden_state_is_sequence=True, text_embeds_is_sequence=False):
+    def model_test_runner(
+        self,
+        model,
+        model_type,
+        num_layers,
+        last_hidden_state_is_sequence=True,
+        text_embeds_is_sequence=False,
+    ):
         self.assertEqual(model.config.model_type, model_type)
         if hasattr(model, "encoder"):
             self.assertEqual(len(model.encoder.layer), num_layers)
@@ -25,12 +32,11 @@ class TestModels(unittest.TestCase):
         outputs = model(inputs)
         self.assertEqual(outputs.last_hidden_state.dtype, mx.float32)
 
-
         # Verify last_hidden_state shape
         expected_hidden_shape = (
             (batch_size, seq_length, model.config.hidden_size)
-            if last_hidden_state_is_sequence else
-            (batch_size, model.config.hidden_size)
+            if last_hidden_state_is_sequence
+            else (batch_size, model.config.hidden_size)
         )
         self.assertEqual(outputs.last_hidden_state.shape, expected_hidden_shape)
 
@@ -39,8 +45,8 @@ class TestModels(unittest.TestCase):
         # Verify text_embeds shape
         expected_embeds_shape = (
             (batch_size, seq_length, output_dim)
-            if text_embeds_is_sequence else
-            (batch_size, output_dim)
+            if text_embeds_is_sequence
+            else (batch_size, output_dim)
         )
         self.assertEqual(outputs.text_embeds.shape, expected_embeds_shape)
         self.assertEqual(outputs.text_embeds.dtype, mx.float32)
@@ -207,7 +213,7 @@ class TestModels(unittest.TestCase):
                 "full_attention",
                 "conv",
                 "full_attention",
-                "conv"
+                "conv",
             ],
             conv_bias=False,
             conv_L_cache=3,

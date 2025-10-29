@@ -1,18 +1,21 @@
 import re
+from dataclasses import dataclass
 from typing import Optional
 
 import mlx.core as mx
 import mlx.nn as nn
 from mlx_lm.models.base import create_attention_mask, create_ssm_mask
 from mlx_lm.models.cache import ArraysCache, KVCache
-from mlx_lm.models.lfm2 import Lfm2DecoderLayer, ModelArgs as Lfm2ModelArgs
-from dataclasses import dataclass
+from mlx_lm.models.lfm2 import Lfm2DecoderLayer
+from mlx_lm.models.lfm2 import ModelArgs as Lfm2ModelArgs
 
 from .base import BaseModelOutput, mean_pooling, normalize_embeddings
+
 
 @dataclass
 class ModelArgs(Lfm2ModelArgs):
     out_features: int = 128
+
 
 class Lfm2Model(nn.Module):
     def __init__(self, args: ModelArgs):
@@ -57,6 +60,7 @@ class Lfm2Model(nn.Module):
             h = layer(h, mask, cache=c)
 
         return self.embedding_norm(h)
+
 
 class Model(nn.Module):
     def __init__(self, config: ModelArgs):
