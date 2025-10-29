@@ -9,7 +9,7 @@ from mlx.utils import tree_map
 
 class TestModels(unittest.TestCase):
 
-    def model_test_runner(self, model, model_type, num_layers):
+    def model_test_runner(self, model, model_type, num_layers,  last_hidden_state_is_sequence=True, text_embeds_is_sequence=False):
         self.assertEqual(model.config.model_type, model_type)
         if hasattr(model, "encoder"):
             self.assertEqual(len(model.encoder.layer), num_layers)
@@ -25,31 +25,22 @@ class TestModels(unittest.TestCase):
         outputs = model(inputs)
         self.assertEqual(outputs.last_hidden_state.dtype, mx.float32)
 
-        # Check if model is ModernBertModel
-        is_modern_bert = (
-            hasattr(model.config, "architectures")
-            and model.config.architectures[0] == "ModernBertModel"
-        )
-
-        # Check if model is ModernBertForMaskedLM
-        is_masked_lm = (
-            hasattr(model.config, "architectures")
-            and model.config.architectures[0] == "ModernBertForMaskedLM"
-        )
 
         # Verify last_hidden_state shape
         expected_hidden_shape = (
+            (batch_size, seq_length, model.config.hidden_size)
+            if last_hidden_state_is_sequence else
             (batch_size, model.config.hidden_size)
-            if is_modern_bert
-            else (batch_size, seq_length, model.config.hidden_size)
         )
         self.assertEqual(outputs.last_hidden_state.shape, expected_hidden_shape)
 
+        output_dim = getattr(model.config, "out_features", model.config.hidden_size)
+
         # Verify text_embeds shape
         expected_embeds_shape = (
-            (batch_size, seq_length, model.config.hidden_size)
-            if is_masked_lm
-            else (batch_size, model.config.hidden_size)
+            (batch_size, seq_length, output_dim)
+            if text_embeds_is_sequence else
+            (batch_size, output_dim)
         )
         self.assertEqual(outputs.text_embeds.shape, expected_embeds_shape)
         self.assertEqual(outputs.text_embeds.dtype, mx.float32)
@@ -188,6 +179,56 @@ class TestModels(unittest.TestCase):
             config.num_hidden_layers,
         )
 
+    def test_lfm2_model(self):
+        from mlx_embeddings.models import lfm2
+
+        config = lfm2.ModelArgs(
+            model_type="lfm2",
+            hidden_size=1024,
+            num_hidden_layers=16,
+            num_attention_heads=16,
+            num_key_value_heads=8,
+            max_position_embeddings=128000,
+            vocab_size=64402,
+            norm_eps=1e-05,
+            layer_types=[
+                "conv",
+                "conv",
+                "full_attention",
+                "conv",
+                "conv",
+                "full_attention",
+                "conv",
+                "conv",
+                "full_attention",
+                "conv",
+                "full_attention",
+                "conv",
+                "full_attention",
+                "conv",
+                "full_attention",
+                "conv"
+            ],
+            conv_bias=False,
+            conv_L_cache=3,
+            block_dim=1024,
+            block_ff_dim=6656,
+            block_multiple_of=256,
+            block_ffn_dim_multiplier=1.0,
+            block_auto_adjust_ff_dim=True,
+            rope_theta=1000000.0,
+            out_features=128,
+        )
+        model = lfm2.Model(config)
+
+        self.model_test_runner(
+            model,
+            config.model_type,
+            config.num_hidden_layers,
+            text_embeds_is_sequence=True,
+            last_hidden_state_is_sequence=True,
+        )
+
     def test_modernbert_model_mask_token(self):
         from mlx_embeddings.models import modernbert
 
@@ -207,6 +248,8 @@ class TestModels(unittest.TestCase):
             model,
             config.model_type,
             config.num_hidden_layers,
+            text_embeds_is_sequence=True,
+            last_hidden_state_is_sequence=True,
         )
 
     def test_modernbert_model_embeddings(self):
@@ -228,6 +271,8 @@ class TestModels(unittest.TestCase):
             model,
             config.model_type,
             config.num_hidden_layers,
+            last_hidden_state_is_sequence=False,
+            text_embeds_is_sequence=False,
         )
 
     def test_siglip_model(self):
