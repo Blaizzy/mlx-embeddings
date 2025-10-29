@@ -5,10 +5,14 @@ import mlx.core as mx
 import mlx.nn as nn
 from mlx_lm.models.base import create_attention_mask, create_ssm_mask
 from mlx_lm.models.cache import ArraysCache, KVCache
-from mlx_lm.models.lfm2 import Lfm2DecoderLayer, ModelArgs
+from mlx_lm.models.lfm2 import Lfm2DecoderLayer, ModelArgs as Lfm2ModelArgs
+from dataclasses import dataclass
 
 from .base import BaseModelOutput, mean_pooling, normalize_embeddings
 
+@dataclass
+class ModelArgs(Lfm2ModelArgs):
+    out_features: int = 128
 
 class Lfm2Model(nn.Module):
     def __init__(self, args: ModelArgs):
@@ -61,7 +65,7 @@ class Model(nn.Module):
         self.model_type = config.model_type
         self.model = Lfm2Model(config)
         self.dense = [
-            nn.Linear(config.block_dim, 128, bias=False),
+            nn.Linear(config.block_dim, config.out_features, bias=False),
         ]
 
     def get_extended_attention_mask(self, attention_mask, input_shape):
@@ -88,8 +92,8 @@ class Model(nn.Module):
         if attention_mask is None:
             attention_mask = mx.ones(inputs.shape)
 
-        out = self.model(inputs, cache=self.make_cache)
-
+        h = self.model(inputs, cache=self.make_cache)
+        out = h
         for dense in self.dense:
             out = dense(out)
 
@@ -101,7 +105,7 @@ class Model(nn.Module):
         pooled = mean_pooling(text_embeds, attention_mask)
 
         return BaseModelOutput(
-            last_hidden_state=text_embeds,
+            last_hidden_state=h,
             text_embeds=text_embeds,
             pooler_output=pooled,
         )
