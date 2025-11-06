@@ -16,7 +16,7 @@ import mlx.nn as nn
 from huggingface_hub import snapshot_download
 from huggingface_hub.errors import RepositoryNotFoundError
 from mlx.utils import tree_flatten, tree_unflatten
-from mlx_vlm.utils import process_image
+
 from transformers import AutoProcessor, PreTrainedTokenizer
 
 from .tokenizer_utils import TokenizerWrapper, load_tokenizer
@@ -641,6 +641,9 @@ def convert(
 
 
 def load_images(images, processor, resize_shape=None):
+    # make mlx_vlm optional
+    from mlx_vlm.utils import process_image
+
     image_processor = (
         processor.image_processor if hasattr(processor, "image_processor") else None
     )
