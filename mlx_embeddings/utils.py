@@ -669,7 +669,7 @@ def prepare_inputs(
     elif isinstance(texts, str):
         inputs = processor.encode(texts, return_tensors="mlx")
     elif isinstance(texts, list):
-        inputs = processor.batch_encode_plus(
+        inputs = processor(
             texts,
             return_tensors="mlx",
             padding=padding,
