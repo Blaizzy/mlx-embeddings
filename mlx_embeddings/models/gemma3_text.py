@@ -83,6 +83,7 @@ class Model(nn.Module):
             extended_attention_mask = mx.repeat(
                 extended_attention_mask, attention_mask.shape[-1], -2
             )
+
         else:
             raise ValueError(
                 f"Wrong shape for attention_mask (shape {attention_mask.shape})"
@@ -94,6 +95,7 @@ class Model(nn.Module):
         inputs: mx.array,
         attention_mask: Optional[mx.array] = None,
     ):
+
         if attention_mask is None:
             attention_mask = mx.ones(inputs.shape)
 
