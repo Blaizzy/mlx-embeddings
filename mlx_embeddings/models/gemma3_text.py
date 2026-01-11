@@ -41,8 +41,6 @@ class Gemma3Model(nn.Module):
         if cache is None:
             cache = [None] * len(self.layers)
 
-        # For embedding models, mask is provided externally (bidirectional with padding).
-        # Only create causal masks if no mask is provided (autoregressive use case).
         if mask is None:
             j = self.config.sliding_window_pattern
             full_mask = create_attention_mask(h, cache[j - 1 : j])
@@ -55,7 +53,6 @@ class Gemma3Model(nn.Module):
             )
 
             if mask is not None:
-                # Use provided mask (bidirectional for embeddings)
                 local_mask = mask
             elif is_global:
                 local_mask = full_mask
@@ -79,7 +76,6 @@ class Model(nn.Module):
         ]
 
     def get_extended_attention_mask(self, attention_mask, input_shape):
-        """Create 4D attention mask from 2D padding mask for bidirectional attention."""
         if attention_mask.ndim == 3:
             extended_attention_mask = attention_mask[:, None, :, :]
         elif attention_mask.ndim == 2:
@@ -101,30 +97,27 @@ class Model(nn.Module):
         if attention_mask is None:
             attention_mask = mx.ones(inputs.shape)
 
-        # Create bidirectional attention mask that properly masks padding tokens.
-        # This allows all non-padding tokens to attend to each other while
-        # preventing attention to/from padding positions.
+        # Create bidirectional attention mask (masks padding, allows full attention otherwise)
         extended_attention_mask = self.get_extended_attention_mask(
             attention_mask, inputs.shape
         )
-        # Convert from 1/0 format to additive mask format (0/-inf) for SDPA.
-        # Where mask is 0 (padding), we want -inf; where mask is 1, we want 0.
-        extended_attention_mask = (1.0 - extended_attention_mask) * -1e9
-        # Cast to model dtype for scaled_dot_product_attention compatibility.
-        model_dtype = self.model.embed_tokens.weight.dtype
-        extended_attention_mask = extended_attention_mask.astype(model_dtype)
+        extended_attention_mask = mx.where(
+            extended_attention_mask.astype(mx.bool_),
+            0.0,
+            -mx.inf,
+        )
+        extended_attention_mask = extended_attention_mask.astype(
+            self.model.embed_tokens.weight.dtype
+        )
 
         out = self.model(inputs, extended_attention_mask)
 
-        # Pool FIRST, then apply dense projection layers.
-        # This matches the SentenceTransformers pipeline order:
-        # Transformer -> Pooling -> Dense -> Dense -> Normalize
+        # Pool first, then dense (matches SentenceTransformers pipeline)
         text_embeds = mean_pooling(out, attention_mask)
 
         for dense in self.dense:
             text_embeds = dense(text_embeds)
 
-        # Normalize embeddings
         text_embeds = normalize_embeddings(text_embeds)
 
         return BaseModelOutput(
