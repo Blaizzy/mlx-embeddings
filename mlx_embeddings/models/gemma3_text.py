@@ -52,10 +52,11 @@ class Gemma3Model(nn.Module):
                 == self.config.sliding_window_pattern - 1
             )
 
-            local_mask = mask
-            if mask is None and is_global:
+            if mask is not None:
+                local_mask = mask
+            elif is_global:
                 local_mask = full_mask
-            elif mask is None:
+            else:
                 local_mask = sliding_window_mask
 
             h = layer(h, local_mask, c)
@@ -98,17 +99,27 @@ class Model(nn.Module):
         if attention_mask is None:
             attention_mask = mx.ones(inputs.shape)
 
+        # Create bidirectional attention mask (masks padding, allows full attention otherwise)
         extended_attention_mask = self.get_extended_attention_mask(
             attention_mask, inputs.shape
+        )
+        extended_attention_mask = mx.where(
+            extended_attention_mask.astype(mx.bool_),
+            0.0,
+            -mx.inf,
+        )
+        extended_attention_mask = extended_attention_mask.astype(
+            self.model.embed_tokens.weight.dtype
         )
 
         out = self.model(inputs, extended_attention_mask)
 
-        for dense in self.dense:
-            out = dense(out)
-
-        # normalized features
+        # Pool first, then dense (matches SentenceTransformers pipeline)
         text_embeds = mean_pooling(out, attention_mask)
+
+        for dense in self.dense:
+            text_embeds = dense(text_embeds)
+
         text_embeds = normalize_embeddings(text_embeds)
 
         return BaseModelOutput(
