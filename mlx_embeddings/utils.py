@@ -175,17 +175,20 @@ def load_model(
 
         # siglip models have a different image size
         if "siglip" in config["model_type"]:
-            # Extract the image size
-            image_size = re.search(
-                r"patch\d+-(\d+)(?:-|$)", kwargs["path_to_repo"]
-            ).group(1)
-            # Extract the patch size
-            patch_size = re.search(r"patch(\d+)", kwargs["path_to_repo"]).group(1)
-            patch_size = (
-                re.search(r"\d+", patch_size).group()
-                if re.search(r"\d+", patch_size)
-                else patch_size
-            )
+            if not isinstance(image_size := model_config.get("image_size"), int):
+                # Extract the image size from hf repo name if not supplied
+                image_size = re.search(
+                    r"patch\d+-(\d+)(?:-|$)", kwargs["path_to_repo"]
+                ).group(1)
+
+            if not isinstance(patch_size := model_config.get("patch_size"), int):
+                # Extract the patch size from hf repo  if not supplied
+                patch_size = re.search(r"patch(\d+)", kwargs["path_to_repo"]).group(1)
+                patch_size = (
+                    re.search(r"\d+", patch_size).group()
+                    if re.search(r"\d+", patch_size)
+                    else patch_size
+                )
             if model_args.vision_config.image_size != int(image_size):
                 model_args.vision_config.image_size = int(image_size)
             if model_args.vision_config.patch_size != int(patch_size):
