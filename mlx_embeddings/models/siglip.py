@@ -103,14 +103,23 @@ class MHA(nn.Module):
         self.out_proj = nn.Linear(dims, dims, bias=bias)
 
     def __call__(self, queries: mx.array, keys: mx.array, values: mx.array, mask=None):
-        B, L, D = queries.shape
+        B, L, _ = queries.shape
+        _, S, _ = keys.shape
 
-        qkv = self.in_proj(keys)
-        queries, keys, values = mx.split(qkv, 3, axis=-1)
+        dims = self.in_proj.weight.shape[1]
+
+        # Split in_proj weights for Q, K, V
+        q_weight = self.in_proj.weight[:dims, :]
+        kv_weight = self.in_proj.weight[dims:, :]
+
+        queries = queries @ q_weight.T
+        kv = keys @ kv_weight.T
+        if "bias" in self.in_proj:
+            queries = queries + self.in_proj.bias[:dims]
+            kv = kv + self.in_proj.bias[dims:]
+        keys, values = mx.split(kv, 2, axis=-1)
 
         num_heads = self.num_heads
-        B, L, D = queries.shape
-        _, S, _ = keys.shape
         queries = queries.reshape(B, L, num_heads, -1).transpose(0, 2, 1, 3)
         keys = keys.reshape(B, S, num_heads, -1).transpose(0, 2, 1, 3)
         values = values.reshape(B, S, num_heads, -1).transpose(0, 2, 1, 3)
@@ -120,7 +129,6 @@ class MHA(nn.Module):
         )
         output = output.transpose(0, 2, 1, 3).reshape(B, L, -1)
         return self.out_proj(output)
-
 
 class Attention(nn.Module):
     def __init__(

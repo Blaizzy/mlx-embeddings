@@ -174,7 +174,7 @@ def load_model(
         model_args.vision_config = vision_config(**model_args.vision_config)
 
         # siglip models have a different image size
-        if "siglip" in config["model_type"]:
+        if "medsiglip" not in kwargs["path_to_repo"] and "siglip" in config["model_type"]:
             # Extract the image size
             image_size = re.search(
                 r"patch\d+-(\d+)(?:-|$)", kwargs["path_to_repo"]
