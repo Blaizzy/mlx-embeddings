@@ -4,7 +4,7 @@ version = "0.0.3"
 dynamic = [
     "dependencies",
 ]
-description = "MLX-Embeddings is a package for running Vision and Language Embedding models locally on your Mac using MLX."
+description = "MLX-Embeddings is a package for running vision and language embedding models locally on your Mac using MLX, including Qwen3 and Qwen3-VL."
 readme = "README.md"
 requires-python = ">=3.8"
 keywords = [

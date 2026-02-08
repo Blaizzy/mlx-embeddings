@@ -24,6 +24,38 @@ from .tokenizer_utils import TokenizerWrapper, load_tokenizer
 # Constants
 MODEL_REMAPPING = {}
 
+# Model registry: all supported models with their trust_remote_code requirements
+SUPPORTED_MODELS = {
+    "bert": {
+        "trust_remote_code": False,
+        "description": "BERT-based embeddings (mean pooling)"
+    },
+    "xlm_roberta": {
+        "trust_remote_code": False,
+        "description": "XLM-RoBERTa multilingual embeddings (mean pooling)"
+    },
+    "modernbert": {
+        "trust_remote_code": False,
+        "description": "ModernBERT with configurable pooling (cls or mean)"
+    },
+    "siglip": {
+        "trust_remote_code": False,
+        "description": "SigLIP vision-language model (contrastive learning)"
+    },
+    "colqwen2_5": {
+        "trust_remote_code": False,
+        "description": "ColQwen2.5 multi-vector retrieval model"
+    },
+    "qwen3": {
+        "trust_remote_code": False,
+        "description": "Qwen3-Embeddings text model (last-token pooling, L2 norm)"
+    },
+    "qwen3_vl": {
+        "trust_remote_code": True,
+        "description": "Qwen3-VL multimodal embeddings (custom architecture)"
+    },
+}
+
 MAX_FILE_SIZE_GB = 5
 
 
@@ -33,9 +65,59 @@ class ModelNotFoundError(Exception):
         super().__init__(self.message)
 
 
+def validate_model_type(config: dict) -> None:
+    """
+    Validate model_type against registry and trust_remote_code requirements.
+
+    Raises:
+        ValueError: If model_type is unsupported or trust_remote_code mismatch
+
+    Args:
+        config (dict): Model config dict (must contain 'model_type')
+
+    Examples:
+        >>> validate_model_type({"model_type": "qwen3"})  # OK
+        >>> validate_model_type({"model_type": "unknown"})  # ValueError
+        >>> validate_model_type({
+        ...     "model_type": "qwen3_vl",
+        ...     "trust_remote_code": False
+        ... })  # ValueError: requires trust_remote_code=True
+    """
+    model_type = config.get("model_type", "").replace("-", "_")
+
+    if model_type not in SUPPORTED_MODELS:
+        supported_list = ", ".join(SUPPORTED_MODELS.keys())
+        raise ValueError(
+            f"Model type '{model_type}' not supported. Supported models: {supported_list}\n"
+            f"To add support for a new model, see: docs/CONTRIBUTING.md#adding-new-models"
+        )
+
+    model_spec = SUPPORTED_MODELS[model_type]
+    required_remote_code = model_spec["trust_remote_code"]
+    actual_remote_code = config.get("trust_remote_code", False)
+
+    # Check for missing required trust_remote_code
+    if required_remote_code and not actual_remote_code:
+        raise ValueError(
+            f"Model '{model_type}' requires trust_remote_code=True in config.\n"
+            f"Reason: {model_spec['description']}\n"
+            f"Fix: Add 'trust_remote_code': true to your model config or "
+            f"AutoModel.from_pretrained(..., trust_remote_code=True)"
+        )
+
+    # Warn about unnecessary trust_remote_code (non-breaking, just caution)
+    if not required_remote_code and actual_remote_code:
+        logging.warning(
+            f"Model '{model_type}' does not require trust_remote_code. "
+            f"Consider removing it from config for security."
+        )
+
+
 def _get_classes(config: dict):
     """
     Retrieve the model and model args classes based on the configuration.
+
+    Enhanced with validation before import.
 
     Args:
         config (dict): The model configuration.
@@ -43,12 +125,15 @@ def _get_classes(config: dict):
     Returns:
         A tuple containing the Model class and the ModelArgs class.
     """
+    # Validate before attempting import
+    validate_model_type(config)
+
     model_type = config["model_type"].replace("-", "_")
     model_type = MODEL_REMAPPING.get(model_type, model_type)
     try:
         arch = importlib.import_module(f"mlx_embeddings.models.{model_type}")
-    except ImportError:
-        msg = f"Model type {model_type} not supported."
+    except ImportError as e:
+        msg = f"Failed to import model adapter for '{model_type}': {e}"
         logging.error(msg)
         raise ValueError(msg)
 
