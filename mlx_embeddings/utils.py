@@ -16,7 +16,6 @@ import mlx.nn as nn
 from huggingface_hub import snapshot_download
 from huggingface_hub.errors import RepositoryNotFoundError
 from mlx.utils import tree_flatten, tree_unflatten
-from mlx_vlm.utils import process_image
 from transformers import AutoProcessor, PreTrainedTokenizer
 
 from .tokenizer_utils import TokenizerWrapper, load_tokenizer
@@ -140,7 +139,7 @@ def load_model(
     config = load_config(model_path)
     config.update(model_config)
 
-    weight_files = glob.glob(str(model_path / "model*.safetensors"))
+    weight_files = glob.glob(str(model_path / "**/model*.safetensors"), recursive=True)
 
     if not weight_files:
         # Try weight for back-compat
@@ -152,7 +151,16 @@ def load_model(
 
     weights = {}
     for wf in weight_files:
-        weights.update(mx.load(wf))
+        loaded_weights = mx.load(wf)
+        if Path(wf).parent != model_path:
+            folder_name = Path(wf).parent.name
+            renamed_weights = {}
+            for key, value in loaded_weights.items():
+                new_key = f"{folder_name}.{key}"
+                renamed_weights[new_key] = value
+            weights.update(renamed_weights)
+        else:
+            weights.update(loaded_weights)
 
     model_class, model_args_class, text_config, vision_config = get_model_classes(
         config=config
@@ -438,22 +446,37 @@ def save_weights(
         )
 
 
-def get_class_predicate(skip_vision, weights=None):
-    if skip_vision:
-        return lambda p, m: hasattr(m, "to_quantized") and not (
-            "vision_model" in p or "vision_tower" in p
-        )
-    else:
+def get_class_predicate(skip_vision: bool, q_group_size: int, weights: dict = None):
+    """
+    Returns a predicate function for quantization that handles vision model skipping
+    and dimension compatibility checks.
+    """
+
+    def class_predicate(p, m):
+        # Must have a to_quantized method
+        if not hasattr(m, "to_quantized"):
+            return False
+
+        # Optionally skip vision model layers
+        if skip_vision and ("vision_model" in p or "vision_tower" in p):
+            return False
+
+        # Check for weight attribute and dimension compatibility
+        if hasattr(m, "weight"):
+            if m.weight.ndim < 2 or m.weight.shape[-1] % q_group_size != 0:
+                print(
+                    f"Skipping quantization of {p}:"
+                    f" Last dimension {m.weight.shape[-1]} is not divisible by group size {q_group_size}."
+                )
+                return False
+
+        # Check against a whitelist of weights if provided
         if weights:
-            return lambda p, m: (
-                hasattr(m, "to_quantized")
-                and m.weight.shape[-1] % 64 == 0
-                and f"{p}.scales" in weights
-            )
-        else:
-            return (
-                lambda _, m: hasattr(m, "to_quantized") and m.weight.shape[-1] % 64 == 0
-            )
+            return p in weights
+
+        return True
+
+    return class_predicate
 
 
 def quantize_model(
@@ -516,10 +539,11 @@ def quantize_model(
     
     nn.quantize(
         model,
-        effective_group_size,
-        effective_bits,
-        mode=mode,
-        class_predicate=get_class_predicate(skip_vision=skip_vision),
+        q_group_size,
+        q_bits,
+        class_predicate=get_class_predicate(
+            skip_vision=skip_vision, q_group_size=q_group_size
+        ),
     )
     quantized_config["quantization"] = {
         "group_size": effective_group_size, 
@@ -659,6 +683,9 @@ def convert(
 
 
 def load_images(images, processor, resize_shape=None):
+    # make mlx_vlm optional
+    from mlx_vlm.utils import process_image
+
     image_processor = (
         processor.image_processor if hasattr(processor, "image_processor") else None
     )
@@ -687,7 +714,7 @@ def prepare_inputs(
     elif isinstance(texts, str):
         inputs = processor.encode(texts, return_tensors="mlx")
     elif isinstance(texts, list):
-        inputs = processor.batch_encode_plus(
+        inputs = processor(
             texts,
             return_tensors="mlx",
             padding=padding,
