@@ -65,7 +65,7 @@ class ModelNotFoundError(Exception):
         super().__init__(self.message)
 
 
-def validate_model_type(config: dict) -> None:
+def validate_model_type(config: dict, trust_remote_code: bool = False) -> None:
     """
     Validate model_type against registry and trust_remote_code requirements.
 
@@ -74,14 +74,12 @@ def validate_model_type(config: dict) -> None:
 
     Args:
         config (dict): Model config dict (must contain 'model_type')
+        trust_remote_code (bool): Runtime flag allowing trust_remote_code for custom architectures
 
     Examples:
         >>> validate_model_type({"model_type": "qwen3"})  # OK
         >>> validate_model_type({"model_type": "unknown"})  # ValueError
-        >>> validate_model_type({
-        ...     "model_type": "qwen3_vl",
-        ...     "trust_remote_code": False
-        ... })  # ValueError: requires trust_remote_code=True
+        >>> validate_model_type({"model_type": "qwen3_vl"}, trust_remote_code=True)  # OK
     """
     model_type = config.get("model_type", "").replace("-", "_")
 
@@ -97,12 +95,12 @@ def validate_model_type(config: dict) -> None:
     actual_remote_code = config.get("trust_remote_code", False)
 
     # Check for missing required trust_remote_code
-    if required_remote_code and not actual_remote_code:
+    # Trust either the config file setting OR the runtime parameter
+    if required_remote_code and not (actual_remote_code or trust_remote_code):
         raise ValueError(
             f"Model '{model_type}' requires trust_remote_code=True in config.\n"
             f"Reason: {model_spec['description']}\n"
-            f"Fix: Add 'trust_remote_code': true to your model config or "
-            f"AutoModel.from_pretrained(..., trust_remote_code=True)"
+            f"Fix: Add 'trust_remote_code': true to your model config or use --trust-remote-code flag"
         )
 
     # Warn about unnecessary trust_remote_code (non-breaking, just caution)
@@ -113,7 +111,7 @@ def validate_model_type(config: dict) -> None:
         )
 
 
-def _get_classes(config: dict):
+def _get_classes(config: dict, trust_remote_code: bool = False):
     """
     Retrieve the model and model args classes based on the configuration.
 
@@ -121,12 +119,13 @@ def _get_classes(config: dict):
 
     Args:
         config (dict): The model configuration.
+        trust_remote_code (bool): Whether to trust remote code for custom architectures.
 
     Returns:
         A tuple containing the Model class and the ModelArgs class.
     """
     # Validate before attempting import
-    validate_model_type(config)
+    validate_model_type(config, trust_remote_code=trust_remote_code)
 
     model_type = config["model_type"].replace("-", "_")
     model_type = MODEL_REMAPPING.get(model_type, model_type)
@@ -197,6 +196,7 @@ def load_model(
     model_path: Path,
     lazy: bool = False,
     model_config: dict = {},
+    trust_remote_code: bool = False,
     get_model_classes: Callable[[dict], Tuple[Type[nn.Module], Type]] = _get_classes,
     **kwargs,
 ) -> nn.Module:
@@ -240,15 +240,15 @@ def load_model(
         weights.update(mx.load(wf))
 
     model_class, model_args_class, text_config, vision_config = get_model_classes(
-        config=config
+        config=config, trust_remote_code=trust_remote_code
     )
 
     model_args = model_args_class.from_dict(config)
 
-    if text_config is not None:
-        model_args.text_config = text_config(**model_args.text_config)
-    if vision_config is not None:
-        model_args.vision_config = vision_config(**model_args.vision_config)
+    if text_config is not None and model_args.text_config is not None:
+        model_args.text_config = text_config.from_dict(model_args.text_config)
+    if vision_config is not None and model_args.vision_config is not None:
+        model_args.vision_config = vision_config.from_dict(model_args.vision_config)
 
         # siglip models have a different image size
         if "siglip" in config["model_type"]:
@@ -301,6 +301,7 @@ def load(
     model_config={},
     adapter_path: Optional[str] = None,
     lazy: bool = False,
+    trust_remote_code: bool = False,
 ) -> Tuple[nn.Module, TokenizerWrapper]:
     """
     Load the model and tokenizer from a given path or a huggingface repository.
@@ -333,9 +334,9 @@ def load(
     # First attempt: load tokenizer
     try:
         if hasattr(model.config, "vision_config"):
-            tokenizer = AutoProcessor.from_pretrained(model_path)
+            tokenizer = AutoProcessor.from_pretrained(model_path, trust_remote_code=trust_remote_code)
         else:
-            tokenizer = load_tokenizer(model_path, tokenizer_config)
+            tokenizer = load_tokenizer(model_path, tokenizer_config, trust_remote_code=trust_remote_code)
     except Exception as tokenizer_error:
         raise ValueError(
             f"Failed to initialize tokenizer or processor: {tokenizer_error}"
@@ -345,11 +346,11 @@ def load(
 
 
 def fetch_from_hub(
-    model_path: Path, lazy: bool = False, **kwargs
+    model_path: Path, lazy: bool = False, trust_remote_code: bool = False, **kwargs
 ) -> Tuple[nn.Module, dict, PreTrainedTokenizer]:
-    model = load_model(model_path, lazy, **kwargs)
+    model = load_model(model_path, lazy, trust_remote_code=trust_remote_code, **kwargs)
     config = load_config(model_path)
-    tokenizer = load_tokenizer(model_path)
+    tokenizer = load_tokenizer(model_path, tokenizer_config_extra={}, trust_remote_code=trust_remote_code)
     return model, config, tokenizer
 
 
@@ -697,50 +698,54 @@ def convert(
     revision: Optional[str] = None,
     dequantize: bool = False,
     skip_vision: bool = True,
+    trust_remote_code: bool = False,
 ):
     print("[INFO] Loading")
     model_path = get_model_path(hf_path, revision=revision)
-    model, config, tokenizer = fetch_from_hub(
-        model_path, lazy=True, path_to_repo=hf_path
-    )
+    config = load_config(model_path)
 
+    model, _, _ = fetch_from_hub(
+        model_path, lazy=True, trust_remote_code=trust_remote_code, path_to_repo=hf_path
+    )
     weights = dict(tree_flatten(model.parameters()))
-    dtype = getattr(mx, dtype)
-    weights = {k: v.astype(dtype) for k, v in weights.items()}
+    del model
+    dtype_obj = getattr(mx, dtype)
+    weights = {k: v.astype(dtype_obj) if hasattr(v, 'astype') else v for k, v in weights.items()}
 
     if quantize and dequantize:
         raise ValueError("Choose either quantize or dequantize, not both.")
 
     if quantize:
         print("[INFO] Quantizing")
+        model = load_model(model_path, lazy=False, trust_remote_code=trust_remote_code, path_to_repo=hf_path)
         model.load_weights(list(weights.items()))
         weights, config = quantize_model(
             model, config, q_group_size, q_bits, mode=q_mode, skip_vision=skip_vision
         )
 
-    if dequantize:
-        print("[INFO] Dequantizing")
-        model = dequantize_model(model)
-        weights = dict(tree_flatten(model.parameters()))
-
-    if isinstance(mlx_path, str):
-        mlx_path = Path(mlx_path)
-
-    del model
-    save_weights(mlx_path, weights, donate_weights=True)
+    mlx_path_obj = Path(mlx_path)
+    save_weights(mlx_path_obj, weights, donate_weights=True)
 
     # Copy Python and JSON files from the model path to the MLX path
     for pattern in ["*.py", "*.json"]:
         files = glob.glob(str(model_path / pattern))
         for file in files:
-            shutil.copy(file, mlx_path)
+            shutil.copy(file, str(mlx_path_obj))
 
-    tokenizer.save_pretrained(mlx_path)
+    # Copy tokenizer files (tokenizer.json, tokenizer.model, etc.)
+    tokenizer_files = ["tokenizer.json", "tokenizer.model", "tokenizer.txt", 
+                       "special_tokens_map.json", "tokenizer_config.json"]
+    for fname in tokenizer_files:
+        src = model_path / fname
+        if src.exists():
+            shutil.copy(str(src), str(mlx_path_obj))
 
-    save_config(config, config_path=mlx_path / "config.json")
+    save_config(config, config_path=str(mlx_path_obj / "config.json"))
 
     if upload_repo is not None:
-        upload_to_hub(mlx_path, upload_repo, hf_path, config)
+        upload_to_hub(mlx_path_obj, upload_repo, hf_path, config)
+
+    print(f"[INFO] Conversion complete. Model saved to {mlx_path}")
 
 
 def load_images(images, processor, resize_shape=None):

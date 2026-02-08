@@ -54,6 +54,12 @@ def configure_parser() -> argparse.ArgumentParser:
         action="store_true",
         default=False,
     )
+    parser.add_argument(
+        "--trust-remote-code",
+        help="Trust remote code for custom model architectures (required for Qwen3-VL).",
+        action="store_true",
+        default=False,
+    )
     return parser
 
 

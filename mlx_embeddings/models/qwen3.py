@@ -1,22 +1,13 @@
-"""
-Qwen3-Embeddings adapter for mlx-embeddings.
+"""Qwen3 embedding model adapter for mlx-embeddings.
 
-Qwen3-Embeddings is a dense embedding model designed for semantic search and retrieval.
-Models: Qwen3-Embedding-0.6B, Qwen3-Embedding-4B, Qwen3-Embedding-8B
+Full causal decoder-only transformer with GQA, SwiGLU MLP, RMSNorm,
+and RoPE. Extracts embeddings via last-token pooling + L2 normalization.
 
-Key characteristics:
-- Based on causal LM architecture (Qwen3ForCausalLM)
-- Uses last-token pooling (final token accumulates full context)
-- L2 normalization for cosine similarity
-- Supports 100+ languages
-- Matryoshka RepL loss: supports variable output dimensions
-
-Reference: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B
+Reference: https://github.com/ml-explore/mlx-lm/blob/main/mlx_lm/models/qwen3.py
 """
 
-import inspect
 from dataclasses import dataclass
-from typing import Optional
+from typing import Dict, Optional, Union
 
 import mlx.core as mx
 import mlx.nn as nn
@@ -26,120 +17,170 @@ from .base import BaseModelArgs, BaseModelOutput, last_token_pooling, normalize_
 
 @dataclass
 class ModelArgs(BaseModelArgs):
-    """
-    Qwen3-Embeddings model configuration.
-
-    Filters config to match Qwen3 architecture requirements.
-    All fields are loaded from upstream model config.
-    """
     model_type: str = "qwen3"
-    hidden_size: int = 1024  # 0.6B variant
-    num_hidden_layers: int = 24
-    vocab_size: int = 152064
-    intermediate_size: int = 2816
+    hidden_size: int = 1024
+    num_hidden_layers: int = 28
+    intermediate_size: int = 3072
     num_attention_heads: int = 16
-    num_key_value_heads: Optional[int] = None  # For GQA models
-    max_position_embeddings: int = 32768
+    num_key_value_heads: Optional[int] = None
+    vocab_size: int = 151669
+    max_position_embeddings: int = 40960
     head_dim: Optional[int] = None
     rms_norm_eps: float = 1e-6
-    rope_theta: float = 1000000.0  # Qwen3 specific
-    use_cache: bool = False
+    rope_theta: float = 1000000.0
+    tie_word_embeddings: bool = True
+    rope_scaling: Optional[Dict[str, Union[float, str]]] = None
+
+    def __post_init__(self):
+        if self.head_dim is None:
+            self.head_dim = self.hidden_size // self.num_attention_heads
+        if self.num_key_value_heads is None:
+            self.num_key_value_heads = self.num_attention_heads
 
 
-class Qwen3TextModel(nn.Module):
-    """
-    Qwen3 text-only encoder.
-
-    Note: This is a placeholder structure. In actual implementation,
-    weights are loaded externally via the load_model() utility in utils.py,
-    which handles weight sanitization and device placement.
-    """
-
-    def __init__(self, config: ModelArgs):
+class Attention(nn.Module):
+    def __init__(self, args: ModelArgs):
         super().__init__()
-        # Weights are loaded separately and replaced in this module
-        # This ensures compatibility with MLX's weight loading pipeline
-        self.config = config
+        dim = args.hidden_size
+        self.n_heads = args.num_attention_heads
+        self.n_kv_heads = args.num_key_value_heads
+        self.head_dim = args.head_dim
+        self.scale = self.head_dim**-0.5
+
+        self.q_proj = nn.Linear(dim, self.n_heads * self.head_dim, bias=False)
+        self.k_proj = nn.Linear(dim, self.n_kv_heads * self.head_dim, bias=False)
+        self.v_proj = nn.Linear(dim, self.n_kv_heads * self.head_dim, bias=False)
+        self.o_proj = nn.Linear(self.n_heads * self.head_dim, dim, bias=False)
+
+        self.q_norm = nn.RMSNorm(self.head_dim, eps=args.rms_norm_eps)
+        self.k_norm = nn.RMSNorm(self.head_dim, eps=args.rms_norm_eps)
+
+        self.rope = nn.RoPE(
+            self.head_dim,
+            traditional=False,
+            base=args.rope_theta,
+        )
+
+    def __call__(self, x: mx.array, mask: Optional[mx.array] = None) -> mx.array:
+        B, L, _ = x.shape
+
+        queries = self.q_proj(x)
+        keys = self.k_proj(x)
+        values = self.v_proj(x)
+
+        queries = self.q_norm(queries.reshape(B, L, self.n_heads, -1))
+        keys = self.k_norm(keys.reshape(B, L, self.n_kv_heads, -1))
+        values = values.reshape(B, L, self.n_kv_heads, -1)
+
+        queries = queries.transpose(0, 2, 1, 3)
+        keys = keys.transpose(0, 2, 1, 3)
+        values = values.transpose(0, 2, 1, 3)
+
+        queries = self.rope(queries)
+        keys = self.rope(keys)
+
+        output = mx.fast.scaled_dot_product_attention(
+            queries, keys, values, scale=self.scale, mask=mask
+        )
+        output = output.transpose(0, 2, 1, 3).reshape(B, L, -1)
+        return self.o_proj(output)
+
+
+class MLP(nn.Module):
+    def __init__(self, dim: int, hidden_dim: int):
+        super().__init__()
+        self.gate_proj = nn.Linear(dim, hidden_dim, bias=False)
+        self.down_proj = nn.Linear(hidden_dim, dim, bias=False)
+        self.up_proj = nn.Linear(dim, hidden_dim, bias=False)
+
+    def __call__(self, x: mx.array) -> mx.array:
+        return self.down_proj(nn.silu(self.gate_proj(x)) * self.up_proj(x))
+
+
+class TransformerBlock(nn.Module):
+    def __init__(self, args: ModelArgs):
+        super().__init__()
+        self.self_attn = Attention(args)
+        self.mlp = MLP(args.hidden_size, args.intermediate_size)
+        self.input_layernorm = nn.RMSNorm(args.hidden_size, eps=args.rms_norm_eps)
+        self.post_attention_layernorm = nn.RMSNorm(
+            args.hidden_size, eps=args.rms_norm_eps
+        )
+
+    def __call__(self, x: mx.array, mask: Optional[mx.array] = None) -> mx.array:
+        r = self.self_attn(self.input_layernorm(x), mask)
+        h = x + r
+        r = self.mlp(self.post_attention_layernorm(h))
+        return h + r
+
+
+class Qwen3Model(nn.Module):
+    def __init__(self, args: ModelArgs):
+        super().__init__()
+        self.embed_tokens = nn.Embedding(args.vocab_size, args.hidden_size)
+        self.layers = [
+            TransformerBlock(args) for _ in range(args.num_hidden_layers)
+        ]
+        self.norm = nn.RMSNorm(args.hidden_size, eps=args.rms_norm_eps)
 
     def __call__(
         self,
         input_ids: mx.array,
         attention_mask: Optional[mx.array] = None,
-        **kwargs
     ) -> mx.array:
-        """
-        Forward pass through Qwen3 text model.
+        h = self.embed_tokens(input_ids)
+        T = h.shape[1]
 
-        Args:
-            input_ids: [batch_size, seq_len]
-            attention_mask: [batch_size, seq_len]
-            **kwargs: ignored fields (compatibility with loader)
+        causal_mask = None
+        if T > 1:
+            indices = mx.arange(T)
+            causal_mask = (indices[:, None] < indices[None, :]).astype(h.dtype) * -1e9
 
-        Returns:
-            hidden_states: [batch_size, seq_len, hidden_size]
-        """
-        # This method will be replaced by actual model weights
-        raise NotImplementedError(
-            "Qwen3TextModel weights must be loaded via load_model()"
-        )
+        if attention_mask is not None and causal_mask is not None:
+            padding_mask = (
+                (1.0 - attention_mask[:, None, None, :].astype(h.dtype)) * -1e9
+            )
+            mask = causal_mask + padding_mask
+        else:
+            mask = causal_mask
+
+        for layer in self.layers:
+            h = layer(h, mask)
+
+        return self.norm(h)
 
 
 class Model(nn.Module):
-    """
-    Qwen3-Embeddings model for dense text embeddings.
-
-    Forward pass:
-    1. Tokenize input → input_ids, attention_mask
-    2. Pass through Qwen3 encoder → hidden_states [batch, seq_len, hidden_dim]
-    3. Apply last_token_pooling → [batch, hidden_dim]
-    4. L2 normalize → [batch, hidden_dim]  (norm ≈ 1.0)
-    5. Return BaseModelOutput with text_embeds
-    """
-
     def __init__(self, args: ModelArgs):
         super().__init__()
         self.config = args
-        self.model = Qwen3TextModel(args)
+        self.model = Qwen3Model(args)
 
     def __call__(
         self,
         input_ids: mx.array,
         attention_mask: Optional[mx.array] = None,
-        **kwargs
+        **kwargs,
     ) -> BaseModelOutput:
-        """
-        Encode text to embeddings.
+        hidden_states = self.model(input_ids, attention_mask)
 
-        Args:
-            input_ids: [batch_size, seq_len] token IDs from tokenizer
-            attention_mask: [batch_size, seq_len] binary mask (1 for valid, 0 for padding)
-            **kwargs: ignored fields (compatibility with loader)
-
-        Returns:
-            BaseModelOutput with:
-            - text_embeds: [batch_size, embedding_dim] L2-normalized embeddings
-            - last_hidden_state: [batch_size, seq_len, hidden_size] raw transformer output
-        """
-        # Forward pass through Qwen3 encoder
-        outputs = self.model(input_ids, attention_mask=attention_mask)
-
-        if isinstance(outputs, tuple):
-            last_hidden_state = outputs[0]
-        else:
-            last_hidden_state = outputs.last_hidden_state
-
-        # Ensure attention_mask is provided
         if attention_mask is None:
-            # Create default attention_mask (all valid tokens)
             attention_mask = mx.ones_like(input_ids)
 
-        # Apply last-token pooling (respects left-padding)
-        text_embeds = last_token_pooling(last_hidden_state, attention_mask)
-
-        # L2 normalize for cosine similarity
+        text_embeds = last_token_pooling(hidden_states, attention_mask)
         text_embeds = normalize_embeddings(text_embeds)
 
         return BaseModelOutput(
-            last_hidden_state=last_hidden_state,
+            last_hidden_state=hidden_states,
             text_embeds=text_embeds,
         )
+
+    def sanitize(self, weights):
+        sanitized = {}
+        for k, v in weights.items():
+            if "lm_head" in k:
+                continue
+            if not k.startswith("model."):
+                k = f"model.{k}"
+            sanitized[k] = v
+        return sanitized

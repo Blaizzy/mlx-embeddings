@@ -303,12 +303,17 @@ def _is_bpe_decoder(decoder):
     return _match(_target_description, decoder)
 
 
-def load_tokenizer(model_path, tokenizer_config_extra={}):
+def load_tokenizer(model_path, tokenizer_config_extra={}, trust_remote_code=False):
     """Load a huggingface tokenizer and try to infer the type of streaming
     detokenizer to use.
 
     Note, to use a fast streaming tokenizer, pass a local file path rather than
     a Hugging Face repo ID.
+    
+    Args:
+        model_path: Path to the model directory
+        tokenizer_config_extra: Additional tokenizer configuration options
+        trust_remote_code: Whether to trust remote code for custom tokenizer classes
     """
     detokenizer_class = NaiveStreamingDetokenizer
 
@@ -325,6 +330,6 @@ def load_tokenizer(model_path, tokenizer_config_extra={}):
                 detokenizer_class = BPEStreamingDetokenizer
 
     return TokenizerWrapper(
-        AutoTokenizer.from_pretrained(model_path, **tokenizer_config_extra),
+        AutoTokenizer.from_pretrained(model_path, trust_remote_code=trust_remote_code, **tokenizer_config_extra),
         detokenizer_class,
     )
