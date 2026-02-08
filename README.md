@@ -368,6 +368,76 @@ scores = processor.score_retrieval(text_embeddings, image_embeddings)
 print(scores)
 ```
 
+## Model Conversion
+
+### Converting Hugging Face Models to MLX Format
+
+You can convert Hugging Face models to MLX format using the `mlx-embeddings` conversion tool:
+
+```bash
+python -m mlx_embeddings.convert \
+  --hf-path <huggingface-model-id-or-path> \
+  --mlx-path <output-path>
+```
+
+### Quantization
+
+The conversion tool supports quantization to reduce model size and improve inference speed:
+
+```bash
+# Default affine quantization (group_size=64, bits=4)
+python -m mlx_embeddings.convert \
+  --hf-path <huggingface-model-id-or-path> \
+  --mlx-path <output-path> \
+  --quantize
+```
+
+#### Quantization Modes
+
+The `--q-mode` option specifies which quantization mode to use. Supported modes are:
+
+| Mode | Group Size | Bits | Use Case |
+|------|-----------|------|----------|
+| `affine` (default) | 64 | 4 | General-purpose quantization |
+| `mxfp4` | 32 | 4 | MLX floating-point 4-bit |
+| `nvfp4` | 16 | 4 | NVIDIA floating-point 4-bit |
+| `mxfp8` | 32 | 8 | MLX floating-point 8-bit (higher precision) |
+
+**Examples:**
+
+```bash
+# mxfp4 quantization with default settings
+python -m mlx_embeddings.convert \
+  --hf-path <model> \
+  --mlx-path <output-path> \
+  --quantize \
+  --q-mode mxfp4
+
+# nvfp4 quantization with custom group size and bits
+python -m mlx_embeddings.convert \
+  --hf-path <model> \
+  --mlx-path <output-path> \
+  --quantize \
+  --q-mode nvfp4 \
+  --q-group-size 32 \
+  --q-bits 6
+
+# mxfp8 for higher precision (8-bit)
+python -m mlx_embeddings.convert \
+  --hf-path <model> \
+  --mlx-path <output-path> \
+  --quantize \
+  --q-mode mxfp8
+```
+
+**Note:** User-specified `--q-group-size` and `--q-bits` values override mode defaults.
+
+### Other Conversion Options
+
+- `--dtype`: Convert to specific dtype (`float16`, `bfloat16`, `float32`). Defaults to `float16`.
+- `--dequantize`: Dequantize a previously quantized model.
+- `--upload-repo`: Upload converted model to Hugging Face Hub.
+
 ## Contributing
 
 Contributions to MLX-Embeddings are welcome! Please refer to our contribution guidelines for more information.

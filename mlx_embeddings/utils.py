@@ -461,6 +461,7 @@ def quantize_model(
     config: dict,
     q_group_size: int,
     q_bits: int,
+    mode: str = "affine",
     skip_vision: bool = True,
 ) -> Tuple:
     """
@@ -471,18 +472,60 @@ def quantize_model(
         config (dict): Model configuration.
         q_group_size (int): Group size for quantization.
         q_bits (int): Bits per weight for quantization.
+        mode (str): The quantization mode. Supported values: "affine", "mxfp4", 
+            "nvfp4", "mxfp8". Defaults to "affine".
+        skip_vision (bool): Whether to skip vision layers. Defaults to True.
 
     Returns:
         Tuple: Tuple containing quantized weights and config.
+        
+    Raises:
+        ValueError: If an unsupported quantization mode is specified.
     """
+    def defaults_for_mode(mode: str, group_size: int, bits: int) -> Tuple[int, int]:
+        """
+        Get default group_size and bits for the given quantization mode.
+        
+        Args:
+            mode (str): The quantization mode.
+            group_size (int): User-specified group size (used if non-zero).
+            bits (int): User-specified bits (used if non-zero).
+            
+        Returns:
+            Tuple: (effective_group_size, effective_bits)
+        """
+        mode_defaults = {
+            "affine": (64, 4),
+            "mxfp4": (32, 4),
+            "nvfp4": (16, 4),
+            "mxfp8": (32, 8),
+        }
+        if mode not in mode_defaults:
+            raise ValueError(
+                f"Unsupported quantization mode '{mode}'. "
+                f"Supported modes are: {', '.join(mode_defaults.keys())}"
+            )
+        default_group_size, default_bits = mode_defaults[mode]
+        # Use provided values if they are non-zero, otherwise use defaults
+        effective_group_size = group_size if group_size else default_group_size
+        effective_bits = bits if bits else default_bits
+        return effective_group_size, effective_bits
+    
     quantized_config = copy.deepcopy(config)
+    effective_group_size, effective_bits = defaults_for_mode(mode, q_group_size, q_bits)
+    
     nn.quantize(
         model,
-        q_group_size,
-        q_bits,
+        effective_group_size,
+        effective_bits,
+        mode=mode,
         class_predicate=get_class_predicate(skip_vision=skip_vision),
     )
-    quantized_config["quantization"] = {"group_size": q_group_size, "bits": q_bits}
+    quantized_config["quantization"] = {
+        "group_size": effective_group_size, 
+        "bits": effective_bits,
+        "mode": mode,
+    }
     quantized_weights = dict(tree_flatten(model.parameters()))
 
     return quantized_weights, quantized_config
@@ -563,6 +606,7 @@ def convert(
     quantize: bool = False,
     q_group_size: int = 64,
     q_bits: int = 4,
+    q_mode: str = "affine",
     dtype: str = "float16",
     upload_repo: str = None,
     revision: Optional[str] = None,
@@ -586,7 +630,7 @@ def convert(
         print("[INFO] Quantizing")
         model.load_weights(list(weights.items()))
         weights, config = quantize_model(
-            model, config, q_group_size, q_bits, skip_vision=skip_vision
+            model, config, q_group_size, q_bits, mode=q_mode, skip_vision=skip_vision
         )
 
     if dequantize:
