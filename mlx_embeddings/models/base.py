@@ -37,6 +37,13 @@ class ViTModelOutput:
     vision_model_output: Optional[mx.array] = None
 
 
+@dataclass
+class RerankerOutput:
+    scores: Optional[mx.array] = None
+    query_embeds: Optional[mx.array] = None
+    doc_embeds: Optional[mx.array] = None
+
+
 def mean_pooling(token_embeddings: mx.array, attention_mask: mx.array):
     input_mask_expanded = mx.expand_dims(attention_mask, -1)
     input_mask_expanded = mx.broadcast_to(

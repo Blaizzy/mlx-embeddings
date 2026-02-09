@@ -7,6 +7,7 @@ import json
 import logging
 import re
 import shutil
+from enum import Enum
 from pathlib import Path
 from textwrap import dedent
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
@@ -23,6 +24,44 @@ from .tokenizer_utils import TokenizerWrapper, load_tokenizer
 
 # Constants
 MODEL_REMAPPING = {}
+
+
+class Architecture(str, Enum):
+    """Known model architectures for routing and validation.
+    
+    This enum provides type-safe architecture handling and enables
+    architecture-based routing when model_type collides.
+    
+    Inherits from both str and Enum to allow enum members to be used as both
+    enum values and strings, which is important for dictionary keys in
+    ARCHITECTURE_REMAPPING and string comparisons throughout the codebase.
+    """
+    JINA_FOR_RANKING = "JinaForRanking"
+    MODERN_BERT_FOR_MASKED_LM = "ModernBertForMaskedLM"
+    MODERN_BERT_FOR_SEQUENCE_CLASSIFICATION = "ModernBertForSequenceClassification"
+    MODERN_BERT_MODEL = "ModernBertModel"
+    
+    @classmethod
+    def from_string(cls, arch_name: str) -> Optional["Architecture"]:
+        """Convert string to Architecture enum, returning None if not found.
+        
+        Args:
+            arch_name: Architecture name string to convert
+            
+        Returns:
+            Architecture enum if found, None otherwise
+        """
+        try:
+            return cls(arch_name)
+        except ValueError:
+            logging.debug(f"Unknown architecture '{arch_name}' - not in Architecture enum")
+            return None
+
+
+# Architecture-based routing (overrides model_type when architectures collide)
+ARCHITECTURE_REMAPPING = {
+    Architecture.JINA_FOR_RANKING: "jina_reranker",
+}
 
 # Model registry: all supported models with their trust_remote_code requirements
 SUPPORTED_MODELS = {
@@ -54,6 +93,10 @@ SUPPORTED_MODELS = {
         "trust_remote_code": True,
         "description": "Qwen3-VL multimodal embeddings (custom architecture)"
     },
+    "jina_reranker": {
+        "trust_remote_code": False,
+        "description": "Jina Reranker v3 cross-encoder (Qwen3 backbone, projector MLP, cosine scoring)"
+    },
 }
 
 MAX_FILE_SIZE_GB = 5
@@ -63,6 +106,46 @@ class ModelNotFoundError(Exception):
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
+
+
+def _resolve_model_type(config: dict) -> str:
+    """Resolve effective model type, checking architecture-based routing first.
+    
+    Normalizes the architectures field to handle various input types (str, None, list)
+    and uses the Architecture enum for type-safe routing.
+    
+    Args:
+        config (dict): Model config dict with optional 'architectures' and 'model_type'
+        
+    Returns:
+        str: The resolved model type string
+    """
+    # Normalize architectures to a list
+    architectures = config.get("architectures")
+    if architectures is None:
+        arch_iter = []
+    elif isinstance(architectures, str):
+        arch_iter = [architectures]
+    elif isinstance(architectures, (list, tuple)):
+        arch_iter = architectures
+    elif isinstance(architectures, set):
+        # Filter to strings first to avoid TypeError when the set contains mixed types.
+        # This ensures consistent behavior across runs when multiple architectures
+        # might match the remapping, as the first match will be used.
+        arch_iter = sorted(a for a in architectures if isinstance(a, str))
+    else:
+        arch_iter = []
+    
+    # Check architecture-based routing with enum validation
+    for arch_name in arch_iter:
+        # Skip non-string values to avoid exceptions
+        if not isinstance(arch_name, str):
+            continue
+        arch_enum = Architecture.from_string(arch_name)
+        if arch_enum and arch_enum in ARCHITECTURE_REMAPPING:
+            return ARCHITECTURE_REMAPPING[arch_enum]
+    
+    return config.get("model_type", "").replace("-", "_")
 
 
 def validate_model_type(config: dict, trust_remote_code: bool = False) -> None:
@@ -81,7 +164,7 @@ def validate_model_type(config: dict, trust_remote_code: bool = False) -> None:
         >>> validate_model_type({"model_type": "unknown"})  # ValueError
         >>> validate_model_type({"model_type": "qwen3_vl"}, trust_remote_code=True)  # OK
     """
-    model_type = config.get("model_type", "").replace("-", "_")
+    model_type = _resolve_model_type(config)
 
     if model_type not in SUPPORTED_MODELS:
         supported_list = ", ".join(SUPPORTED_MODELS.keys())
@@ -127,7 +210,7 @@ def _get_classes(config: dict, trust_remote_code: bool = False):
     # Validate before attempting import
     validate_model_type(config, trust_remote_code=trust_remote_code)
 
-    model_type = config["model_type"].replace("-", "_")
+    model_type = _resolve_model_type(config)
     model_type = MODEL_REMAPPING.get(model_type, model_type)
     try:
         arch = importlib.import_module(f"mlx_embeddings.models.{model_type}")
@@ -408,7 +491,14 @@ def upload_to_hub(path: str, upload_repo: str, hf_path: str, config: dict):
         print(similarity_matrix)
         """
 
-        if config.get("architectures", None) == "ModernBertForMaskedLM":
+        # Check if this is a ModernBert masked LM model
+        architectures = config.get("architectures", [])
+        if isinstance(architectures, str):
+            architectures = [architectures]
+        elif not isinstance(architectures, (list, tuple, set)):
+            # Normalize None or other invalid types to an empty list
+            architectures = []
+        if "ModernBertForMaskedLM" in architectures:
             text_example = """
             # For masked language modeling
             output = generate(model, processor, texts=["The capital of France is [MASK]."])\n
@@ -444,7 +534,7 @@ def upload_to_hub(path: str, upload_repo: str, hf_path: str, config: dict):
         f"""
         # {upload_repo}
 
-        The Model [{upload_repo}](https://huggingface.co/{upload_repo}) was converted to MLX format from [{hf_path}](https://huggingface.co/{hf_path}) using mlx-lm version **{__version__}**.
+        The Model [{upload_repo}](https://huggingface.co/{upload_repo}) was converted to MLX format from [{hf_path}](https://huggingface.co/{hf_path}) using [mlx-embeddings](https://github.com/Blaizzy/mlx-embeddings) version **{__version__}**.
 
         ## Use with mlx
 
@@ -545,8 +635,8 @@ def get_class_predicate(skip_vision, weights=None):
 def quantize_model(
     model: nn.Module,
     config: dict,
-    q_group_size: int,
-    q_bits: int,
+    q_group_size: Optional[int],
+    q_bits: Optional[int],
     mode: str = "affine",
     skip_vision: bool = True,
 ) -> Tuple:
@@ -556,8 +646,8 @@ def quantize_model(
     Args:
         model (nn.Module): The model to be quantized.
         config (dict): Model configuration.
-        q_group_size (int): Group size for quantization.
-        q_bits (int): Bits per weight for quantization.
+        q_group_size (Optional[int]): Group size for quantization. If None, uses mode-specific default.
+        q_bits (Optional[int]): Bits per weight for quantization. If None, uses mode-specific default.
         mode (str): The quantization mode. Supported values: "affine", "mxfp4", 
             "nvfp4", "mxfp8". Defaults to "affine".
         skip_vision (bool): Whether to skip vision layers. Defaults to True.
@@ -568,14 +658,14 @@ def quantize_model(
     Raises:
         ValueError: If an unsupported quantization mode is specified.
     """
-    def defaults_for_mode(mode: str, group_size: int, bits: int) -> Tuple[int, int]:
+    def defaults_for_mode(mode: str, group_size: Optional[int], bits: Optional[int]) -> Tuple[int, int]:
         """
         Get default group_size and bits for the given quantization mode.
         
         Args:
             mode (str): The quantization mode.
-            group_size (int): User-specified group size (used if non-zero).
-            bits (int): User-specified bits (used if non-zero).
+            group_size (Optional[int]): User-specified group size. If None, uses mode-specific default.
+            bits (Optional[int]): User-specified bits. If None, uses mode-specific default.
             
         Returns:
             Tuple: (effective_group_size, effective_bits)
@@ -592,9 +682,9 @@ def quantize_model(
                 f"Supported modes are: {', '.join(mode_defaults.keys())}"
             )
         default_group_size, default_bits = mode_defaults[mode]
-        # Use provided values if they are non-zero, otherwise use defaults
-        effective_group_size = group_size if group_size else default_group_size
-        effective_bits = bits if bits else default_bits
+        # Use provided values if explicitly set, otherwise use mode defaults
+        effective_group_size = group_size if group_size is not None else default_group_size
+        effective_bits = bits if bits is not None else default_bits
         return effective_group_size, effective_bits
     
     quantized_config = copy.deepcopy(config)
@@ -690,8 +780,8 @@ def convert(
     hf_path: str,
     mlx_path: str = "mlx_model",
     quantize: bool = False,
-    q_group_size: int = 64,
-    q_bits: int = 4,
+    q_group_size: Optional[int] = None,
+    q_bits: Optional[int] = None,
     q_mode: str = "affine",
     dtype: str = "float16",
     upload_repo: str = None,
