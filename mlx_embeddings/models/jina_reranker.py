@@ -70,7 +70,7 @@ class Model(nn.Module):
         # Verify special tokens exist in all sequences
         embed_token_counts = mx.sum(embed_mask, axis=1)
         rerank_token_counts = mx.sum(rerank_mask, axis=1)
-        
+
         missing_embed_mask = embed_token_counts == 0
         if mx.any(missing_embed_mask):
             missing_indices = mx.where(missing_embed_mask)[0].tolist()
@@ -78,7 +78,7 @@ class Model(nn.Module):
                 f"doc_embed_token_id ({self.config.doc_embed_token_id}) not found in sequence(s) "
                 f"at indices: {missing_indices}. Each sequence must contain the document embedding token."
             )
-        
+
         missing_rerank_mask = rerank_token_counts == 0
         if mx.any(missing_rerank_mask):
             missing_indices = mx.where(missing_rerank_mask)[0].tolist()
