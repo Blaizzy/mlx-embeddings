@@ -39,10 +39,18 @@ class Architecture(str, Enum):
     
     @classmethod
     def from_string(cls, arch_name: str) -> Optional["Architecture"]:
-        """Convert string to Architecture enum, returning None if not found."""
+        """Convert string to Architecture enum, returning None if not found.
+        
+        Args:
+            arch_name: Architecture name string to convert
+            
+        Returns:
+            Architecture enum if found, None otherwise
+        """
         try:
             return cls(arch_name)
         except ValueError:
+            logging.debug(f"Unknown architecture '{arch_name}' - not in Architecture enum")
             return None
 
 
@@ -114,8 +122,11 @@ def _resolve_model_type(config: dict) -> str:
         arch_iter = []
     elif isinstance(architectures, str):
         arch_iter = [architectures]
-    elif isinstance(architectures, (list, tuple, set)):
+    elif isinstance(architectures, (list, tuple)):
         arch_iter = architectures
+    elif isinstance(architectures, set):
+        # Convert set to sorted list for deterministic ordering
+        arch_iter = sorted(architectures)
     else:
         arch_iter = []
     
