@@ -61,6 +61,8 @@ class Model(nn.Module):
         attention_mask: Optional[mx.array] = None,
         **kwargs,
     ) -> RerankerOutput:
+        if attention_mask is None:
+            attention_mask = mx.ones_like(input_ids)
         hidden_states = self.model(input_ids, attention_mask)
         batch_size = hidden_states.shape[0]
 
