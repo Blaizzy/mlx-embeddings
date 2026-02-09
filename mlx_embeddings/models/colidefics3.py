@@ -2,7 +2,7 @@ import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Optional
+from typing import ClassVar, Dict, List, Optional
 
 import mlx.core as mx
 import mlx.nn as nn
@@ -14,6 +14,10 @@ from mlx_vlm.models.idefics3 import Model as VLModel
 from mlx_vlm.models.idefics3 import ModelConfig as VLModelConfig
 from mlx_vlm.models.idefics3 import TextConfig, VisionConfig, VisionModel
 from mlx_vlm.trainer.utils import get_module_by_name, set_module_by_name
+from PIL import Image
+from transformers import BatchEncoding, Idefics3Processor
+
+from .processors import BaseColVisionProcessor
 
 
 def apply_lora_adapters(model, adapter_config, adapter_weights):
@@ -234,20 +238,7 @@ class Model(VLModel):
         return model
 
 
-from typing import ClassVar, List, Optional
-
-from PIL import Image
-from transformers import BatchEncoding, Idefics3Processor
-
-from ..colvision_processor import BaseColVisionProcessor
-
-
 class Processor(BaseColVisionProcessor, Idefics3Processor):
-    """
-    Processor for ColIdefics3.
-    Ported from PyTorch to MLX from:
-    https://github.com/illuin-tech/colpali/blob/main/colpali_engine/models/idefics3/colidefics3/processing_colidefics3.py
-    """
 
     query_prefix: ClassVar[str] = "Query: "
     query_augmentation_token: ClassVar[str] = "<end_of_utterance>"

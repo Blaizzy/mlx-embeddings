@@ -1,12 +1,3 @@
-"""
-ColQwen2.5 model implementation for MLX.
-
-ColQwen2.5 is a multimodal retrieval model that uses Qwen2.5-VL as its backbone
-to create efficient multi-vector embeddings from document images for retrieval.
-It follows the ColPali approach, eliminating the need for OCR pipelines.
-"""
-
-import inspect
 from dataclasses import asdict, dataclass
 from typing import Any, Dict, Optional
 
