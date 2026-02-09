@@ -24,6 +24,11 @@ from .tokenizer_utils import TokenizerWrapper, load_tokenizer
 # Constants
 MODEL_REMAPPING = {}
 
+# Architecture-based routing (overrides model_type when architectures collide)
+ARCHITECTURE_REMAPPING = {
+    "JinaForRanking": "jina_reranker",
+}
+
 # Model registry: all supported models with their trust_remote_code requirements
 SUPPORTED_MODELS = {
     "bert": {
@@ -54,6 +59,10 @@ SUPPORTED_MODELS = {
         "trust_remote_code": True,
         "description": "Qwen3-VL multimodal embeddings (custom architecture)"
     },
+    "jina_reranker": {
+        "trust_remote_code": False,
+        "description": "Jina Reranker v3 cross-encoder (Qwen3 backbone, projector MLP, cosine scoring)"
+    },
 }
 
 MAX_FILE_SIZE_GB = 5
@@ -63,6 +72,14 @@ class ModelNotFoundError(Exception):
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
+
+
+def _resolve_model_type(config: dict) -> str:
+    """Resolve effective model type, checking architecture-based routing first."""
+    for arch_name in config.get("architectures", []):
+        if arch_name in ARCHITECTURE_REMAPPING:
+            return ARCHITECTURE_REMAPPING[arch_name]
+    return config.get("model_type", "").replace("-", "_")
 
 
 def validate_model_type(config: dict, trust_remote_code: bool = False) -> None:
@@ -81,7 +98,7 @@ def validate_model_type(config: dict, trust_remote_code: bool = False) -> None:
         >>> validate_model_type({"model_type": "unknown"})  # ValueError
         >>> validate_model_type({"model_type": "qwen3_vl"}, trust_remote_code=True)  # OK
     """
-    model_type = config.get("model_type", "").replace("-", "_")
+    model_type = _resolve_model_type(config)
 
     if model_type not in SUPPORTED_MODELS:
         supported_list = ", ".join(SUPPORTED_MODELS.keys())
@@ -127,7 +144,7 @@ def _get_classes(config: dict, trust_remote_code: bool = False):
     # Validate before attempting import
     validate_model_type(config, trust_remote_code=trust_remote_code)
 
-    model_type = config["model_type"].replace("-", "_")
+    model_type = _resolve_model_type(config)
     model_type = MODEL_REMAPPING.get(model_type, model_type)
     try:
         arch = importlib.import_module(f"mlx_embeddings.models.{model_type}")
