@@ -609,9 +609,9 @@ def quantize_model(
                 f"Supported modes are: {', '.join(mode_defaults.keys())}"
             )
         default_group_size, default_bits = mode_defaults[mode]
-        # Use provided values if they are non-zero, otherwise use defaults
-        effective_group_size = group_size if group_size else default_group_size
-        effective_bits = bits if bits else default_bits
+        # Use provided values if explicitly set, otherwise use mode defaults
+        effective_group_size = group_size if group_size is not None else default_group_size
+        effective_bits = bits if bits is not None else default_bits
         return effective_group_size, effective_bits
     
     quantized_config = copy.deepcopy(config)
@@ -707,8 +707,8 @@ def convert(
     hf_path: str,
     mlx_path: str = "mlx_model",
     quantize: bool = False,
-    q_group_size: int = 64,
-    q_bits: int = 4,
+    q_group_size: Optional[int] = None,
+    q_bits: Optional[int] = None,
     q_mode: str = "affine",
     dtype: str = "float16",
     upload_repo: str = None,
