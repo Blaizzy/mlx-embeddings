@@ -129,10 +129,10 @@ def _resolve_model_type(config: dict) -> str:
     elif isinstance(architectures, (list, tuple)):
         arch_iter = architectures
     elif isinstance(architectures, set):
-        # Convert set to sorted list for deterministic ordering.
+        # Filter to strings first to avoid TypeError when the set contains mixed types.
         # This ensures consistent behavior across runs when multiple architectures
         # might match the remapping, as the first match will be used.
-        arch_iter = sorted(architectures)
+        arch_iter = sorted(a for a in architectures if isinstance(a, str))
     else:
         arch_iter = []
     
@@ -495,6 +495,9 @@ def upload_to_hub(path: str, upload_repo: str, hf_path: str, config: dict):
         architectures = config.get("architectures", [])
         if isinstance(architectures, str):
             architectures = [architectures]
+        elif not isinstance(architectures, (list, tuple, set)):
+            # Normalize None or other invalid types to an empty list
+            architectures = []
         if "ModernBertForMaskedLM" in architectures:
             text_example = """
             # For masked language modeling

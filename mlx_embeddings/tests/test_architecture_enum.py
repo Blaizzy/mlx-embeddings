@@ -1,7 +1,5 @@
 """Tests for Architecture enum and _resolve_model_type function."""
 
-import pytest
-
 from mlx_embeddings.utils import Architecture, ARCHITECTURE_REMAPPING, _resolve_model_type
 
 
@@ -87,6 +85,18 @@ class TestResolveModelType:
         config = {"architectures": {"JinaForRanking"}, "model_type": "qwen3"}
         result = _resolve_model_type(config)
         assert result == "jina_reranker"
+
+    def test_architectures_set_mixed_types(self):
+        """Test with architectures as a set containing mixed types."""
+        # Should filter to strings before sorting, avoiding TypeError
+        config = {"architectures": {"JinaForRanking", 123, None}, "model_type": "qwen3"}
+        result = _resolve_model_type(config)
+        assert result == "jina_reranker"
+        
+        # Set with only non-string values should fall back to model_type
+        config = {"architectures": {123, 456}, "model_type": "bert"}
+        result = _resolve_model_type(config)
+        assert result == "bert"
 
     def test_architectures_empty_list(self):
         """Test with empty architectures list (should fall back to model_type)."""
