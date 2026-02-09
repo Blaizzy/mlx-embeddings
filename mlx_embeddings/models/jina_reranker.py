@@ -69,6 +69,26 @@ class Model(nn.Module):
         embed_mask = (input_ids == self.config.doc_embed_token_id).astype(mx.int32)
         rerank_mask = (input_ids == self.config.query_embed_token_id).astype(mx.int32)
 
+        # Verify special tokens exist in all sequences
+        embed_token_counts = mx.sum(embed_mask, axis=1)
+        rerank_token_counts = mx.sum(rerank_mask, axis=1)
+
+        missing_embed_mask = embed_token_counts == 0
+        if mx.any(missing_embed_mask):
+            missing_indices = mx.where(missing_embed_mask)[0].tolist()
+            raise ValueError(
+                f"doc_embed_token_id ({self.config.doc_embed_token_id}) not found in sequence(s) "
+                f"at indices: {missing_indices}. Each sequence must contain the document embedding token."
+            )
+
+        missing_rerank_mask = rerank_token_counts == 0
+        if mx.any(missing_rerank_mask):
+            missing_indices = mx.where(missing_rerank_mask)[0].tolist()
+            raise ValueError(
+                f"query_embed_token_id ({self.config.query_embed_token_id}) not found in sequence(s) "
+                f"at indices: {missing_indices}. Each sequence must contain the query embedding token."
+            )
+
         embed_positions = mx.argmax(embed_mask, axis=1).astype(mx.int32)
         rerank_positions = mx.argmax(rerank_mask, axis=1).astype(mx.int32)
 
