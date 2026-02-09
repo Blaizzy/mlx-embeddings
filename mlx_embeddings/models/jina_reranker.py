@@ -71,16 +71,20 @@ class Model(nn.Module):
         embed_token_counts = mx.sum(embed_mask, axis=1)
         rerank_token_counts = mx.sum(rerank_mask, axis=1)
         
-        if mx.any(embed_token_counts == 0):
+        missing_embed_mask = embed_token_counts == 0
+        if mx.any(missing_embed_mask):
+            missing_indices = mx.where(missing_embed_mask)[0].tolist()
             raise ValueError(
-                f"doc_embed_token_id ({self.config.doc_embed_token_id}) not found in all sequences. "
-                "Each sequence must contain the document embedding token."
+                f"doc_embed_token_id ({self.config.doc_embed_token_id}) not found in sequence(s) "
+                f"at indices: {missing_indices}. Each sequence must contain the document embedding token."
             )
         
-        if mx.any(rerank_token_counts == 0):
+        missing_rerank_mask = rerank_token_counts == 0
+        if mx.any(missing_rerank_mask):
+            missing_indices = mx.where(missing_rerank_mask)[0].tolist()
             raise ValueError(
-                f"query_embed_token_id ({self.config.query_embed_token_id}) not found in all sequences. "
-                "Each sequence must contain the query embedding token."
+                f"query_embed_token_id ({self.config.query_embed_token_id}) not found in sequence(s) "
+                f"at indices: {missing_indices}. Each sequence must contain the query embedding token."
             )
 
         embed_positions = mx.argmax(embed_mask, axis=1).astype(mx.int32)
