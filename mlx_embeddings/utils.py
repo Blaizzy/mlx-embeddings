@@ -7,6 +7,7 @@ import json
 import logging
 import re
 import shutil
+from enum import Enum
 from pathlib import Path
 from textwrap import dedent
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
@@ -24,9 +25,30 @@ from .tokenizer_utils import TokenizerWrapper, load_tokenizer
 # Constants
 MODEL_REMAPPING = {}
 
+
+class Architecture(str, Enum):
+    """Known model architectures for routing and validation.
+    
+    This enum provides type-safe architecture handling and enables
+    architecture-based routing when model_type collides.
+    """
+    JINA_FOR_RANKING = "JinaForRanking"
+    MODERN_BERT_FOR_MASKED_LM = "ModernBertForMaskedLM"
+    MODERN_BERT_FOR_SEQUENCE_CLASSIFICATION = "ModernBertForSequenceClassification"
+    MODERN_BERT_MODEL = "ModernBertModel"
+    
+    @classmethod
+    def from_string(cls, arch_name: str) -> Optional["Architecture"]:
+        """Convert string to Architecture enum, returning None if not found."""
+        try:
+            return cls(arch_name)
+        except ValueError:
+            return None
+
+
 # Architecture-based routing (overrides model_type when architectures collide)
 ARCHITECTURE_REMAPPING = {
-    "JinaForRanking": "jina_reranker",
+    Architecture.JINA_FOR_RANKING: "jina_reranker",
 }
 
 # Model registry: all supported models with their trust_remote_code requirements
@@ -75,10 +97,34 @@ class ModelNotFoundError(Exception):
 
 
 def _resolve_model_type(config: dict) -> str:
-    """Resolve effective model type, checking architecture-based routing first."""
-    for arch_name in config.get("architectures", []):
-        if arch_name in ARCHITECTURE_REMAPPING:
-            return ARCHITECTURE_REMAPPING[arch_name]
+    """Resolve effective model type, checking architecture-based routing first.
+    
+    Normalizes the architectures field to handle various input types (str, None, list)
+    and uses the Architecture enum for type-safe routing.
+    
+    Args:
+        config (dict): Model config dict with optional 'architectures' and 'model_type'
+        
+    Returns:
+        str: The resolved model type string
+    """
+    # Normalize architectures to a list
+    architectures = config.get("architectures")
+    if architectures is None:
+        arch_iter = []
+    elif isinstance(architectures, str):
+        arch_iter = [architectures]
+    elif isinstance(architectures, (list, tuple, set)):
+        arch_iter = architectures
+    else:
+        arch_iter = []
+    
+    # Check architecture-based routing with enum validation
+    for arch_name in arch_iter:
+        arch_enum = Architecture.from_string(arch_name)
+        if arch_enum and arch_enum in ARCHITECTURE_REMAPPING:
+            return ARCHITECTURE_REMAPPING[arch_enum]
+    
     return config.get("model_type", "").replace("-", "_")
 
 
@@ -425,7 +471,11 @@ def upload_to_hub(path: str, upload_repo: str, hf_path: str, config: dict):
         print(similarity_matrix)
         """
 
-        if config.get("architectures", None) == "ModernBertForMaskedLM":
+        # Check if this is a ModernBert masked LM model
+        architectures = config.get("architectures", [])
+        if isinstance(architectures, str):
+            architectures = [architectures]
+        if "ModernBertForMaskedLM" in architectures:
             text_example = """
             # For masked language modeling
             output = generate(model, processor, texts=["The capital of France is [MASK]."])\n
