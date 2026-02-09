@@ -461,7 +461,7 @@ def upload_to_hub(path: str, upload_repo: str, hf_path: str, config: dict):
         f"""
         # {upload_repo}
 
-        The Model [{upload_repo}](https://huggingface.co/{upload_repo}) was converted to MLX format from [{hf_path}](https://huggingface.co/{hf_path}) using mlx-lm version **{__version__}**.
+        The Model [{upload_repo}](https://huggingface.co/{upload_repo}) was converted to MLX format from [{hf_path}](https://huggingface.co/{hf_path}) using [mlx-embeddings](https://github.com/Blaizzy/mlx-embeddings) version **{__version__}**.
 
         ## Use with mlx
 
