@@ -31,6 +31,10 @@ class Architecture(str, Enum):
     
     This enum provides type-safe architecture handling and enables
     architecture-based routing when model_type collides.
+    
+    Inherits from both str and Enum to allow enum members to be used as both
+    enum values and strings, which is important for dictionary keys in
+    ARCHITECTURE_REMAPPING and string comparisons throughout the codebase.
     """
     JINA_FOR_RANKING = "JinaForRanking"
     MODERN_BERT_FOR_MASKED_LM = "ModernBertForMaskedLM"
@@ -125,13 +129,18 @@ def _resolve_model_type(config: dict) -> str:
     elif isinstance(architectures, (list, tuple)):
         arch_iter = architectures
     elif isinstance(architectures, set):
-        # Convert set to sorted list for deterministic ordering
+        # Convert set to sorted list for deterministic ordering.
+        # This ensures consistent behavior across runs when multiple architectures
+        # might match the remapping, as the first match will be used.
         arch_iter = sorted(architectures)
     else:
         arch_iter = []
     
     # Check architecture-based routing with enum validation
     for arch_name in arch_iter:
+        # Skip non-string values to avoid exceptions
+        if not isinstance(arch_name, str):
+            continue
         arch_enum = Architecture.from_string(arch_name)
         if arch_enum and arch_enum in ARCHITECTURE_REMAPPING:
             return ARCHITECTURE_REMAPPING[arch_enum]
