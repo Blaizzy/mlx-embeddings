@@ -20,9 +20,7 @@ class TestConfigureParser:
 
     def test_q_mode_valid_choices(self):
         for mode in ("affine", "mxfp4", "nvfp4", "mxfp8"):
-            args = self.parser.parse_args(
-                ["--hf-path", "test/model", "--q-mode", mode]
-            )
+            args = self.parser.parse_args(["--hf-path", "test/model", "--q-mode", mode])
             assert args.q_mode == mode
 
     def test_q_mode_invalid_choice(self):
@@ -39,17 +37,26 @@ class TestConfigureParser:
         assert args.q_group_size == 64
 
     def test_all_convert_args_present(self):
-        args = self.parser.parse_args([
-            "--hf-path", "test/model",
-            "--mlx-path", "/tmp/out",
-            "-q",
-            "--q-group-size", "32",
-            "--q-bits", "8",
-            "--q-mode", "mxfp8",
-            "--dtype", "bfloat16",
-            "--upload-repo", "user/repo",
-            "-d",
-        ])
+        args = self.parser.parse_args(
+            [
+                "--hf-path",
+                "test/model",
+                "--mlx-path",
+                "/tmp/out",
+                "-q",
+                "--q-group-size",
+                "32",
+                "--q-bits",
+                "8",
+                "--q-mode",
+                "mxfp8",
+                "--dtype",
+                "bfloat16",
+                "--upload-repo",
+                "user/repo",
+                "-d",
+            ]
+        )
         assert args.hf_path == "test/model"
         assert args.mlx_path == "/tmp/out"
         assert args.quantize is True
@@ -81,10 +88,12 @@ class TestQuantizeModeDefaults:
         model = nn.Sequential(linear)
         config = {"model_type": "test"}
 
-        weights, qconfig = quantize_model(
-            model, config, group_size, bits, mode=mode
+        weights, qconfig = quantize_model(model, config, group_size, bits, mode=mode)
+        return (
+            qconfig["quantization"]["group_size"],
+            qconfig["quantization"]["bits"],
+            qconfig["quantization"]["mode"],
         )
-        return qconfig["quantization"]["group_size"], qconfig["quantization"]["bits"], qconfig["quantization"]["mode"]
 
     def test_affine_defaults(self):
         gs, bits, mode = self._call_defaults_for_mode("affine", 64, 4)
@@ -165,7 +174,10 @@ class TestConvertQModePassthrough:
 
         mock_quantize.return_value = (
             {"w": mx.zeros((4, 4))},
-            {"model_type": "test", "quantization": {"group_size": 32, "bits": 4, "mode": "mxfp4"}},
+            {
+                "model_type": "test",
+                "quantization": {"group_size": 32, "bits": 4, "mode": "mxfp4"},
+            },
         )
 
         from mlx_embeddings.utils import convert

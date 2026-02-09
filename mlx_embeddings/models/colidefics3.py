@@ -7,18 +7,13 @@ from typing import Dict, Optional
 import mlx.core as mx
 import mlx.nn as nn
 from huggingface_hub import snapshot_download
-
-from mlx_vlm.models.base import create_attention_mask
-from mlx_vlm.trainer.utils import get_module_by_name, set_module_by_name
 from mlx_lm.tuner.lora import LoRALinear
-from mlx_vlm.models.idefics3 import (
-    Model as VLModel,
-    ModelConfig as VLModelConfig,
-    LanguageModel,
-    TextConfig,
-    VisionModel,
-    VisionConfig,
-)
+from mlx_vlm.models.base import create_attention_mask
+from mlx_vlm.models.idefics3 import LanguageModel
+from mlx_vlm.models.idefics3 import Model as VLModel
+from mlx_vlm.models.idefics3 import ModelConfig as VLModelConfig
+from mlx_vlm.models.idefics3 import TextConfig, VisionConfig, VisionModel
+from mlx_vlm.trainer.utils import get_module_by_name, set_module_by_name
 
 
 def apply_lora_adapters(model, adapter_config, adapter_weights):
@@ -68,7 +63,9 @@ class Model(VLModel):
 
     def __init__(self, config: ModelArgs):
         super().__init__(config)
-        assert config.mask_non_image_embeddings is False, "mask_non_image_embeddings is not implemeted yet in ColIdefics3."
+        assert (
+            config.mask_non_image_embeddings is False
+        ), "mask_non_image_embeddings is not implemeted yet in ColIdefics3."
 
         self.embedding_dim = config.embedding_dim
         self.linear = nn.Linear(self.config.text_config.hidden_size, self.embedding_dim)
@@ -83,7 +80,9 @@ class Model(VLModel):
         pixel_values: Optional[mx.array] = None,
         **kwargs,
     ):
-        assert input_ids is not None or pixel_values is not None, "Either input_ids or pixel_values must be provided."
+        assert (
+            input_ids is not None or pixel_values is not None
+        ), "Either input_ids or pixel_values must be provided."
         inputs_embeds = self.get_input_embeddings(input_ids, pixel_values)
 
         last_hidden_state = self.call_lm_without_head(inputs_embeds=inputs_embeds)
@@ -163,10 +162,17 @@ class Model(VLModel):
         Sanitize the adapter weights to match the model's expected format.
         """
         # Remove any prefix that might be added by the adapter loading
-        sanitized_weights = {k.replace("base_model.model.model.", ""): v for k, v in weights.items()}
+        sanitized_weights = {
+            k.replace("base_model.model.model.", ""): v for k, v in weights.items()
+        }
         sanitized_weights = self.sanitize(weights=sanitized_weights)
         sanitized_weights = self.language_model.sanitize(weights=sanitized_weights)
-        sanitized_weights = {k.replace(".lora_A.weight", ".lora_a").replace(".lora_B.weight", ".lora_b"): v.T for k, v in sanitized_weights.items()}
+        sanitized_weights = {
+            k.replace(".lora_A.weight", ".lora_a").replace(
+                ".lora_B.weight", ".lora_b"
+            ): v.T
+            for k, v in sanitized_weights.items()
+        }
         return sanitized_weights
 
     @staticmethod
@@ -193,7 +199,9 @@ class Model(VLModel):
                 adapter_config = json.load(f)
 
             # Load base model and weights
-            model, weights = Model._load_base_model_and_weights(adapter_config["base_model_name_or_path"])
+            model, weights = Model._load_base_model_and_weights(
+                adapter_config["base_model_name_or_path"]
+            )
 
             # Load LoRA adapter weights
             adapter_weight_files = list(path.glob("*.safetensors"))
@@ -207,7 +215,9 @@ class Model(VLModel):
             adapter_weights = model.sanitize_adapters(adapter_weights)
 
             # Apply LoRA adapters to the model
-            model, target_modules = apply_lora_adapters(model, adapter_config, adapter_weights)
+            model, target_modules = apply_lora_adapters(
+                model, adapter_config, adapter_weights
+            )
 
             # [tm].weight -> [tm].linear.weight
             for tm in target_modules:
@@ -225,8 +235,10 @@ class Model(VLModel):
 
 
 from typing import ClassVar, List, Optional
+
 from PIL import Image
 from transformers import BatchEncoding, Idefics3Processor
+
 from ..colvision_processor import BaseColVisionProcessor
 
 
@@ -240,7 +252,9 @@ class Processor(BaseColVisionProcessor, Idefics3Processor):
     query_prefix: ClassVar[str] = "Query: "
     query_augmentation_token: ClassVar[str] = "<end_of_utterance>"
     image_token: ClassVar[str] = "<image>"
-    visual_prompt_prefix: ClassVar[str] = "<|im_start|>user\n<image>Describe the image.<end_of_utterance>"
+    visual_prompt_prefix: ClassVar[str] = (
+        "<|im_start|>user\n<image>Describe the image.<end_of_utterance>"
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

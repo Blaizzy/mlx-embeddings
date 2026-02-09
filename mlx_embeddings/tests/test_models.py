@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
 """Tests for `mlx_embeddings` package."""
+import importlib.util
 import unittest
 
 import mlx.core as mx
 from mlx.utils import tree_map
+
+HAS_COLQWEN3 = importlib.util.find_spec("mlx_embeddings.models.colqwen3") is not None
 
 
 class TestModels(unittest.TestCase):
@@ -399,6 +402,30 @@ class TestModels(unittest.TestCase):
             config.model_type,
             config.num_hidden_layers,
         )
+
+    @unittest.skipUnless(
+        HAS_COLQWEN3,
+        "mlx_embeddings.models.colqwen3 is not available in this checkout",
+    )
+    def test_colqwen3_model_args_from_dict(self):
+        from mlx_embeddings.models import colqwen3
+
+        config = colqwen3.ModelArgs.from_dict(
+            {
+                "model_type": "colqwen3",
+                "text_config": {},
+                "vision_config": {},
+                "vlm_config": {
+                    "text_config": {},
+                    "vision_config": {},
+                },
+            }
+        )
+
+        self.assertEqual(config.model_type, "colqwen3")
+        self.assertTrue(hasattr(config, "text_config"))
+        self.assertTrue(hasattr(config, "vision_config"))
+        self.assertTrue(hasattr(config, "vlm_config"))
 
 
 if __name__ == "__main__":

@@ -174,7 +174,7 @@ def load_model(
         model_args.vision_config = vision_config(**model_args.vision_config)
 
         # siglip models have a different image size
-        if "medsiglip" not in kwargs["path_to_repo"] and "siglip" in config["model_type"]:
+        if config["model_type"] in ["medsiglip", "siglip2"]:
             # Extract the image size
             image_size = re.search(
                 r"patch\d+-(\d+)(?:-|$)", kwargs["path_to_repo"]
@@ -495,25 +495,26 @@ def quantize_model(
         config (dict): Model configuration.
         q_group_size (int): Group size for quantization.
         q_bits (int): Bits per weight for quantization.
-        mode (str): The quantization mode. Supported values: "affine", "mxfp4", 
+        mode (str): The quantization mode. Supported values: "affine", "mxfp4",
             "nvfp4", "mxfp8". Defaults to "affine".
         skip_vision (bool): Whether to skip vision layers. Defaults to True.
 
     Returns:
         Tuple: Tuple containing quantized weights and config.
-        
+
     Raises:
         ValueError: If an unsupported quantization mode is specified.
     """
+
     def defaults_for_mode(mode: str, group_size: int, bits: int) -> Tuple[int, int]:
         """
         Get default group_size and bits for the given quantization mode.
-        
+
         Args:
             mode (str): The quantization mode.
             group_size (int): User-specified group size (used if non-zero).
             bits (int): User-specified bits (used if non-zero).
-            
+
         Returns:
             Tuple: (effective_group_size, effective_bits)
         """
@@ -533,10 +534,10 @@ def quantize_model(
         effective_group_size = group_size if group_size else default_group_size
         effective_bits = bits if bits else default_bits
         return effective_group_size, effective_bits
-    
+
     quantized_config = copy.deepcopy(config)
     effective_group_size, effective_bits = defaults_for_mode(mode, q_group_size, q_bits)
-    
+
     nn.quantize(
         model,
         q_group_size,
@@ -546,7 +547,7 @@ def quantize_model(
         ),
     )
     quantized_config["quantization"] = {
-        "group_size": effective_group_size, 
+        "group_size": effective_group_size,
         "bits": effective_bits,
         "mode": mode,
     }

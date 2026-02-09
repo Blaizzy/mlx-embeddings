@@ -57,7 +57,9 @@ class BaseColVisionProcessor(ABC, ProcessorMixin):
         ps_stacked = mx.stack(ps)
 
         scores = mx.einsum("bd,cd->bc", qs_stacked, ps_stacked)
-        assert scores.shape[0] == len(qs), f"Expected {len(qs)} scores, got {scores.shape[0]}"
+        assert scores.shape[0] == len(
+            qs
+        ), f"Expected {len(qs)} scores, got {scores.shape[0]}"
         return scores.astype(mx.float32)
 
     @staticmethod
@@ -102,5 +104,7 @@ class BaseColVisionProcessor(ABC, ProcessorMixin):
             scores_batch = mx.concatenate(scores_batch, axis=1)
             scores_list.append(scores_batch)
         scores = mx.concatenate(scores_list, axis=0)
-        assert scores.shape[0] == len(qs), f"Expected {len(qs)} scores, got {scores.shape[0]}"
+        assert scores.shape[0] == len(
+            qs
+        ), f"Expected {len(qs)} scores, got {scores.shape[0]}"
         return scores.astype(mx.float32)
