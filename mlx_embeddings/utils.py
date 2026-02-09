@@ -562,8 +562,8 @@ def get_class_predicate(skip_vision, weights=None):
 def quantize_model(
     model: nn.Module,
     config: dict,
-    q_group_size: int,
-    q_bits: int,
+    q_group_size: Optional[int],
+    q_bits: Optional[int],
     mode: str = "affine",
     skip_vision: bool = True,
 ) -> Tuple:
@@ -573,8 +573,8 @@ def quantize_model(
     Args:
         model (nn.Module): The model to be quantized.
         config (dict): Model configuration.
-        q_group_size (int): Group size for quantization.
-        q_bits (int): Bits per weight for quantization.
+        q_group_size (Optional[int]): Group size for quantization. If None, uses mode-specific default.
+        q_bits (Optional[int]): Bits per weight for quantization. If None, uses mode-specific default.
         mode (str): The quantization mode. Supported values: "affine", "mxfp4", 
             "nvfp4", "mxfp8". Defaults to "affine".
         skip_vision (bool): Whether to skip vision layers. Defaults to True.
@@ -585,14 +585,14 @@ def quantize_model(
     Raises:
         ValueError: If an unsupported quantization mode is specified.
     """
-    def defaults_for_mode(mode: str, group_size: int, bits: int) -> Tuple[int, int]:
+    def defaults_for_mode(mode: str, group_size: Optional[int], bits: Optional[int]) -> Tuple[int, int]:
         """
         Get default group_size and bits for the given quantization mode.
         
         Args:
             mode (str): The quantization mode.
-            group_size (int): User-specified group size (used if non-zero).
-            bits (int): User-specified bits (used if non-zero).
+            group_size (Optional[int]): User-specified group size. If None, uses mode-specific default.
+            bits (Optional[int]): User-specified bits. If None, uses mode-specific default.
             
         Returns:
             Tuple: (effective_group_size, effective_bits)
