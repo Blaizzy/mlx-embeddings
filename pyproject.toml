@@ -37,6 +37,11 @@ extra = [
     "pandas",
 ]
 
+dev = [
+    "pytest",
+    "psutil",
+    "rich",
+]
 
 [tool]
 [tool.setuptools.packages.find]
@@ -66,6 +71,10 @@ filename = "mlx_embeddings/version.py"
 search = '__version__ = "{current_version}"'
 replace = '__version__ = "{new_version}"'
 
+
+[tool.pytest.ini_options]
+# test_smoke.py is a CLI integration script, not a pytest module
+addopts = "--ignore=mlx_embeddings/tests/test_smoke.py"
 
 [tool.flake8]
 exclude = [
