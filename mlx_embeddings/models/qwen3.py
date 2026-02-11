@@ -12,7 +12,12 @@ from typing import Dict, Optional, Union
 import mlx.core as mx
 import mlx.nn as nn
 
-from .base import BaseModelArgs, BaseModelOutput, last_token_pooling, normalize_embeddings
+from .base import (
+    BaseModelArgs,
+    BaseModelOutput,
+    last_token_pooling,
+    normalize_embeddings,
+)
 
 
 @dataclass
@@ -118,9 +123,7 @@ class Qwen3Model(nn.Module):
     def __init__(self, args: ModelArgs):
         super().__init__()
         self.embed_tokens = nn.Embedding(args.vocab_size, args.hidden_size)
-        self.layers = [
-            TransformerBlock(args) for _ in range(args.num_hidden_layers)
-        ]
+        self.layers = [TransformerBlock(args) for _ in range(args.num_hidden_layers)]
         self.norm = nn.RMSNorm(args.hidden_size, eps=args.rms_norm_eps)
 
     def __call__(
@@ -138,8 +141,8 @@ class Qwen3Model(nn.Module):
 
         if attention_mask is not None and causal_mask is not None:
             padding_mask = (
-                (1.0 - attention_mask[:, None, None, :].astype(h.dtype)) * -1e9
-            )
+                1.0 - attention_mask[:, None, None, :].astype(h.dtype)
+            ) * -1e9
             mask = causal_mask + padding_mask
         else:
             mask = causal_mask

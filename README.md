@@ -24,7 +24,7 @@ We support a wide variety of embedding models for text and multimodal tasks. Eac
 | SigLIP | `siglip` | Vision-Language embeddings | Attention pooling | [Google SigLIP](https://huggingface.co/google/siglip-base-patch16-224) |
 | ColQwen | `colqwen2_5` | Document image retrieval | Multi-vector late interaction | [qnguyen3 ColQwen2.5](https://huggingface.co/qnguyen3/colqwen2.5-v0.2-mlx) |
 | **Qwen3-Embeddings** | **`qwen3`** | **High-performance text embeddings** | **Last-token pooling** | **[Qwen Qwen3-Embedding-0.6B](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B)** |
-| **Qwen3-VL-Embeddings** | **`qwen3_vl`** | **Unified text-image embeddings** | **Fused representation** | **[Qwen Qwen3-VL-Embedding-2B](https://huggingface.co/Qwen/Qwen3-VL-Embedding-2B)** |
+| **Qwen3-VL-Embeddings** | **`qwen3_vl`** | **Unified text-image embeddings** | **Last-token pooling after multimodal fusion** | **[Qwen Qwen3-VL-Embedding-2B](https://huggingface.co/Qwen/Qwen3-VL-Embedding-2B)** |
 
 ## Installation
 
@@ -227,38 +227,79 @@ print(outputs.text_embeds.dtype)  # model-dependent dtype
 
 ### Qwen3-VL-Embeddings (Vision-Language)
 
-Unified embeddings for both text and images:
+Unified embeddings for both text-only and image+text items (same vector space):
 
 ```python
-import mlx.core as mx
-from mlx_embeddings.utils import load
-from PIL import Image
+from mlx_embeddings import embed_text, embed_vision_language, load
 
-# Load the Qwen3-VL-Embeddings model (requires trust_remote_code)
+# You can use canonical model IDs or family aliases like "qwen3-vl"
 model, processor = load(
-    "Qwen/Qwen3-VL-Embedding-2B",
-    model_config={"trust_remote_code": True},
+    "qwen3-vl",
+    trust_remote_code=True,
 )
 
-# Encode text and image together
-texts = ["A scenic mountain landscape"]
-image = Image.open("mountain.jpg")
-
-# Process inputs
-inputs = processor(text=texts, images=[image], return_tensors="pt")
-input_ids = mx.array(inputs.input_ids)
-pixel_values = mx.array(inputs.pixel_values)
-image_grid_thw = mx.array(inputs.image_grid_thw)
-
-# Generate embeddings
-outputs = model(
-    input_ids=input_ids,
-    pixel_values=pixel_values,
-    image_grid_thw=image_grid_thw,
+# Text-only embedding (supported)
+text_embeds = embed_text(
+    model,
+    processor,
+    texts=["A scenic mountain landscape"],
 )
+print(text_embeds.shape)  # (1, 2048) for Qwen3-VL-Embedding-2B
 
-print(outputs.text_embeds.shape)   # (1, 2048)
-print(outputs.image_embeds.shape)  # (1, 2048)
+# Image+text embedding (primary)
+vl_embeds = embed_vision_language(
+    model,
+    processor,
+    items=[
+        {"text": "A scenic mountain landscape", "image": "mountain.jpg"},
+    ],
+)
+print(vl_embeds.shape)    # (1, 2048)
+print(vl_embeds.dtype)    # model-dependent dtype
+```
+
+### Qwen3-VL Support
+
+Qwen3-VL support in `mlx-embeddings` includes:
+
+- Model family discovery aliases:
+  - `qwen3-vl` -> `Qwen/Qwen3-VL-Embedding-2B` (default)
+  - `qwen3_vl` -> `Qwen/Qwen3-VL-Embedding-2B`
+- Canonical variants:
+  - `Qwen/Qwen3-VL-Embedding-2B`
+  - `Qwen/Qwen3-VL-Embedding-8B`
+- Input types:
+  - text-only (`list[str]`)
+  - image+text (`list[{"image": ..., "text"?: str}]`)
+  - image supports file paths, `PIL.Image.Image`, and raw bytes
+- Output behavior:
+  - one embedding per item in a unified space
+  - L2-normalized vectors intended for cosine similarity retrieval
+- Validation guarantees:
+  - no silent fallback from image+text to text-only
+  - explicit hard-errors on malformed multimodal batches
+  - explicit hard-errors when processor outputs are inconsistent
+
+Known limitations:
+
+- Qwen3-VL models are memory-intensive (2B/8B): tune batch size conservatively on laptop GPUs.
+- Very long prompts can exceed `text_config.max_position_embeddings` and will hard-error.
+- Image preprocessing is deterministic, but throughput depends on image resolution and model size.
+
+### CLI Usage
+
+```bash
+# List known model families
+mlx_embeddings --list-families
+
+# Text-only embedding
+mlx_embeddings --model qwen3-vl --text "cats on a couch"
+
+# Image+text embedding
+mlx_embeddings --model qwen3-vl --text "a photo of cats" --image ./images/cats.jpg
+
+# Full end-to-end demo (prints shape + deterministic fingerprints)
+python examples/qwen3_vl_end_to_end.py --model qwen3-vl --image ./images/cats.jpg
 ```
 
 
@@ -615,7 +656,7 @@ from mlx_embeddings.utils import load
 
 model, processor = load(
     "Qwen/Qwen3-VL-Embedding-2B",
-    model_config={"trust_remote_code": True},
+    trust_remote_code=True,
 )
 ```
 

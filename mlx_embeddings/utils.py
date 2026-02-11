@@ -8,53 +8,92 @@ import logging
 import re
 import shutil
 from enum import Enum
+from io import BytesIO
 from pathlib import Path
 from textwrap import dedent
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
 import mlx.core as mx
 import mlx.nn as nn
+import numpy as np
 from huggingface_hub import snapshot_download
 from huggingface_hub.errors import RepositoryNotFoundError
 from mlx.utils import tree_flatten, tree_unflatten
-from mlx_vlm.utils import process_image
-from transformers import AutoProcessor, PreTrainedTokenizer
+from mlx_vlm.utils import load_processor, process_image
+from PIL import Image, ImageOps
+from transformers import (
+    AutoImageProcessor,
+    AutoProcessor,
+    AutoTokenizer,
+    PreTrainedTokenizer,
+)
+from transformers import __version__ as TRANSFORMERS_VERSION
 
 from .tokenizer_utils import TokenizerWrapper, load_tokenizer
 
 # Constants
 MODEL_REMAPPING = {}
+MODEL_FAMILIES = {
+    "qwen3": {
+        "default_model": "Qwen/Qwen3-Embedding-0.6B",
+        "variants": [
+            "Qwen/Qwen3-Embedding-0.6B",
+            "Qwen/Qwen3-Embedding-4B",
+            "Qwen/Qwen3-Embedding-8B",
+        ],
+        "aliases": ["qwen3", "qwen3-embedding"],
+        "model_type": "qwen3",
+    },
+    "qwen3-vl": {
+        "default_model": "Qwen/Qwen3-VL-Embedding-2B",
+        "variants": [
+            "Qwen/Qwen3-VL-Embedding-2B",
+            "Qwen/Qwen3-VL-Embedding-8B",
+        ],
+        "aliases": ["qwen3-vl", "qwen3_vl", "qwen3-vl-embedding"],
+        "model_type": "qwen3_vl",
+    },
+}
+
+MODEL_FAMILY_ALIASES = {
+    alias.lower(): family["default_model"]
+    for family in MODEL_FAMILIES.values()
+    for alias in family["aliases"]
+}
 
 
 class Architecture(str, Enum):
     """Known model architectures for routing and validation.
-    
+
     This enum provides type-safe architecture handling and enables
     architecture-based routing when model_type collides.
-    
+
     Inherits from both str and Enum to allow enum members to be used as both
     enum values and strings, which is important for dictionary keys in
     ARCHITECTURE_REMAPPING and string comparisons throughout the codebase.
     """
+
     JINA_FOR_RANKING = "JinaForRanking"
     MODERN_BERT_FOR_MASKED_LM = "ModernBertForMaskedLM"
     MODERN_BERT_FOR_SEQUENCE_CLASSIFICATION = "ModernBertForSequenceClassification"
     MODERN_BERT_MODEL = "ModernBertModel"
-    
+
     @classmethod
     def from_string(cls, arch_name: str) -> Optional["Architecture"]:
         """Convert string to Architecture enum, returning None if not found.
-        
+
         Args:
             arch_name: Architecture name string to convert
-            
+
         Returns:
             Architecture enum if found, None otherwise
         """
         try:
             return cls(arch_name)
         except ValueError:
-            logging.debug(f"Unknown architecture '{arch_name}' - not in Architecture enum")
+            logging.debug(
+                f"Unknown architecture '{arch_name}' - not in Architecture enum"
+            )
             return None
 
 
@@ -67,35 +106,35 @@ ARCHITECTURE_REMAPPING = {
 SUPPORTED_MODELS = {
     "bert": {
         "trust_remote_code": False,
-        "description": "BERT-based embeddings (mean pooling)"
+        "description": "BERT-based embeddings (mean pooling)",
     },
     "xlm_roberta": {
         "trust_remote_code": False,
-        "description": "XLM-RoBERTa multilingual embeddings (mean pooling)"
+        "description": "XLM-RoBERTa multilingual embeddings (mean pooling)",
     },
     "modernbert": {
         "trust_remote_code": False,
-        "description": "ModernBERT with configurable pooling (cls or mean)"
+        "description": "ModernBERT with configurable pooling (cls or mean)",
     },
     "siglip": {
         "trust_remote_code": False,
-        "description": "SigLIP vision-language model (contrastive learning)"
+        "description": "SigLIP vision-language model (contrastive learning)",
     },
     "colqwen2_5": {
         "trust_remote_code": False,
-        "description": "ColQwen2.5 multi-vector retrieval model"
+        "description": "ColQwen2.5 multi-vector retrieval model",
     },
     "qwen3": {
         "trust_remote_code": False,
-        "description": "Qwen3-Embeddings text model (last-token pooling, L2 norm)"
+        "description": "Qwen3-Embeddings text model (last-token pooling, L2 norm)",
     },
     "qwen3_vl": {
         "trust_remote_code": True,
-        "description": "Qwen3-VL multimodal embeddings (custom architecture)"
+        "description": "Qwen3-VL multimodal embeddings (custom architecture)",
     },
     "jina_reranker": {
         "trust_remote_code": False,
-        "description": "Jina Reranker v3 cross-encoder (Qwen3 backbone, projector MLP, cosine scoring)"
+        "description": "Jina Reranker v3 cross-encoder (Qwen3 backbone, projector MLP, cosine scoring)",
     },
 }
 
@@ -108,15 +147,149 @@ class ModelNotFoundError(Exception):
         super().__init__(self.message)
 
 
+class Qwen3VLProcessorFallback:
+    """
+    Minimal text+image processor for Qwen3-VL when AutoProcessor cannot initialize.
+
+    This fallback intentionally supports image+text and text-only embedding flows.
+    Video inputs are not supported in this wrapper.
+    """
+
+    def __init__(self, tokenizer: Any, image_processor: Any):
+        self.tokenizer = tokenizer
+        self.image_processor = image_processor
+        self.image_token = "<|image_pad|>"
+        self.vision_start_token = "<|vision_start|>"
+        self.vision_end_token = "<|vision_end|>"
+
+    def encode(self, text: str, return_tensors: str = "mlx"):
+        encoded = self.tokenizer(
+            text,
+            return_tensors="np",
+        )
+        input_ids = encoded["input_ids"]
+        if return_tensors == "mlx":
+            return mx.array(input_ids)
+        return input_ids
+
+    def batch_encode_plus(
+        self,
+        texts: List[str],
+        return_tensors: str = "mlx",
+        padding: bool = True,
+        truncation: bool = True,
+        max_length: int = 512,
+    ):
+        encoded = self.tokenizer(
+            texts,
+            return_tensors="np",
+            padding=padding,
+            truncation=truncation,
+            max_length=max_length,
+        )
+        if return_tensors == "mlx":
+            return {k: mx.array(v) for k, v in encoded.items()}
+        return encoded
+
+    def __call__(
+        self,
+        text: List[str],
+        images: List[Any],
+        padding: bool = True,
+        truncation: bool = True,
+        max_length: int = 512,
+        return_tensors: str = "mlx",
+    ):
+        if not isinstance(text, list):
+            text = [text]
+
+        image_inputs = self.image_processor(images=images, return_tensors="np")
+        image_grid_thw = image_inputs["image_grid_thw"]
+
+        text_with_vision_tokens = text.copy()
+        merge_length = int(self.image_processor.merge_size) ** 2
+        image_index = 0
+
+        for idx in range(len(text_with_vision_tokens)):
+            if self.image_token not in text_with_vision_tokens[idx]:
+                text_with_vision_tokens[idx] = (
+                    f"{self.vision_start_token}{self.image_token}{self.vision_end_token}"
+                    f"{text_with_vision_tokens[idx]}"
+                )
+
+            while self.image_token in text_with_vision_tokens[
+                idx
+            ] and image_index < len(image_grid_thw):
+                num_image_tokens = int(
+                    np.prod(image_grid_thw[image_index]) // merge_length
+                )
+                text_with_vision_tokens[idx] = text_with_vision_tokens[idx].replace(
+                    self.image_token,
+                    "<|placeholder|>" * num_image_tokens,
+                    1,
+                )
+                image_index += 1
+            text_with_vision_tokens[idx] = text_with_vision_tokens[idx].replace(
+                "<|placeholder|>",
+                self.image_token,
+            )
+
+        text_inputs = self.tokenizer(
+            text_with_vision_tokens,
+            return_tensors="np",
+            padding=padding,
+            truncation=truncation,
+            max_length=max_length,
+        )
+
+        merged = {**text_inputs, **image_inputs}
+        if return_tensors == "mlx":
+            return {
+                key: mx.array(value) if isinstance(value, np.ndarray) else value
+                for key, value in merged.items()
+            }
+        return merged
+
+
+def list_model_families() -> Dict[str, Dict[str, Any]]:
+    """Return supported model families and their canonical variants."""
+    return copy.deepcopy(MODEL_FAMILIES)
+
+
+def resolve_model_reference(path_or_hf_repo: str) -> str:
+    """
+    Resolve family aliases to canonical Hugging Face model IDs.
+
+    Local filesystem paths always win over alias resolution.
+    """
+    if not path_or_hf_repo:
+        raise ValueError("Model path/repo cannot be empty.")
+
+    candidate_path = Path(path_or_hf_repo)
+    if candidate_path.exists():
+        return path_or_hf_repo
+
+    resolved = MODEL_FAMILY_ALIASES.get(path_or_hf_repo.lower())
+    if resolved:
+        logging.info(
+            "Resolved model alias '%s' -> '%s'",
+            path_or_hf_repo,
+            resolved,
+        )
+        return resolved
+
+    return path_or_hf_repo
+
+
 def _resolve_model_type(config: dict) -> str:
     """Resolve effective model type, checking architecture-based routing first.
-    
+
     Normalizes the architectures field to handle various input types (str, None, list)
     and uses the Architecture enum for type-safe routing.
-    
+
     Args:
         config (dict): Model config dict with optional 'architectures' and 'model_type'
-        
+
     Returns:
         str: The resolved model type string
     """
@@ -135,7 +308,7 @@ def _resolve_model_type(config: dict) -> str:
         arch_iter = sorted(a for a in architectures if isinstance(a, str))
     else:
         arch_iter = []
-    
+
     # Check architecture-based routing with enum validation
     for arch_name in arch_iter:
         # Skip non-string values to avoid exceptions
@@ -144,7 +317,7 @@ def _resolve_model_type(config: dict) -> str:
         arch_enum = Architecture.from_string(arch_name)
         if arch_enum and arch_enum in ARCHITECTURE_REMAPPING:
             return ARCHITECTURE_REMAPPING[arch_enum]
-    
+
     return config.get("model_type", "").replace("-", "_")
 
 
@@ -237,31 +410,54 @@ def get_model_path(path_or_hf_repo: str, revision: Optional[str] = None) -> Path
     Returns:
         Path: The path to the model.
     """
-    model_path = Path(path_or_hf_repo)
+    resolved_path_or_hf_repo = resolve_model_reference(path_or_hf_repo)
+    model_path = Path(resolved_path_or_hf_repo)
     if not model_path.exists():
-        try:
-            model_path = Path(
-                snapshot_download(
-                    repo_id=path_or_hf_repo,
-                    revision=revision,
-                    allow_patterns=[
-                        "*.json",
-                        "*.safetensors",
-                        "*.py",
-                        "*.tiktoken",
-                        "*.txt",
-                        "*.model",
-                    ],
+        attempts = 2
+        last_error = None
+        for attempt in range(1, attempts + 1):
+            try:
+                model_path = Path(
+                    snapshot_download(
+                        repo_id=resolved_path_or_hf_repo,
+                        revision=revision,
+                        etag_timeout=10,
+                        allow_patterns=[
+                            "*.json",
+                            "*.safetensors",
+                            "*.py",
+                            "*.tiktoken",
+                            "*.txt",
+                            "*.model",
+                        ],
+                    )
                 )
-            )
-        except RepositoryNotFoundError:
+                break
+            except RepositoryNotFoundError:
+                raise ModelNotFoundError(
+                    f"Model not found for path or HF repo: {resolved_path_or_hf_repo}.\n"
+                    "Please make sure you specified the local path or Hugging Face"
+                    " repo id correctly.\nIf you are trying to access a private or"
+                    " gated Hugging Face repo, make sure you are authenticated:\n"
+                    "https://huggingface.co/docs/huggingface_hub/en/guides/cli#huggingface-cli-login"
+                ) from None
+            except Exception as exc:  # network/cache transient
+                last_error = exc
+                if attempt == attempts:
+                    raise ModelNotFoundError(
+                        f"Failed to download model '{resolved_path_or_hf_repo}' after {attempts} attempts: {exc}"
+                    ) from exc
+                logging.warning(
+                    "snapshot_download failed for '%s' (attempt %s/%s): %s",
+                    resolved_path_or_hf_repo,
+                    attempt,
+                    attempts,
+                    exc,
+                )
+        if last_error and not model_path.exists():
             raise ModelNotFoundError(
-                f"Model not found for path or HF repo: {path_or_hf_repo}.\n"
-                "Please make sure you specified the local path or Hugging Face"
-                " repo id correctly.\nIf you are trying to access a private or"
-                " gated Hugging Face repo, make sure you are authenticated:\n"
-                "https://huggingface.co/docs/huggingface_hub/en/guides/cli#huggingface-cli-login"
-            ) from None
+                f"Failed to resolve model path for '{resolved_path_or_hf_repo}'. Last error: {last_error}"
+            )
     return model_path
 
 
@@ -407,9 +603,16 @@ def load(
         FileNotFoundError: If config file or safetensors are not found.
         ValueError: If model class or args class are not found.
     """
-    model_path = get_model_path(path_or_hf_repo)
+    resolved_model = resolve_model_reference(path_or_hf_repo)
+    model_path = get_model_path(resolved_model)
 
-    model = load_model(model_path, lazy, model_config, path_to_repo=path_or_hf_repo)
+    model = load_model(
+        model_path,
+        lazy,
+        model_config,
+        trust_remote_code=trust_remote_code,
+        path_to_repo=resolved_model,
+    )
 
     # Try to load tokenizer first, then fall back to processor if needed
     tokenizer = None
@@ -417,9 +620,50 @@ def load(
     # First attempt: load tokenizer
     try:
         if hasattr(model.config, "vision_config"):
-            tokenizer = AutoProcessor.from_pretrained(model_path, trust_remote_code=trust_remote_code)
+            try:
+                tokenizer = AutoProcessor.from_pretrained(
+                    model_path, trust_remote_code=trust_remote_code
+                )
+            except Exception as auto_processor_error:
+                logging.warning(
+                    "AutoProcessor initialization failed for '%s': %s. "
+                    "Falling back to mlx_vlm.utils.load_processor.",
+                    resolved_model,
+                    auto_processor_error,
+                )
+                try:
+                    tokenizer = load_processor(
+                        model_path,
+                        trust_remote_code=trust_remote_code,
+                    )
+                except Exception as processor_error:
+                    if getattr(model.config, "model_type", "") != "qwen3_vl":
+                        raise ValueError(
+                            f"Failed to initialize vision processor: {processor_error}"
+                        ) from processor_error
+
+                    logging.warning(
+                        "mlx_vlm.load_processor failed for '%s' using transformers==%s: %s. "
+                        "Using qwen3_vl fallback processor (text + image only, video unsupported).",
+                        resolved_model,
+                        TRANSFORMERS_VERSION,
+                        processor_error,
+                    )
+                    tokenizer = Qwen3VLProcessorFallback(
+                        tokenizer=AutoTokenizer.from_pretrained(
+                            model_path,
+                            trust_remote_code=trust_remote_code,
+                        ),
+                        image_processor=AutoImageProcessor.from_pretrained(
+                            model_path,
+                            trust_remote_code=trust_remote_code,
+                            use_fast=False,
+                        ),
+                    )
         else:
-            tokenizer = load_tokenizer(model_path, tokenizer_config, trust_remote_code=trust_remote_code)
+            tokenizer = load_tokenizer(
+                model_path, tokenizer_config, trust_remote_code=trust_remote_code
+            )
     except Exception as tokenizer_error:
         raise ValueError(
             f"Failed to initialize tokenizer or processor: {tokenizer_error}"
@@ -433,7 +677,9 @@ def fetch_from_hub(
 ) -> Tuple[nn.Module, dict, PreTrainedTokenizer]:
     model = load_model(model_path, lazy, trust_remote_code=trust_remote_code, **kwargs)
     config = load_config(model_path)
-    tokenizer = load_tokenizer(model_path, tokenizer_config_extra={}, trust_remote_code=trust_remote_code)
+    tokenizer = load_tokenizer(
+        model_path, tokenizer_config_extra={}, trust_remote_code=trust_remote_code
+    )
     return model, config, tokenizer
 
 
@@ -648,25 +894,28 @@ def quantize_model(
         config (dict): Model configuration.
         q_group_size (Optional[int]): Group size for quantization. If None, uses mode-specific default.
         q_bits (Optional[int]): Bits per weight for quantization. If None, uses mode-specific default.
-        mode (str): The quantization mode. Supported values: "affine", "mxfp4", 
+        mode (str): The quantization mode. Supported values: "affine", "mxfp4",
             "nvfp4", "mxfp8". Defaults to "affine".
         skip_vision (bool): Whether to skip vision layers. Defaults to True.
 
     Returns:
         Tuple: Tuple containing quantized weights and config.
-        
+
     Raises:
         ValueError: If an unsupported quantization mode is specified.
     """
-    def defaults_for_mode(mode: str, group_size: Optional[int], bits: Optional[int]) -> Tuple[int, int]:
+
+    def defaults_for_mode(
+        mode: str, group_size: Optional[int], bits: Optional[int]
+    ) -> Tuple[int, int]:
         """
         Get default group_size and bits for the given quantization mode.
-        
+
         Args:
             mode (str): The quantization mode.
             group_size (Optional[int]): User-specified group size. If None, uses mode-specific default.
             bits (Optional[int]): User-specified bits. If None, uses mode-specific default.
-            
+
         Returns:
             Tuple: (effective_group_size, effective_bits)
         """
@@ -682,14 +931,16 @@ def quantize_model(
                 f"Supported modes are: {', '.join(mode_defaults.keys())}"
             )
         default_group_size, default_bits = mode_defaults[mode]
-        # Use provided values if explicitly set, otherwise use mode defaults
-        effective_group_size = group_size if group_size is not None else default_group_size
-        effective_bits = bits if bits is not None else default_bits
+        # Treat None/0/negative as "unset" and fall back to mode defaults.
+        effective_group_size = (
+            default_group_size if group_size is None or group_size <= 0 else group_size
+        )
+        effective_bits = default_bits if bits is None or bits <= 0 else bits
         return effective_group_size, effective_bits
-    
+
     quantized_config = copy.deepcopy(config)
     effective_group_size, effective_bits = defaults_for_mode(mode, q_group_size, q_bits)
-    
+
     nn.quantize(
         model,
         effective_group_size,
@@ -698,7 +949,7 @@ def quantize_model(
         class_predicate=get_class_predicate(skip_vision=skip_vision),
     )
     quantized_config["quantization"] = {
-        "group_size": effective_group_size, 
+        "group_size": effective_group_size,
         "bits": effective_bits,
         "mode": mode,
     }
@@ -791,27 +1042,33 @@ def convert(
     trust_remote_code: bool = False,
 ):
     print("[INFO] Loading")
-    model_path = get_model_path(hf_path, revision=revision)
-    config = load_config(model_path)
+    resolved_hf_path = resolve_model_reference(hf_path)
+    model_path = get_model_path(resolved_hf_path, revision=revision)
 
-    model, _, _ = fetch_from_hub(
-        model_path, lazy=True, trust_remote_code=trust_remote_code, path_to_repo=hf_path
+    model, config, _ = fetch_from_hub(
+        model_path,
+        lazy=not quantize,
+        trust_remote_code=trust_remote_code,
+        path_to_repo=resolved_hf_path,
     )
-    weights = dict(tree_flatten(model.parameters()))
-    del model
-    dtype_obj = getattr(mx, dtype)
-    weights = {k: v.astype(dtype_obj) if hasattr(v, 'astype') else v for k, v in weights.items()}
 
     if quantize and dequantize:
         raise ValueError("Choose either quantize or dequantize, not both.")
 
     if quantize:
         print("[INFO] Quantizing")
-        model = load_model(model_path, lazy=False, trust_remote_code=trust_remote_code, path_to_repo=hf_path)
-        model.load_weights(list(weights.items()))
         weights, config = quantize_model(
             model, config, q_group_size, q_bits, mode=q_mode, skip_vision=skip_vision
         )
+    else:
+        weights = dict(tree_flatten(model.parameters()))
+        dtype_obj = getattr(mx, dtype)
+        weights = {
+            k: v.astype(dtype_obj) if hasattr(v, "astype") else v
+            for k, v in weights.items()
+        }
+
+    del model
 
     mlx_path_obj = Path(mlx_path)
     save_weights(mlx_path_obj, weights, donate_weights=True)
@@ -823,8 +1080,13 @@ def convert(
             shutil.copy(file, str(mlx_path_obj))
 
     # Copy tokenizer files (tokenizer.json, tokenizer.model, etc.)
-    tokenizer_files = ["tokenizer.json", "tokenizer.model", "tokenizer.txt", 
-                       "special_tokens_map.json", "tokenizer_config.json"]
+    tokenizer_files = [
+        "tokenizer.json",
+        "tokenizer.model",
+        "tokenizer.txt",
+        "special_tokens_map.json",
+        "tokenizer_config.json",
+    ]
     for fname in tokenizer_files:
         src = model_path / fname
         if src.exists():
@@ -838,19 +1100,41 @@ def convert(
     print(f"[INFO] Conversion complete. Model saved to {mlx_path}")
 
 
+def _normalize_single_image_input(image: Any) -> Any:
+    """Normalize supported image input types to values process_image understands."""
+    if isinstance(image, Path):
+        return str(image)
+    if isinstance(image, (bytes, bytearray)):
+        with Image.open(BytesIO(image)) as in_memory_image:
+            image = ImageOps.exif_transpose(in_memory_image)
+            return image.convert("RGB")
+    return image
+
+
 def load_images(images, processor, resize_shape=None):
     image_processor = (
         processor.image_processor if hasattr(processor, "image_processor") else None
     )
-    if isinstance(images, str):
-        images = [process_image(images, resize_shape, image_processor)]
-    elif isinstance(images, list):
-        images = [
-            process_image(image, resize_shape, image_processor) for image in images
-        ]
+    if isinstance(images, (str, Path, bytes, bytearray, BytesIO, Image.Image)):
+        image_items = [images]
+    elif isinstance(images, (list, tuple)):
+        image_items = list(images)
     else:
-        raise ValueError(f"Unsupported image type: {type(images)}")
-    return images
+        raise ValueError(
+            "Unsupported image type. Expected a path, PIL image, bytes, or a list/tuple "
+            f"of those types. Got: {type(images)}"
+        )
+
+    processed_images = []
+    for idx, image in enumerate(image_items):
+        normalized_image = _normalize_single_image_input(image)
+        try:
+            processed_images.append(
+                process_image(normalized_image, resize_shape, image_processor)
+            )
+        except Exception as exc:
+            raise ValueError(f"Failed to process image at index {idx}: {exc}") from exc
+    return processed_images
 
 
 def prepare_inputs(
@@ -859,13 +1143,49 @@ def prepare_inputs(
     # Preprocess image-text embeddings
     if images is not None:
         images = load_images(images, processor, resize_shape=resize_shape)
+
+        if texts is None:
+            texts = [""] * len(images)
+        elif isinstance(texts, str):
+            texts = [texts]
+        elif isinstance(texts, tuple):
+            texts = list(texts)
+        elif not isinstance(texts, list):
+            raise ValueError(
+                f"Unsupported text input type for multimodal embeddings: {type(texts)}"
+            )
+
+        if any(not isinstance(text, str) for text in texts):
+            raise ValueError(
+                "All text entries must be strings for multimodal embedding."
+            )
+
+        if len(texts) != len(images):
+            raise ValueError(
+                f"Mismatched multimodal batch sizes: got {len(texts)} text item(s) and "
+                f"{len(images)} image item(s)."
+            )
+
         inputs = processor(
-            text=texts, images=images, padding="max_length", return_tensors="mlx"
+            text=texts,
+            images=images,
+            padding=padding,
+            truncation=truncation,
+            max_length=max_length,
+            return_tensors="mlx",
         )
 
     # Preprocess text embeddings
     elif isinstance(texts, str):
         inputs = processor.encode(texts, return_tensors="mlx")
+    elif isinstance(texts, tuple):
+        inputs = processor.batch_encode_plus(
+            list(texts),
+            return_tensors="mlx",
+            padding=padding,
+            truncation=truncation,
+            max_length=max_length,
+        )
     elif isinstance(texts, list):
         inputs = processor.batch_encode_plus(
             texts,
@@ -875,7 +1195,10 @@ def prepare_inputs(
             max_length=max_length,
         )
     else:
-        raise ValueError(f"Unsupported input type: {type(texts)}")
+        raise ValueError(
+            f"Unsupported input type for text embeddings: {type(texts)}. "
+            "Expected str, list[str], or tuple[str, ...]."
+        )
 
     return inputs
 
@@ -914,3 +1237,40 @@ def generate(
         outputs = model(**inputs)
 
     return outputs
+
+
+def get_embedding_provider(model: nn.Module, processor: Any):
+    """Return the provider implementation for a loaded model/processor pair."""
+    from .provider import get_embedding_provider as _get_embedding_provider
+
+    return _get_embedding_provider(model, processor, generate_fn=generate)
+
+
+def embed_text(
+    model: nn.Module,
+    processor: Any,
+    texts: List[str],
+    **kwargs,
+) -> mx.array:
+    """
+    Contract-first text embedding API.
+
+    This routes through the provider layer so model-specific constraints stay centralized.
+    """
+    provider = get_embedding_provider(model, processor)
+    return provider.embed_text(texts=texts, **kwargs)
+
+
+def embed_vision_language(
+    model: nn.Module,
+    processor: Any,
+    items: List[Dict[str, Any]],
+    **kwargs,
+) -> mx.array:
+    """
+    Contract-first multimodal embedding API.
+
+    Each item must include an ``image`` key and may include ``text``.
+    """
+    provider = get_embedding_provider(model, processor)
+    return provider.embed_vision_language(items=items, **kwargs)

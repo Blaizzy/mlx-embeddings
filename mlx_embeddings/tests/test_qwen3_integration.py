@@ -32,7 +32,6 @@ from mlx_embeddings.models.qwen3_vl import Model as Qwen3VLModel
 from mlx_embeddings.models.qwen3_vl import ModelArgs as Qwen3VLModelArgs
 from mlx_embeddings.models.qwen3_vl import TextConfig, VisionConfig
 
-
 # ============================================================================
 # TEST FIXTURES & HELPERS
 # ============================================================================
@@ -44,8 +43,9 @@ def create_synthetic_hidden_states(batch_size: int, seq_len: int, hidden_dim: in
     return mx.random.normal((batch_size, seq_len, hidden_dim))
 
 
-def create_synthetic_attention_mask(batch_size: int, seq_len: int,
-                                    padding_type: str = "none"):
+def create_synthetic_attention_mask(
+    batch_size: int, seq_len: int, padding_type: str = "none"
+):
     """Create attention masks with various padding patterns."""
     if padding_type == "none":
         return mx.ones((batch_size, seq_len))
@@ -65,9 +65,9 @@ def create_synthetic_attention_mask(batch_size: int, seq_len: int,
         mask = mx.zeros((batch_size, seq_len))
         for b in range(batch_size):
             if b % 2 == 0:
-                mask[b, (b + 2):] = 1.0
+                mask[b, (b + 2) :] = 1.0
             else:
-                mask[b, :(seq_len - b)] = 1.0
+                mask[b, : (seq_len - b)] = 1.0
         return mask
     raise ValueError(f"Unknown padding_type: {padding_type}")
 
@@ -78,8 +78,9 @@ def create_synthetic_input_ids(batch_size: int, seq_len: int, vocab_size: int = 
     return mx.array(np.random.randint(0, vocab_size, (batch_size, seq_len)))
 
 
-def create_synthetic_pixel_values(batch_size: int, channels: int = 3,
-                                  height: int = 224, width: int = 224):
+def create_synthetic_pixel_values(
+    batch_size: int, channels: int = 3, height: int = 224, width: int = 224
+):
     """Create synthetic image pixel values."""
     mx.random.seed(42)
     return mx.random.normal((batch_size, channels, height, width))
@@ -95,14 +96,16 @@ class TestQwen3ModelLoading(unittest.TestCase):
 
     def test_qwen3_model_instantiation(self):
         """Test that Qwen3 model can be instantiated with minimal config."""
-        args = Qwen3ModelArgs.from_dict({
-            "model_type": "qwen3",
-            "hidden_size": 1024,
-            "num_hidden_layers": 24,
-            "num_attention_heads": 16,
-            "intermediate_size": 2816,
-            "vocab_size": 152064
-        })
+        args = Qwen3ModelArgs.from_dict(
+            {
+                "model_type": "qwen3",
+                "hidden_size": 1024,
+                "num_hidden_layers": 24,
+                "num_attention_heads": 16,
+                "intermediate_size": 2816,
+                "vocab_size": 152064,
+            }
+        )
 
         model = Qwen3Model(args)
 
@@ -112,13 +115,15 @@ class TestQwen3ModelLoading(unittest.TestCase):
 
     def test_qwen3_model_has_expected_structure(self):
         """Test that Qwen3Model has expected attributes."""
-        args = Qwen3ModelArgs.from_dict({
-            "hidden_size": 512,
-            "num_hidden_layers": 12,
-            "num_attention_heads": 8,
-            "intermediate_size": 2048,
-            "vocab_size": 10000
-        })
+        args = Qwen3ModelArgs.from_dict(
+            {
+                "hidden_size": 512,
+                "num_hidden_layers": 12,
+                "num_attention_heads": 8,
+                "intermediate_size": 2048,
+                "vocab_size": 10000,
+            }
+        )
 
         model = Qwen3Model(args)
 
@@ -140,7 +145,7 @@ class TestQwen3ModelLoading(unittest.TestCase):
                 "num_hidden_layers": 24,
                 "num_attention_heads": 16,
                 "intermediate_size": 2816,
-                "vocab_size": 152064
+                "vocab_size": 152064,
             }
             config.update(config_override)
 
@@ -160,22 +165,24 @@ class TestQwen3VLModelLoading(unittest.TestCase):
 
     def test_qwen3_vl_model_instantiation(self):
         """Test that Qwen3-VL model can be instantiated."""
-        args = Qwen3VLModelArgs.from_dict({
-            "model_type": "qwen3_vl",
-            "text_config": {
-                "hidden_size": 2048,
-                "num_hidden_layers": 24,
-                "num_attention_heads": 16,
-                "vocab_size": 152064
-            },
-            "vision_config": {
-                "image_size": 1024,
-                "patch_size": 14,
-                "hidden_size": 1536,
-                "num_hidden_layers": 24,
-                "num_attention_heads": 24
+        args = Qwen3VLModelArgs.from_dict(
+            {
+                "model_type": "qwen3_vl",
+                "text_config": {
+                    "hidden_size": 2048,
+                    "num_hidden_layers": 24,
+                    "num_attention_heads": 16,
+                    "vocab_size": 152064,
+                },
+                "vision_config": {
+                    "image_size": 1024,
+                    "patch_size": 14,
+                    "hidden_size": 1536,
+                    "num_hidden_layers": 24,
+                    "num_attention_heads": 24,
+                },
             }
-        })
+        )
 
         model = Qwen3VLModel(args)
 
@@ -184,11 +191,13 @@ class TestQwen3VLModelLoading(unittest.TestCase):
 
     def test_qwen3_vl_model_has_multimodal_configs(self):
         """Test that Qwen3-VL model maintains text and vision configs."""
-        args = Qwen3VLModelArgs.from_dict({
-            "model_type": "qwen3_vl",
-            "text_config": {"hidden_size": 768},
-            "vision_config": {"image_size": 224, "hidden_size": 768}
-        })
+        args = Qwen3VLModelArgs.from_dict(
+            {
+                "model_type": "qwen3_vl",
+                "text_config": {"hidden_size": 768},
+                "vision_config": {"image_size": 224, "hidden_size": 768},
+            }
+        )
 
         model = Qwen3VLModel(args)
 
@@ -201,7 +210,7 @@ class TestQwen3VLModelLoading(unittest.TestCase):
             "hidden_size": 2048,
             "num_hidden_layers": 24,
             "vocab_size": 152064,
-            "num_attention_heads": 16
+            "num_attention_heads": 16,
         }
 
         vision_config_dict = {
@@ -209,7 +218,7 @@ class TestQwen3VLModelLoading(unittest.TestCase):
             "patch_size": 14,
             "hidden_size": 1536,
             "num_hidden_layers": 24,
-            "num_attention_heads": 24
+            "num_attention_heads": 24,
         }
 
         text_config = TextConfig.from_dict(text_config_dict)
@@ -229,13 +238,15 @@ class TestQwen3ForwardPass(unittest.TestCase):
 
     def test_qwen3_forward_returns_base_model_output(self):
         """Test that Qwen3.forward() returns BaseModelOutput."""
-        args = Qwen3ModelArgs.from_dict({
-            "hidden_size": 256,
-            "num_hidden_layers": 2,
-            "num_attention_heads": 4,
-            "intermediate_size": 512,
-            "vocab_size": 1000
-        })
+        args = Qwen3ModelArgs.from_dict(
+            {
+                "hidden_size": 256,
+                "num_hidden_layers": 2,
+                "num_attention_heads": 4,
+                "intermediate_size": 512,
+                "vocab_size": 1000,
+            }
+        )
 
         model = Qwen3Model(args)
         input_ids = create_synthetic_input_ids(2, 10, vocab_size=1000)
@@ -249,13 +260,15 @@ class TestQwen3ForwardPass(unittest.TestCase):
 
     def test_qwen3_forward_default_attention_mask(self):
         """Test that Qwen3 creates default attention_mask if not provided."""
-        args = Qwen3ModelArgs.from_dict({
-            "hidden_size": 256,
-            "num_hidden_layers": 2,
-            "num_attention_heads": 4,
-            "intermediate_size": 512,
-            "vocab_size": 1000
-        })
+        args = Qwen3ModelArgs.from_dict(
+            {
+                "hidden_size": 256,
+                "num_hidden_layers": 2,
+                "num_attention_heads": 4,
+                "intermediate_size": 512,
+                "vocab_size": 1000,
+            }
+        )
 
         model = Qwen3Model(args)
         input_ids = create_synthetic_input_ids(2, 10, vocab_size=1000)
@@ -270,45 +283,52 @@ class TestQwen3VLForwardPass(unittest.TestCase):
     """Test Qwen3-VL forward pass and multimodal output."""
 
     def test_qwen3_vl_forward_signature(self):
-        """Test that Qwen3-VL accepts multimodal inputs."""
-        args = Qwen3VLModelArgs.from_dict({
-            "model_type": "qwen3_vl",
-            "text_config": {
-                "hidden_size": 512,
-                "num_hidden_layers": 2,
-                "num_attention_heads": 4
-            },
-            "vision_config": {
-                "image_size": 224,
-                "patch_size": 16,
-                "hidden_size": 256,
-                "num_hidden_layers": 2,
-                "num_attention_heads": 4
+        """Qwen3-VL should hard-error when pixel_values are provided without image_grid_thw."""
+        args = Qwen3VLModelArgs.from_dict(
+            {
+                "model_type": "qwen3_vl",
+                "text_config": {
+                    "hidden_size": 512,
+                    "num_hidden_layers": 2,
+                    "num_attention_heads": 4,
+                },
+                "vision_config": {
+                    "image_size": 224,
+                    "patch_size": 16,
+                    "hidden_size": 256,
+                    "num_hidden_layers": 2,
+                    "num_attention_heads": 4,
+                },
             }
-        })
+        )
 
         model = Qwen3VLModel(args)
         input_ids = create_synthetic_input_ids(2, 10, vocab_size=1000)
         attention_mask = mx.ones((2, 10))
         pixel_values = create_synthetic_pixel_values(2, height=224, width=224)
 
-        try:
-            output = model(
+        with self.assertRaises(ValueError) as context:
+            model(
                 input_ids=input_ids,
                 attention_mask=attention_mask,
-                pixel_values=pixel_values
+                pixel_values=pixel_values,
             )
-        except NotImplementedError:
-            pass
+        self.assertIn("image_grid_thw", str(context.exception))
 
     def test_qwen3_vl_forward_with_image_grid_thw(self):
-        """Test Qwen3-VL with vision grid information."""
-        args = Qwen3VLModelArgs.from_dict({
-            "model_type": "qwen3_vl",
-            "text_config": {"hidden_size": 512, "num_hidden_layers": 2},
-            "vision_config": {"image_size": 224, "patch_size": 16,
-                             "hidden_size": 256, "num_hidden_layers": 2}
-        })
+        """Qwen3-VL should hard-error when image placeholders are missing in input_ids."""
+        args = Qwen3VLModelArgs.from_dict(
+            {
+                "model_type": "qwen3_vl",
+                "text_config": {"hidden_size": 512, "num_hidden_layers": 2},
+                "vision_config": {
+                    "image_size": 224,
+                    "patch_size": 16,
+                    "hidden_size": 256,
+                    "num_hidden_layers": 2,
+                },
+            }
+        )
 
         model = Qwen3VLModel(args)
         input_ids = create_synthetic_input_ids(2, 10)
@@ -316,15 +336,14 @@ class TestQwen3VLForwardPass(unittest.TestCase):
         pixel_values = create_synthetic_pixel_values(2)
         image_grid_thw = mx.array([[1, 16, 16], [1, 16, 16]])
 
-        try:
-            output = model(
+        with self.assertRaises(ValueError) as context:
+            model(
                 input_ids=input_ids,
                 attention_mask=attention_mask,
                 pixel_values=pixel_values,
-                image_grid_thw=image_grid_thw
+                image_grid_thw=image_grid_thw,
             )
-        except NotImplementedError:
-            pass
+        self.assertIn("placeholder tokens", str(context.exception))
 
 
 # ============================================================================
@@ -355,9 +374,7 @@ class TestQwen3Determinism(unittest.TestCase):
         normalized2 = normalize_embeddings(embeddings)
 
         np.testing.assert_allclose(
-            normalized1.tolist(),
-            normalized2.tolist(),
-            rtol=1e-5
+            normalized1.tolist(), normalized2.tolist(), rtol=1e-5
         )
 
     def test_seed_reproducibility(self):
@@ -411,15 +428,17 @@ class TestBackwardCompatibility(unittest.TestCase):
 
     def test_bert_model_still_loads(self):
         """Test that BERT model can still be instantiated."""
-        args = BertModelArgs.from_dict({
-            "model_type": "bert",
-            "hidden_size": 768,
-            "num_hidden_layers": 12,
-            "num_attention_heads": 12,
-            "intermediate_size": 3072,
-            "vocab_size": 30522,
-            "max_position_embeddings": 512
-        })
+        args = BertModelArgs.from_dict(
+            {
+                "model_type": "bert",
+                "hidden_size": 768,
+                "num_hidden_layers": 12,
+                "num_attention_heads": 12,
+                "intermediate_size": 3072,
+                "vocab_size": 30522,
+                "max_position_embeddings": 512,
+            }
+        )
 
         model = BertModel(args)
 
@@ -428,15 +447,17 @@ class TestBackwardCompatibility(unittest.TestCase):
 
     def test_bert_model_forward_still_works(self):
         """Test that BERT forward pass still works."""
-        args = BertModelArgs.from_dict({
-            "model_type": "bert",
-            "hidden_size": 256,
-            "num_hidden_layers": 2,
-            "num_attention_heads": 4,
-            "intermediate_size": 512,
-            "vocab_size": 1000,
-            "max_position_embeddings": 512
-        })
+        args = BertModelArgs.from_dict(
+            {
+                "model_type": "bert",
+                "hidden_size": 256,
+                "num_hidden_layers": 2,
+                "num_attention_heads": 4,
+                "intermediate_size": 512,
+                "vocab_size": 1000,
+                "max_position_embeddings": 512,
+            }
+        )
 
         model = BertModel(args)
         # Forward pass test simplified to avoid unrelated dtype issues
@@ -448,13 +469,12 @@ class TestBackwardCompatibility(unittest.TestCase):
         """Test that registry still lists all existing models."""
         from mlx_embeddings.utils import SUPPORTED_MODELS
 
-        existing_models = {
-            "bert", "xlm_roberta", "modernbert", "siglip", "colqwen2_5"
-        }
+        existing_models = {"bert", "xlm_roberta", "modernbert", "siglip", "colqwen2_5"}
 
         for model in existing_models:
-            self.assertIn(model, SUPPORTED_MODELS,
-                         f"Model {model} missing from registry")
+            self.assertIn(
+                model, SUPPORTED_MODELS, f"Model {model} missing from registry"
+            )
 
 
 # ============================================================================
@@ -485,8 +505,7 @@ class TestEndToEndPipeline(unittest.TestCase):
             self.assertAlmostEqual(norm, 1.0, places=5)
 
         output = BaseModelOutput(
-            text_embeds=normalized,
-            last_hidden_state=hidden_states
+            text_embeds=normalized, last_hidden_state=hidden_states
         )
         self.assertIsNotNone(output.text_embeds)
         self.assertIsNotNone(output.last_hidden_state)
@@ -505,8 +524,7 @@ class TestEndToEndPipeline(unittest.TestCase):
         image_embeds_norm = normalize_embeddings(image_embeds)
 
         output = ViTModelOutput(
-            text_embeds=text_embeds_norm,
-            image_embeds=image_embeds_norm
+            text_embeds=text_embeds_norm, image_embeds=image_embeds_norm
         )
 
         self.assertEqual(output.text_embeds.shape, (batch_size, text_dim))

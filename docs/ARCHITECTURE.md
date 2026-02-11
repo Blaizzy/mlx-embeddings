@@ -10,14 +10,25 @@ mlx-embeddings provides a modular, registry-based system for loading and using e
 
 The complete flow from model ID to inference-ready instance:
 
-1. `mlx_embeddings.utils.load(model_id)`
-2. `get_model_path()` downloads or locates weights and `config.json`
+1. `mlx_embeddings.utils.load(model_id_or_alias)`
+2. `resolve_model_reference()` maps family aliases (for example, `qwen3-vl`) to canonical HF IDs
+3. `get_model_path()` downloads or locates weights and `config.json`
 3. `load_config()` parses the model config
 4. `validate_model_type()` checks registry and trust_remote_code requirements
 5. `_get_classes()` dynamically imports `mlx_embeddings.models.{model_type}`
 6. `load_model()` instantiates the model and loads weights
 7. Tokenizer/processor is selected (`load_tokenizer()` or `AutoProcessor`)
 8. Returns `(model, tokenizer/processor)` ready for inference
+
+### Provider Contract
+
+Embedding APIs route through a provider abstraction to keep adapter-specific
+logic contained:
+
+- `embed_text(texts: list[str]) -> mx.array`
+- `embed_vision_language(items: list[{"image": ..., "text"?: str}]) -> mx.array`
+
+Qwen3-VL implements both methods. Invalid multimodal combinations hard-error.
 
 ### Registry (SUPPORTED_MODELS)
 
@@ -210,4 +221,3 @@ All adapters must return embeddings conforming to:
 
 - Some models (e.g., Qwen3-VL) use custom Python classes in their config.
 - This is explicitly validated; `load()` will error if `trust_remote_code` policy is violated.
-

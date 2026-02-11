@@ -1,24 +1,19 @@
-"""
-Qwen3-VL embedding model adapter for mlx-embeddings.
+"""Qwen3-VL embedding adapter.
 
-Wraps the mlx-vlm Qwen3-VL model for multimodal embedding tasks.
-Models: Qwen/Qwen3-VL-Embedding-2B, Qwen/Qwen3-VL-Embedding-8B
-
-Architecture:
-- Vision tower: Qwen3-VL vision encoder (ViT with 3D patch embedding)
-- Language model: Qwen3 decoder with GQA + RoPE
-- Embedding: last-token pooling + L2 normalization
+This adapter wraps mlx-vlm's Qwen3-VL implementation and exposes deterministic
+embedding extraction for text-only and image+text inputs.
 """
 
 import inspect
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, is_dataclass
 from typing import Any, Dict, Optional
 
 import mlx.core as mx
 import mlx.nn as nn
-import numpy as np
 from mlx_vlm.models.qwen3_vl import Model as Qwen3VLModel
-from mlx_vlm.models.qwen3_vl import ModelConfig, TextConfig, VisionConfig
+from mlx_vlm.models.qwen3_vl import ModelConfig
+from mlx_vlm.models.qwen3_vl import TextConfig as _UpstreamTextConfig
+from mlx_vlm.models.qwen3_vl import VisionConfig as _UpstreamVisionConfig
 
 from .base import (
     BaseModelArgs,
@@ -27,29 +22,110 @@ from .base import (
     normalize_embeddings,
 )
 
+_DEFAULT_TEXT_CONFIG = {
+    "model_type": "qwen3_vl",
+    "num_hidden_layers": 2,
+    "hidden_size": 512,
+    "intermediate_size": 2048,
+    "num_attention_heads": 8,
+    "rms_norm_eps": 1e-6,
+    "vocab_size": 151936,
+    "num_key_value_heads": 8,
+    "head_dim": 64,
+    "rope_theta": 1000000.0,
+    "max_position_embeddings": 32768,
+}
+
+
+def _coerce_config_dict(
+    params: Optional[Dict[str, Any]],
+    config_cls,
+    required_defaults: Dict[str, Any],
+    config_name: str,
+) -> Dict[str, Any]:
+    """Filter unknown keys and fill missing required keys with deterministic defaults."""
+    params = params or {}
+    if not isinstance(params, dict):
+        if is_dataclass(params):
+            params = asdict(params)
+        elif hasattr(params, "__dict__"):
+            params = dict(params.__dict__)
+        else:
+            raise ValueError(f"{config_name} must be a dictionary. Got: {type(params)}")
+
+    signature = inspect.signature(config_cls)
+    clean: Dict[str, Any] = {}
+    missing_required = []
+
+    for name, spec in signature.parameters.items():
+        if name in params:
+            clean[name] = params[name]
+        elif spec.default is not inspect._empty:
+            clean[name] = spec.default
+        elif name in required_defaults:
+            clean[name] = required_defaults[name]
+        else:
+            missing_required.append(name)
+
+    if missing_required:
+        raise ValueError(
+            f"{config_name} is missing required field(s): {', '.join(missing_required)}"
+        )
+
+    return clean
+
+
+class TextConfig(_UpstreamTextConfig):
+    """Compatibility wrapper that tolerates partial dicts in tests and local configs."""
+
+    @classmethod
+    def from_dict(cls, params):
+        return cls(
+            **_coerce_config_dict(
+                params, _UpstreamTextConfig, _DEFAULT_TEXT_CONFIG, "text_config"
+            )
+        )
+
+
+class VisionConfig(_UpstreamVisionConfig):
+    """Compatibility wrapper around upstream VisionConfig."""
+
+    @classmethod
+    def from_dict(cls, params):
+        return cls(
+            **_coerce_config_dict(params, _UpstreamVisionConfig, {}, "vision_config")
+        )
+
 
 @dataclass
 class ModelArgs(BaseModelArgs):
-    text_config: Dict[str, Any] = None
-    vision_config: Dict[str, Any] = None
-    vlm_config: Dict[str, Any] = None
+    text_config: Optional[Dict[str, Any]] = None
+    vision_config: Optional[Dict[str, Any]] = None
+    vlm_config: Optional[Dict[str, Any]] = None
     model_type: str = "qwen3_vl"
 
     @classmethod
     def from_dict(cls, params):
         vlm_config = dict(params)
 
-        text_config_raw = vlm_config.get("text_config", {})
-        vision_config_raw = vlm_config.get("vision_config", {})
+        text_config_raw = vlm_config.get("text_config")
+        vision_config_raw = vlm_config.get("vision_config")
 
         text_config = (
-            asdict(TextConfig.from_dict(text_config_raw)) if text_config_raw else {}
+            asdict(TextConfig.from_dict(text_config_raw))
+            if text_config_raw is not None
+            else None
         )
         vision_config = (
             asdict(VisionConfig.from_dict(vision_config_raw))
-            if vision_config_raw
-            else {}
+            if vision_config_raw is not None
+            else None
         )
+
+        if text_config is not None:
+            vlm_config["text_config"] = text_config
+        if vision_config is not None:
+            vlm_config["vision_config"] = vision_config
 
         return cls(
             text_config=text_config,
@@ -59,11 +135,11 @@ class ModelArgs(BaseModelArgs):
         )
 
     def __post_init__(self):
-        if not isinstance(self.vlm_config, dict):
+        if self.vlm_config is None:
+            self.vlm_config = {}
+        elif not isinstance(self.vlm_config, dict):
             self.vlm_config = (
-                self.vlm_config.__dict__
-                if hasattr(self.vlm_config, "__dict__")
-                else {}
+                self.vlm_config.__dict__ if hasattr(self.vlm_config, "__dict__") else {}
             )
 
 
@@ -72,70 +148,106 @@ class Model(nn.Module):
         super().__init__()
         self.config = config
 
-        vlm_config = ModelConfig.from_dict(config.vlm_config)
-        if isinstance(vlm_config.vision_config, dict):
-            vlm_config.vision_config = VisionConfig.from_dict(vlm_config.vision_config)
+        vlm_config_dict = dict(config.vlm_config or {})
+        if config.text_config is not None:
+            vlm_config_dict["text_config"] = config.text_config
+        if config.vision_config is not None:
+            vlm_config_dict["vision_config"] = config.vision_config
+
+        if (
+            "text_config" not in vlm_config_dict
+            or vlm_config_dict["text_config"] is None
+        ):
+            raise ValueError("qwen3_vl requires text_config in model config.")
+        if (
+            "vision_config" not in vlm_config_dict
+            or vlm_config_dict["vision_config"] is None
+        ):
+            raise ValueError("qwen3_vl requires vision_config in model config.")
+
+        # Normalize nested configs first so ModelConfig.from_dict always gets complete inputs.
+        vlm_config_dict["text_config"] = asdict(
+            TextConfig.from_dict(vlm_config_dict["text_config"])
+        )
+        vlm_config_dict["vision_config"] = asdict(
+            VisionConfig.from_dict(vlm_config_dict["vision_config"])
+        )
+
+        vlm_config = ModelConfig.from_dict(vlm_config_dict)
         if isinstance(vlm_config.text_config, dict):
             vlm_config.text_config = TextConfig.from_dict(vlm_config.text_config)
-
+        if isinstance(vlm_config.vision_config, dict):
+            vlm_config.vision_config = VisionConfig.from_dict(vlm_config.vision_config)
         self.vlm = Qwen3VLModel(vlm_config)
 
-        self.image_token_id = getattr(vlm_config, "image_token_id", 151655)
-        self.video_token_id = getattr(vlm_config, "video_token_id", 151656)
+        self.image_token_id = getattr(vlm_config, "image_token_index", None)
+        if self.image_token_id is None:
+            self.image_token_id = getattr(vlm_config, "image_token_id", 151655)
 
-    def get_input_embeddings_batch(
+        self.video_token_id = getattr(vlm_config, "video_token_index", None)
+        if self.video_token_id is None:
+            self.video_token_id = getattr(vlm_config, "video_token_id", 151656)
+
+        self.max_position_embeddings = getattr(
+            vlm_config.text_config,
+            "max_position_embeddings",
+            None,
+        )
+
+    def _build_attention_mask(
         self,
         input_ids: mx.array,
-        pixel_values: Optional[mx.array] = None,
-        image_grid_thw: Optional[mx.array] = None,
+        attention_mask: Optional[mx.array],
+        dtype,
     ):
-        if pixel_values is None:
-            return self.vlm.language_model.model.embed_tokens(input_ids)
+        seq_len = input_ids.shape[1]
 
-        dtype = self.vlm.vision_tower.patch_embed.proj.weight.dtype
-        pixel_values = pixel_values.astype(dtype)
-
-        inputs_embeds = self.vlm.language_model.model.embed_tokens(input_ids)
-
-        hidden_states, _ = self.vlm.vision_tower(pixel_values, image_grid_thw)
-
-        batch_size = input_ids.shape[0]
-        if batch_size > 1 and hidden_states.ndim == 2:
-            features_per_image = []
-            start_idx = 0
-            for i in range(batch_size):
-                t, h, w = image_grid_thw[i].tolist()
-                num_features = int(
-                    (h // self.vlm.vision_tower.spatial_merge_size)
-                    * (w // self.vlm.vision_tower.spatial_merge_size)
-                    * t
-                )
-                features_per_image.append(
-                    hidden_states[start_idx : start_idx + num_features]
-                )
-                start_idx += num_features
-            hidden_states = mx.stack(features_per_image)
-
-        if hidden_states.ndim == 2:
-            hidden_states = hidden_states[None, :, :]
-
-        image_positions = input_ids == self.image_token_id
-        if mx.sum(image_positions) == 0:
-            image_positions = input_ids == self.video_token_id
-
-        if batch_size == 1:
-            image_positions_np = np.array(image_positions)
-            image_indices = np.where(image_positions_np)[1].tolist()
-            inputs_embeds[:, image_indices, :] = hidden_states
+        if seq_len <= 1:
+            causal_mask = None
         else:
-            for batch_idx in range(batch_size):
-                batch_positions = image_positions[batch_idx]
-                batch_positions_np = np.array(batch_positions)
-                batch_indices = np.where(batch_positions_np)[0].tolist()
-                batch_features = hidden_states[batch_idx]
-                inputs_embeds[batch_idx, batch_indices, :] = batch_features
+            indices = mx.arange(seq_len)
+            causal_mask = (indices[:, None] < indices[None, :]).astype(dtype) * -1e9
 
-        return inputs_embeds
+        if attention_mask is None:
+            return causal_mask
+
+        padding_mask = (1.0 - attention_mask[:, None, None, :].astype(dtype)) * -1e9
+        if causal_mask is None:
+            return padding_mask
+
+        return causal_mask + padding_mask
+
+    def _validate_multimodal_inputs(
+        self,
+        input_ids: mx.array,
+        pixel_values: Optional[mx.array],
+        image_grid_thw: Optional[mx.array],
+    ) -> None:
+        if pixel_values is None and image_grid_thw is not None:
+            raise ValueError("image_grid_thw was provided without pixel_values.")
+
+        if pixel_values is not None and image_grid_thw is None:
+            raise ValueError(
+                "Qwen3-VL requires image_grid_thw when pixel_values are provided. "
+                "Use the paired processor output for both fields."
+            )
+
+        if pixel_values is None:
+            return
+
+        if image_grid_thw.shape[0] != input_ids.shape[0]:
+            raise ValueError(
+                "image_grid_thw batch size must match input_ids batch size. "
+                f"Got {image_grid_thw.shape[0]} and {input_ids.shape[0]}."
+            )
+
+        token_count = int(mx.sum(input_ids == self.image_token_id).item())
+        token_count += int(mx.sum(input_ids == self.video_token_id).item())
+        if token_count == 0:
+            raise ValueError(
+                "pixel_values were provided, but no image/video placeholder tokens were found in input_ids. "
+                "This usually means text and images were not prepared by the same processor call."
+            )
 
     def __call__(
         self,
@@ -145,24 +257,70 @@ class Model(nn.Module):
         image_grid_thw: Optional[mx.array] = None,
         **kwargs,
     ) -> ViTModelOutput:
-        inputs_embeds = self.get_input_embeddings_batch(
-            input_ids, pixel_values, image_grid_thw
-        )
+        if input_ids.ndim != 2:
+            raise ValueError(
+                f"input_ids must be 2D [batch, seq], got shape {input_ids.shape}."
+            )
 
-        hidden_states = self.vlm.language_model.model(
-            None, inputs_embeds=inputs_embeds, mask=None, cache=None
+        if attention_mask is not None and attention_mask.shape != input_ids.shape:
+            raise ValueError(
+                "attention_mask shape must match input_ids shape. "
+                f"Got {attention_mask.shape} and {input_ids.shape}."
+            )
+
+        if (
+            self.max_position_embeddings is not None
+            and input_ids.shape[1] > self.max_position_embeddings
+        ):
+            raise ValueError(
+                f"Input sequence length {input_ids.shape[1]} exceeds max_position_embeddings "
+                f"({self.max_position_embeddings}) for qwen3_vl."
+            )
+
+        self._validate_multimodal_inputs(input_ids, pixel_values, image_grid_thw)
+
+        embedding_features = self.vlm.get_input_embeddings(
+            input_ids=input_ids,
+            pixel_values=pixel_values,
+            image_grid_thw=image_grid_thw,
         )
+        inputs_embeds = embedding_features.inputs_embeds
 
         if attention_mask is None:
             attention_mask = mx.ones(input_ids.shape, dtype=mx.int32)
+
+        mask = self._build_attention_mask(
+            input_ids, attention_mask, inputs_embeds.dtype
+        )
+        # Recompute rope indices per request so cached values from a previous
+        # batch shape cannot leak into the current forward pass.
+        position_ids, rope_deltas = self.vlm.language_model.get_rope_index(
+            input_ids,
+            image_grid_thw,
+            None,
+            attention_mask,
+        )
+        self.vlm.language_model._position_ids = position_ids
+        self.vlm.language_model._rope_deltas = rope_deltas
+
+        hidden_states = self.vlm.language_model.model(
+            None,
+            inputs_embeds=inputs_embeds,
+            mask=mask,
+            cache=None,
+            position_ids=position_ids,
+            visual_pos_masks=embedding_features.visual_pos_masks,
+            deepstack_visual_embeds=embedding_features.deepstack_visual_embeds,
+        )
 
         embeddings = last_token_pooling(hidden_states, attention_mask)
         embeddings = normalize_embeddings(embeddings)
 
         if pixel_values is None:
             return ViTModelOutput(text_embeds=embeddings)
-        else:
-            return ViTModelOutput(image_embeds=embeddings)
+
+        # Qwen3-VL uses a unified representation space for text/image/mixed items.
+        return ViTModelOutput(text_embeds=embeddings, image_embeds=embeddings)
 
     def sanitize(self, weights):
         sanitized_weights = {}
@@ -172,7 +330,7 @@ class Model(nn.Module):
                 continue
 
             if "patch_embed.proj.weight" in k and v.ndim == 5:
-                # HF Conv3d: (out, in, t, h, w) → MLX: (out, t, h, w, in)
+                # HF Conv3d: (out, in, t, h, w) -> MLX: (out, t, h, w, in)
                 if v.shape[1] == 3 and v.shape[2] == 2:
                     v = v.transpose(0, 2, 3, 4, 1)
 

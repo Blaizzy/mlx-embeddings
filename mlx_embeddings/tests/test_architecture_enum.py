@@ -1,6 +1,10 @@
 """Tests for Architecture enum and _resolve_model_type function."""
 
-from mlx_embeddings.utils import Architecture, ARCHITECTURE_REMAPPING, _resolve_model_type
+from mlx_embeddings.utils import (
+    ARCHITECTURE_REMAPPING,
+    Architecture,
+    _resolve_model_type,
+)
 
 
 class TestArchitectureEnum:
@@ -92,7 +96,7 @@ class TestResolveModelType:
         config = {"architectures": {"JinaForRanking", 123, None}, "model_type": "qwen3"}
         result = _resolve_model_type(config)
         assert result == "jina_reranker"
-        
+
         # Set with only non-string values should fall back to model_type
         config = {"architectures": {123, 456}, "model_type": "bert"}
         result = _resolve_model_type(config)
@@ -151,7 +155,10 @@ class TestResolveModelType:
 
     def test_modern_bert_architectures(self):
         """Test ModernBert architecture variants."""
-        config = {"architectures": ["ModernBertForMaskedLM"], "model_type": "modernbert"}
+        config = {
+            "architectures": ["ModernBertForMaskedLM"],
+            "model_type": "modernbert",
+        }
         result = _resolve_model_type(config)
         # ModernBertForMaskedLM is in the enum but not in ARCHITECTURE_REMAPPING
         # so it should fall back to model_type

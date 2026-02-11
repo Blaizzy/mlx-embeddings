@@ -22,10 +22,16 @@ def configure_parser() -> argparse.ArgumentParser:
         "-q", "--quantize", help="Generate a quantized model.", action="store_true"
     )
     parser.add_argument(
-        "--q-group-size", help="Group size for quantization (overrides mode default).", type=int, default=None
+        "--q-group-size",
+        help="Group size for quantization (overrides mode default).",
+        type=int,
+        default=64,
     )
     parser.add_argument(
-        "--q-bits", help="Bits per weight for quantization (overrides mode default).", type=int, default=None
+        "--q-bits",
+        help="Bits per weight for quantization (overrides mode default).",
+        type=int,
+        default=4,
     )
     parser.add_argument(
         "--q-mode",

@@ -34,7 +34,6 @@ from mlx_embeddings.models.qwen3_vl import ModelArgs as Qwen3VLModelArgs
 from mlx_embeddings.models.qwen3_vl import TextConfig, VisionConfig
 from mlx_embeddings.utils import SUPPORTED_MODELS, _get_classes, validate_model_type
 
-
 # ============================================================================
 # 1. LAST-TOKEN POOLING TESTS
 # ============================================================================
@@ -56,14 +55,10 @@ class TestLastTokenPooling(unittest.TestCase):
 
         # Result should be the last hidden state for each sample
         np.testing.assert_allclose(
-            result[0].tolist(),
-            hidden_states[0, seq_len - 1].tolist(),
-            rtol=1e-5
+            result[0].tolist(), hidden_states[0, seq_len - 1].tolist(), rtol=1e-5
         )
         np.testing.assert_allclose(
-            result[1].tolist(),
-            hidden_states[1, seq_len - 1].tolist(),
-            rtol=1e-5
+            result[1].tolist(), hidden_states[1, seq_len - 1].tolist(), rtol=1e-5
         )
 
     def test_last_token_pooling_left_padded(self):
@@ -73,10 +68,9 @@ class TestLastTokenPooling(unittest.TestCase):
 
         # Seq 0: [PAD, PAD, token, token, token] -> last valid at index 4
         # Seq 1: [PAD, token, token, token, PAD] -> last valid at index 3
-        attention_mask = mx.array([
-            [0.0, 0.0, 1.0, 1.0, 1.0],
-            [0.0, 1.0, 1.0, 1.0, 0.0]
-        ])
+        attention_mask = mx.array(
+            [[0.0, 0.0, 1.0, 1.0, 1.0], [0.0, 1.0, 1.0, 1.0, 0.0]]
+        )
 
         result = last_token_pooling(hidden_states, attention_mask)
 
@@ -84,16 +78,12 @@ class TestLastTokenPooling(unittest.TestCase):
 
         # Row 0: last valid at index 4
         np.testing.assert_allclose(
-            result[0].tolist(),
-            hidden_states[0, 4].tolist(),
-            rtol=1e-5
+            result[0].tolist(), hidden_states[0, 4].tolist(), rtol=1e-5
         )
 
         # Row 1: last valid at index 3
         np.testing.assert_allclose(
-            result[1].tolist(),
-            hidden_states[1, 3].tolist(),
-            rtol=1e-5
+            result[1].tolist(), hidden_states[1, 3].tolist(), rtol=1e-5
         )
 
     def test_last_token_pooling_right_padded(self):
@@ -104,11 +94,13 @@ class TestLastTokenPooling(unittest.TestCase):
         # Seq 0: [token, token, token, token, token, PAD, PAD, PAD, PAD, PAD] -> 5 valid
         # Seq 1: [token, token, token, token, token, token, token, PAD, PAD, PAD] -> 7 valid
         # Seq 2: [token, token, PAD, PAD, PAD, PAD, PAD, PAD, PAD, PAD] -> 2 valid
-        attention_mask = mx.array([
-            [1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-            [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0],
-            [1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        ])
+        attention_mask = mx.array(
+            [
+                [1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0],
+                [1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            ]
+        )
 
         result = last_token_pooling(hidden_states, attention_mask)
 
@@ -116,23 +108,17 @@ class TestLastTokenPooling(unittest.TestCase):
 
         # Row 0: last valid at index 4 (5th token)
         np.testing.assert_allclose(
-            result[0].tolist(),
-            hidden_states[0, 4].tolist(),
-            rtol=1e-5
+            result[0].tolist(), hidden_states[0, 4].tolist(), rtol=1e-5
         )
 
         # Row 1: last valid at index 6 (7th token)
         np.testing.assert_allclose(
-            result[1].tolist(),
-            hidden_states[1, 6].tolist(),
-            rtol=1e-5
+            result[1].tolist(), hidden_states[1, 6].tolist(), rtol=1e-5
         )
 
         # Row 2: last valid at index 1 (2nd token)
         np.testing.assert_allclose(
-            result[2].tolist(),
-            hidden_states[2, 1].tolist(),
-            rtol=1e-5
+            result[2].tolist(), hidden_states[2, 1].tolist(), rtol=1e-5
         )
 
     def test_last_token_pooling_single_token(self):
@@ -147,17 +133,14 @@ class TestLastTokenPooling(unittest.TestCase):
 
         # Should return the only token
         np.testing.assert_allclose(
-            result[0].tolist(),
-            hidden_states[0, 0].tolist(),
-            rtol=1e-5
+            result[0].tolist(), hidden_states[0, 0].tolist(), rtol=1e-5
         )
 
     def test_last_token_pooling_dtype_preservation(self):
         """Test that dtype is preserved in last-token pooling."""
         batch_size, seq_len, hidden_dim = 2, 5, 256
         hidden_states = mx.array(
-            np.random.randn(batch_size, seq_len, hidden_dim),
-            dtype=mx.float32
+            np.random.randn(batch_size, seq_len, hidden_dim), dtype=mx.float32
         )
         attention_mask = mx.ones((batch_size, seq_len))
 
@@ -180,9 +163,7 @@ class TestLastTokenPooling(unittest.TestCase):
 
         # Should gracefully return first token (index clamped from -1 to 0)
         np.testing.assert_allclose(
-            result[0].tolist(),
-            hidden_states[0, 0].tolist(),
-            rtol=1e-5
+            result[0].tolist(), hidden_states[0, 0].tolist(), rtol=1e-5
         )
 
     def test_last_token_pooling_large_batch(self):
@@ -198,9 +179,7 @@ class TestLastTokenPooling(unittest.TestCase):
         # Verify a few samples
         for i in [0, 10, 31]:
             np.testing.assert_allclose(
-                result[i].tolist(),
-                hidden_states[i, seq_len - 1].tolist(),
-                rtol=1e-5
+                result[i].tolist(), hidden_states[i, seq_len - 1].tolist(), rtol=1e-5
             )
 
 
@@ -217,7 +196,7 @@ class TestRegistryValidation(unittest.TestCase):
         config = {
             "model_type": "qwen3",
             "trust_remote_code": False,
-            "hidden_size": 1024
+            "hidden_size": 1024,
         }
 
         # Should not raise
@@ -229,7 +208,7 @@ class TestRegistryValidation(unittest.TestCase):
             "model_type": "qwen3_vl",
             "trust_remote_code": True,
             "text_config": {},
-            "vision_config": {}
+            "vision_config": {},
         }
 
         # Should not raise
@@ -237,10 +216,7 @@ class TestRegistryValidation(unittest.TestCase):
 
     def test_validate_model_type_unsupported_model(self):
         """Test that validation rejects unknown model_type."""
-        config = {
-            "model_type": "unknown_model_xyz",
-            "hidden_size": 1024
-        }
+        config = {"model_type": "unknown_model_xyz", "hidden_size": 1024}
 
         with self.assertRaises(ValueError) as context:
             validate_model_type(config)
@@ -255,7 +231,7 @@ class TestRegistryValidation(unittest.TestCase):
             "model_type": "qwen3_vl",
             # Missing trust_remote_code or False
             "text_config": {},
-            "vision_config": {}
+            "vision_config": {},
         }
 
         with self.assertRaises(ValueError) as context:
@@ -267,9 +243,7 @@ class TestRegistryValidation(unittest.TestCase):
 
     def test_validate_model_type_error_message_helpful(self):
         """Test that error message is actionable and lists supported types."""
-        config = {
-            "model_type": "nonexistent"
-        }
+        config = {"model_type": "nonexistent"}
 
         with self.assertRaises(ValueError) as context:
             validate_model_type(config)
@@ -283,10 +257,7 @@ class TestRegistryValidation(unittest.TestCase):
 
     def test_validate_model_type_hyphen_to_underscore(self):
         """Test that model_type with hyphens is normalized."""
-        config = {
-            "model_type": "xlm-roberta",  # Note: hyphen
-            "hidden_size": 768
-        }
+        config = {"model_type": "xlm-roberta", "hidden_size": 768}  # Note: hyphen
 
         # Should normalize to xlm_roberta and accept
         validate_model_type(config)
@@ -294,14 +265,21 @@ class TestRegistryValidation(unittest.TestCase):
     def test_supported_models_registry_complete(self):
         """Test that SUPPORTED_MODELS registry has all expected models."""
         expected_models = {
-            "bert", "xlm_roberta", "modernbert", "siglip",
-            "colqwen2_5", "qwen3", "qwen3_vl"
+            "bert",
+            "xlm_roberta",
+            "modernbert",
+            "siglip",
+            "colqwen2_5",
+            "qwen3",
+            "qwen3_vl",
         }
 
         actual_models = set(SUPPORTED_MODELS.keys())
 
-        self.assertTrue(expected_models.issubset(actual_models),
-                       f"Missing models: {expected_models - actual_models}")
+        self.assertTrue(
+            expected_models.issubset(actual_models),
+            f"Missing models: {expected_models - actual_models}",
+        )
 
     def test_supported_models_qwen3_trust_remote_code_policy(self):
         """Test that Qwen3 models have correct trust_remote_code policy."""
@@ -327,7 +305,7 @@ class TestQwen3ModelArgsInitialization(unittest.TestCase):
             "hidden_size": 1024,
             "num_hidden_layers": 24,
             "intermediate_size": 2816,
-            "num_attention_heads": 16
+            "num_attention_heads": 16,
         }
 
         args = Qwen3ModelArgs.from_dict(config)
@@ -347,7 +325,7 @@ class TestQwen3ModelArgsInitialization(unittest.TestCase):
             "intermediate_size": 2816,
             "num_attention_heads": 16,
             "unknown_field_xyz": "should_be_ignored",
-            "another_unknown": 9999
+            "another_unknown": 9999,
         }
 
         args = Qwen3ModelArgs.from_dict(config)
@@ -380,13 +358,13 @@ class TestQwen3VLModelArgsInitialization(unittest.TestCase):
             "text_config": {
                 "hidden_size": 2048,
                 "num_hidden_layers": 24,
-                "num_attention_heads": 16
+                "num_attention_heads": 16,
             },
             "vision_config": {
                 "image_size": 1024,
                 "patch_size": 14,
-                "hidden_size": 1536
-            }
+                "hidden_size": 1536,
+            },
         }
 
         args = Qwen3VLModelArgs.from_dict(config)
@@ -404,7 +382,7 @@ class TestQwen3VLModelArgsInitialization(unittest.TestCase):
             "num_hidden_layers": 12,
             "vocab_size": 30000,
             "intermediate_size": 3072,
-            "num_attention_heads": 12
+            "num_attention_heads": 12,
         }
 
         text_config = TextConfig.from_dict(config)
@@ -420,7 +398,7 @@ class TestQwen3VLModelArgsInitialization(unittest.TestCase):
             "patch_size": 16,
             "num_channels": 3,
             "hidden_size": 768,
-            "num_hidden_layers": 12
+            "num_hidden_layers": 12,
         }
 
         vision_config = VisionConfig.from_dict(config)
@@ -434,7 +412,7 @@ class TestQwen3VLModelArgsInitialization(unittest.TestCase):
         config = {
             "hidden_size": 768,
             "num_hidden_layers": 12,
-            "unknown_field": "ignored"
+            "unknown_field": "ignored",
         }
 
         text_config = TextConfig.from_dict(config)
@@ -459,13 +437,15 @@ class TestErrorHandling(unittest.TestCase):
         batch_size, seq_len, hidden_dim = 2, 5, 256
         input_ids = mx.array(np.random.randint(0, 100, (batch_size, seq_len)))
 
-        args = Qwen3ModelArgs.from_dict({
-            "hidden_size": hidden_dim,
-            "num_hidden_layers": 2,
-            "num_attention_heads": 4,
-            "intermediate_size": 512,
-            "vocab_size": 1000
-        })
+        args = Qwen3ModelArgs.from_dict(
+            {
+                "hidden_size": hidden_dim,
+                "num_hidden_layers": 2,
+                "num_attention_heads": 4,
+                "intermediate_size": 512,
+                "vocab_size": 1000,
+            }
+        )
 
         model = Qwen3Model(args)
 
@@ -482,16 +462,68 @@ class TestErrorHandling(unittest.TestCase):
 
     def test_qwen3_vl_modelargs_accepts_none_configs(self):
         """Test that Qwen3-VL ModelArgs gracefully handles None configs."""
-        config = {
-            "model_type": "qwen3_vl",
-            "text_config": None,
-            "vision_config": None
-        }
+        config = {"model_type": "qwen3_vl", "text_config": None, "vision_config": None}
 
         args = Qwen3VLModelArgs.from_dict(config)
 
         self.assertIsNone(args.text_config)
         self.assertIsNone(args.vision_config)
+
+    def test_qwen3_vl_requires_image_grid_when_pixels_provided(self):
+        """pixel_values without image_grid_thw must hard-error (no silent fallback)."""
+        args = Qwen3VLModelArgs.from_dict(
+            {
+                "model_type": "qwen3_vl",
+                "text_config": {
+                    "hidden_size": 512,
+                    "num_hidden_layers": 2,
+                    "num_attention_heads": 8,
+                },
+                "vision_config": {
+                    "hidden_size": 512,
+                    "image_size": 224,
+                    "patch_size": 16,
+                },
+            }
+        )
+        model = Qwen3VLModel(args)
+        input_ids = mx.array([[1, 2, 3]])
+        pixel_values = mx.random.normal((1, 3, 224, 224))
+
+        with self.assertRaises(ValueError) as context:
+            model(input_ids=input_ids, pixel_values=pixel_values, image_grid_thw=None)
+        self.assertIn("image_grid_thw", str(context.exception))
+
+    def test_qwen3_vl_rejects_pixels_without_placeholder_tokens(self):
+        """Providing an image without image tokens in input_ids must fail loudly."""
+        args = Qwen3VLModelArgs.from_dict(
+            {
+                "model_type": "qwen3_vl",
+                "text_config": {
+                    "hidden_size": 512,
+                    "num_hidden_layers": 2,
+                    "num_attention_heads": 8,
+                },
+                "vision_config": {
+                    "hidden_size": 512,
+                    "image_size": 224,
+                    "patch_size": 16,
+                },
+            }
+        )
+        model = Qwen3VLModel(args)
+        # No image/video placeholder tokens present.
+        input_ids = mx.array([[1, 2, 3]])
+        pixel_values = mx.random.normal((1, 3, 224, 224))
+        image_grid_thw = mx.array([[1, 16, 16]])
+
+        with self.assertRaises(ValueError) as context:
+            model(
+                input_ids=input_ids,
+                pixel_values=pixel_values,
+                image_grid_thw=image_grid_thw,
+            )
+        self.assertIn("placeholder tokens", str(context.exception))
 
 
 # ============================================================================
@@ -507,7 +539,7 @@ class TestGetClasses(unittest.TestCase):
         config = {
             "model_type": "qwen3",
             "trust_remote_code": False,
-            "hidden_size": 1024
+            "hidden_size": 1024,
         }
 
         Model, ModelArgs, TextConfig, VisionConfig = _get_classes(config)
@@ -524,7 +556,7 @@ class TestGetClasses(unittest.TestCase):
             "model_type": "qwen3_vl",
             "trust_remote_code": True,
             "text_config": {},
-            "vision_config": {}
+            "vision_config": {},
         }
 
         Model, ModelArgs, TextConfig_cls, VisionConfig_cls = _get_classes(config)
@@ -537,10 +569,7 @@ class TestGetClasses(unittest.TestCase):
 
     def test_get_classes_validates_before_import(self):
         """Test that _get_classes validates model_type before attempting import."""
-        config = {
-            "model_type": "unknown_model",
-            "trust_remote_code": False
-        }
+        config = {"model_type": "unknown_model", "trust_remote_code": False}
 
         # Should raise ValueError from validate_model_type, not ImportError
         with self.assertRaises(ValueError):
@@ -552,7 +581,7 @@ class TestGetClasses(unittest.TestCase):
             "model_type": "qwen3_vl",
             "trust_remote_code": False,  # Missing required trust_remote_code
             "text_config": {},
-            "vision_config": {}
+            "vision_config": {},
         }
 
         with self.assertRaises(ValueError) as context:
@@ -587,11 +616,7 @@ class TestNormalizationAndPooling(unittest.TestCase):
 
         # [3, 4] should normalize to [3/5, 4/5] = [0.6, 0.8]
         # [5, 12] should normalize to [5/13, 12/13]
-        np.testing.assert_allclose(
-            normalized[0].tolist(),
-            [0.6, 0.8],
-            atol=1e-5
-        )
+        np.testing.assert_allclose(normalized[0].tolist(), [0.6, 0.8], atol=1e-5)
 
     def test_normalize_embeddings_dtype_preservation(self):
         """Test that normalization preserves dtype."""
@@ -639,10 +664,7 @@ class TestBaseModelOutputs(unittest.TestCase):
         text_embeds = mx.random.normal((2, 2048))
         image_embeds = mx.random.normal((2, 2048))
 
-        output = ViTModelOutput(
-            text_embeds=text_embeds,
-            image_embeds=image_embeds
-        )
+        output = ViTModelOutput(text_embeds=text_embeds, image_embeds=image_embeds)
 
         self.assertIsNotNone(output.text_embeds)
         self.assertIsNotNone(output.image_embeds)

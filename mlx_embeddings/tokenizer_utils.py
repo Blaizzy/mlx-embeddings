@@ -309,7 +309,7 @@ def load_tokenizer(model_path, tokenizer_config_extra={}, trust_remote_code=Fals
 
     Note, to use a fast streaming tokenizer, pass a local file path rather than
     a Hugging Face repo ID.
-    
+
     Args:
         model_path: Path to the model directory
         tokenizer_config_extra: Additional tokenizer configuration options
@@ -330,6 +330,8 @@ def load_tokenizer(model_path, tokenizer_config_extra={}, trust_remote_code=Fals
                 detokenizer_class = BPEStreamingDetokenizer
 
     return TokenizerWrapper(
-        AutoTokenizer.from_pretrained(model_path, trust_remote_code=trust_remote_code, **tokenizer_config_extra),
+        AutoTokenizer.from_pretrained(
+            model_path, trust_remote_code=trust_remote_code, **tokenizer_config_extra
+        ),
         detokenizer_class,
     )
