@@ -7,6 +7,7 @@ import mlx.core as mx
 import numpy as np
 import pytest
 
+import mlx_embeddings.utils as utils_module
 from mlx_embeddings.models.base import ViTModelOutput
 from mlx_embeddings.provider import Qwen3VLEmbeddingProvider
 from mlx_embeddings.utils import (
@@ -179,3 +180,53 @@ def test_qwen3_vl_text_only_embedding_supported():
 
     assert embeddings.shape == (1, 3)
     assert embeddings.dtype == mx.float32
+
+
+def test_qwen3_vl_dependency_gate_for_direct_fallback(monkeypatch):
+    monkeypatch.setattr(
+        utils_module,
+        "_module_available",
+        lambda module_name: module_name != "torchvision",
+    )
+    assert utils_module._qwen3_vl_needs_direct_fallback() is True
+
+    monkeypatch.setattr(utils_module, "_module_available", lambda _: True)
+    assert utils_module._qwen3_vl_needs_direct_fallback() is False
+
+
+def test_load_qwen3_vl_skips_auto_processor_without_torchvision(monkeypatch, tmp_path):
+    model_dir = tmp_path / "dummy-model"
+    model_dir.mkdir()
+
+    fake_model = SimpleNamespace(
+        config=SimpleNamespace(model_type="qwen3_vl", vision_config={})
+    )
+
+    monkeypatch.setattr(utils_module, "resolve_model_reference", lambda value: value)
+    monkeypatch.setattr(utils_module, "get_model_path", lambda _: model_dir)
+    monkeypatch.setattr(utils_module, "load_model", lambda *args, **kwargs: fake_model)
+    monkeypatch.setattr(
+        utils_module,
+        "_qwen3_vl_needs_direct_fallback",
+        lambda: True,
+    )
+
+    def _unexpected_call(*args, **kwargs):  # pragma: no cover - assertion guard
+        raise AssertionError("AutoProcessor/load_processor should not be called.")
+
+    monkeypatch.setattr(
+        utils_module.AutoProcessor,
+        "from_pretrained",
+        _unexpected_call,
+    )
+    monkeypatch.setattr(utils_module, "load_processor", _unexpected_call)
+    monkeypatch.setattr(
+        utils_module,
+        "_build_qwen3_vl_fallback_processor",
+        lambda **_: "fallback-processor",
+    )
+
+    model, processor = utils_module.load("qwen3-vl", trust_remote_code=True)
+
+    assert model is fake_model
+    assert processor == "fallback-processor"

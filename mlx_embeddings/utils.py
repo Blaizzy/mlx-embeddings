@@ -3,6 +3,7 @@
 import copy
 import glob
 import importlib
+import importlib.util
 import json
 import logging
 import re
@@ -249,6 +250,41 @@ class Qwen3VLProcessorFallback:
                 for key, value in merged.items()
             }
         return merged
+
+
+def _module_available(module_name: str) -> bool:
+    """Return True when ``module_name`` can be imported in this environment."""
+    try:
+        return importlib.util.find_spec(module_name) is not None
+    except Exception:
+        return False
+
+
+def _qwen3_vl_needs_direct_fallback() -> bool:
+    """
+    Determine whether Qwen3-VL should bypass AutoProcessor/load_processor.
+
+    Qwen3-VL AutoProcessor initialization traverses video processor code paths
+    that require both torch and torchvision in current Transformers builds.
+    """
+    return not (_module_available("torch") and _module_available("torchvision"))
+
+
+def _build_qwen3_vl_fallback_processor(
+    model_path: Path, trust_remote_code: bool
+) -> Qwen3VLProcessorFallback:
+    """Build the explicit text+image fallback processor for Qwen3-VL."""
+    return Qwen3VLProcessorFallback(
+        tokenizer=AutoTokenizer.from_pretrained(
+            model_path,
+            trust_remote_code=trust_remote_code,
+        ),
+        image_processor=AutoImageProcessor.from_pretrained(
+            model_path,
+            trust_remote_code=trust_remote_code,
+            use_fast=False,
+        ),
+    )
 
 
 def list_model_families() -> Dict[str, Dict[str, Any]]:
@@ -620,6 +656,20 @@ def load(
     # First attempt: load tokenizer
     try:
         if hasattr(model.config, "vision_config"):
+            model_type = getattr(model.config, "model_type", "")
+
+            if model_type == "qwen3_vl" and _qwen3_vl_needs_direct_fallback():
+                logging.info(
+                    "Skipping AutoProcessor/load_processor for '%s' because torch/torchvision are unavailable. "
+                    "Using qwen3_vl fallback processor (text + image only, video unsupported).",
+                    resolved_model,
+                )
+                tokenizer = _build_qwen3_vl_fallback_processor(
+                    model_path=model_path,
+                    trust_remote_code=trust_remote_code,
+                )
+                return model, tokenizer
+
             try:
                 tokenizer = AutoProcessor.from_pretrained(
                     model_path, trust_remote_code=trust_remote_code
@@ -637,7 +687,7 @@ def load(
                         trust_remote_code=trust_remote_code,
                     )
                 except Exception as processor_error:
-                    if getattr(model.config, "model_type", "") != "qwen3_vl":
+                    if model_type != "qwen3_vl":
                         raise ValueError(
                             f"Failed to initialize vision processor: {processor_error}"
                         ) from processor_error
@@ -649,16 +699,9 @@ def load(
                         TRANSFORMERS_VERSION,
                         processor_error,
                     )
-                    tokenizer = Qwen3VLProcessorFallback(
-                        tokenizer=AutoTokenizer.from_pretrained(
-                            model_path,
-                            trust_remote_code=trust_remote_code,
-                        ),
-                        image_processor=AutoImageProcessor.from_pretrained(
-                            model_path,
-                            trust_remote_code=trust_remote_code,
-                            use_fast=False,
-                        ),
+                    tokenizer = _build_qwen3_vl_fallback_processor(
+                        model_path=model_path,
+                        trust_remote_code=trust_remote_code,
                     )
         else:
             tokenizer = load_tokenizer(

@@ -284,6 +284,8 @@ Known limitations:
 
 - Qwen3-VL models are memory-intensive (2B/8B): tune batch size conservatively on laptop GPUs.
 - Very long prompts can exceed `text_config.max_position_embeddings` and will hard-error.
+- Environments without `torch`/`torchvision` use a guarded text+image processor fallback
+  (video processor paths are unavailable in that mode).
 - Image preprocessing is deterministic, but throughput depends on image resolution and model size.
 
 ### CLI Usage
