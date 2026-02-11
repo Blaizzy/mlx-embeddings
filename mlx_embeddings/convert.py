@@ -41,6 +41,13 @@ def configure_parser() -> argparse.ArgumentParser:
         choices=["affine", "mxfp4", "nvfp4", "mxfp8"],
     )
     parser.add_argument(
+        "--q-mode",
+        help="The quantization mode.",
+        type=str,
+        default="affine",
+        choices=["affine", "mxfp4", "nvfp4", "mxfp8"],
+    )
+    parser.add_argument(
         "--dtype",
         help="Type to save the parameters, ignored if -q is given.",
         type=str,

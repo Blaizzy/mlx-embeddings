@@ -20,7 +20,9 @@ class TestConfigureParser:
 
     def test_q_mode_valid_choices(self):
         for mode in ("affine", "mxfp4", "nvfp4", "mxfp8"):
-            args = self.parser.parse_args(["--hf-path", "test/model", "--q-mode", mode])
+            args = self.parser.parse_args(
+                ["--hf-path", "test/model", "--q-mode", mode]
+            )
             assert args.q_mode == mode
 
     def test_q_mode_invalid_choice(self):
