@@ -2,7 +2,6 @@ from dataclasses import asdict, dataclass
 from typing import Any, Dict, Optional, Tuple
 
 import mlx.core as mx
-import mlx.nn as nn
 from mlx_lm.models.base import create_causal_mask
 from mlx_vlm.models.qwen3_vl import Model as Qwen3VLBackbone
 from mlx_vlm.models.qwen3_vl import LanguageModel as Qwen3VLLanguageModel
@@ -146,58 +145,41 @@ class ModelArgs(BaseModelArgs):
         )
 
 
-class Model(nn.Module):
+class Model(Qwen3VLBackbone):
     LanguageModel = Qwen3VLLanguageModel
     VisionModel = Qwen3VLVisionModel
 
     def __init__(self, config: ModelArgs):
-        super().__init__()
-        self.config = config
-        self.model = Qwen3VLBackbone(build_qwen3_vl_config(config.vlm_config))
-
-    def get_input_embeddings(self):
-        return self.model.language_model.model.embed_tokens
-
-    def set_input_embeddings(self, value):
-        self.model.language_model.model.embed_tokens = value
-
-    def set_decoder(self, decoder):
-        self.model.language_model.model = decoder
-
-    def get_decoder(self):
-        return self.model.language_model.model
-
-    @property
-    def language_model(self):
-        return self.model.language_model
+        self.args = config
+        super().__init__(build_qwen3_vl_config(config.vlm_config))
 
     @property
     def visual(self):
-        return self.model.vision_tower
+        return self.vision_tower
 
     def get_image_features(
         self,
         pixel_values: mx.array,
         image_grid_thw: Optional[mx.array] = None,
     ) -> mx.array:
-        return self.model.vision_tower(pixel_values, image_grid_thw)[0]
+        return self.vision_tower(pixel_values, image_grid_thw)[0]
 
     def get_video_features(
         self,
         pixel_values: mx.array,
         video_grid_thw: Optional[mx.array] = None,
     ) -> mx.array:
-        return self.model.vision_tower(pixel_values, video_grid_thw)[0]
+        return self.vision_tower(pixel_values, video_grid_thw)[0]
 
     def get_binary_weight(self) -> mx.array:
-        if hasattr(self.model.language_model, "lm_head"):
-            lm_head_weight = self.model.language_model.lm_head.weight
+        if hasattr(self.language_model, "lm_head"):
+            lm_head_weight = self.language_model.lm_head.weight
         else:
-            lm_head_weight = self.model.language_model.model.embed_tokens.weight
+            lm_head_weight = self.language_model.model.embed_tokens.weight
 
         return (
-            lm_head_weight[self.config.yes_token_id]
-            - lm_head_weight[self.config.no_token_id]
+            lm_head_weight[self.args.yes_token_id]
+            - lm_head_weight[self.args.no_token_id]
         )
 
     def __call__(
@@ -224,7 +206,7 @@ class Model(nn.Module):
             cache = past_key_values
 
         hidden_states = compute_qwen3_vl_hidden_states(
-            model=self.model,
+            model=self,
             input_ids=input_ids,
             attention_mask=attention_mask,
             position_ids=position_ids,
@@ -237,7 +219,7 @@ class Model(nn.Module):
 
         pooled = last_non_padding_token(hidden_states, attention_mask)
         text_embeds = (
-            normalize_embeddings(pooled) if self.config.normalize else pooled
+            normalize_embeddings(pooled) if self.args.normalize else pooled
         )
         logits = mx.sum(pooled * self.get_binary_weight(), axis=-1)
         scores = mx.sigmoid(logits)
@@ -272,40 +254,3 @@ class Model(nn.Module):
         if isinstance(inputs, dict) and "documents" in inputs:
             return self.rerank(inputs, processor, **kwargs)
         return self.embed(inputs, processor, **kwargs)
-
-    def sanitize(self, weights):
-        sanitized = {}
-        language_prefix = "model.language_model."
-        language_model_prefix = f"{language_prefix}model."
-        vision_prefix = "model.vision_tower."
-
-        for key, value in weights.items():
-            mapped_key = key
-
-            if key.startswith(language_model_prefix):
-                mapped_key = key
-            elif key.startswith(language_prefix):
-                mapped_key = key.replace(language_prefix, language_model_prefix, 1)
-            elif key.startswith("model.visual."):
-                mapped_key = key.replace("model.visual.", vision_prefix, 1)
-            elif key.startswith(vision_prefix):
-                mapped_key = key
-            elif key.startswith("model.lm_head"):
-                mapped_key = key.replace(
-                    "model.lm_head", "model.language_model.lm_head", 1
-                )
-            elif key.startswith("lm_head"):
-                mapped_key = key.replace(
-                    "lm_head", "model.language_model.lm_head", 1
-                )
-
-            if mapped_key.startswith(vision_prefix):
-                vision_key = mapped_key[len(vision_prefix) :]
-                for sanitized_key, sanitized_value in self.model.vision_tower.sanitize(
-                    {vision_key: value}
-                ).items():
-                    sanitized[f"{vision_prefix}{sanitized_key}"] = sanitized_value
-            else:
-                sanitized[mapped_key] = value
-
-        return sanitized
