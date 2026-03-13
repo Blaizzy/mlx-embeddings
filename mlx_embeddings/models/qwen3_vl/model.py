@@ -171,15 +171,15 @@ class Model(Qwen3VLBackbone):
     ) -> mx.array:
         return self.vision_tower(pixel_values, video_grid_thw)[0]
 
-    def get_binary_weight(self) -> mx.array:
+    def get_binary_logits(self, pooled: mx.array) -> mx.array:
         if hasattr(self.language_model, "lm_head"):
-            lm_head_weight = self.language_model.lm_head.weight
+            token_logits = self.language_model.lm_head(pooled)
         else:
-            lm_head_weight = self.language_model.model.embed_tokens.weight
+            token_logits = self.language_model.model.embed_tokens.as_linear(pooled)
 
         return (
-            lm_head_weight[self.args.yes_token_id]
-            - lm_head_weight[self.args.no_token_id]
+            token_logits[:, self.args.yes_token_id]
+            - token_logits[:, self.args.no_token_id]
         )
 
     def __call__(
@@ -221,7 +221,7 @@ class Model(Qwen3VLBackbone):
         text_embeds = (
             normalize_embeddings(pooled) if self.args.normalize else pooled
         )
-        logits = mx.sum(pooled * self.get_binary_weight(), axis=-1)
+        logits = self.get_binary_logits(pooled)
         scores = mx.sigmoid(logits)
 
         return ModelOutput(

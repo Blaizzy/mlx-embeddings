@@ -110,6 +110,10 @@ def quantize_model(
         "bits": effective_bits,
         "mode": mode,
     }
+    if "vision_config" in quantized_config and isinstance(
+        quantized_config["vision_config"], dict
+    ):
+        quantized_config["vision_config"]["skip_vision"] = skip_vision
     quantized_weights = dict(tree_flatten(model.parameters()))
 
     return quantized_weights, quantized_config

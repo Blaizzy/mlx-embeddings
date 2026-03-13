@@ -133,6 +133,21 @@ class TestQuantizeModeDefaults:
         _, _, mode = self._call_defaults_for_mode("nvfp4", 0, 0)
         assert mode == "nvfp4"
 
+    def test_skip_vision_recorded_in_vision_config(self):
+        import mlx.nn as nn
+
+        from mlx_embeddings.convert import quantize_model
+
+        model = nn.Sequential(nn.Linear(128, 64))
+        _, qconfig = quantize_model(
+            model,
+            {"vision_config": {}},
+            64,
+            4,
+            skip_vision=True,
+        )
+        assert qconfig["vision_config"]["skip_vision"] is True
+
 
 class TestConvertQModePassthrough:
     """Verify that convert() passes q_mode through to quantize_model."""
