@@ -242,12 +242,26 @@ class TokenizerWrapper:
     """A wrapper that combines an HF tokenizer and a detokenizer.
 
     Accessing any attribute other than the ``detokenizer`` is forwarded to the
-    huggingface tokenizer.
+    huggingface tokenizer. The wrapper also exposes the tokenizer call
+    interface directly and keeps ``batch_encode_plus`` working for tokenizers
+    that only implement the modern callable API.
     """
 
     def __init__(self, tokenizer, detokenizer_class=NaiveStreamingDetokenizer):
         self._tokenizer = tokenizer
         self._detokenizer = detokenizer_class(tokenizer)
+
+    def __call__(self, *args, **kwargs):
+        return self._tokenizer(*args, **kwargs)
+
+    def batch_encode_plus(self, batch_text_or_text_pairs, *args, **kwargs):
+        batch_encode_plus = getattr(self._tokenizer, "batch_encode_plus", None)
+        if batch_encode_plus is not None:
+            try:
+                return batch_encode_plus(batch_text_or_text_pairs, *args, **kwargs)
+            except AttributeError:
+                pass
+        return self._tokenizer(batch_text_or_text_pairs, *args, **kwargs)
 
     def __getattr__(self, attr):
         if attr == "detokenizer":
