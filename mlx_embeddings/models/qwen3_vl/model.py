@@ -12,21 +12,6 @@ from mlx_vlm.models.qwen3_vl import VisionModel as Qwen3VLVisionModel
 from ..base import BaseModelArgs, BaseModelOutput, normalize_embeddings
 
 
-def clean_qwen3_vl_subconfigs(
-    params: Dict[str, Any],
-) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-    text_config_raw = params.get("text_config", {})
-    vision_config_raw = params.get("vision_config", {})
-
-    text_config = (
-        asdict(TextConfig.from_dict(text_config_raw)) if text_config_raw else {}
-    )
-    vision_config = (
-        asdict(VisionConfig.from_dict(vision_config_raw)) if vision_config_raw else {}
-    )
-
-    return text_config, vision_config
-
 
 def build_qwen3_vl_config(vlm_config: Dict[str, Any]) -> ModelConfig:
     base_config = dict(vlm_config)
@@ -144,7 +129,12 @@ class ModelArgs(BaseModelArgs):
 
     @classmethod
     def from_dict(cls, params):
-        text_config, vision_config = clean_qwen3_vl_subconfigs(params)
+        text_config_raw = params.get("text_config", {})
+        vision_config_raw = params.get("vision_config", {})
+
+        text_config = asdict(TextConfig.from_dict(text_config_raw)) if text_config_raw else {}
+        vision_config = asdict(VisionConfig.from_dict(vision_config_raw)) if vision_config_raw else {}
+
         return cls(
             text_config=text_config,
             vision_config=vision_config,
