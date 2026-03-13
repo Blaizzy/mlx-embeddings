@@ -316,56 +316,86 @@ image_labels = [f"Image {i+1}" for i in range(len(images))]
 plot_similarity_matrix(all_probs, image_labels, texts)
 ```
 
-### Late Interaction Multimodal Retrival Models (ColPali/ColQwen)
+### Late Interaction Multimodal Retrieval Models (ColPali/ColQwen)
 
 ```python
 import mlx.core as mx
-from mlx_embeddings.utils import load
-import requests
+from mlx_embeddings import load
 from PIL import Image
-import torch
+from transformers import Qwen2VLImageProcessor
 
-# Load vision model and processor
-model, processor = load("qnguyen3/colqwen2.5-v0.2-mlx")
+# Load model and tokenizer backend
+model, tokenizer = load("qnguyen3/colqwen2.5-v0.2-mlx")
+# ColQwen2.5 needs the image processor separately
+image_processor = Qwen2VLImageProcessor.from_pretrained(tokenizer.name_or_path)
 
-# Load an image
+# Load images
+images = [
+    Image.open("images/cats.jpg").convert("RGB"),
+    Image.open("images/desktop_setup.png").convert("RGB"),
+]
 
-url_1 = "https://upload.wikimedia.org/wikipedia/commons/8/89/US-original-Declaration-1776.jpg"
-image_1 = Image.open(url_1)
+# Queries
+texts = ["a photo of cats", "a desktop setup"]
 
-url_2 = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Romeoandjuliet1597.jpg/500px-Romeoandjuliet1597.jpg"
-image_2 = Image.open(url_2)
-
-# Create text descriptions to compare with the image
-texts = ["how many percent of data are books?", "evaluation results between models"]
-
-# Process inputs - text and images need to be processed separately for ColQwen2.5
-text_inputs = processor(text=texts, padding=True, return_tensors="pt")
-image_inputs = processor(images=[image_1, image_2], padding=True, return_tensors="pt")
-
-# Convert to MLX arrays
-text_input_ids = mx.array(text_inputs.input_ids)
-
-image_input_ids = mx.array(image_inputs.input_ids)
-pixel_values = mx.array(image_inputs.pixel_values)
-image_grid_thw = mx.array(image_inputs.image_grid_thw)
-
-text_embeddings = model(input_ids=text_input_ids)
-image_embeddings = model(
-    input_ids=image_input_ids, 
-    pixel_values=pixel_values, 
-    image_grid_thw=image_grid_thw,
+# Process text
+text_inputs = tokenizer(text=texts, padding=True, return_tensors="mlx")
+text_output = model(
+    input_ids=text_inputs["input_ids"],
+    attention_mask=text_inputs["attention_mask"],
 )
 
-print(text_embeddings.text_embeds.shape)
-print(image_embeddings.image_embeds.shape)
+# Process images
+image_features = image_processor(images=images, return_tensors="np")
+pixel_values = mx.array(image_features["pixel_values"])
+image_grid_thw = mx.array(image_features["image_grid_thw"])
 
-## convert to torch
-import torch
-text_embeddings = torch.tensor(text_embeddings.text_embeds)
-image_embeddings = torch.tensor(image_embeddings.image_embeds)
+# Build image token sequences for ColQwen2.5
+vision_start = model.vlm.config.vision_start_token_id
+vision_end = model.vlm.config.vision_end_token_id
+image_token = model.image_token_id
+pad_id = tokenizer.pad_token_id
+spatial_merge = model.vlm.vision_tower.spatial_merge_size
 
-scores = processor.score_retrieval(text_embeddings, image_embeddings)
+image_token_seqs = []
+image_attention_masks = []
+max_len = 0
+for i in range(image_grid_thw.shape[0]):
+    t, h, w = image_grid_thw[i].tolist()
+    num_tokens = int((h // spatial_merge) * (w // spatial_merge) * t)
+    seq = [vision_start] + [image_token] * num_tokens + [vision_end]
+    image_token_seqs.append(seq)
+    max_len = max(max_len, len(seq))
+
+for seq in image_token_seqs:
+    pad = max_len - len(seq)
+    image_attention_masks.append([1] * len(seq) + [0] * pad)
+    seq.extend([pad_id] * pad)
+
+image_input_ids = mx.array(image_token_seqs)
+image_attention_mask = mx.array(image_attention_masks)
+
+image_output = model(
+    input_ids=image_input_ids,
+    pixel_values=pixel_values,
+    image_grid_thw=image_grid_thw,
+    attention_mask=image_attention_mask,
+)
+
+# Late-interaction retrieval score (ColBERT-style maxsim) 
+q = text_output.text_embeds
+d = image_output.image_embeds
+q_mask = text_inputs["attention_mask"]
+d_mask = image_attention_mask
+
+sim = mx.einsum("qth,dsh->qtds", q, d)  # [n_query, q_tokens, n_doc, d_tokens]
+sim = mx.where(d_mask[None, None, :, :] == 1, sim, -1e9)  # mask doc padding
+max_sim = mx.max(sim, axis=-1)  # max over doc tokens
+max_sim = max_sim * q_mask[:, :, None]  # mask query padding
+scores = mx.sum(max_sim, axis=1)  # [n_query, n_doc]
+
+print(text_output.text_embeds.shape)
+print(image_output.image_embeds.shape)
 print(scores)
 ```
 

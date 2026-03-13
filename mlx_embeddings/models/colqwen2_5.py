@@ -120,10 +120,12 @@ class Model(nn.Module):
             pixel_values, image_grid_thw, output_hidden_states=False
         )
 
-        # Reshape hidden_states to match batch structure if needed
+        # Reshape hidden_states to match batch structure if needed.
+        # Mixed-size image batches can produce different token counts per item,
+        # so keep those per-image features as a Python list instead of stacking.
         batch_size = input_ids.shape[0]
+        features_per_image = None
         if batch_size > 1 and hidden_states.ndim == 2:
-            # Calculate features per image based on grid_thw
             features_per_image = []
             start_idx = 0
             for i in range(batch_size):
@@ -137,9 +139,7 @@ class Model(nn.Module):
                     hidden_states[start_idx : start_idx + num_features]
                 )
                 start_idx += num_features
-            hidden_states = mx.stack(features_per_image)
-
-        if hidden_states.ndim == 2:
+        elif hidden_states.ndim == 2:
             hidden_states = hidden_states[None, :, :]
 
         # Merge image features with input embeddings
@@ -155,7 +155,7 @@ class Model(nn.Module):
             # Original single-batch logic using numpy for index finding
             image_positions_np = np.array(image_positions)
             image_indices = np.where(image_positions_np)[1].tolist()
-            inputs_embeds[:, image_indices, :] = hidden_states
+            inputs_embeds[:, image_indices, :] = hidden_states[0]
         else:
             # Multi-batch processing
             for batch_idx in range(batch_size):
@@ -166,7 +166,17 @@ class Model(nn.Module):
                 batch_indices = np.where(batch_positions_np)[0].tolist()
 
                 # Get the corresponding features for this batch
-                batch_features = hidden_states[batch_idx]
+                if features_per_image is not None:
+                    batch_features = features_per_image[batch_idx]
+                else:
+                    batch_features = hidden_states[batch_idx]
+
+                if batch_features.shape[0] != len(batch_indices):
+                    raise ValueError(
+                        "Number of image features does not match image token positions "
+                        f"for batch {batch_idx}: {batch_features.shape[0]} features vs "
+                        f"{len(batch_indices)} token positions."
+                    )
 
                 # Update embeddings for this batch
                 inputs_embeds[batch_idx, batch_indices, :] = batch_features
@@ -202,9 +212,27 @@ class Model(nn.Module):
             input_ids, pixel_values, image_grid_thw
         )
 
+        # Qwen2.5-VL attention expects explicit position_ids when cache entries are None.
+        # Build them from the current inputs so embedding-only forward passes work reliably.
+        position_ids = None
+        if input_ids is not None:
+            position_ids, _ = self.vlm.language_model.get_rope_index(
+                input_ids,
+                image_grid_thw=image_grid_thw,
+                attention_mask=attention_mask,
+            )
+
+        # Keep Qwen2Model's expected cache shape when no cache is provided.
+        if cache is None:
+            cache = [None] * len(self.vlm.language_model.model.layers)
+
         # Run through the language model
         output = self.vlm.language_model.model(
-            None, inputs_embeds=inputs_embeds, mask=None, cache=cache
+            None,
+            inputs_embeds=inputs_embeds,
+            mask=None,
+            cache=cache,
+            position_ids=position_ids,
         )
 
         # Project to embedding dimension
