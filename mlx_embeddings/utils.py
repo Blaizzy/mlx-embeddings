@@ -1,12 +1,10 @@
 # Copyright © 2023-2024 Apple Inc.
 
-import copy
 import glob
 import importlib
 import json
 import logging
 import re
-import shutil
 from pathlib import Path
 from textwrap import dedent
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
@@ -15,10 +13,11 @@ import mlx.core as mx
 import mlx.nn as nn
 from huggingface_hub import snapshot_download
 from huggingface_hub.errors import RepositoryNotFoundError
-from mlx.utils import tree_flatten, tree_unflatten
+from mlx.utils import tree_flatten
 from transformers import AutoProcessor, PreTrainedTokenizer
-
+from mlx_vlm.utils import sanitize_weights
 from .tokenizer_utils import TokenizerWrapper, load_tokenizer
+
 
 # Constants
 MODEL_REMAPPING = {}
@@ -192,20 +191,68 @@ def load_model(
                 model_args.vision_config.patch_size = int(patch_size)
 
     model = model_class(model_args)
-
     if hasattr(model, "sanitize"):
         weights = model.sanitize(weights)
 
+    if hasattr(model_class, "VisionModel"):
+        weights = sanitize_weights(
+            model_class.VisionModel, weights, model_args.vision_config
+        )
+    if hasattr(model_class, "LanguageModel"):
+        weights = sanitize_weights(
+            model_class.LanguageModel, weights, model_args.text_config
+        )
+
+
+    if "quantization" not in config:
+        quantization_config = config.get("quantization_config", None)
+        if quantization_config is None:
+            text_config_dict = config.get("text_config", {})
+            quantization_config = text_config_dict.get("quantization_config", None)
+            if quantization_config is not None:
+                config["quantization_config"] = quantization_config
+
+        if quantization_config is not None:
+            quant_method = quantization_config.get("quant_method")
+            quantization = None
+            if quant_method == "compressed-tensors":
+                quantization = {"group_size": 32, "bits": 4, "mode": "affine"}
+            elif quant_method == "mxfp4":
+                quantization = {"group_size": 32, "bits": 4, "mode": "mxfp4"}
+            elif quant_method == "nvfp4":
+                quantization = {"group_size": 16, "bits": 4, "mode": "nvfp4"}
+            elif quant_method == "mxfp8":
+                quantization = {"group_size": 32, "bits": 8, "mode": "mxfp8"}
+            elif quant_method in ("awq", "gptq", "bitnet"):
+                logging.warning(
+                    "Quantization method %s is not supported in mlx_embeddings.load_model()",
+                    quant_method,
+                )
+
+            if quantization is not None:
+                config["quantization"] = quantization
+                config["quantization_config"] = quantization
+
     if (quantization := config.get("quantization", None)) is not None:
-        # Handle legacy models which may not have everything quantized
+        # Handle legacy models which may or may not have vision quantized.
+        skip_vision = config.get("vision_config", {}).get("skip_vision", False)
+
         def class_predicate(p, m):
+            if skip_vision and ("vision_model" in p or "vision_tower" in p):
+                return False
+            if p in quantization:
+                return quantization[p]
             if not hasattr(m, "to_quantized"):
+                return False
+            if hasattr(m, "weight") and m.weight.size % 64 != 0:
                 return False
             return f"{p}.scales" in weights
 
         nn.quantize(
             model,
-            **quantization,
+            group_size=quantization["group_size"],
+            bits=quantization["bits"],
+            mode=quantization.get("mode", "affine"),
             class_predicate=class_predicate,
         )
 
@@ -446,115 +493,6 @@ def save_weights(
         )
 
 
-def get_class_predicate(skip_vision: bool, q_group_size: int, weights: dict = None):
-    """
-    Returns a predicate function for quantization that handles vision model skipping
-    and dimension compatibility checks.
-    """
-
-    def class_predicate(p, m):
-        # Must have a to_quantized method
-        if not hasattr(m, "to_quantized"):
-            return False
-
-        # Optionally skip vision model layers
-        if skip_vision and ("vision_model" in p or "vision_tower" in p):
-            return False
-
-        # Check for weight attribute and dimension compatibility
-        if hasattr(m, "weight"):
-            if m.weight.ndim < 2 or m.weight.shape[-1] % q_group_size != 0:
-                print(
-                    f"Skipping quantization of {p}:"
-                    f" Last dimension {m.weight.shape[-1]} is not divisible by group size {q_group_size}."
-                )
-                return False
-
-        # Check against a whitelist of weights if provided
-        if weights:
-            return p in weights
-
-        return True
-
-    return class_predicate
-
-
-def quantize_model(
-    model: nn.Module,
-    config: dict,
-    q_group_size: int,
-    q_bits: int,
-    mode: str = "affine",
-    skip_vision: bool = True,
-) -> Tuple:
-    """
-    Applies quantization to the model weights.
-
-    Args:
-        model (nn.Module): The model to be quantized.
-        config (dict): Model configuration.
-        q_group_size (int): Group size for quantization.
-        q_bits (int): Bits per weight for quantization.
-        mode (str): The quantization mode. Supported values: "affine", "mxfp4", 
-            "nvfp4", "mxfp8". Defaults to "affine".
-        skip_vision (bool): Whether to skip vision layers. Defaults to True.
-
-    Returns:
-        Tuple: Tuple containing quantized weights and config.
-        
-    Raises:
-        ValueError: If an unsupported quantization mode is specified.
-    """
-    def defaults_for_mode(mode: str, group_size: int, bits: int) -> Tuple[int, int]:
-        """
-        Get default group_size and bits for the given quantization mode.
-        
-        Args:
-            mode (str): The quantization mode.
-            group_size (int): User-specified group size (used if non-zero).
-            bits (int): User-specified bits (used if non-zero).
-            
-        Returns:
-            Tuple: (effective_group_size, effective_bits)
-        """
-        mode_defaults = {
-            "affine": (64, 4),
-            "mxfp4": (32, 4),
-            "nvfp4": (16, 4),
-            "mxfp8": (32, 8),
-        }
-        if mode not in mode_defaults:
-            raise ValueError(
-                f"Unsupported quantization mode '{mode}'. "
-                f"Supported modes are: {', '.join(mode_defaults.keys())}"
-            )
-        default_group_size, default_bits = mode_defaults[mode]
-        # Use provided values if they are non-zero, otherwise use defaults
-        effective_group_size = group_size if group_size else default_group_size
-        effective_bits = bits if bits else default_bits
-        return effective_group_size, effective_bits
-    
-    quantized_config = copy.deepcopy(config)
-    effective_group_size, effective_bits = defaults_for_mode(mode, q_group_size, q_bits)
-    
-    nn.quantize(
-        model,
-        q_group_size,
-        q_bits,
-        class_predicate=get_class_predicate(
-            skip_vision=skip_vision, q_group_size=q_group_size
-        ),
-    )
-    quantized_config["quantization"] = {
-        "group_size": effective_group_size, 
-        "bits": effective_bits,
-        "mode": mode,
-    }
-    quantized_weights = dict(tree_flatten(model.parameters()))
-
-    return quantized_weights, quantized_config
-
-
 def save_config(
     config: dict,
     config_path: Union[str, Path],
@@ -576,110 +514,6 @@ def save_config(
     # write the updated config to the config_path (if provided)
     with open(config_path, "w") as fid:
         json.dump(config, fid, indent=4)
-
-
-def dequantize_model(model: nn.Module) -> nn.Module:
-    """
-    Dequantize the quantized linear layers in the model.
-
-    Args:
-        model (nn.Module): The model with quantized linear layers.
-
-    Returns:
-        nn.Module: The model with dequantized layers.
-    """
-    de_quantize_layers = []
-    for name, module in model.named_modules():
-        if isinstance(module, nn.QuantizedLinear):
-            bias = "bias" in module
-            weight = module.weight
-            weight = mx.dequantize(
-                weight,
-                module.scales,
-                module.biases,
-                module.group_size,
-                module.bits,
-            ).astype(mx.float16)
-            output_dims, input_dims = weight.shape
-            linear = nn.Linear(input_dims, output_dims, bias=bias)
-            linear.weight = weight
-            if bias:
-                linear.bias = module.bias
-            de_quantize_layers.append((name, linear))
-        if isinstance(module, nn.QuantizedEmbedding):
-            weight = mx.dequantize(
-                module.weight,
-                module.scales,
-                module.biases,
-                module.group_size,
-                module.bits,
-            ).astype(mx.float16)
-            num_embeddings, dims = weight.shape
-            emb = nn.Embedding(num_embeddings, dims)
-            emb.weight = weight
-            de_quantize_layers.append((name, emb))
-
-    if len(de_quantize_layers) > 0:
-        model.update_modules(tree_unflatten(de_quantize_layers))
-    return model
-
-
-def convert(
-    hf_path: str,
-    mlx_path: str = "mlx_model",
-    quantize: bool = False,
-    q_group_size: int = 64,
-    q_bits: int = 4,
-    q_mode: str = "affine",
-    dtype: str = "float16",
-    upload_repo: str = None,
-    revision: Optional[str] = None,
-    dequantize: bool = False,
-    skip_vision: bool = True,
-):
-    print("[INFO] Loading")
-    model_path = get_model_path(hf_path, revision=revision)
-    model, config, tokenizer = fetch_from_hub(
-        model_path, lazy=True, path_to_repo=hf_path
-    )
-
-    weights = dict(tree_flatten(model.parameters()))
-    dtype = getattr(mx, dtype)
-    weights = {k: v.astype(dtype) for k, v in weights.items()}
-
-    if quantize and dequantize:
-        raise ValueError("Choose either quantize or dequantize, not both.")
-
-    if quantize:
-        print("[INFO] Quantizing")
-        model.load_weights(list(weights.items()))
-        weights, config = quantize_model(
-            model, config, q_group_size, q_bits, mode=q_mode, skip_vision=skip_vision
-        )
-
-    if dequantize:
-        print("[INFO] Dequantizing")
-        model = dequantize_model(model)
-        weights = dict(tree_flatten(model.parameters()))
-
-    if isinstance(mlx_path, str):
-        mlx_path = Path(mlx_path)
-
-    del model
-    save_weights(mlx_path, weights, donate_weights=True)
-
-    # Copy Python and JSON files from the model path to the MLX path
-    for pattern in ["*.py", "*.json"]:
-        files = glob.glob(str(model_path / pattern))
-        for file in files:
-            shutil.copy(file, mlx_path)
-
-    tokenizer.save_pretrained(mlx_path)
-
-    save_config(config, config_path=mlx_path / "config.json")
-
-    if upload_repo is not None:
-        upload_to_hub(mlx_path, upload_repo, hf_path, config)
 
 
 def load_images(images, processor, resize_shape=None):

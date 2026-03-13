@@ -18,6 +18,7 @@ MLX-Embeddings supports a variety of model architectures for text embedding task
 - BERT (Bidirectional Encoder Representations from Transformers)
 - ModernBERT (modernized bidirectional encoder-only Transformer model)
 - Qwen3 (Qwen3's embedding model)
+- Qwen3-VL (multimodal Qwen3-VL embedding and reranking model)
 
 We're continuously working to expand our support for additional model architectures. Check our GitHub repository or documentation for the most up-to-date list of supported models and their specific versions.
 

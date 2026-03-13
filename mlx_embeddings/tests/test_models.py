@@ -8,6 +8,49 @@ from mlx.utils import tree_map
 
 
 class TestModels(unittest.TestCase):
+    def _qwen3_vl_variant_config(self, model_type, **extra):
+        config = {
+            "model_type": model_type,
+            "text_config": {
+                "model_type": "qwen3_vl_text",
+                "hidden_size": 16,
+                "num_hidden_layers": 1,
+                "intermediate_size": 32,
+                "num_attention_heads": 2,
+                "num_key_value_heads": 2,
+                "rms_norm_eps": 1e-5,
+                "head_dim": 8,
+                "vocab_size": 32,
+                "rope_theta": 1000.0,
+                "max_position_embeddings": 128,
+                "tie_word_embeddings": True,
+                "rope_scaling": {"rope_type": "mrope", "mrope_section": [2, 1, 1]},
+            },
+            "vision_config": {
+                "model_type": "qwen3_vl",
+                "depth": 1,
+                "hidden_size": 16,
+                "intermediate_size": 32,
+                "out_hidden_size": 16,
+                "num_heads": 2,
+                "patch_size": 2,
+                "in_channels": 3,
+                "spatial_merge_size": 2,
+                "temporal_patch_size": 2,
+                "num_position_embeddings": 4,
+                "deepstack_visual_indexes": [],
+            },
+            "image_token_id": 31,
+            "video_token_id": 30,
+            "vision_start_token_id": 29,
+            "vision_end_token_id": 28,
+            "vocab_size": 32,
+            "yes_token_id": 3,
+            "no_token_id": 4,
+        }
+        config.update(extra)
+        return config
+
 
     def model_test_runner(
         self,
@@ -399,6 +442,51 @@ class TestModels(unittest.TestCase):
             config.model_type,
             config.num_hidden_layers,
         )
+
+    def test_qwen3_vl_model(self):
+        from mlx_embeddings.models import qwen3_vl
+
+        config = qwen3_vl.ModelArgs.from_dict(
+            self._qwen3_vl_variant_config("qwen3_vl")
+        )
+        model = qwen3_vl.Model(config)
+        model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
+
+        attention_mask = mx.ones((1, 4), dtype=mx.int32)
+        outputs = model(
+            input_ids=mx.array([[1, 2, 3, 4]], dtype=mx.int32),
+            attention_mask=attention_mask,
+        )
+
+        self.assertEqual(outputs.last_hidden_state.shape, (1, 4, 16))
+        self.assertEqual(outputs.text_embeds.shape, (1, 16))
+        self.assertEqual(outputs.logits.shape, (1,))
+        self.assertEqual(outputs.scores.shape, (1,))
+        self.assertTrue(
+            mx.allclose(mx.linalg.norm(outputs.text_embeds, axis=-1), mx.ones((1,)))
+        )
+
+    def test_qwen3_vl_model_multimodal(self):
+        from mlx_embeddings.models import qwen3_vl
+
+        config = qwen3_vl.ModelArgs.from_dict(
+            self._qwen3_vl_variant_config("qwen3_vl")
+        )
+        model = qwen3_vl.Model(config)
+        model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
+
+        pixel_values = mx.random.normal((4, 3, 2, 2, 2))
+        outputs = model(
+            input_ids=mx.array([[1, 31, 2]], dtype=mx.int32),
+            attention_mask=mx.ones((1, 3), dtype=mx.int32),
+            pixel_values=pixel_values,
+            image_grid_thw=mx.array([[1, 2, 2]], dtype=mx.int32),
+        )
+
+        self.assertEqual(outputs.last_hidden_state.shape, (1, 3, 16))
+        self.assertEqual(outputs.text_embeds.shape, (1, 16))
+        self.assertTrue(mx.all(outputs.scores >= 0.0).item())
+        self.assertTrue(mx.all(outputs.scores <= 1.0).item())
 
 
 if __name__ == "__main__":
