@@ -2,8 +2,10 @@
 
 """Tests for `mlx_embeddings` package."""
 import unittest
+from unittest.mock import MagicMock
 
 import mlx.core as mx
+import numpy as np
 from mlx.utils import tree_map
 
 
@@ -487,6 +489,104 @@ class TestModels(unittest.TestCase):
         self.assertEqual(outputs.text_embeds.shape, (1, 16))
         self.assertTrue(mx.all(outputs.scores >= 0.0).item())
         self.assertTrue(mx.all(outputs.scores <= 1.0).item())
+
+    def test_qwen3_vl_processor_formats_embedding_and_reranker_inputs(self):
+        from mlx_embeddings.models import qwen3_vl
+
+        hf_processor = MagicMock()
+        hf_processor.tokenizer.padding_side = "right"
+        hf_processor.image_processor = MagicMock()
+        hf_processor.apply_chat_template.return_value = {
+            "input_ids": np.array([[1, 2, 3]], dtype=np.int32),
+            "attention_mask": np.array([[1, 1, 1]], dtype=np.int32),
+        }
+
+        processor = qwen3_vl.Processor(hf_processor)
+
+        embedding_inputs = processor.prepare_embedding_inputs(
+            {"text": "hello", "instruction": "Represent this"}
+        )
+        self.assertEqual(embedding_inputs["input_ids"].shape, (1, 3))
+        self.assertEqual(hf_processor.tokenizer.padding_side, "right")
+        embedding_conversation = hf_processor.apply_chat_template.call_args.args[0][0]
+        self.assertEqual(
+            embedding_conversation[0]["content"][0]["text"], "Represent this"
+        )
+        self.assertEqual(
+            embedding_conversation[1]["content"][-1], {"type": "text", "text": "hello"}
+        )
+
+        reranker_inputs = processor.prepare_reranker_inputs(
+            {
+                "instruction": "Rank candidates",
+                "query": {"text": "query"},
+                "documents": [{"text": "doc"}],
+            }
+        )
+        self.assertEqual(reranker_inputs["attention_mask"].shape, (1, 3))
+        self.assertEqual(hf_processor.tokenizer.padding_side, "right")
+        reranker_conversation = hf_processor.apply_chat_template.call_args.args[0][0]
+        self.assertEqual(
+            reranker_conversation[0]["content"][0]["text"],
+            processor.reranking_system_prompt,
+        )
+        self.assertEqual(
+            reranker_conversation[1]["content"][0]["text"],
+            "<Instruct>: Rank candidates",
+        )
+        self.assertIn(
+            {"type": "text", "text": "<Query>:"},
+            reranker_conversation[1]["content"],
+        )
+        self.assertIn(
+            {"type": "text", "text": "\n<Document>:"},
+            reranker_conversation[1]["content"],
+        )
+
+    def test_qwen3_vl_model_process_uses_high_level_processor_paths(self):
+        from mlx_embeddings.models import qwen3_vl
+
+        class DummyProcessor:
+            def prepare_embedding_inputs(self, inputs, **kwargs):
+                del inputs, kwargs
+                return {
+                    "input_ids": mx.array([[1, 2, 3]], dtype=mx.int32),
+                    "attention_mask": mx.ones((1, 3), dtype=mx.int32),
+                }
+
+            def prepare_reranker_inputs(self, inputs, **kwargs):
+                del kwargs
+                return {
+                    "input_ids": mx.array([[1, 2, 3]], dtype=mx.int32),
+                    "attention_mask": mx.ones((1, 3), dtype=mx.int32),
+                }
+
+            def prepare_model_inputs(self, inputs, **kwargs):
+                if isinstance(inputs, dict) and "documents" in inputs:
+                    return self.prepare_reranker_inputs(inputs, **kwargs)
+                return self.prepare_embedding_inputs(inputs, **kwargs)
+
+        config = qwen3_vl.ModelArgs.from_dict(
+            self._qwen3_vl_variant_config("qwen3_vl")
+        )
+        model = qwen3_vl.Model(config)
+        model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
+
+        processor = DummyProcessor()
+
+        embeddings = model.process([{"text": "hello"}], processor=processor)
+        self.assertEqual(embeddings.shape, (1, 16))
+
+        scores = model.process(
+            {
+                "query": {"text": "query"},
+                "documents": [{"text": "doc 1"}],
+            },
+            processor=processor,
+        )
+        self.assertEqual(scores.shape, (1,))
+        self.assertTrue(mx.all(scores >= 0.0).item())
+        self.assertTrue(mx.all(scores <= 1.0).item())
 
 
 if __name__ == "__main__":

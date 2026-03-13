@@ -31,6 +31,17 @@ class ModelNotFoundError(Exception):
         super().__init__(self.message)
 
 
+def _get_model_arch(config: dict):
+    model_type = config["model_type"].replace("-", "_")
+    model_type = MODEL_REMAPPING.get(model_type, model_type)
+    try:
+        return importlib.import_module(f"mlx_embeddings.models.{model_type}")
+    except ImportError:
+        msg = f"Model type {model_type} not supported."
+        logging.error(msg)
+        raise ValueError(msg)
+
+
 def _get_classes(config: dict):
     """
     Retrieve the model and model args classes based on the configuration.
@@ -41,14 +52,7 @@ def _get_classes(config: dict):
     Returns:
         A tuple containing the Model class and the ModelArgs class.
     """
-    model_type = config["model_type"].replace("-", "_")
-    model_type = MODEL_REMAPPING.get(model_type, model_type)
-    try:
-        arch = importlib.import_module(f"mlx_embeddings.models.{model_type}")
-    except ImportError:
-        msg = f"Model type {model_type} not supported."
-        logging.error(msg)
-        raise ValueError(msg)
+    arch = _get_model_arch(config)
 
     if hasattr(arch, "TextConfig") and hasattr(arch, "VisionConfig"):
         return arch.Model, arch.ModelArgs, arch.TextConfig, arch.VisionConfig
@@ -203,7 +207,6 @@ def load_model(
             model_class.LanguageModel, weights, model_args.text_config
         )
 
-
     if "quantization" not in config:
         quantization_config = config.get("quantization_config", None)
         if quantization_config is None:
@@ -294,6 +297,9 @@ def load(
         ValueError: If model class or args class are not found.
     """
     model_path = get_model_path(path_or_hf_repo)
+    config = load_config(model_path)
+    config.update(model_config)
+    arch = _get_model_arch(config)
 
     model = load_model(model_path, lazy, model_config, path_to_repo=path_or_hf_repo)
 
@@ -302,7 +308,9 @@ def load(
 
     # First attempt: load tokenizer
     try:
-        if hasattr(model.config, "vision_config"):
+        if hasattr(arch, "Processor"):
+            tokenizer = arch.Processor.from_pretrained(model_path, **tokenizer_config)
+        elif hasattr(model.config, "vision_config"):
             tokenizer = AutoProcessor.from_pretrained(model_path)
         else:
             tokenizer = load_tokenizer(model_path, tokenizer_config)

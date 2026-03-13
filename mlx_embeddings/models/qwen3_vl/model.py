@@ -3,12 +3,13 @@ from typing import Any, Dict, Optional, Tuple
 
 import mlx.core as mx
 import mlx.nn as nn
+from mlx_lm.models.base import create_causal_mask
 from mlx_vlm.models.qwen3_vl import Model as Qwen3VLBackbone
 from mlx_vlm.models.qwen3_vl import LanguageModel as Qwen3VLLanguageModel
 from mlx_vlm.models.qwen3_vl import ModelConfig, TextConfig, VisionConfig
 from mlx_vlm.models.qwen3_vl import VisionModel as Qwen3VLVisionModel
 
-from .base import BaseModelArgs, BaseModelOutput, normalize_embeddings
+from ..base import BaseModelArgs, BaseModelOutput, normalize_embeddings
 
 
 def clean_qwen3_vl_subconfigs(
@@ -87,6 +88,14 @@ def compute_qwen3_vl_hidden_states(
         language_model._position_ids = None
 
     rope_mask = attention_mask
+    model_mask = attention_mask
+    if attention_mask is not None and attention_mask.ndim == 2:
+        seq_length = attention_mask.shape[-1]
+        causal_mask = create_causal_mask(seq_length)
+        valid_tokens = attention_mask.astype(mx.bool_)
+        key_mask = mx.expand_dims(valid_tokens, axis=(1, 2))
+        query_mask = mx.expand_dims(valid_tokens, axis=(1, 3))
+        model_mask = causal_mask[None, None, :, :] & key_mask & query_mask
     if attention_mask is not None and attention_mask.shape[-1] != input_ids.shape[-1]:
         rope_mask = None
 
@@ -109,7 +118,7 @@ def compute_qwen3_vl_hidden_states(
     return language_model.model(
         input_ids,
         inputs_embeds=inputs_embeds,
-        mask=attention_mask,
+        mask=model_mask,
         cache=cache,
         position_ids=position_ids,
         visual_pos_masks=visual_pos_masks,
@@ -253,6 +262,26 @@ class Model(nn.Module):
 
     def compute_scores(self, inputs: Dict[str, mx.array]) -> mx.array:
         return self(**inputs).scores
+
+    def embed(self, inputs, processor, **kwargs) -> mx.array:
+        model_inputs = processor.prepare_embedding_inputs(inputs, **kwargs)
+        return self(**model_inputs).text_embeds
+
+    def rerank(self, inputs, processor, **kwargs) -> mx.array:
+        model_inputs = processor.prepare_reranker_inputs(inputs, **kwargs)
+        if model_inputs is None:
+            return mx.array([])
+        return self(**model_inputs).scores
+
+    def process(self, inputs, processor, **kwargs):
+        if processor is None or not hasattr(processor, "prepare_model_inputs"):
+            raise ValueError(
+                "Qwen3-VL high-level processing requires the custom Qwen3-VL processor."
+            )
+
+        if isinstance(inputs, dict) and "documents" in inputs:
+            return self.rerank(inputs, processor, **kwargs)
+        return self.embed(inputs, processor, **kwargs)
 
     def sanitize(self, weights):
         sanitized = {}

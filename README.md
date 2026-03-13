@@ -32,6 +32,75 @@ pip install mlx-embeddings
 
 ## Usage
 
+### Qwen3-VL
+
+Qwen3-VL uses a model-specific processor and a high-level `model.process(...)` API for multimodal embedding and reranking.
+
+#### Multimodal Embedding
+
+```python
+import mlx.core as mx
+from mlx_embeddings import load
+
+model, processor = load("Qwen/Qwen3-VL-Embedding-2B")
+
+inputs = [
+    {
+        "text": "A woman playing with her dog on a beach at sunset.",
+        "instruction": "Retrieve images or text relevant to the user's query.",
+    },
+    {
+        "text": "A woman shares a joyful moment with her golden retriever on a sun-drenched beach at sunset."
+    },
+    {
+        "image": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen-VL/assets/demo.jpeg"
+    },
+    {
+        "text": "A woman shares a joyful moment with her golden retriever on a sun-drenched beach at sunset.",
+        "image": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen-VL/assets/demo.jpeg",
+    },
+]
+
+embeddings = model.process(inputs, processor=processor)
+similarity = embeddings @ embeddings.T
+
+mx.eval(embeddings, similarity)
+print(embeddings.shape)  # (4, 2048)
+print(similarity)
+```
+
+#### Multimodal Reranking
+
+```python
+import mlx.core as mx
+from mlx_embeddings import load
+
+model, processor = load("Qwen/Qwen3-VL-Reranker-2B")
+
+inputs = {
+    "instruction": "Retrieve images or text relevant to the user's query.",
+    "query": {"text": "A woman playing with her dog on a beach at sunset."},
+    "documents": [
+        {
+            "text": "A woman shares a joyful moment with her golden retriever on a sun-drenched beach at sunset."
+        },
+        {
+            "image": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen-VL/assets/demo.jpeg"
+        },
+        {
+            "text": "A woman shares a joyful moment with her golden retriever on a sun-drenched beach at sunset.",
+            "image": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen-VL/assets/demo.jpeg",
+        },
+    ],
+}
+
+scores = model.process(inputs, processor=processor)
+
+mx.eval(scores)
+print(scores.shape)  # (3,)
+print(scores)
+```
+
 ### Single Item Embedding
 
 
