@@ -92,9 +92,7 @@ def quantize_model(
         return effective_group_size, effective_bits
 
     quantized_config = copy.deepcopy(config)
-    effective_group_size, effective_bits = defaults_for_mode(
-        mode, q_group_size, q_bits
-    )
+    effective_group_size, effective_bits = defaults_for_mode(mode, q_group_size, q_bits)
 
     nn.quantize(
         model,

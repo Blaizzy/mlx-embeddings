@@ -6,13 +6,12 @@ import mlx.core as mx
 from transformers import AutoImageProcessor, AutoTokenizer
 from transformers.models.qwen3_vl.processing_qwen3_vl import Qwen3VLProcessor
 
-
 DEFAULT_EMBEDDING_INSTRUCTION = "Represent the user's input."
 DEFAULT_RERANKING_INSTRUCTION = (
     "Given a search query, retrieve relevant candidates that answer the query."
 )
 DEFAULT_RERANKING_SYSTEM_PROMPT = (
-    'Judge whether the Document meets the requirements based on the Query and the '
+    "Judge whether the Document meets the requirements based on the Query and the "
     'Instruct provided. Note that the answer can only be "yes" or "no".'
 )
 DEFAULT_MAX_LENGTH = 8192
@@ -119,12 +118,18 @@ class Processor:
 
         if processor.chat_template is None:
             try:
-                processor.chat_template = Processor._load_chat_template(tokenizer.name_or_path)
+                processor.chat_template = Processor._load_chat_template(
+                    tokenizer.name_or_path
+                )
             except Exception:
                 processor.chat_template = None
 
-        processor.image_token = getattr(tokenizer, "image_token", None) or "<|image_pad|>"
-        processor.video_token = getattr(tokenizer, "video_token", None) or "<|video_pad|>"
+        processor.image_token = (
+            getattr(tokenizer, "image_token", None) or "<|image_pad|>"
+        )
+        processor.video_token = (
+            getattr(tokenizer, "video_token", None) or "<|video_pad|>"
+        )
         processor.image_token_id = (
             getattr(tokenizer, "image_token_id", None)
             if getattr(tokenizer, "image_token_id", None) is not None
@@ -264,10 +269,10 @@ class Processor:
             {"role": "user", "content": content},
         ]
 
-    def format_reranker_inputs(self, payload: Dict[str, Any]) -> List[List[Dict[str, Any]]]:
-        instruction = payload.get(
-            "instruction", self.default_reranking_instruction
-        )
+    def format_reranker_inputs(
+        self, payload: Dict[str, Any]
+    ) -> List[List[Dict[str, Any]]]:
+        instruction = payload.get("instruction", self.default_reranking_instruction)
         query = payload.get("query", {})
         documents = payload.get("documents", [])
         fps = payload.get("fps")

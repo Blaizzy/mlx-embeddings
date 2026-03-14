@@ -3,13 +3,12 @@ from typing import Any, Dict, Optional, Tuple
 
 import mlx.core as mx
 from mlx_lm.models.base import create_causal_mask
-from mlx_vlm.models.qwen3_vl import Model as Qwen3VLBackbone
 from mlx_vlm.models.qwen3_vl import LanguageModel as Qwen3VLLanguageModel
+from mlx_vlm.models.qwen3_vl import Model as Qwen3VLBackbone
 from mlx_vlm.models.qwen3_vl import ModelConfig, TextConfig, VisionConfig
 from mlx_vlm.models.qwen3_vl import VisionModel as Qwen3VLVisionModel
 
 from ..base import BaseModelArgs, BaseModelOutput, normalize_embeddings
-
 
 
 def build_qwen3_vl_config(vlm_config: Dict[str, Any]) -> ModelConfig:
@@ -49,7 +48,9 @@ def compute_qwen3_vl_hidden_states(
     cache=None,
 ) -> mx.array:
     if input_ids is None:
-        raise ValueError("`input_ids` is required for Qwen3-VL embedding and reranking.")
+        raise ValueError(
+            "`input_ids` is required for Qwen3-VL embedding and reranking."
+        )
 
     visual_pos_masks = None
     deepstack_visual_embeds = None
@@ -131,8 +132,14 @@ class ModelArgs(BaseModelArgs):
         text_config_raw = params.get("text_config", {})
         vision_config_raw = params.get("vision_config", {})
 
-        text_config = asdict(TextConfig.from_dict(text_config_raw)) if text_config_raw else {}
-        vision_config = asdict(VisionConfig.from_dict(vision_config_raw)) if vision_config_raw else {}
+        text_config = (
+            asdict(TextConfig.from_dict(text_config_raw)) if text_config_raw else {}
+        )
+        vision_config = (
+            asdict(VisionConfig.from_dict(vision_config_raw))
+            if vision_config_raw
+            else {}
+        )
 
         return cls(
             text_config=text_config,
@@ -218,9 +225,7 @@ class Model(Qwen3VLBackbone):
         )
 
         pooled = last_non_padding_token(hidden_states, attention_mask)
-        text_embeds = (
-            normalize_embeddings(pooled) if self.args.normalize else pooled
-        )
+        text_embeds = normalize_embeddings(pooled) if self.args.normalize else pooled
         logits = self.get_binary_logits(pooled)
         scores = mx.sigmoid(logits)
 

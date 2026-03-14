@@ -14,10 +14,10 @@ import mlx.nn as nn
 from huggingface_hub import snapshot_download
 from huggingface_hub.errors import RepositoryNotFoundError
 from mlx.utils import tree_flatten
-from transformers import AutoProcessor, PreTrainedTokenizer
 from mlx_vlm.utils import sanitize_weights
-from .tokenizer_utils import TokenizerWrapper, load_tokenizer
+from transformers import AutoProcessor, PreTrainedTokenizer
 
+from .tokenizer_utils import TokenizerWrapper, load_tokenizer
 
 # Constants
 MODEL_REMAPPING = {}
@@ -177,7 +177,10 @@ def load_model(
         model_args.vision_config = vision_config(**model_args.vision_config)
 
         # siglip models have a different image size
-        if "medsiglip" not in kwargs["path_to_repo"] and "siglip" in config["model_type"]:
+        if (
+            "medsiglip" not in kwargs["path_to_repo"]
+            and "siglip" in config["model_type"]
+        ):
             # Extract the image size
             image_size = re.search(
                 r"patch\d+-(\d+)(?:-|$)", kwargs["path_to_repo"]

@@ -53,7 +53,6 @@ class TestModels(unittest.TestCase):
         config.update(extra)
         return config
 
-
     def model_test_runner(
         self,
         model,
@@ -448,9 +447,7 @@ class TestModels(unittest.TestCase):
     def test_qwen3_vl_model(self):
         from mlx_embeddings.models import qwen3_vl
 
-        config = qwen3_vl.ModelArgs.from_dict(
-            self._qwen3_vl_variant_config("qwen3_vl")
-        )
+        config = qwen3_vl.ModelArgs.from_dict(self._qwen3_vl_variant_config("qwen3_vl"))
         model = qwen3_vl.Model(config)
         model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
 
@@ -471,9 +468,7 @@ class TestModels(unittest.TestCase):
     def test_qwen3_vl_model_multimodal(self):
         from mlx_embeddings.models import qwen3_vl
 
-        config = qwen3_vl.ModelArgs.from_dict(
-            self._qwen3_vl_variant_config("qwen3_vl")
-        )
+        config = qwen3_vl.ModelArgs.from_dict(self._qwen3_vl_variant_config("qwen3_vl"))
         model = qwen3_vl.Model(config)
         model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
 
@@ -565,15 +560,18 @@ class TestModels(unittest.TestCase):
         dummy_image_processor = MagicMock()
         dummy_image_processor.merge_size = 2
 
-        with patch.object(
-            qwen3_vl.processor.AutoTokenizer,
-            "from_pretrained",
-            return_value=dummy_tokenizer,
-        ) as mock_tokenizer, patch.object(
-            qwen3_vl.processor.AutoImageProcessor,
-            "from_pretrained",
-            return_value=dummy_image_processor,
-        ) as mock_image_processor:
+        with (
+            patch.object(
+                qwen3_vl.processor.AutoTokenizer,
+                "from_pretrained",
+                return_value=dummy_tokenizer,
+            ) as mock_tokenizer,
+            patch.object(
+                qwen3_vl.processor.AutoImageProcessor,
+                "from_pretrained",
+                return_value=dummy_image_processor,
+            ) as mock_image_processor,
+        ):
             processor = qwen3_vl.Processor.from_pretrained("dummy-model")
 
         mock_tokenizer.assert_called_once()
@@ -606,9 +604,7 @@ class TestModels(unittest.TestCase):
                     return self.prepare_reranker_inputs(inputs, **kwargs)
                 return self.prepare_embedding_inputs(inputs, **kwargs)
 
-        config = qwen3_vl.ModelArgs.from_dict(
-            self._qwen3_vl_variant_config("qwen3_vl")
-        )
+        config = qwen3_vl.ModelArgs.from_dict(self._qwen3_vl_variant_config("qwen3_vl"))
         model = qwen3_vl.Model(config)
         model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
 
