@@ -292,7 +292,7 @@ image = Image.open(requests.get(url, stream=True).raw)
 texts = ["a photo of 2 dogs", "a photo of 2 cats"]
 
 # Process inputs
-inputs = processor(text=texts, images=image, padding="max_length", return_tensors="pt")
+inputs = processor(text=texts, images=image, padding="max_length", return_tensors="np")
 pixel_values = mx.array(inputs.pixel_values).transpose(0, 2, 3, 1).astype(mx.float32)
 input_ids = mx.array(inputs.input_ids)
 
@@ -336,7 +336,7 @@ all_probs = []
 
 
 # Process all image-text pairs in batch
-inputs = processor(text=texts, images=images, padding="max_length", return_tensors="pt")
+inputs = processor(text=texts, images=images, padding="max_length", return_tensors="np")
 pixel_values = mx.array(inputs.pixel_values).transpose(0, 2, 3, 1).astype(mx.float32)
 input_ids = mx.array(inputs.input_ids)
 
@@ -386,56 +386,130 @@ image_labels = [f"Image {i+1}" for i in range(len(images))]
 plot_similarity_matrix(all_probs, image_labels, texts)
 ```
 
-### Late Interaction Multimodal Retrival Models (ColPali/ColQwen)
+### Late Interaction Multimodal Retrieval Models (ColPali/ColQwen)
 
 ```python
 import mlx.core as mx
-from mlx_embeddings.utils import load
 import requests
+from io import BytesIO
 from PIL import Image
-import torch
+from transformers import AutoImageProcessor
 
-# Load vision model and processor
-model, processor = load("qnguyen3/colqwen2.5-v0.2-mlx")
+from mlx_embeddings import load
+from mlx_embeddings.models.base import normalize_embeddings
 
-# Load an image
+# Load the model and tokenizer returned by mlx-embeddings
+model, tokenizer = load("qnguyen3/colqwen2.5-v0.2-mlx")
+image_processor = AutoImageProcessor.from_pretrained("qnguyen3/colqwen2.5-v0.2-mlx")
 
-url_1 = "https://upload.wikimedia.org/wikipedia/commons/8/89/US-original-Declaration-1776.jpg"
-image_1 = Image.open(url_1)
 
-url_2 = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Romeoandjuliet1597.jpg/500px-Romeoandjuliet1597.jpg"
-image_2 = Image.open(url_2)
+def fetch_image(url):
+    response = requests.get(url, timeout=60)
+    response.raise_for_status()
+    return Image.open(BytesIO(response.content)).convert("RGB")
 
-# Create text descriptions to compare with the image
+
+def nonpad_rows(embeds, attention_mask):
+    indices = mx.where(attention_mask[0] != 0)[0]
+    return embeds[0, indices, :]
+
+
+def prepare_query(text):
+    suffix = tokenizer.pad_token * 10
+    query = "Query: " + text + suffix
+    inputs = tokenizer([query], return_tensors="np", padding=True)
+    return {
+        "input_ids": mx.array(inputs["input_ids"]),
+        "attention_mask": mx.array(inputs["attention_mask"]),
+    }
+
+
+def prepare_image(image):
+    image_inputs = image_processor(
+        images=[image],
+        return_tensors="np",
+        data_format="channels_first",
+        do_convert_rgb=True,
+    )
+    image_grid_thw = mx.array(image_inputs["image_grid_thw"])
+    num_image_tokens = int(
+        image_inputs["image_grid_thw"][0].prod() // (image_processor.merge_size ** 2)
+    )
+    prompt = (
+        "<|im_start|>user\n"
+        "<|vision_start|><|image_pad|><|vision_end|>"
+        "Describe the image.<|im_end|><|endoftext|>"
+    )
+    prompt = prompt.replace("<|image_pad|>", "<|image_pad|>" * num_image_tokens)
+    text_inputs = tokenizer([prompt], return_tensors="np", padding=True)
+    return {
+        "input_ids": mx.array(text_inputs["input_ids"]),
+        "attention_mask": mx.array(text_inputs["attention_mask"]),
+        "pixel_values": mx.array(image_inputs["pixel_values"]),
+        "image_grid_thw": image_grid_thw,
+    }
+
+
+def embed_query(text):
+    inputs = prepare_query(text)
+    inputs_embeds = model.get_input_embeddings_batch(inputs["input_ids"])
+    position_ids, _ = model.vlm.language_model.get_rope_index(
+        inputs["input_ids"],
+        attention_mask=inputs["attention_mask"],
+    )
+    hidden = model.vlm.language_model.model(
+        None,
+        inputs_embeds=inputs_embeds,
+        mask=None,
+        cache=None,
+        position_ids=position_ids,
+    )
+    embeds = normalize_embeddings(model.embedding_proj_layer(hidden))
+    embeds = embeds * inputs["attention_mask"][:, :, None]
+    return nonpad_rows(embeds, inputs["attention_mask"])
+
+
+def embed_image(image):
+    inputs = prepare_image(image)
+    inputs_embeds = model.get_input_embeddings_batch(
+        inputs["input_ids"],
+        inputs["pixel_values"],
+        inputs["image_grid_thw"],
+    )
+    position_ids, _ = model.vlm.language_model.get_rope_index(
+        inputs["input_ids"],
+        image_grid_thw=inputs["image_grid_thw"],
+        attention_mask=inputs["attention_mask"],
+    )
+    hidden = model.vlm.language_model.model(
+        None,
+        inputs_embeds=inputs_embeds,
+        mask=None,
+        cache=None,
+        position_ids=position_ids,
+    )
+    embeds = normalize_embeddings(model.embedding_proj_layer(hidden))
+    embeds = embeds * inputs["attention_mask"][:, :, None]
+    return nonpad_rows(embeds, inputs["attention_mask"])
+
+
+def maxsim(query_embeds, image_embeds):
+    sims = query_embeds @ image_embeds.T
+    return mx.sum(mx.max(sims, axis=1))
+
+
 texts = ["how many percent of data are books?", "evaluation results between models"]
+images = [
+    fetch_image("https://upload.wikimedia.org/wikipedia/commons/8/89/US-original-Declaration-1776.jpg"),
+    fetch_image("https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Romeoandjuliet1597.jpg/500px-Romeoandjuliet1597.jpg"),
+]
 
-# Process inputs - text and images need to be processed separately for ColQwen2.5
-text_inputs = processor(text=texts, padding=True, return_tensors="pt")
-image_inputs = processor(images=[image_1, image_2], padding=True, return_tensors="pt")
+query_embeddings = [embed_query(text) for text in texts]
+image_embeddings = [embed_image(image) for image in images]
+scores = [[float(maxsim(q, d)) for d in image_embeddings] for q in query_embeddings]
 
-# Convert to MLX arrays
-text_input_ids = mx.array(text_inputs.input_ids)
-
-image_input_ids = mx.array(image_inputs.input_ids)
-pixel_values = mx.array(image_inputs.pixel_values)
-image_grid_thw = mx.array(image_inputs.image_grid_thw)
-
-text_embeddings = model(input_ids=text_input_ids)
-image_embeddings = model(
-    input_ids=image_input_ids, 
-    pixel_values=pixel_values, 
-    image_grid_thw=image_grid_thw,
-)
-
-print(text_embeddings.text_embeds.shape)
-print(image_embeddings.image_embeds.shape)
-
-## convert to torch
-import torch
-text_embeddings = torch.tensor(text_embeddings.text_embeds)
-image_embeddings = torch.tensor(image_embeddings.image_embeds)
-
-scores = processor.score_retrieval(text_embeddings, image_embeddings)
+print([embedding.shape for embedding in query_embeddings])
+print([embedding.shape for embedding in image_embeddings])
 print(scores)
 ```
 
