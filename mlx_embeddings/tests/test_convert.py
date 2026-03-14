@@ -1,11 +1,14 @@
 """Tests for convert CLI and quantization mode (q_mode) support."""
 
 import argparse
+import importlib
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from mlx_embeddings.convert import configure_parser
+
+_convert_mod = importlib.import_module("mlx_embeddings.convert")
 
 
 class TestConfigureParser:
@@ -20,9 +23,7 @@ class TestConfigureParser:
 
     def test_q_mode_valid_choices(self):
         for mode in ("affine", "mxfp4", "nvfp4", "mxfp8"):
-            args = self.parser.parse_args(
-                ["--hf-path", "test/model", "--q-mode", mode]
-            )
+            args = self.parser.parse_args(["--hf-path", "test/model", "--q-mode", mode])
             assert args.q_mode == mode
 
     def test_q_mode_invalid_choice(self):
@@ -39,17 +40,26 @@ class TestConfigureParser:
         assert args.q_group_size == 64
 
     def test_all_convert_args_present(self):
-        args = self.parser.parse_args([
-            "--hf-path", "test/model",
-            "--mlx-path", "/tmp/out",
-            "-q",
-            "--q-group-size", "32",
-            "--q-bits", "8",
-            "--q-mode", "mxfp8",
-            "--dtype", "bfloat16",
-            "--upload-repo", "user/repo",
-            "-d",
-        ])
+        args = self.parser.parse_args(
+            [
+                "--hf-path",
+                "test/model",
+                "--mlx-path",
+                "/tmp/out",
+                "-q",
+                "--q-group-size",
+                "32",
+                "--q-bits",
+                "8",
+                "--q-mode",
+                "mxfp8",
+                "--dtype",
+                "bfloat16",
+                "--upload-repo",
+                "user/repo",
+                "-d",
+            ]
+        )
         assert args.hf_path == "test/model"
         assert args.mlx_path == "/tmp/out"
         assert args.quantize is True
@@ -75,16 +85,18 @@ class TestQuantizeModeDefaults:
         import mlx.core as mx
         import mlx.nn as nn
 
-        from mlx_embeddings.utils import quantize_model
+        from mlx_embeddings.convert import quantize_model
 
         linear = nn.Linear(128, 64)
         model = nn.Sequential(linear)
         config = {"model_type": "test"}
 
-        weights, qconfig = quantize_model(
-            model, config, group_size, bits, mode=mode
+        weights, qconfig = quantize_model(model, config, group_size, bits, mode=mode)
+        return (
+            qconfig["quantization"]["group_size"],
+            qconfig["quantization"]["bits"],
+            qconfig["quantization"]["mode"],
         )
-        return qconfig["quantization"]["group_size"], qconfig["quantization"]["bits"], qconfig["quantization"]["mode"]
 
     def test_affine_defaults(self):
         gs, bits, mode = self._call_defaults_for_mode("affine", 64, 4)
@@ -123,7 +135,7 @@ class TestQuantizeModeDefaults:
     def test_unsupported_mode_raises(self):
         import mlx.nn as nn
 
-        from mlx_embeddings.utils import quantize_model
+        from mlx_embeddings.convert import quantize_model
 
         model = nn.Sequential(nn.Linear(128, 64))
         with pytest.raises(ValueError, match="Unsupported quantization mode"):
@@ -133,16 +145,31 @@ class TestQuantizeModeDefaults:
         _, _, mode = self._call_defaults_for_mode("nvfp4", 0, 0)
         assert mode == "nvfp4"
 
+    def test_skip_vision_recorded_in_vision_config(self):
+        import mlx.nn as nn
+
+        from mlx_embeddings.convert import quantize_model
+
+        model = nn.Sequential(nn.Linear(128, 64))
+        _, qconfig = quantize_model(
+            model,
+            {"vision_config": {}},
+            64,
+            4,
+            skip_vision=True,
+        )
+        assert qconfig["vision_config"]["skip_vision"] is True
+
 
 class TestConvertQModePassthrough:
     """Verify that convert() passes q_mode through to quantize_model."""
 
     @patch("glob.glob", return_value=[])
-    @patch("mlx_embeddings.utils.save_weights")
-    @patch("mlx_embeddings.utils.save_config")
-    @patch("mlx_embeddings.utils.quantize_model")
-    @patch("mlx_embeddings.utils.fetch_from_hub")
-    @patch("mlx_embeddings.utils.get_model_path")
+    @patch.object(_convert_mod, "save_weights")
+    @patch.object(_convert_mod, "save_config")
+    @patch.object(_convert_mod, "quantize_model")
+    @patch.object(_convert_mod, "fetch_from_hub")
+    @patch.object(_convert_mod, "get_model_path")
     def test_convert_passes_q_mode(
         self,
         mock_get_model_path,
@@ -165,10 +192,13 @@ class TestConvertQModePassthrough:
 
         mock_quantize.return_value = (
             {"w": mx.zeros((4, 4))},
-            {"model_type": "test", "quantization": {"group_size": 32, "bits": 4, "mode": "mxfp4"}},
+            {
+                "model_type": "test",
+                "quantization": {"group_size": 32, "bits": 4, "mode": "mxfp4"},
+            },
         )
 
-        from mlx_embeddings.utils import convert
+        from mlx_embeddings.convert import convert
 
         convert(
             hf_path="test/model",

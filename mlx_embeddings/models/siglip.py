@@ -130,6 +130,7 @@ class MHA(nn.Module):
         output = output.transpose(0, 2, 1, 3).reshape(B, L, -1)
         return self.out_proj(output)
 
+
 class Attention(nn.Module):
     def __init__(
         self,

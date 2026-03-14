@@ -2,12 +2,56 @@
 
 """Tests for `mlx_embeddings` package."""
 import unittest
+from unittest.mock import MagicMock, patch
 
 import mlx.core as mx
+import numpy as np
 from mlx.utils import tree_map
 
 
 class TestModels(unittest.TestCase):
+    def _qwen3_vl_variant_config(self, model_type, **extra):
+        config = {
+            "model_type": model_type,
+            "text_config": {
+                "model_type": "qwen3_vl_text",
+                "hidden_size": 16,
+                "num_hidden_layers": 1,
+                "intermediate_size": 32,
+                "num_attention_heads": 2,
+                "num_key_value_heads": 2,
+                "rms_norm_eps": 1e-5,
+                "head_dim": 8,
+                "vocab_size": 32,
+                "rope_theta": 1000.0,
+                "max_position_embeddings": 128,
+                "tie_word_embeddings": True,
+                "rope_scaling": {"rope_type": "mrope", "mrope_section": [2, 1, 1]},
+            },
+            "vision_config": {
+                "model_type": "qwen3_vl",
+                "depth": 1,
+                "hidden_size": 16,
+                "intermediate_size": 32,
+                "out_hidden_size": 16,
+                "num_heads": 2,
+                "patch_size": 2,
+                "in_channels": 3,
+                "spatial_merge_size": 2,
+                "temporal_patch_size": 2,
+                "num_position_embeddings": 4,
+                "deepstack_visual_indexes": [],
+            },
+            "image_token_id": 31,
+            "video_token_id": 30,
+            "vision_start_token_id": 29,
+            "vision_end_token_id": 28,
+            "vocab_size": 32,
+            "yes_token_id": 3,
+            "no_token_id": 4,
+        }
+        config.update(extra)
+        return config
 
     def model_test_runner(
         self,
@@ -399,6 +443,186 @@ class TestModels(unittest.TestCase):
             config.model_type,
             config.num_hidden_layers,
         )
+
+    def test_qwen3_vl_model(self):
+        from mlx_embeddings.models import qwen3_vl
+
+        config = qwen3_vl.ModelArgs.from_dict(self._qwen3_vl_variant_config("qwen3_vl"))
+        model = qwen3_vl.Model(config)
+        model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
+
+        attention_mask = mx.ones((1, 4), dtype=mx.int32)
+        outputs = model(
+            input_ids=mx.array([[1, 2, 3, 4]], dtype=mx.int32),
+            attention_mask=attention_mask,
+        )
+
+        self.assertEqual(outputs.last_hidden_state.shape, (1, 4, 16))
+        self.assertEqual(outputs.text_embeds.shape, (1, 16))
+        self.assertEqual(outputs.logits.shape, (1,))
+        self.assertEqual(outputs.scores.shape, (1,))
+        self.assertTrue(
+            mx.allclose(mx.linalg.norm(outputs.text_embeds, axis=-1), mx.ones((1,)))
+        )
+
+    def test_qwen3_vl_model_multimodal(self):
+        from mlx_embeddings.models import qwen3_vl
+
+        config = qwen3_vl.ModelArgs.from_dict(self._qwen3_vl_variant_config("qwen3_vl"))
+        model = qwen3_vl.Model(config)
+        model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
+
+        pixel_values = mx.random.normal((4, 3, 2, 2, 2))
+        outputs = model(
+            input_ids=mx.array([[1, 31, 2]], dtype=mx.int32),
+            attention_mask=mx.ones((1, 3), dtype=mx.int32),
+            pixel_values=pixel_values,
+            image_grid_thw=mx.array([[1, 2, 2]], dtype=mx.int32),
+        )
+
+        self.assertEqual(outputs.last_hidden_state.shape, (1, 3, 16))
+        self.assertEqual(outputs.text_embeds.shape, (1, 16))
+        self.assertTrue(mx.all(outputs.scores >= 0.0).item())
+        self.assertTrue(mx.all(outputs.scores <= 1.0).item())
+
+    def test_qwen3_vl_processor_formats_embedding_and_reranker_inputs(self):
+        from mlx_embeddings.models import qwen3_vl
+
+        hf_processor = MagicMock()
+        hf_processor.tokenizer.padding_side = "right"
+        hf_processor.image_processor = MagicMock()
+        hf_processor.apply_chat_template.return_value = {
+            "input_ids": np.array([[1, 2, 3]], dtype=np.int32),
+            "attention_mask": np.array([[1, 1, 1]], dtype=np.int32),
+        }
+
+        processor = qwen3_vl.Processor(hf_processor)
+
+        embedding_inputs = processor.prepare_embedding_inputs(
+            {"text": "hello", "instruction": "Represent this"}
+        )
+        self.assertEqual(embedding_inputs["input_ids"].shape, (1, 3))
+        self.assertEqual(hf_processor.tokenizer.padding_side, "right")
+        embedding_conversation = hf_processor.apply_chat_template.call_args.args[0][0]
+        self.assertEqual(
+            embedding_conversation[0]["content"][0]["text"], "Represent this"
+        )
+        self.assertEqual(
+            embedding_conversation[1]["content"][-1], {"type": "text", "text": "hello"}
+        )
+
+        reranker_inputs = processor.prepare_reranker_inputs(
+            {
+                "instruction": "Rank candidates",
+                "query": {"text": "query"},
+                "documents": [{"text": "doc"}],
+            }
+        )
+        self.assertEqual(reranker_inputs["attention_mask"].shape, (1, 3))
+        self.assertEqual(hf_processor.tokenizer.padding_side, "right")
+        reranker_conversation = hf_processor.apply_chat_template.call_args.args[0][0]
+        self.assertEqual(
+            reranker_conversation[0]["content"][0]["text"],
+            processor.reranking_system_prompt,
+        )
+        self.assertEqual(
+            reranker_conversation[1]["content"][0]["text"],
+            "<Instruct>: Rank candidates",
+        )
+        self.assertIn(
+            {"type": "text", "text": "<Query>:"},
+            reranker_conversation[1]["content"],
+        )
+        self.assertIn(
+            {"type": "text", "text": "\n<Document>:"},
+            reranker_conversation[1]["content"],
+        )
+
+    def test_qwen3_vl_processor_from_pretrained_uses_custom_loader(self):
+        from mlx_embeddings.models import qwen3_vl
+
+        class DummyTokenizer:
+            def __init__(self):
+                self.chat_template = "dummy-template"
+                self.padding_side = "right"
+                self.name_or_path = "dummy-model"
+
+            def convert_tokens_to_ids(self, token):
+                mapping = {
+                    "<|image_pad|>": 1,
+                    "<|video_pad|>": 2,
+                    "<|vision_start|>": 3,
+                    "<|vision_end|>": 4,
+                }
+                return mapping[token]
+
+        dummy_tokenizer = DummyTokenizer()
+        dummy_image_processor = MagicMock()
+        dummy_image_processor.merge_size = 2
+
+        with (
+            patch.object(
+                qwen3_vl.processor.AutoTokenizer,
+                "from_pretrained",
+                return_value=dummy_tokenizer,
+            ) as mock_tokenizer,
+            patch.object(
+                qwen3_vl.processor.AutoImageProcessor,
+                "from_pretrained",
+                return_value=dummy_image_processor,
+            ) as mock_image_processor,
+        ):
+            processor = qwen3_vl.Processor.from_pretrained("dummy-model")
+
+        mock_tokenizer.assert_called_once()
+        mock_image_processor.assert_called_once()
+        self.assertIs(processor.tokenizer, dummy_tokenizer)
+        self.assertIs(processor.image_processor, dummy_image_processor)
+        self.assertEqual(processor.processor.chat_template, "dummy-template")
+        self.assertEqual(processor.processor.video_processor.merge_size, 2)
+
+    def test_qwen3_vl_model_process_uses_high_level_processor_paths(self):
+        from mlx_embeddings.models import qwen3_vl
+
+        class DummyProcessor:
+            def prepare_embedding_inputs(self, inputs, **kwargs):
+                del inputs, kwargs
+                return {
+                    "input_ids": mx.array([[1, 2, 3]], dtype=mx.int32),
+                    "attention_mask": mx.ones((1, 3), dtype=mx.int32),
+                }
+
+            def prepare_reranker_inputs(self, inputs, **kwargs):
+                del kwargs
+                return {
+                    "input_ids": mx.array([[1, 2, 3]], dtype=mx.int32),
+                    "attention_mask": mx.ones((1, 3), dtype=mx.int32),
+                }
+
+            def prepare_model_inputs(self, inputs, **kwargs):
+                if isinstance(inputs, dict) and "documents" in inputs:
+                    return self.prepare_reranker_inputs(inputs, **kwargs)
+                return self.prepare_embedding_inputs(inputs, **kwargs)
+
+        config = qwen3_vl.ModelArgs.from_dict(self._qwen3_vl_variant_config("qwen3_vl"))
+        model = qwen3_vl.Model(config)
+        model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
+
+        processor = DummyProcessor()
+
+        embeddings = model.process([{"text": "hello"}], processor=processor)
+        self.assertEqual(embeddings.shape, (1, 16))
+
+        scores = model.process(
+            {
+                "query": {"text": "query"},
+                "documents": [{"text": "doc 1"}],
+            },
+            processor=processor,
+        )
+        self.assertEqual(scores.shape, (1,))
+        self.assertTrue(mx.all(scores >= 0.0).item())
+        self.assertTrue(mx.all(scores <= 1.0).item())
 
 
 if __name__ == "__main__":

@@ -9,6 +9,7 @@ from mlx_embeddings.models.base import (
     mean_pooling,
     normalize_embeddings,
 )
+from mlx_embeddings.tokenizer_utils import TokenizerWrapper
 
 
 class TestBaseModelArgs:
@@ -156,3 +157,33 @@ class TestNormalizeEmbeddings:
         normalized = normalize_embeddings(embeddings, eps=1.0)
         expected = mx.zeros((2, 3))
         np.testing.assert_allclose(normalized.tolist(), expected.tolist(), rtol=1e-5)
+
+
+class TestTokenizerWrapper:
+    def test_call_forwards_to_underlying_tokenizer(self):
+        class DummyTokenizer:
+            def __call__(self, *args, **kwargs):
+                return {"args": args, "kwargs": kwargs}
+
+            def decode(self, tokens):
+                return str(tokens)
+
+        wrapper = TokenizerWrapper(DummyTokenizer())
+        output = wrapper(["hello"], return_tensors="mlx", padding=True)
+
+        assert output["args"] == (["hello"],)
+        assert output["kwargs"] == {"return_tensors": "mlx", "padding": True}
+
+    def test_batch_encode_plus_falls_back_to_call(self):
+        class DummyTokenizer:
+            def __call__(self, *args, **kwargs):
+                return {"args": args, "kwargs": kwargs}
+
+            def decode(self, tokens):
+                return str(tokens)
+
+        wrapper = TokenizerWrapper(DummyTokenizer())
+        output = wrapper.batch_encode_plus(["hello", "world"], return_tensors="mlx")
+
+        assert output["args"] == (["hello", "world"],)
+        assert output["kwargs"] == {"return_tensors": "mlx"}
