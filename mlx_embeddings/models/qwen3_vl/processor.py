@@ -1,8 +1,10 @@
 from contextlib import contextmanager
+from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
 import mlx.core as mx
-from transformers import AutoProcessor
+from transformers import AutoImageProcessor, AutoTokenizer
+from transformers.models.qwen3_vl.processing_qwen3_vl import Qwen3VLProcessor
 
 
 DEFAULT_EMBEDDING_INSTRUCTION = "Represent the user's input."
@@ -18,6 +20,18 @@ IMAGE_BASE_FACTOR = 16
 IMAGE_FACTOR = IMAGE_BASE_FACTOR * 2
 MIN_PIXELS = 4 * IMAGE_FACTOR * IMAGE_FACTOR
 MAX_PIXELS = 1800 * IMAGE_FACTOR * IMAGE_FACTOR
+
+
+class _UnsupportedVideoProcessor:
+    def __init__(self, merge_size: int = 2):
+        self.merge_size = merge_size
+        self.temporal_patch_size = 2
+
+    def __call__(self, *args, **kwargs):
+        del args, kwargs
+        raise ValueError(
+            "Qwen3-VL video inputs are not supported by the custom MLX processor."
+        )
 
 
 class Processor:
@@ -56,8 +70,32 @@ class Processor:
         reranking_system_prompt = kwargs.pop(
             "reranking_system_prompt", DEFAULT_RERANKING_SYSTEM_PROMPT
         )
+        trust_remote_code = kwargs.pop("trust_remote_code", True)
+        kwargs.pop("use_fast", None)
 
-        processor = AutoProcessor.from_pretrained(model_path, **kwargs)
+        model_dir = Path(model_path)
+        is_local = model_dir.exists() and model_dir.is_dir()
+        load_path = str(model_dir) if is_local else model_path
+        hub_kwargs = {
+            key: kwargs[key]
+            for key in ["cache_dir", "force_download", "revision", "token"]
+            if key in kwargs
+        }
+
+        tokenizer = AutoTokenizer.from_pretrained(
+            load_path,
+            trust_remote_code=trust_remote_code,
+            local_files_only=is_local,
+            **kwargs,
+        )
+        image_processor = AutoImageProcessor.from_pretrained(
+            load_path,
+            trust_remote_code=trust_remote_code,
+            local_files_only=is_local,
+            use_fast=False,
+            **hub_kwargs,
+        )
+        processor = cls._build_processor(tokenizer, image_processor)
         return cls(
             processor=processor,
             embedding_max_length=embedding_max_length,
@@ -68,6 +106,64 @@ class Processor:
             default_reranking_instruction=default_reranking_instruction,
             reranking_system_prompt=reranking_system_prompt,
         )
+
+    @staticmethod
+    def _build_processor(tokenizer, image_processor):
+        processor = object.__new__(Qwen3VLProcessor)
+        processor.tokenizer = tokenizer
+        processor.image_processor = image_processor
+        processor.video_processor = _UnsupportedVideoProcessor(
+            merge_size=getattr(image_processor, "merge_size", 2)
+        )
+        processor.chat_template = getattr(tokenizer, "chat_template", None)
+
+        if processor.chat_template is None:
+            try:
+                processor.chat_template = Processor._load_chat_template(tokenizer.name_or_path)
+            except Exception:
+                processor.chat_template = None
+
+        processor.image_token = getattr(tokenizer, "image_token", None) or "<|image_pad|>"
+        processor.video_token = getattr(tokenizer, "video_token", None) or "<|video_pad|>"
+        processor.image_token_id = (
+            getattr(tokenizer, "image_token_id", None)
+            if getattr(tokenizer, "image_token_id", None) is not None
+            else tokenizer.convert_tokens_to_ids(processor.image_token)
+        )
+        processor.video_token_id = (
+            getattr(tokenizer, "video_token_id", None)
+            if getattr(tokenizer, "video_token_id", None) is not None
+            else tokenizer.convert_tokens_to_ids(processor.video_token)
+        )
+        processor.vision_start_token = (
+            getattr(tokenizer, "vision_start_token", None) or "<|vision_start|>"
+        )
+        processor.vision_end_token = (
+            getattr(tokenizer, "vision_end_token", None) or "<|vision_end|>"
+        )
+        processor.vision_start_token_id = (
+            getattr(tokenizer, "vision_start_token_id", None)
+            if getattr(tokenizer, "vision_start_token_id", None) is not None
+            else tokenizer.convert_tokens_to_ids(processor.vision_start_token)
+        )
+        processor.vision_end_token_id = (
+            getattr(tokenizer, "vision_end_token_id", None)
+            if getattr(tokenizer, "vision_end_token_id", None) is not None
+            else tokenizer.convert_tokens_to_ids(processor.vision_end_token)
+        )
+
+        return processor
+
+    @staticmethod
+    def _load_chat_template(model_path: str) -> str:
+        path = Path(model_path)
+        if path.exists() and path.is_dir():
+            template_path = path / "chat_template.jinja"
+        else:
+            from huggingface_hub import hf_hub_download
+
+            template_path = Path(hf_hub_download(model_path, "chat_template.jinja"))
+        return template_path.read_text(encoding="utf-8")
 
     def __call__(self, *args, **kwargs):
         return self.processor(*args, **kwargs)
@@ -243,7 +339,7 @@ class Processor:
                 conversations,
                 tokenize=True,
                 return_dict=True,
-                return_tensors="pt",
+                return_tensors="np",
                 add_generation_prompt=True,
                 padding=True,
                 truncation=True,

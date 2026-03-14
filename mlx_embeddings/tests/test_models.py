@@ -2,7 +2,7 @@
 
 """Tests for `mlx_embeddings` package."""
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import mlx.core as mx
 import numpy as np
@@ -542,6 +542,46 @@ class TestModels(unittest.TestCase):
             {"type": "text", "text": "\n<Document>:"},
             reranker_conversation[1]["content"],
         )
+
+    def test_qwen3_vl_processor_from_pretrained_uses_custom_loader(self):
+        from mlx_embeddings.models import qwen3_vl
+
+        class DummyTokenizer:
+            def __init__(self):
+                self.chat_template = "dummy-template"
+                self.padding_side = "right"
+                self.name_or_path = "dummy-model"
+
+            def convert_tokens_to_ids(self, token):
+                mapping = {
+                    "<|image_pad|>": 1,
+                    "<|video_pad|>": 2,
+                    "<|vision_start|>": 3,
+                    "<|vision_end|>": 4,
+                }
+                return mapping[token]
+
+        dummy_tokenizer = DummyTokenizer()
+        dummy_image_processor = MagicMock()
+        dummy_image_processor.merge_size = 2
+
+        with patch.object(
+            qwen3_vl.processor.AutoTokenizer,
+            "from_pretrained",
+            return_value=dummy_tokenizer,
+        ) as mock_tokenizer, patch.object(
+            qwen3_vl.processor.AutoImageProcessor,
+            "from_pretrained",
+            return_value=dummy_image_processor,
+        ) as mock_image_processor:
+            processor = qwen3_vl.Processor.from_pretrained("dummy-model")
+
+        mock_tokenizer.assert_called_once()
+        mock_image_processor.assert_called_once()
+        self.assertIs(processor.tokenizer, dummy_tokenizer)
+        self.assertIs(processor.image_processor, dummy_image_processor)
+        self.assertEqual(processor.processor.chat_template, "dummy-template")
+        self.assertEqual(processor.processor.video_processor.merge_size, 2)
 
     def test_qwen3_vl_model_process_uses_high_level_processor_paths(self):
         from mlx_embeddings.models import qwen3_vl
