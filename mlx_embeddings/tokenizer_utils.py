@@ -249,6 +249,19 @@ class TokenizerWrapper:
         self._tokenizer = tokenizer
         self._detokenizer = detokenizer_class(tokenizer)
 
+    def __call__(self, *args, **kwargs):
+        return self._tokenizer(*args, **kwargs)
+
+    def batch_encode_plus(self, *args, **kwargs):
+        if hasattr(self._tokenizer, "batch_encode_plus"):
+            return self._tokenizer.batch_encode_plus(*args, **kwargs)
+        return self._tokenizer(*args, **kwargs)
+
+    def encode_plus(self, *args, **kwargs):
+        if hasattr(self._tokenizer, "encode_plus"):
+            return self._tokenizer.encode_plus(*args, **kwargs)
+        return self._tokenizer(*args, **kwargs)
+
     def __getattr__(self, attr):
         if attr == "detokenizer":
             return self._detokenizer

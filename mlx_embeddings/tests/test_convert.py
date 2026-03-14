@@ -1,11 +1,14 @@
 """Tests for convert CLI and quantization mode (q_mode) support."""
 
 import argparse
+import importlib
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from mlx_embeddings.convert import configure_parser
+
+_convert_mod = importlib.import_module("mlx_embeddings.convert")
 
 
 class TestConfigureParser:
@@ -162,11 +165,11 @@ class TestConvertQModePassthrough:
     """Verify that convert() passes q_mode through to quantize_model."""
 
     @patch("glob.glob", return_value=[])
-    @patch("mlx_embeddings.convert.save_weights")
-    @patch("mlx_embeddings.convert.save_config")
-    @patch("mlx_embeddings.convert.quantize_model")
-    @patch("mlx_embeddings.convert.fetch_from_hub")
-    @patch("mlx_embeddings.convert.get_model_path")
+    @patch.object(_convert_mod, "save_weights")
+    @patch.object(_convert_mod, "save_config")
+    @patch.object(_convert_mod, "quantize_model")
+    @patch.object(_convert_mod, "fetch_from_hub")
+    @patch.object(_convert_mod, "get_model_path")
     def test_convert_passes_q_mode(
         self,
         mock_get_model_path,
