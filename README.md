@@ -404,13 +404,13 @@ image_processor = AutoImageProcessor.from_pretrained("qnguyen3/colqwen2.5-v0.2-m
 
 
 def fetch_image(url):
-    response = requests.get(url, timeout=60)
+    response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=60)
     response.raise_for_status()
     return Image.open(BytesIO(response.content)).convert("RGB")
 
 
 def nonpad_rows(embeds, attention_mask):
-    indices = mx.where(attention_mask[0] != 0)[0]
+    indices = [i for i, value in enumerate(attention_mask[0].tolist()) if value != 0]
     return embeds[0, indices, :]
 
 
