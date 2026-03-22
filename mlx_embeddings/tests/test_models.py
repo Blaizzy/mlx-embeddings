@@ -421,6 +421,30 @@ class TestModels(unittest.TestCase):
         self.assertEqual(outputs.logits_per_image.shape, (batch_size, batch_size))
         self.assertEqual(outputs.logits_per_text.shape, (batch_size, batch_size))
 
+    def test_llama_bidirec_model(self):
+        from mlx_embeddings.models import llama_bidirec
+
+        config = llama_bidirec.ModelArgs(
+            model_type="llama_bidirec",
+            hidden_size=64,
+            num_hidden_layers=2,
+            intermediate_size=128,
+            num_attention_heads=2,
+            num_key_value_heads=2,
+            head_dim=32,
+            max_position_embeddings=128,
+            vocab_size=1000,
+            rms_norm_eps=1e-5,
+            rope_theta=500000.0,
+        )
+        model = llama_bidirec.Model(config)
+
+        self.model_test_runner(
+            model,
+            config.model_type,
+            config.num_hidden_layers,
+        )
+
     def test_qwen3_model(self):
         from mlx_embeddings.models import qwen3
 
