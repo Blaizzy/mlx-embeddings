@@ -49,8 +49,16 @@ class LlamaBidirectionalModel(nn.Module):
         ]
         self.norm = nn.RMSNorm(args.hidden_size, eps=args.rms_norm_eps)
 
-    def __call__(self, inputs: mx.array, mask: Optional[mx.array] = None):
-        h = self.embed_tokens(inputs)
+    def __call__(
+        self,
+        inputs: mx.array,
+        mask: Optional[mx.array] = None,
+        input_embeddings: Optional[mx.array] = None,
+    ):
+        if input_embeddings is not None:
+            h = input_embeddings
+        else:
+            h = self.embed_tokens(inputs)
 
         for layer in self.layers:
             h = layer(h, mask, cache=None)
