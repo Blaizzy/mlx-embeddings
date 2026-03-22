@@ -421,6 +421,50 @@ class TestModels(unittest.TestCase):
         self.assertEqual(outputs.logits_per_image.shape, (batch_size, batch_size))
         self.assertEqual(outputs.logits_per_text.shape, (batch_size, batch_size))
 
+    def test_llama_nemotron_vl_text_only(self):
+        from mlx_embeddings.models.llama_nemotron_vl.model import (
+            Model as NemotronVLModel,
+        )
+        from mlx_embeddings.models.llama_nemotron_vl.model import (
+            ModelArgs as NemotronVLModelArgs,
+        )
+        from mlx_embeddings.models.llama_nemotron_vl.model import (
+            TextConfig,
+            VisionConfig,
+        )
+
+        config = NemotronVLModelArgs(
+            model_type="llama_nemotron_vl",
+            hidden_size=64,
+            vision_config=VisionConfig(
+                hidden_size=64,
+                intermediate_size=128,
+                num_hidden_layers=2,
+                num_attention_heads=2,
+                image_size=32,
+                patch_size=16,
+            ),
+            llm_config=TextConfig(
+                hidden_size=64,
+                num_hidden_layers=2,
+                intermediate_size=128,
+                num_attention_heads=2,
+                num_key_value_heads=2,
+                head_dim=32,
+                max_position_embeddings=128,
+                vocab_size=1000,
+            ),
+            downsample_ratio=0.5,
+            img_context_token_id=999,
+        )
+        model = NemotronVLModel(config)
+
+        self.model_test_runner(
+            model,
+            config.model_type,
+            config.llm_config.num_hidden_layers,
+        )
+
     def test_llama_bidirec_model(self):
         from mlx_embeddings.models import llama_bidirec
 
