@@ -1,6 +1,6 @@
 [project]
 name = "mlx-embeddings"
-version = "0.0.5"
+version = "0.1.0"
 dynamic = [
     "dependencies",
 ]
@@ -56,7 +56,7 @@ universal = true
 
 
 [tool.bumpversion]
-current_version = "0.0.5"
+current_version = "0.1.0"
 commit = true
 tag = true
 
