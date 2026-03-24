@@ -48,7 +48,7 @@ include = ["mlx_embeddings*"]
 exclude = ["docs*"]
 
 [tool.setuptools.dynamic]
-version = {attr = "mlx_embeddings._version.__version__"}
+version = {attr = "mlx_embeddings.version.__version__"}
 dependencies = {file = ["requirements.txt"]}
 
 
@@ -57,7 +57,7 @@ universal = true
 
 
 [tool.bumpversion]
-current_version = "0.1.0"
+current_version = "0.1.1"
 commit = true
 tag = true
 
@@ -67,7 +67,7 @@ search = 'current_version = "{current_version}"'
 replace = 'current_version = "{new_version}"'
 
 [[tool.bumpversion.files]]
-filename = "mlx_embeddings/_version.py"
+filename = "mlx_embeddings/version.py"
 search = '__version__ = "{current_version}"'
 replace = '__version__ = "{new_version}"'
 
