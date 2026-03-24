@@ -1,7 +1,7 @@
 [project]
 name = "mlx-embeddings"
-version = "0.1.0"
 dynamic = [
+    "version",
     "dependencies",
 ]
 description = "MLX-Embeddings is a package for running Vision and Language Embedding models locally on your Mac using MLX."
@@ -48,27 +48,12 @@ include = ["mlx_embeddings*"]
 exclude = ["docs*"]
 
 [tool.setuptools.dynamic]
+version = {attr = "mlx_embeddings.version.__version__"}
 dependencies = {file = ["requirements.txt"]}
 
 
 [tool.distutils.bdist_wheel]
 universal = true
-
-
-[tool.bumpversion]
-current_version = "0.1.0"
-commit = true
-tag = true
-
-[[tool.bumpversion.files]]
-filename = "pyproject.toml"
-search = 'version = "{current_version}"'
-replace = 'version = "{new_version}"'
-
-[[tool.bumpversion.files]]
-filename = "mlx_embeddings/version.py"
-search = '__version__ = "{current_version}"'
-replace = '__version__ = "{new_version}"'
 
 
 [tool.pytest.ini_options]
@@ -86,5 +71,5 @@ max-line-length = 88
 Homepage = "https://github.com/Blaizzy/mlx-embeddings"
 
 [build-system]
-requires = ["setuptools>=64", "setuptools_scm>=8"]
+requires = ["setuptools>=64"]
 build-backend = "setuptools.build_meta"
