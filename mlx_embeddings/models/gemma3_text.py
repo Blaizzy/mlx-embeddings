@@ -70,9 +70,24 @@ class Model(nn.Module):
         self.config = config
         self.model_type = config.model_type
         self.model = Gemma3Model(config)
+        self.dense = []
+
+    def _configure_dense_layers(self, weights):
+        dense_indices = sorted(
+            {
+                int(match.group(1))
+                for key in weights
+                if (match := re.fullmatch(r"dense\.(\d+)\.weight", key)) is not None
+            }
+        )
+
+        if not dense_indices:
+            self.dense = []
+            return
+
         self.dense = [
-            nn.Linear(config.hidden_size, config.hidden_size * 4, bias=False),
-            nn.Linear(config.hidden_size * 4, config.hidden_size, bias=False),
+            nn.Linear(weights[f"dense.{index}.weight"].shape[1], weights[f"dense.{index}.weight"].shape[0], bias=False)
+            for index in dense_indices
         ]
 
     def get_extended_attention_mask(self, attention_mask, input_shape):
@@ -141,6 +156,7 @@ class Model(nn.Module):
             else:
                 sanitized_weights[k] = v
 
+        self._configure_dense_layers(sanitized_weights)
         return sanitized_weights
 
     @property
