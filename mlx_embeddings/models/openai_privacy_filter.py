@@ -57,14 +57,6 @@ class ModelArgs(BaseModelArgs):
         return 33
 
 
-def _swiglu_concat(gate_up: mx.array, alpha: float = 1.702, limit: float = 7.0) -> mx.array:
-    gate, up = mx.split(gate_up, 2, axis=-1)
-    gate = mx.clip(gate, a_min=None, a_max=limit)
-    up = mx.clip(up, a_min=-limit, a_max=limit)
-    glu = gate * mx.sigmoid(gate * alpha)
-    return (up + 1) * glu
-
-
 class PrivacyFilterSwiGLU(nn.Module):
     """SwiGLU variant used by the privacy filter: gate clamped above, up clamped both sides, (up+1)*gate*sigmoid(alpha*gate)."""
 
@@ -163,11 +155,9 @@ class OpenAIPrivacyFilterMLP(nn.Module):
         )
 
     def __call__(self, x: mx.array) -> mx.array:
-        # Router runs in fp32 for numerical parity with the reference.
-        x_f32 = x.astype(mx.float32)
-        w_f32 = self.router.weight.astype(mx.float32)
-        b_f32 = self.router.bias.astype(mx.float32)
-        router_logits = x_f32 @ w_f32.swapaxes(-1, -2) + b_f32
+        # Go through the router module so this works with both dense and
+        # QuantizedLinear weights; upcast the softmax for numerical parity.
+        router_logits = self.router(x).astype(mx.float32)
 
         k = self.num_experts_per_tok
         top_idx = mx.argpartition(router_logits, kth=-k, axis=-1)[..., -k:]
@@ -281,6 +271,7 @@ class Model(nn.Module):
             last_hidden_state=last_hidden_state,
             logits=logits,
         )
+
 
     def sanitize(self, weights: dict) -> dict:
         # Split the fused gate_up_proj (concatenated layout) into separate gate and up
