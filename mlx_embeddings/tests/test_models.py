@@ -489,6 +489,34 @@ class TestModels(unittest.TestCase):
             config.num_hidden_layers,
         )
 
+    def test_openai_privacy_filter_model(self):
+        from mlx_embeddings.models import openai_privacy_filter
+
+        config = openai_privacy_filter.ModelArgs(
+            model_type="openai_privacy_filter",
+            vocab_size=64,
+            hidden_size=32,
+            intermediate_size=32,
+            num_hidden_layers=2,
+            num_attention_heads=4,
+            num_key_value_heads=2,
+            head_dim=8,
+            sliding_window=16,
+            max_position_embeddings=128,
+            num_local_experts=4,
+            num_experts_per_tok=2,
+            rms_norm_eps=1e-5,
+        )
+        model = openai_privacy_filter.Model(config)
+        model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
+
+        inputs = mx.array([[0, 1, 2, 3, 4]])
+        outputs = model(inputs)
+
+        self.assertEqual(outputs.last_hidden_state.shape, (1, 5, config.hidden_size))
+        self.assertEqual(outputs.logits.shape, (1, 5, config.num_labels))
+        self.assertEqual(outputs.last_hidden_state.dtype, mx.float32)
+
     def test_qwen3_model(self):
         from mlx_embeddings.models import qwen3
 

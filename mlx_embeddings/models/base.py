@@ -24,6 +24,7 @@ class BaseModelOutput:
     pooler_output: Optional[mx.array] = None
     text_embeds: Optional[mx.array] = None  # mean pooled and normalized embeddings
     hidden_states: Optional[List[mx.array]] = None
+    logits: Optional[mx.array] = None  # token-level or sequence classification logits
 
 
 @dataclass
