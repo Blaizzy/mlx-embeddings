@@ -100,7 +100,10 @@ def quantize_model(
     default_predicate = get_class_predicate(
         skip_vision=skip_vision, q_group_size=effective_group_size
     )
-    model_quant_predicate = getattr(model, "quant_predicate", None)
+
+    model_quant_predicate = (
+        getattr(model, "quant_predicate", None) if mode == "affine" else None
+    )
     overrides: Dict[str, Dict[str, int]] = {}
 
     def base_quant_predicate(path, module):
