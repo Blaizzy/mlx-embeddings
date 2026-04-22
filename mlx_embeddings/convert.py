@@ -94,19 +94,40 @@ def quantize_model(
     quantized_config = copy.deepcopy(config)
     effective_group_size, effective_bits = defaults_for_mode(mode, q_group_size, q_bits)
 
+    # Predicate-chaining pattern from mlx-vlm: honor the model's `quant_predicate`
+    # (if any) on top of the default skip-vision / group-size checks, and record
+    # per-layer overrides so the load path re-quantizes the same way.
+    default_predicate = get_class_predicate(
+        skip_vision=skip_vision, q_group_size=effective_group_size
+    )
+
+    model_quant_predicate = (
+        getattr(model, "quant_predicate", None) if mode == "affine" else None
+    )
+    overrides: Dict[str, Dict[str, int]] = {}
+
+    def base_quant_predicate(path, module):
+        if not default_predicate(path, module):
+            return False
+        if model_quant_predicate is None:
+            return True
+        result = model_quant_predicate(path, module)
+        if isinstance(result, dict):
+            overrides[path] = result
+        return result
+
     nn.quantize(
         model,
         group_size=effective_group_size,
         bits=effective_bits,
         mode=mode,
-        class_predicate=get_class_predicate(
-            skip_vision=skip_vision, q_group_size=effective_group_size
-        ),
+        class_predicate=base_quant_predicate,
     )
     quantized_config["quantization"] = {
         "group_size": effective_group_size,
         "bits": effective_bits,
         "mode": mode,
+        **overrides,
     }
     if "vision_config" in quantized_config and isinstance(
         quantized_config["vision_config"], dict
