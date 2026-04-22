@@ -91,23 +91,34 @@ def quantize_model(
         effective_bits = bits if bits else default_bits
         return effective_group_size, effective_bits
 
-    quantized_config = copy.deepcopy(config)
     effective_group_size, effective_bits = defaults_for_mode(mode, q_group_size, q_bits)
 
-    nn.quantize(
+    # Delegate to mlx_lm.utils.quantize_model (same pattern as mlx-vlm): it reads
+    # `model.quant_predicate` and records per-layer overrides into the config,
+    # while our wrapper adds the skip-vision / group-size sanity checks.
+    from mlx_lm.utils import quantize_model as mlx_lm_quantize_model
+
+    default_predicate = get_class_predicate(
+        skip_vision=skip_vision, q_group_size=effective_group_size
+    )
+    model_predicate = getattr(model, "quant_predicate", None)
+
+    def quant_predicate(path, module):
+        if not default_predicate(path, module):
+            return False
+        if model_predicate is not None:
+            return model_predicate(path, module)
+        return True
+
+    model, quantized_config = mlx_lm_quantize_model(
         model,
+        copy.deepcopy(config),
         group_size=effective_group_size,
         bits=effective_bits,
         mode=mode,
-        class_predicate=get_class_predicate(
-            skip_vision=skip_vision, q_group_size=effective_group_size
-        ),
+        quant_predicate=quant_predicate,
     )
-    quantized_config["quantization"] = {
-        "group_size": effective_group_size,
-        "bits": effective_bits,
-        "mode": mode,
-    }
+
     if "vision_config" in quantized_config and isinstance(
         quantized_config["vision_config"], dict
     ):

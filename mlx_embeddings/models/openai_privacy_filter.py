@@ -155,8 +155,6 @@ class OpenAIPrivacyFilterMLP(nn.Module):
         )
 
     def __call__(self, x: mx.array) -> mx.array:
-        # Go through the router module so this works with both dense and
-        # QuantizedLinear weights; upcast the softmax for numerical parity.
         router_logits = self.router(x).astype(mx.float32)
 
         k = self.num_experts_per_tok
@@ -315,3 +313,12 @@ class Model(nn.Module):
     @property
     def layers(self):
         return self.model.layers
+
+    @property
+    def quant_predicate(self):
+        def predicate(path, _):
+            if path.endswith("router"):
+                return {"group_size": 64, "bits": 8}
+            return True
+
+        return predicate
