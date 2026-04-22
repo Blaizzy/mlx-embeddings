@@ -25,7 +25,9 @@ classifiers = [
 ]
 
 [project.entry-points."console_scripts"]
-mlx_embeddings = "mlx_embeddings.cli:main"
+"mlx_embeddings.cli" = "mlx_embeddings.cli:main"
+"mlx_embeddings.convert" = "mlx_embeddings.convert:main"
+
 
 [project.optional-dependencies]
 all = [
