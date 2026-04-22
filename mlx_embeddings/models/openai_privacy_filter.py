@@ -150,9 +150,7 @@ class OpenAIPrivacyFilterMLP(nn.Module):
             activation=PrivacyFilterSwiGLU(),
             bias=True,
         )
-        self.router = nn.Linear(
-            config.hidden_size, config.num_local_experts, bias=True
-        )
+        self.router = nn.Linear(config.hidden_size, config.num_local_experts, bias=True)
 
     def __call__(self, x: mx.array) -> mx.array:
         router_logits = self.router(x).astype(mx.float32)
@@ -269,7 +267,6 @@ class Model(nn.Module):
             last_hidden_state=last_hidden_state,
             logits=logits,
         )
-
 
     def sanitize(self, weights: dict) -> dict:
         # Split the fused gate_up_proj (concatenated layout) into separate gate and up
