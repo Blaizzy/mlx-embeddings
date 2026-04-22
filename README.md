@@ -21,6 +21,7 @@ MLX-Embeddings supports a variety of model architectures for text embedding task
 - Qwen3-VL (multimodal Qwen3-VL embedding and reranking model)
 - Llama Bidirectional (Llama-based bidirectional embedding models, e.g. NVIDIA NV-Embed)
 - Llama Nemotron VL (multimodal vision-language embedding model with SigLIP vision + bidirectional Llama)
+- OpenAI Privacy Filter (bidirectional GPT-OSS variant for PII token classification with sparse MoE, GQA + attention sinks, and YARN RoPE)
 
 We're continuously working to expand our support for additional model architectures. Check our GitHub repository or documentation for the most up-to-date list of supported models and their specific versions.
 
@@ -175,6 +176,30 @@ print("\nTop predictions for classification:")
 for idx, logit in enumerate(predictions.tolist()):
     label = id2label[str(idx)]
     print(f"{label}: {logit:.3f}")
+```
+
+#### Token Classification (PII detection)
+
+`openai/privacy-filter` is a bidirectional 1.5B-parameter / 50M-active sparse-MoE token classifier that tags personally identifiable information (PII) with BIOES spans over 8 categories (person, email, phone, URL, address, date, account number, secret).
+
+```python
+import mlx.core as mx
+from mlx_embeddings.utils import load
+
+model, tokenizer = load("openai/privacy-filter")
+id2label = model.config.id2label
+
+text = "My name is Alice Smith and my email is alice@example.com. Phone: 555-1234."
+inputs = tokenizer(text, return_tensors="mlx")
+
+outputs = model(inputs["input_ids"], attention_mask=inputs["attention_mask"])
+preds = mx.argmax(outputs.logits, axis=-1)[0].tolist()
+
+tokens = tokenizer.convert_ids_to_tokens(inputs["input_ids"][0].tolist())
+for token, pred in zip(tokens, preds):
+    label = id2label[str(pred)]
+    if label != "O":
+        print(f"{token!r:20s} -> {label}")
 ```
 
 ### Batch Processing
