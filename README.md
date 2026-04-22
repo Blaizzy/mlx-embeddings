@@ -183,6 +183,7 @@ for idx, logit in enumerate(predictions.tolist()):
 `openai/privacy-filter` is a bidirectional 1.5B-parameter / 50M-active sparse-MoE token classifier that tags personally identifiable information (PII) with BIOES spans over 8 categories (person, email, phone, URL, address, date, account number, secret).
 
 ```python
+from itertools import groupby
 import mlx.core as mx
 from mlx_embeddings.utils import load
 
@@ -195,11 +196,12 @@ inputs = tokenizer(text, return_tensors="mlx")
 outputs = model(inputs["input_ids"], attention_mask=inputs["attention_mask"])
 preds = mx.argmax(outputs.logits, axis=-1)[0].tolist()
 
-tokens = tokenizer.convert_ids_to_tokens(inputs["input_ids"][0].tolist())
-for token, pred in zip(tokens, preds):
-    label = id2label[str(pred)]
-    if label != "O":
-        print(f"{token!r:20s} -> {label}")
+entity = lambda p: id2label[str(p)].split("-", 1)[-1] if id2label[str(p)] != "O" else None
+
+for ent, group in groupby(zip(inputs["input_ids"][0].tolist(), preds), key=lambda x: entity(x[1])):
+    if ent:
+        span = tokenizer.decode([tid for tid, _ in group]).strip()
+        print(f"{ent:18s} -> {span!r}")
 ```
 
 ### Batch Processing
