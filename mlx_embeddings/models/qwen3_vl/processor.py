@@ -363,43 +363,37 @@ class Qwen3VLVideoProcessor(BaseVideoProcessor):
         }
 
 
-def _load_qwen_vl_json(pretrained_model_name_or_path, relative_name: str):
+def _load_qwen_vl_file(pretrained_model_name_or_path, relative_name: str):
+    """Read a file from the checkpoint (local dir or HF Hub).
+
+    Returns the parsed dict when *relative_name* ends in ``.json``, otherwise
+    the raw text. Returns ``None`` if the file isn't available.
+    """
     import json
     from pathlib import Path
 
     local = Path(pretrained_model_name_or_path) / relative_name
     if local.exists():
-        return json.loads(local.read_text())
-    try:
-        from huggingface_hub import hf_hub_download
+        text = local.read_text(encoding="utf-8")
+    else:
+        try:
+            from huggingface_hub import hf_hub_download
 
-        fetched = Path(hf_hub_download(pretrained_model_name_or_path, relative_name))
-        return json.loads(fetched.read_text())
-    except Exception:
-        return None
-
-
-def _load_qwen_vl_text(pretrained_model_name_or_path, relative_name: str):
-    from pathlib import Path
-
-    local = Path(pretrained_model_name_or_path) / relative_name
-    if local.exists():
-        return local.read_text(encoding="utf-8")
-    try:
-        from huggingface_hub import hf_hub_download
-
-        fetched = Path(hf_hub_download(pretrained_model_name_or_path, relative_name))
-        return fetched.read_text(encoding="utf-8")
-    except Exception:
-        return None
+            fetched = Path(
+                hf_hub_download(pretrained_model_name_or_path, relative_name)
+            )
+            text = fetched.read_text(encoding="utf-8")
+        except Exception:
+            return None
+    return json.loads(text) if relative_name.endswith(".json") else text
 
 
 def _qwen_vl_image_kwargs(pretrained_model_name_or_path, default_patch_size: int = 16):
     proc_cfg = (
-        _load_qwen_vl_json(pretrained_model_name_or_path, "processor_config.json") or {}
+        _load_qwen_vl_file(pretrained_model_name_or_path, "processor_config.json") or {}
     )
     raw = (
-        _load_qwen_vl_json(pretrained_model_name_or_path, "preprocessor_config.json")
+        _load_qwen_vl_file(pretrained_model_name_or_path, "preprocessor_config.json")
         or {}
     )
     raw.update(proc_cfg.get("image_processor", {}) or {})
@@ -430,12 +424,12 @@ def _qwen_vl_image_kwargs(pretrained_model_name_or_path, default_patch_size: int
 
 
 def _qwen_vl_video_kwargs(pretrained_model_name_or_path, default_patch_size: int = 16):
-    raw = _load_qwen_vl_json(
+    raw = _load_qwen_vl_file(
         pretrained_model_name_or_path, "video_preprocessor_config.json"
     )
     if raw is None:
         raw = (
-            _load_qwen_vl_json(
+            _load_qwen_vl_file(
                 pretrained_model_name_or_path, "preprocessor_config.json"
             )
             or {}
@@ -655,7 +649,7 @@ class Qwen3VLProcessor(ProcessorMixin):
         )
 
         proc_cfg = (
-            _load_qwen_vl_json(pretrained_model_name_or_path, "processor_config.json")
+            _load_qwen_vl_file(pretrained_model_name_or_path, "processor_config.json")
             or {}
         )
         chat_template = proc_cfg.get(
@@ -664,7 +658,7 @@ class Qwen3VLProcessor(ProcessorMixin):
         # Some checkpoints (e.g. Qwen3-VL-Reranker-2B) ship the template in
         # chat_template.jinja on the Hub instead of tokenizer_config.json.
         if chat_template is None:
-            chat_template = _load_qwen_vl_text(
+            chat_template = _load_qwen_vl_file(
                 pretrained_model_name_or_path, "chat_template.jinja"
             )
             if chat_template is not None:
