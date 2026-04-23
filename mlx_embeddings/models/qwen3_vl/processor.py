@@ -103,10 +103,17 @@ def _smart_resize_image(
 
 
 def _to_numpy_image(img) -> np.ndarray:
+    from io import BytesIO
+
     from PIL import Image
 
     if isinstance(img, str):
-        img = Image.open(img)
+        if img.startswith(("http://", "https://")):
+            import requests
+
+            img = Image.open(BytesIO(requests.get(img, timeout=30).content))
+        else:
+            img = Image.open(img)
     if hasattr(img, "convert"):
         img = img.convert("RGB")
         arr = np.array(img)
@@ -368,6 +375,21 @@ def _load_qwen_vl_json(pretrained_model_name_or_path, relative_name: str):
 
         fetched = Path(hf_hub_download(pretrained_model_name_or_path, relative_name))
         return json.loads(fetched.read_text())
+    except Exception:
+        return None
+
+
+def _load_qwen_vl_text(pretrained_model_name_or_path, relative_name: str):
+    from pathlib import Path
+
+    local = Path(pretrained_model_name_or_path) / relative_name
+    if local.exists():
+        return local.read_text(encoding="utf-8")
+    try:
+        from huggingface_hub import hf_hub_download
+
+        fetched = Path(hf_hub_download(pretrained_model_name_or_path, relative_name))
+        return fetched.read_text(encoding="utf-8")
     except Exception:
         return None
 
@@ -639,6 +661,14 @@ class Qwen3VLProcessor(ProcessorMixin):
         chat_template = proc_cfg.get(
             "chat_template", getattr(tokenizer, "chat_template", None)
         )
+        # Some checkpoints (e.g. Qwen3-VL-Reranker-2B) ship the template in
+        # chat_template.jinja on the Hub instead of tokenizer_config.json.
+        if chat_template is None:
+            chat_template = _load_qwen_vl_text(
+                pretrained_model_name_or_path, "chat_template.jinja"
+            )
+            if chat_template is not None:
+                tokenizer.chat_template = chat_template
 
         return cls(
             image_processor=image_processor,
