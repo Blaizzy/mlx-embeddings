@@ -2,6 +2,7 @@ from dataclasses import asdict, dataclass
 from typing import Any, Dict, Optional, Tuple
 
 import mlx.core as mx
+import numpy as np
 from mlx_lm.models.base import create_causal_mask
 from mlx_vlm.models.qwen3_vl import LanguageModel as Qwen3VLLanguageModel
 from mlx_vlm.models.qwen3_vl import Model as Qwen3VLBackbone
@@ -9,6 +10,40 @@ from mlx_vlm.models.qwen3_vl import ModelConfig, TextConfig, VisionConfig
 from mlx_vlm.models.qwen3_vl import VisionModel as Qwen3VLVisionModel
 
 from ..base import BaseModelArgs, BaseModelOutput, normalize_embeddings
+
+
+def _patched_deepstack_process(
+    self,
+    hidden_states: mx.array,
+    visual_pos_masks: mx.array,
+    visual_embeds: mx.array,
+) -> mx.array:
+    """Fixed version of mlx-vlm's Qwen3-VL ``_deepstack_process``.
+
+    Upstream passes the full concatenated ``visual_embeds`` (all samples)
+    into each sample's ``batch_result.at[batch_indices].add(...)``, which
+    only broadcasts when the batch has one image. This version slices
+    ``visual_embeds`` per sample using the running offset of image-token
+    counts so it works for multi-image batches.
+    """
+    batch_size = hidden_states.shape[0]
+    updated = []
+    offset = 0
+    for b in range(batch_size):
+        batch_mask = visual_pos_masks[b]
+        batch_hidden = hidden_states[b]
+        batch_indices = mx.array(np.where(batch_mask)[0], dtype=mx.uint32)
+        n = int(batch_indices.shape[0])
+        if n == 0:
+            updated.append(batch_hidden)
+            continue
+        batch_result = mx.array(batch_hidden)
+        batch_result = batch_result.at[batch_indices].add(
+            visual_embeds[offset : offset + n]
+        )
+        offset += n
+        updated.append(batch_result)
+    return mx.stack(updated, axis=0)
 
 
 def build_qwen3_vl_config(vlm_config: Dict[str, Any]) -> ModelConfig:
@@ -159,6 +194,14 @@ class Model(Qwen3VLBackbone):
     def __init__(self, config: ModelArgs):
         self.args = config
         super().__init__(build_qwen3_vl_config(config.vlm_config))
+        # Fix upstream mlx-vlm Qwen3-VL bug (as of 0.4.4): _deepstack_process
+        # indexes the full concatenated visual_embeds at each batch sample's
+        # image positions, which is only correct for batch_size=1. Patch the
+        # instance with a version that slices visual_embeds per sample.
+        lm_inner = self.language_model.model
+        lm_inner._deepstack_process = _patched_deepstack_process.__get__(
+            lm_inner, type(lm_inner)
+        )
 
     @property
     def visual(self):
@@ -177,6 +220,29 @@ class Model(Qwen3VLBackbone):
         video_grid_thw: Optional[mx.array] = None,
     ) -> mx.array:
         return self.vision_tower(pixel_values, video_grid_thw)[0]
+
+    def get_input_embeddings(self, input_ids=None, pixel_values=None, **kwargs):
+        # Work around an mlx-vlm bug (as of 0.4.4): Qwen3-VL's
+        # get_input_embeddings assigns `mx.eval(deepstack_image_embeds)` to
+        # `deepstack_visual_embeds`, but mx.eval returns None — so multi-scale
+        # deepstack features are silently dropped, costing ~0.1 cosine on the
+        # final image embedding. If they came back None but we actually have
+        # images, re-run the vision tower just to grab the deepstack list.
+        feats = super().get_input_embeddings(
+            input_ids=input_ids, pixel_values=pixel_values, **kwargs
+        )
+        if (
+            pixel_values is not None
+            and feats.deepstack_visual_embeds is None
+            and getattr(self.config.vision_config, "deepstack_visual_indexes", None)
+        ):
+            image_grid_thw = kwargs.get("image_grid_thw")
+            video_grid_thw = kwargs.get("video_grid_thw")
+            grid_thw = image_grid_thw if image_grid_thw is not None else video_grid_thw
+            dtype = self.vision_tower.patch_embed.proj.weight.dtype
+            _, deepstack = self.vision_tower(pixel_values.astype(dtype), grid_thw)
+            feats.deepstack_visual_embeds = deepstack
+        return feats
 
     def get_binary_logits(self, pooled: mx.array) -> mx.array:
         if hasattr(self.language_model, "lm_head"):

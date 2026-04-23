@@ -711,6 +711,14 @@ class Processor:
         kwargs.pop("use_fast", None)
 
         processor = Qwen3VLProcessor.from_pretrained(model_path, **kwargs)
+        # preprocessor_config.json often caps max_pixels at the full Qwen3-VL
+        # context (e.g. 1,310,720 or 16M); the embedder-specific resize budget
+        # (4096..1,843,200) must win so our resize matches the HF reference.
+        processor.image_processor.min_pixels = min_pixels
+        processor.image_processor.max_pixels = max_pixels
+        if processor.video_processor is not None:
+            processor.video_processor.min_pixels = min_pixels
+            processor.video_processor.max_pixels = max_pixels
         return cls(
             processor=processor,
             embedding_max_length=embedding_max_length,
