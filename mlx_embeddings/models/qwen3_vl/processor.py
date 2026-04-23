@@ -363,7 +363,7 @@ class Qwen3VLVideoProcessor(BaseVideoProcessor):
         }
 
 
-def _load_qwen_vl_file(pretrained_model_name_or_path, relative_name: str):
+def _load_file(pretrained_model_name_or_path, relative_name: str):
     """Read a file from the checkpoint (local dir or HF Hub).
 
     Returns the parsed dict when *relative_name* ends in ``.json``, otherwise
@@ -388,12 +388,12 @@ def _load_qwen_vl_file(pretrained_model_name_or_path, relative_name: str):
     return json.loads(text) if relative_name.endswith(".json") else text
 
 
-def _qwen_vl_image_kwargs(pretrained_model_name_or_path, default_patch_size: int = 16):
+def _image_kwargs(pretrained_model_name_or_path, default_patch_size: int = 16):
     proc_cfg = (
-        _load_qwen_vl_file(pretrained_model_name_or_path, "processor_config.json") or {}
+        _load_file(pretrained_model_name_or_path, "processor_config.json") or {}
     )
     raw = (
-        _load_qwen_vl_file(pretrained_model_name_or_path, "preprocessor_config.json")
+        _load_file(pretrained_model_name_or_path, "preprocessor_config.json")
         or {}
     )
     raw.update(proc_cfg.get("image_processor", {}) or {})
@@ -423,13 +423,13 @@ def _qwen_vl_image_kwargs(pretrained_model_name_or_path, default_patch_size: int
     return out
 
 
-def _qwen_vl_video_kwargs(pretrained_model_name_or_path, default_patch_size: int = 16):
-    raw = _load_qwen_vl_file(
+def _video_kwargs(pretrained_model_name_or_path, default_patch_size: int = 16):
+    raw = _load_file(
         pretrained_model_name_or_path, "video_preprocessor_config.json"
     )
     if raw is None:
         raw = (
-            _load_qwen_vl_file(
+            _load_file(
                 pretrained_model_name_or_path, "preprocessor_config.json"
             )
             or {}
@@ -638,18 +638,18 @@ class Qwen3VLProcessor(ProcessorMixin):
         load_chat_template(tokenizer, pretrained_model_name_or_path)
 
         image_processor = Qwen3VLImageProcessor(
-            **_qwen_vl_image_kwargs(
+            **_image_kwargs(
                 pretrained_model_name_or_path, default_patch_size=16
             )
         )
         video_processor = Qwen3VLVideoProcessor(
-            **_qwen_vl_video_kwargs(
+            **_video_kwargs(
                 pretrained_model_name_or_path, default_patch_size=16
             )
         )
 
         proc_cfg = (
-            _load_qwen_vl_file(pretrained_model_name_or_path, "processor_config.json")
+            _load_file(pretrained_model_name_or_path, "processor_config.json")
             or {}
         )
         chat_template = proc_cfg.get(
@@ -658,7 +658,7 @@ class Qwen3VLProcessor(ProcessorMixin):
         # Some checkpoints (e.g. Qwen3-VL-Reranker-2B) ship the template in
         # chat_template.jinja on the Hub instead of tokenizer_config.json.
         if chat_template is None:
-            chat_template = _load_qwen_vl_file(
+            chat_template = _load_file(
                 pretrained_model_name_or_path, "chat_template.jinja"
             )
             if chat_template is not None:
