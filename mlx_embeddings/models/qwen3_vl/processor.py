@@ -655,8 +655,7 @@ class Qwen3VLProcessor(ProcessorMixin):
         chat_template = proc_cfg.get(
             "chat_template", getattr(tokenizer, "chat_template", None)
         )
-        # Some checkpoints (e.g. Qwen3-VL-Reranker-2B) ship the template in
-        # chat_template.jinja on the Hub instead of tokenizer_config.json.
+
         if chat_template is None:
             chat_template = _load_file(
                 pretrained_model_name_or_path, "chat_template.jinja"
