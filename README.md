@@ -41,7 +41,7 @@ Qwen3-VL uses a model-specific processor and a high-level `model.process(...)` A
 
 #### Multimodal Retrieval
 
-Text-to-image retrieval over a small gallery — embed images once, then score any number of text queries against them. Full script: [`examples/qwen3_vl_retrieval.py`](examples/qwen3_vl_retrieval.py).
+Text-to-image retrieval over a small gallery — embed images once, then score any number of text queries against them. Full notebook (with heatmap + top-K plot): [`examples/qwen3_vl_retrieval.ipynb`](examples/qwen3_vl_retrieval.ipynb).
 
 ```python
 from io import BytesIO
@@ -99,10 +99,6 @@ for qi, q in enumerate(QUERIES):
     for k, idx in enumerate(top):
         print(f"  #{k + 1}  {sim[qi, idx]:.3f}  {labels[idx]}")
 ```
-
-Output (`examples/qwen3_vl_retrieval.py` additionally plots the full query × image similarity heatmap and the top-K image grid):
-
-![Qwen3-VL retrieval](examples/qwen3_vl_retrieval.png)
 
 #### Multimodal Reranking
 
