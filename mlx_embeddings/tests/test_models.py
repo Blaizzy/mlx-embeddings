@@ -637,43 +637,27 @@ class TestModels(unittest.TestCase):
     def test_qwen3_vl_processor_from_pretrained_uses_custom_loader(self):
         from mlx_embeddings.models import qwen3_vl
 
-        class DummyTokenizer:
-            def __init__(self):
-                self.chat_template = "dummy-template"
-                self.padding_side = "right"
-                self.name_or_path = "dummy-model"
+        dummy_inner = MagicMock()
+        dummy_inner.tokenizer = MagicMock()
+        dummy_inner.image_processor = MagicMock()
+        dummy_inner.video_processor = MagicMock()
+        dummy_inner.video_processor.merge_size = 2
+        dummy_inner.chat_template = "dummy-template"
 
-            def convert_tokens_to_ids(self, token):
-                mapping = {
-                    "<|image_pad|>": 1,
-                    "<|video_pad|>": 2,
-                    "<|vision_start|>": 3,
-                    "<|vision_end|>": 4,
-                }
-                return mapping[token]
-
-        dummy_tokenizer = DummyTokenizer()
-        dummy_image_processor = MagicMock()
-        dummy_image_processor.merge_size = 2
-
-        with (
-            patch.object(
-                qwen3_vl.processor.AutoTokenizer,
-                "from_pretrained",
-                return_value=dummy_tokenizer,
-            ) as mock_tokenizer,
-            patch.object(
-                qwen3_vl.processor.AutoImageProcessor,
-                "from_pretrained",
-                return_value=dummy_image_processor,
-            ) as mock_image_processor,
-        ):
+        with patch.object(
+            qwen3_vl.processor.Qwen3VLProcessor,
+            "from_pretrained",
+            return_value=dummy_inner,
+        ) as mock_from_pretrained:
             processor = qwen3_vl.Processor.from_pretrained("dummy-model")
 
-        mock_tokenizer.assert_called_once()
-        mock_image_processor.assert_called_once()
-        self.assertIs(processor.tokenizer, dummy_tokenizer)
-        self.assertIs(processor.image_processor, dummy_image_processor)
+        mock_from_pretrained.assert_called_once()
+        call_args, call_kwargs = mock_from_pretrained.call_args
+        self.assertEqual(call_args[0], "dummy-model")
+        self.assertTrue(call_kwargs.get("trust_remote_code"))
+        self.assertIs(processor.processor, dummy_inner)
+        self.assertIs(processor.tokenizer, dummy_inner.tokenizer)
+        self.assertIs(processor.image_processor, dummy_inner.image_processor)
         self.assertEqual(processor.processor.chat_template, "dummy-template")
         self.assertEqual(processor.processor.video_processor.merge_size, 2)
 

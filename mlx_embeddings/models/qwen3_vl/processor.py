@@ -1,10 +1,16 @@
+import math
 from contextlib import contextmanager
-from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import mlx.core as mx
-from transformers import AutoImageProcessor, AutoTokenizer
-from transformers.models.qwen3_vl.processing_qwen3_vl import Qwen3VLProcessor
+import numpy as np
+from mlx_vlm.models.base import load_chat_template, to_mlx
+from transformers.feature_extraction_utils import BatchFeature
+from transformers.image_processing_utils import ImageProcessingMixin
+from transformers.image_utils import ImageInput
+from transformers.processing_utils import ProcessorMixin
+from transformers.tokenization_utils_base import PreTokenizedInput, TextInput
+from transformers.video_processing_utils import BaseVideoProcessor
 
 DEFAULT_EMBEDDING_INSTRUCTION = "Represent the user's input."
 DEFAULT_RERANKING_INSTRUCTION = (
@@ -21,15 +27,647 @@ MIN_PIXELS = 4 * IMAGE_FACTOR * IMAGE_FACTOR
 MAX_PIXELS = 1800 * IMAGE_FACTOR * IMAGE_FACTOR
 
 
-class _UnsupportedVideoProcessor:
-    def __init__(self, merge_size: int = 2):
-        self.merge_size = merge_size
-        self.temporal_patch_size = 2
-
-    def __call__(self, *args, **kwargs):
-        del args, kwargs
+def _smart_resize_video(
+    num_frames: int,
+    height: int,
+    width: int,
+    temporal_factor: int = 2,
+    factor: int = 32,
+    min_pixels: int = 128 * 128,
+    max_pixels: int = 16 * 16 * 2 * 2 * 2 * 6144,
+) -> Tuple[int, int]:
+    if height < factor or width < factor:
         raise ValueError(
-            "Qwen3-VL video inputs are not supported by the custom MLX processor."
+            f"height:{height} or width:{width} must be larger than factor:{factor}"
+        )
+    if max(height, width) / min(height, width) > 200:
+        raise ValueError(
+            f"absolute aspect ratio must be smaller than 200, got "
+            f"{max(height, width) / min(height, width)}"
+        )
+    h_bar = round(height / factor) * factor
+    w_bar = round(width / factor) * factor
+    t_bar = math.ceil(num_frames / temporal_factor) * temporal_factor
+
+    if t_bar * h_bar * w_bar > max_pixels:
+        beta = math.sqrt((num_frames * height * width) / max_pixels)
+        h_bar = max(factor, math.floor(height / beta / factor) * factor)
+        w_bar = max(factor, math.floor(width / beta / factor) * factor)
+    elif t_bar * h_bar * w_bar < min_pixels:
+        beta = math.sqrt(min_pixels / (num_frames * height * width))
+        h_bar = math.ceil(height * beta / factor) * factor
+        w_bar = math.ceil(width * beta / factor) * factor
+    return h_bar, w_bar
+
+
+def _resize_video_frames(video: np.ndarray, target_h: int, target_w: int) -> np.ndarray:
+    from PIL import Image
+
+    T, C, H, W = video.shape
+    if target_h == H and target_w == W:
+        return video
+    out = np.empty((T, C, target_h, target_w), dtype=video.dtype)
+    for i, frame in enumerate(video):
+        arr = np.transpose(frame, (1, 2, 0))
+        if arr.dtype in (np.float32, np.float64):
+            arr = (arr * 255).clip(0, 255).astype(np.uint8)
+        pil = Image.fromarray(arr)
+        pil = pil.resize((target_w, target_h), resample=Image.BICUBIC)
+        out[i] = np.transpose(np.array(pil), (2, 0, 1))
+    return out
+
+
+def _smart_resize_image(
+    height: int,
+    width: int,
+    factor: int = 32,
+    min_pixels: int = 56 * 56,
+    max_pixels: int = 14 * 14 * 4 * 1280,
+) -> Tuple[int, int]:
+    if max(height, width) / min(height, width) > 200:
+        raise ValueError(
+            f"absolute aspect ratio must be smaller than 200, got "
+            f"{max(height, width) / min(height, width)}"
+        )
+    h_bar = round(height / factor) * factor
+    w_bar = round(width / factor) * factor
+    if h_bar * w_bar > max_pixels:
+        beta = math.sqrt((height * width) / max_pixels)
+        h_bar = max(factor, math.floor(height / beta / factor) * factor)
+        w_bar = max(factor, math.floor(width / beta / factor) * factor)
+    elif h_bar * w_bar < min_pixels:
+        beta = math.sqrt(min_pixels / (height * width))
+        h_bar = math.ceil(height * beta / factor) * factor
+        w_bar = math.ceil(width * beta / factor) * factor
+    return h_bar, w_bar
+
+
+def _to_numpy_image(img) -> np.ndarray:
+    from io import BytesIO
+
+    from PIL import Image
+
+    if isinstance(img, str):
+        if img.startswith(("http://", "https://")):
+            import requests
+
+            img = Image.open(BytesIO(requests.get(img, timeout=30).content))
+        else:
+            img = Image.open(img)
+    if hasattr(img, "convert"):
+        img = img.convert("RGB")
+        arr = np.array(img)
+    elif isinstance(img, np.ndarray):
+        arr = img
+    else:
+        arr = np.asarray(img)
+    if arr.ndim == 2:
+        arr = np.stack([arr] * 3, axis=-1)
+    if arr.shape[-1] in (1, 3, 4) and arr.ndim == 3:
+        arr = np.transpose(arr, (2, 0, 1))
+    if arr.shape[0] == 4:
+        arr = arr[:3]
+    return arr
+
+
+class Qwen3VLImageProcessor(ImageProcessingMixin):
+    model_input_names = ["pixel_values", "image_grid_thw"]
+
+    def __init__(
+        self,
+        patch_size: int = 16,
+        temporal_patch_size: int = 2,
+        merge_size: int = 2,
+        min_pixels: int = 56 * 56,
+        max_pixels: int = 14 * 14 * 4 * 1280,
+        do_rescale: bool = True,
+        rescale_factor: float = 1 / 255.0,
+        do_normalize: bool = True,
+        image_mean: Optional[List[float]] = None,
+        image_std: Optional[List[float]] = None,
+        do_convert_rgb: bool = True,
+        **kwargs,
+    ):
+        self.patch_size = patch_size
+        self.temporal_patch_size = temporal_patch_size
+        self.merge_size = merge_size
+        self.min_pixels = min_pixels
+        self.max_pixels = max_pixels
+        self.do_rescale = do_rescale
+        self.rescale_factor = rescale_factor
+        self.do_normalize = do_normalize
+        self.image_mean = image_mean or [0.5, 0.5, 0.5]
+        self.image_std = image_std or [0.5, 0.5, 0.5]
+        self.do_convert_rgb = do_convert_rgb
+
+    def fetch_images(self, images):
+        if not isinstance(images, list):
+            images = [images]
+        return [_to_numpy_image(img) for img in images]
+
+    def _process_one(self, image: np.ndarray) -> Tuple[np.ndarray, List[int]]:
+        C, H, W = image.shape
+        resized_h, resized_w = _smart_resize_image(
+            H,
+            W,
+            factor=self.patch_size * self.merge_size,
+            min_pixels=self.min_pixels,
+            max_pixels=self.max_pixels,
+        )
+        frame = _resize_video_frames(image[None, ...], resized_h, resized_w)[0]
+
+        img = frame.astype(np.float32)
+        if self.do_rescale and image.dtype == np.uint8:
+            img = img * self.rescale_factor
+        if self.do_normalize:
+            mean = np.array(self.image_mean, dtype=np.float32)[:, None, None]
+            std = np.array(self.image_std, dtype=np.float32)[:, None, None]
+            img = (img - mean) / std
+
+        patches = np.repeat(img[None, None, ...], self.temporal_patch_size, axis=1)
+
+        ps = self.patch_size
+        tps = self.temporal_patch_size
+        ms = self.merge_size
+        grid_t = 1
+        grid_h = resized_h // ps
+        grid_w = resized_w // ps
+
+        patches = patches.reshape(
+            1,
+            grid_t,
+            tps,
+            C,
+            grid_h // ms,
+            ms,
+            ps,
+            grid_w // ms,
+            ms,
+            ps,
+        )
+        patches = patches.transpose(0, 1, 4, 7, 5, 8, 3, 2, 6, 9)
+        flatten = patches.reshape(1, grid_t * grid_h * grid_w, C * tps * ps * ps)
+        return flatten[0], [grid_t, grid_h, grid_w]
+
+    def __call__(self, images, **kwargs):
+        # HF's apply_chat_template passes images as a list-of-list (one inner
+        # list per batch item). Flatten into a single list of images.
+        if not isinstance(images, list):
+            images = [images]
+        flat = []
+        for item in images:
+            if isinstance(item, list):
+                flat.extend(item)
+            else:
+                flat.append(item)
+        imgs = [
+            (
+                img
+                if (isinstance(img, np.ndarray) and img.ndim == 3)
+                else _to_numpy_image(img)
+            )
+            for img in flat
+        ]
+        all_patches = []
+        all_thw = []
+        for v in imgs:
+            patches, thw = self._process_one(v)
+            all_patches.append(patches)
+            all_thw.append(thw)
+        return {
+            "pixel_values": np.concatenate(all_patches, axis=0),
+            "image_grid_thw": np.array(all_thw, dtype=np.int64),
+        }
+
+    def preprocess(self, images, **kwargs):
+        return self(images, **kwargs)
+
+
+class Qwen3VLVideoProcessor(BaseVideoProcessor):
+    model_input_names = ["pixel_values_videos", "video_grid_thw"]
+
+    def __init__(
+        self,
+        patch_size: int = 16,
+        temporal_patch_size: int = 2,
+        merge_size: int = 2,
+        min_pixels: int = 128 * 32 * 32,
+        max_pixels: int = 32 * 32 * 768,
+        do_rescale: bool = True,
+        rescale_factor: float = 1 / 255.0,
+        do_normalize: bool = True,
+        image_mean: Optional[List[float]] = None,
+        image_std: Optional[List[float]] = None,
+        do_convert_rgb: bool = True,
+        fps: float = 2.0,
+        min_frames: int = 4,
+        max_frames: int = 768,
+        **kwargs,
+    ):
+        self.patch_size = patch_size
+        self.temporal_patch_size = temporal_patch_size
+        self.merge_size = merge_size
+        self.min_pixels = min_pixels
+        self.max_pixels = max_pixels
+        self.do_rescale = do_rescale
+        self.rescale_factor = rescale_factor
+        self.do_normalize = do_normalize
+        self.image_mean = image_mean or [0.5, 0.5, 0.5]
+        self.image_std = image_std or [0.5, 0.5, 0.5]
+        self.do_convert_rgb = do_convert_rgb
+        self.fps = fps
+        self.min_frames = min_frames
+        self.max_frames = max_frames
+
+    def _process_one(self, video: np.ndarray) -> Tuple[np.ndarray, List[int]]:
+        if video.ndim != 4:
+            raise ValueError(
+                f"Expected video as (T, C, H, W), got shape {video.shape}."
+            )
+        T, C, H, W = video.shape
+        if C == 1 and self.do_convert_rgb:
+            video = np.repeat(video, 3, axis=1)
+            C = 3
+
+        resized_h, resized_w = _smart_resize_video(
+            num_frames=T,
+            height=H,
+            width=W,
+            temporal_factor=self.temporal_patch_size,
+            factor=self.patch_size * self.merge_size,
+            min_pixels=self.min_pixels,
+            max_pixels=self.max_pixels,
+        )
+        video = _resize_video_frames(video, resized_h, resized_w)
+
+        video_f = video.astype(np.float32)
+        if self.do_rescale and video.dtype == np.uint8:
+            video_f = video_f * self.rescale_factor
+        if self.do_normalize:
+            mean = np.array(self.image_mean, dtype=np.float32)[None, :, None, None]
+            std = np.array(self.image_std, dtype=np.float32)[None, :, None, None]
+            video_f = (video_f - mean) / std
+
+        pad = (-video_f.shape[0]) % self.temporal_patch_size
+        if pad:
+            video_f = np.concatenate(
+                [video_f, np.repeat(video_f[-1:], pad, axis=0)], axis=0
+            )
+
+        T_padded = video_f.shape[0]
+        grid_t = T_padded // self.temporal_patch_size
+        grid_h = resized_h // self.patch_size
+        grid_w = resized_w // self.patch_size
+        ps = self.patch_size
+        tps = self.temporal_patch_size
+        ms = self.merge_size
+
+        patches = video_f[None, ...]
+        patches = patches.reshape(
+            1,
+            grid_t,
+            tps,
+            C,
+            grid_h // ms,
+            ms,
+            ps,
+            grid_w // ms,
+            ms,
+            ps,
+        )
+        patches = patches.transpose(0, 1, 4, 7, 5, 8, 3, 2, 6, 9)
+        flatten = patches.reshape(1, grid_t * grid_h * grid_w, C * tps * ps * ps)
+        return flatten[0], [grid_t, grid_h, grid_w]
+
+    def __call__(self, videos, **kwargs):
+        # Same list-of-list batching convention as the image processor.
+        if not isinstance(videos, list):
+            videos = [videos]
+        flat = []
+        for item in videos:
+            if isinstance(item, list):
+                flat.extend(item)
+            else:
+                flat.append(item)
+        all_patches = []
+        all_thw = []
+        for v in flat:
+            if not isinstance(v, np.ndarray):
+                v = np.asarray(v)
+            patches, thw = self._process_one(v)
+            all_patches.append(patches)
+            all_thw.append(thw)
+        return {
+            "pixel_values_videos": np.concatenate(all_patches, axis=0),
+            "video_grid_thw": np.array(all_thw, dtype=np.int64),
+        }
+
+
+def _load_file(pretrained_model_name_or_path, relative_name: str):
+    """Read a file from the checkpoint (local dir or HF Hub).
+
+    Returns the parsed dict when *relative_name* ends in ``.json``, otherwise
+    the raw text. Returns ``None`` if the file isn't available.
+    """
+    import json
+    from pathlib import Path
+
+    local = Path(pretrained_model_name_or_path) / relative_name
+    if local.exists():
+        text = local.read_text(encoding="utf-8")
+    else:
+        try:
+            from huggingface_hub import hf_hub_download
+
+            fetched = Path(
+                hf_hub_download(pretrained_model_name_or_path, relative_name)
+            )
+            text = fetched.read_text(encoding="utf-8")
+        except Exception:
+            return None
+    return json.loads(text) if relative_name.endswith(".json") else text
+
+
+def _image_kwargs(pretrained_model_name_or_path, default_patch_size: int = 16):
+    proc_cfg = (
+        _load_file(pretrained_model_name_or_path, "processor_config.json") or {}
+    )
+    raw = (
+        _load_file(pretrained_model_name_or_path, "preprocessor_config.json")
+        or {}
+    )
+    raw.update(proc_cfg.get("image_processor", {}) or {})
+    out = {"patch_size": default_patch_size}
+    for k in (
+        "patch_size",
+        "temporal_patch_size",
+        "merge_size",
+        "image_mean",
+        "image_std",
+        "rescale_factor",
+        "do_rescale",
+        "do_normalize",
+        "do_convert_rgb",
+    ):
+        if raw.get(k) is not None:
+            out[k] = raw[k]
+    size = raw.get("size") or {}
+    if size.get("shortest_edge") is not None:
+        out["min_pixels"] = size["shortest_edge"]
+    if size.get("longest_edge") is not None:
+        out["max_pixels"] = size["longest_edge"]
+    if raw.get("min_pixels") is not None:
+        out["min_pixels"] = raw["min_pixels"]
+    if raw.get("max_pixels") is not None:
+        out["max_pixels"] = raw["max_pixels"]
+    return out
+
+
+def _video_kwargs(pretrained_model_name_or_path, default_patch_size: int = 16):
+    raw = _load_file(
+        pretrained_model_name_or_path, "video_preprocessor_config.json"
+    )
+    if raw is None:
+        raw = (
+            _load_file(
+                pretrained_model_name_or_path, "preprocessor_config.json"
+            )
+            or {}
+        )
+    out = {"patch_size": default_patch_size}
+    for k in (
+        "patch_size",
+        "temporal_patch_size",
+        "merge_size",
+        "fps",
+        "min_frames",
+        "max_frames",
+        "image_mean",
+        "image_std",
+        "rescale_factor",
+        "do_rescale",
+        "do_normalize",
+        "do_convert_rgb",
+    ):
+        if raw.get(k) is not None:
+            out[k] = raw[k]
+    size = raw.get("size") or {}
+    if size.get("shortest_edge") is not None:
+        out["min_pixels"] = size["shortest_edge"]
+    if size.get("longest_edge") is not None:
+        out["max_pixels"] = size["longest_edge"]
+    if raw.get("min_pixels") is not None:
+        out["min_pixels"] = raw["min_pixels"]
+    if raw.get("max_pixels") is not None:
+        out["max_pixels"] = raw["max_pixels"]
+    return out
+
+
+class Qwen3VLProcessor(ProcessorMixin):
+    attributes = ["image_processor", "tokenizer", "video_processor"]
+    valid_kwargs = ["chat_template"]
+    image_processor_class = "AutoImageProcessor"
+    tokenizer_class = "AutoTokenizer"
+    video_processor_class = "AutoVideoProcessor"
+
+    # HF's ProcessorMixin resolves expected base classes at runtime; in torch-
+    # free environments it picks up dummy classes from
+    # ``transformers.utils.dummy_torchvision_objects``, so our (real) numpy
+    # subclasses fail ``isinstance``. Skip that validation — our processors
+    # are duck-typed to the interfaces the call sites use.
+    def check_argument_for_proper_class(self, argument_name, argument):
+        return type(argument)
+
+    def __init__(
+        self,
+        image_processor=None,
+        tokenizer=None,
+        video_processor=None,
+        chat_template=None,
+        **kwargs,
+    ):
+        self.image_token = (
+            "<|image_pad|>"
+            if not hasattr(tokenizer, "image_token")
+            else tokenizer.image_token
+        )
+        self.video_token = (
+            "<|video_pad|>"
+            if not hasattr(tokenizer, "video_token")
+            else tokenizer.video_token
+        )
+        self.image_token_id = (
+            tokenizer.image_token_id
+            if getattr(tokenizer, "image_token_id", None)
+            else tokenizer.convert_tokens_to_ids(self.image_token)
+        )
+        self.video_token_id = (
+            tokenizer.video_token_id
+            if getattr(tokenizer, "video_token_id", None)
+            else tokenizer.convert_tokens_to_ids(self.video_token)
+        )
+        super().__init__(
+            image_processor, tokenizer, video_processor, chat_template=chat_template
+        )
+
+        self.vision_start_token = (
+            "<|vision_start|>"
+            if not hasattr(tokenizer, "vision_start_token")
+            else tokenizer.vision_start_token
+        )
+        self.vision_end_token = (
+            "<|vision_end|>"
+            if not hasattr(tokenizer, "vision_end_token")
+            else tokenizer.vision_end_token
+        )
+        self.vision_start_token_id = (
+            tokenizer.vision_start_token_id
+            if getattr(tokenizer, "vision_start_token_id", None)
+            else tokenizer.convert_tokens_to_ids(self.vision_start_token)
+        )
+        self.vision_end_token_id = (
+            tokenizer.vision_end_token_id
+            if getattr(tokenizer, "vision_end_token_id", None)
+            else tokenizer.convert_tokens_to_ids(self.vision_end_token)
+        )
+
+    def __call__(
+        self,
+        images: Optional[ImageInput] = None,
+        text: Optional[
+            Union[
+                TextInput,
+                PreTokenizedInput,
+                List[TextInput],
+                List[PreTokenizedInput],
+            ]
+        ] = None,
+        videos=None,
+        **kwargs,
+    ) -> BatchFeature:
+        image_inputs = {}
+        videos_inputs = {}
+
+        if images is not None:
+            image_inputs = self.image_processor(images=images)
+            image_grid_thw = image_inputs["image_grid_thw"]
+        else:
+            image_grid_thw = None
+
+        if videos is not None:
+            _video_proc = self.video_processor or self.image_processor
+            videos_inputs = _video_proc(videos=videos)
+            video_grid_thw = videos_inputs["video_grid_thw"]
+        else:
+            video_grid_thw = None
+
+        if not isinstance(text, list):
+            text = [text]
+
+        text = text.copy()
+        if image_grid_thw is not None:
+            merge_length = self.image_processor.merge_size**2
+            index = 0
+            for i in range(len(text)):
+                while self.image_token in text[i]:
+                    num_image_tokens = image_grid_thw[index].prod() // merge_length
+                    text[i] = text[i].replace(
+                        self.image_token,
+                        "<|placeholder|>" * num_image_tokens,
+                        1,
+                    )
+                    index += 1
+                text[i] = text[i].replace("<|placeholder|>", self.image_token)
+
+        if video_grid_thw is not None:
+            _video_proc = self.video_processor or self.image_processor
+            merge_length = _video_proc.merge_size**2
+            index = 0
+            for i in range(len(text)):
+                while self.video_token in text[i]:
+                    num_video_tokens = video_grid_thw[index].prod() // merge_length
+                    text[i] = text[i].replace(
+                        self.video_token,
+                        "<|placeholder|>" * num_video_tokens,
+                        1,
+                    )
+                    index += 1
+                text[i] = text[i].replace("<|placeholder|>", self.video_token)
+
+        kwargs.pop("return_tensors", None)
+        return_mm_token_type_ids = kwargs.pop("return_mm_token_type_ids", None)
+        text_inputs = self.tokenizer(text, **kwargs)
+
+        if return_mm_token_type_ids:
+            array_ids = np.array(text_inputs["input_ids"])
+            mm_token_type_ids = np.zeros_like(text_inputs["input_ids"])
+            mm_token_type_ids[array_ids == self.image_token_id] = 1
+            mm_token_type_ids[array_ids == self.video_token_id] = 2
+            text_inputs["mm_token_type_ids"] = mm_token_type_ids.tolist()
+
+        return BatchFeature(
+            data=to_mlx({**text_inputs, **image_inputs, **videos_inputs})
+        )
+
+    def batch_decode(self, *args, **kwargs):
+        return self.tokenizer.batch_decode(*args, **kwargs)
+
+    def decode(self, *args, **kwargs):
+        return self.tokenizer.decode(*args, **kwargs)
+
+    @property
+    def model_input_names(self):
+        tokenizer_input_names = self.tokenizer.model_input_names
+        image_processor_input_names = self.image_processor.model_input_names
+        return list(
+            dict.fromkeys(
+                tokenizer_input_names
+                + image_processor_input_names
+                + ["mm_token_type_ids"]
+            )
+        )
+
+    @classmethod
+    def from_pretrained(cls, pretrained_model_name_or_path, **kwargs):
+        from transformers import AutoTokenizer
+
+        kwargs.pop("use_fast", None)
+        tokenizer = AutoTokenizer.from_pretrained(
+            pretrained_model_name_or_path, **kwargs
+        )
+        load_chat_template(tokenizer, pretrained_model_name_or_path)
+
+        image_processor = Qwen3VLImageProcessor(
+            **_image_kwargs(
+                pretrained_model_name_or_path, default_patch_size=16
+            )
+        )
+        video_processor = Qwen3VLVideoProcessor(
+            **_video_kwargs(
+                pretrained_model_name_or_path, default_patch_size=16
+            )
+        )
+
+        proc_cfg = (
+            _load_file(pretrained_model_name_or_path, "processor_config.json")
+            or {}
+        )
+        chat_template = proc_cfg.get(
+            "chat_template", getattr(tokenizer, "chat_template", None)
+        )
+
+        if chat_template is None:
+            chat_template = _load_file(
+                pretrained_model_name_or_path, "chat_template.jinja"
+            )
+            if chat_template is not None:
+                tokenizer.chat_template = chat_template
+
+        return cls(
+            image_processor=image_processor,
+            tokenizer=tokenizer,
+            video_processor=video_processor,
+            chat_template=chat_template,
         )
 
 
@@ -69,32 +707,10 @@ class Processor:
         reranking_system_prompt = kwargs.pop(
             "reranking_system_prompt", DEFAULT_RERANKING_SYSTEM_PROMPT
         )
-        trust_remote_code = kwargs.pop("trust_remote_code", True)
+        kwargs.setdefault("trust_remote_code", True)
         kwargs.pop("use_fast", None)
 
-        model_dir = Path(model_path)
-        is_local = model_dir.exists() and model_dir.is_dir()
-        load_path = str(model_dir) if is_local else model_path
-        hub_kwargs = {
-            key: kwargs[key]
-            for key in ["cache_dir", "force_download", "revision", "token"]
-            if key in kwargs
-        }
-
-        tokenizer = AutoTokenizer.from_pretrained(
-            load_path,
-            trust_remote_code=trust_remote_code,
-            local_files_only=is_local,
-            **kwargs,
-        )
-        image_processor = AutoImageProcessor.from_pretrained(
-            load_path,
-            trust_remote_code=trust_remote_code,
-            local_files_only=is_local,
-            use_fast=False,
-            **hub_kwargs,
-        )
-        processor = cls._build_processor(tokenizer, image_processor)
+        processor = Qwen3VLProcessor.from_pretrained(model_path, **kwargs)
         return cls(
             processor=processor,
             embedding_max_length=embedding_max_length,
@@ -105,70 +721,6 @@ class Processor:
             default_reranking_instruction=default_reranking_instruction,
             reranking_system_prompt=reranking_system_prompt,
         )
-
-    @staticmethod
-    def _build_processor(tokenizer, image_processor):
-        processor = object.__new__(Qwen3VLProcessor)
-        processor.tokenizer = tokenizer
-        processor.image_processor = image_processor
-        processor.video_processor = _UnsupportedVideoProcessor(
-            merge_size=getattr(image_processor, "merge_size", 2)
-        )
-        processor.chat_template = getattr(tokenizer, "chat_template", None)
-
-        if processor.chat_template is None:
-            try:
-                processor.chat_template = Processor._load_chat_template(
-                    tokenizer.name_or_path
-                )
-            except Exception:
-                processor.chat_template = None
-
-        processor.image_token = (
-            getattr(tokenizer, "image_token", None) or "<|image_pad|>"
-        )
-        processor.video_token = (
-            getattr(tokenizer, "video_token", None) or "<|video_pad|>"
-        )
-        processor.image_token_id = (
-            getattr(tokenizer, "image_token_id", None)
-            if getattr(tokenizer, "image_token_id", None) is not None
-            else tokenizer.convert_tokens_to_ids(processor.image_token)
-        )
-        processor.video_token_id = (
-            getattr(tokenizer, "video_token_id", None)
-            if getattr(tokenizer, "video_token_id", None) is not None
-            else tokenizer.convert_tokens_to_ids(processor.video_token)
-        )
-        processor.vision_start_token = (
-            getattr(tokenizer, "vision_start_token", None) or "<|vision_start|>"
-        )
-        processor.vision_end_token = (
-            getattr(tokenizer, "vision_end_token", None) or "<|vision_end|>"
-        )
-        processor.vision_start_token_id = (
-            getattr(tokenizer, "vision_start_token_id", None)
-            if getattr(tokenizer, "vision_start_token_id", None) is not None
-            else tokenizer.convert_tokens_to_ids(processor.vision_start_token)
-        )
-        processor.vision_end_token_id = (
-            getattr(tokenizer, "vision_end_token_id", None)
-            if getattr(tokenizer, "vision_end_token_id", None) is not None
-            else tokenizer.convert_tokens_to_ids(processor.vision_end_token)
-        )
-
-        return processor
-
-    @staticmethod
-    def _load_chat_template(model_path: str) -> str:
-        path = Path(model_path)
-        if path.exists() and path.is_dir():
-            template_path = path / "chat_template.jinja"
-        else:
-            from huggingface_hub import hf_hub_download
-
-            template_path = Path(hf_hub_download(model_path, "chat_template.jinja"))
-        return template_path.read_text(encoding="utf-8")
 
     def __call__(self, *args, **kwargs):
         return self.processor(*args, **kwargs)
@@ -390,3 +942,11 @@ class Processor:
         return self.prepare_embedding_inputs(
             inputs, return_tensors=return_tensors, **kwargs
         )
+
+
+__all__ = [
+    "Processor",
+    "Qwen3VLImageProcessor",
+    "Qwen3VLProcessor",
+    "Qwen3VLVideoProcessor",
+]
