@@ -39,38 +39,70 @@ pip install mlx-embeddings
 
 Qwen3-VL uses a model-specific processor and a high-level `model.process(...)` API for multimodal embedding and reranking.
 
-#### Multimodal Embedding
+#### Multimodal Retrieval
+
+Text-to-image retrieval over a small gallery — embed images once, then score any number of text queries against them. Full script: [`examples/qwen3_vl_retrieval.py`](examples/qwen3_vl_retrieval.py).
 
 ```python
+from io import BytesIO
+
+import matplotlib.pyplot as plt
 import mlx.core as mx
+import numpy as np
+import requests
+from PIL import Image
+
 from mlx_embeddings import load
 
-model, processor = load("Qwen/Qwen3-VL-Embedding-2B")
-
-inputs = [
-    {
-        "text": "A woman playing with her dog on a beach at sunset.",
-        "instruction": "Retrieve images or text relevant to the user's query.",
-    },
-    {
-        "text": "A woman shares a joyful moment with her golden retriever on a sun-drenched beach at sunset."
-    },
-    {
-        "image": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen-VL/assets/demo.jpeg"
-    },
-    {
-        "text": "A woman shares a joyful moment with her golden retriever on a sun-drenched beach at sunset.",
-        "image": "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen-VL/assets/demo.jpeg",
-    },
+GALLERY = [
+    ("woman with dog on beach",
+     "https://qianwen-res.oss-cn-beijing.aliyuncs.com/Qwen-VL/assets/demo.jpeg"),
+    ("two cats on a couch",
+     "http://images.cocodataset.org/val2017/000000039769.jpg"),
+    ("tennis player on a court",
+     "http://images.cocodataset.org/val2017/000000000872.jpg"),
+    ("bear in the wild",
+     "http://images.cocodataset.org/val2017/000000000285.jpg"),
+    ("dark train tunnel",
+     "http://images.cocodataset.org/val2017/000000001268.jpg"),
+    ("group of people standing together",
+     "http://images.cocodataset.org/val2017/000000001000.jpg"),
 ]
+QUERIES = [
+    "a person spending time with their pet outdoors at sunset",
+    "sleepy cats relaxing indoors",
+    "someone playing a racquet sport",
+    "wildlife in a natural habitat",
+    "the inside of a transit tunnel",
+    "a crowd of people gathered outside",
+]
+INSTRUCTION = "Retrieve images that match the user's query."
 
-embeddings = model.process(inputs, processor=processor)
-similarity = embeddings @ embeddings.T
+def fetch(src):
+    if src.startswith(("http://", "https://")):
+        return Image.open(BytesIO(requests.get(src, timeout=30).content)).convert("RGB")
+    return Image.open(src).convert("RGB")
 
-mx.eval(embeddings, similarity)
-print(embeddings.shape)  # (4, 2048)
-print(similarity)
+labels, urls = zip(*GALLERY)
+images = [fetch(u) for u in urls]
+
+model, processor = load("Qwen/Qwen3-VL-Embedding-2B")
+img_embeds = model.process([{"image": i} for i in images], processor=processor)
+txt_embeds = model.process(
+    [{"text": q, "instruction": INSTRUCTION} for q in QUERIES], processor=processor,
+)
+sim = np.array((txt_embeds @ img_embeds.T).astype(mx.float32))
+
+for qi, q in enumerate(QUERIES):
+    top = np.argsort(-sim[qi])[:3]
+    print(f"q{qi}: {q}")
+    for k, idx in enumerate(top):
+        print(f"  #{k + 1}  {sim[qi, idx]:.3f}  {labels[idx]}")
 ```
+
+Output (`examples/qwen3_vl_retrieval.py` additionally plots the full query × image similarity heatmap and the top-K image grid):
+
+![Qwen3-VL retrieval](examples/qwen3_vl_retrieval.png)
 
 #### Multimodal Reranking
 
