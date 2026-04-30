@@ -388,7 +388,7 @@ def upload_to_hub(path: str, upload_repo: str, hf_path: str, config: dict):
         print(similarity_matrix)
         """
 
-        if config.get("architectures", None) == "ModernBertForMaskedLM":
+        if config.get("architectures", None) == ["ModernBertForMaskedLM"]:
             text_example = """
             # For masked language modeling
             output = generate(model, processor, texts=["The capital of France is [MASK]."])\n
@@ -396,6 +396,25 @@ def upload_to_hub(path: str, upload_repo: str, hf_path: str, config: dict):
             predicted_token_id = mx.argmax(output.logits[0, mask_index], axis=-1)\n
             predicted_token = processor.decode([predicted_token_id.item()])
             """
+        elif config.get("architectures", None) == [
+            "ModernBertForSequenceClassification"
+        ]:
+            text_example = """
+        # For reranking (sequence classification)
+        pairs = [
+            ["what is the capital of China?", "Beijing"],
+            ["how to implement quick sort in python?", "Introduction of quick sort"],
+        ]
+        output = generate(model, processor, texts=pairs, max_length=8192)
+        scores = output.pooler_output.squeeze()
+
+        print("Reranking scores:")
+        for pair, score in zip(pairs, scores.tolist()):
+            print(f"  Query: {pair[0]}")
+            print(f"  Document: {pair[1]}")
+            print(f"  Score: {score:.4f}")
+            print()
+        """
 
         response = text_example
     else:
@@ -575,7 +594,7 @@ def prepare_inputs(
 def generate(
     model: nn.Module,
     processor: Union[PreTrainedTokenizer, TokenizerWrapper, AutoProcessor],
-    texts: Union[str, List[str]],
+    texts: Union[str, List[str], List[List[str]]],
     images: Union[str, mx.array, List[str], List[mx.array]] = None,
     max_length: int = 512,
     padding: bool = True,
@@ -588,7 +607,9 @@ def generate(
     Args:
         model (nn.Module): The MLX model for generating embeddings.
         tokenizer (TokenizerWrapper): The tokenizer for preprocessing text.
-        texts (Union[str, List[str]]): A single text string or a list of text strings.
+        texts (Union[str, List[str], List[List[str]]]): A single text string,
+            a list of text strings, or a list of text pairs for reranking
+            (e.g. [["query", "document1"], ["query", "document2"]]).
 
     Returns:
         mx.array: The generated embeddings.
