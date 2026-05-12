@@ -110,6 +110,15 @@ def load_config(model_path: Path) -> dict:
     return config
 
 
+def _read_pooling_config(model_path: Path) -> Optional[dict]:
+    """Return the parsed ``1_Pooling/config.json``, or None if absent."""
+    pooling_cfg_path = model_path / "1_Pooling" / "config.json"
+    if not pooling_cfg_path.exists():
+        return None
+    with open(pooling_cfg_path, "r") as f:
+        return json.load(f)
+
+
 def load_model(
     model_path: Path,
     lazy: bool = False,
@@ -141,6 +150,11 @@ def load_model(
 
     config = load_config(model_path)
     config.update(model_config)
+
+    if "pooling_config" not in config:
+        pooling_cfg = _read_pooling_config(model_path)
+        if pooling_cfg is not None:
+            config["pooling_config"] = pooling_cfg
 
     weight_files = glob.glob(str(model_path / "**/model*.safetensors"), recursive=True)
 
