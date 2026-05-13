@@ -5,7 +5,8 @@ import mlx.core as mx
 import mlx.nn as nn
 from mlx_lm.models.llama import TransformerBlock
 
-from .base import BaseModelArgs, BaseModelOutput, mean_pooling, normalize_embeddings
+from .base import BaseModelArgs, BaseModelOutput, normalize_embeddings
+from .pooling import mean_pooling
 
 
 @dataclass

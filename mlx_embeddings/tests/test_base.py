@@ -1,12 +1,10 @@
 import mlx.core as mx
 import numpy as np
-import pytest
 
 from mlx_embeddings.models.base import (
     BaseModelArgs,
     BaseModelOutput,
     ViTModelOutput,
-    mean_pooling,
     normalize_embeddings,
 )
 from mlx_embeddings.tokenizer_utils import TokenizerWrapper
@@ -98,36 +96,6 @@ class TestViTModelOutput:
         assert output.logits_per_image is mock_array
         assert output.text_model_output is mock_array
         assert output.vision_model_output is mock_array
-
-
-class TestMeanPooling:
-    def test_mean_pooling(self):
-        # Create sample inputs
-        batch_size, seq_len, hidden_dim = 2, 3, 4
-        token_embeddings = mx.random.normal((batch_size, seq_len, hidden_dim))
-
-        # Test case 1: No masking (all 1s)
-        attention_mask = mx.ones((batch_size, seq_len))
-        result = mean_pooling(token_embeddings, attention_mask)
-
-        # Expected result is the mean across sequence dimension
-        expected = mx.mean(token_embeddings, axis=1)
-        np.testing.assert_allclose(result.tolist(), expected.tolist(), rtol=1e-5)
-
-        # Test case 2: With masking
-        attention_mask = mx.array(
-            [
-                [1, 1, 0],  # Only first two tokens are valid
-                [1, 0, 0],  # Only first token is valid
-            ]
-        )
-        result = mean_pooling(token_embeddings, attention_mask)
-
-        # Manual calculation for verification
-        expected_0 = mx.sum(token_embeddings[0, :2], axis=0) / 2
-        expected_1 = token_embeddings[1, 0]  # Just the first embedding
-        expected = mx.stack([expected_0, expected_1])
-        np.testing.assert_allclose(result.tolist(), expected.tolist(), rtol=1e-5)
 
 
 class TestNormalizeEmbeddings:

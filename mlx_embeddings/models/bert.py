@@ -1,11 +1,12 @@
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, Tuple
 
 import mlx.core as mx
 import mlx.nn as nn
 
-from .base import BaseModelArgs, BaseModelOutput, mean_pooling, normalize_embeddings
+from .base import BaseModelArgs, BaseModelOutput, normalize_embeddings
+from .pooling import pool_by_config
 
 
 @dataclass
@@ -22,6 +23,7 @@ class ModelArgs(BaseModelArgs):
     initializer_range: float = 0.02
     layer_norm_eps: float = 1e-12
     vocab_size: int = 30522
+    pooling_config: dict = field(default_factory=lambda: {"pooling_mode": "mean"})
 
 
 class BertEmbeddings(nn.Module):
@@ -224,8 +226,9 @@ class Model(nn.Module):
         sequence_output = encoder_outputs
         pooled_output = self.pooler(sequence_output)
 
-        # normalized features
-        text_embeds = mean_pooling(sequence_output, attention_mask)
+        text_embeds = pool_by_config(
+            sequence_output, attention_mask, self.config.pooling_config
+        )
         text_embeds = normalize_embeddings(text_embeds)
 
         return BaseModelOutput(

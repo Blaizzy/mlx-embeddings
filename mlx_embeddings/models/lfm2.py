@@ -9,7 +9,8 @@ from mlx_lm.models.cache import ArraysCache, KVCache
 from mlx_lm.models.lfm2 import Lfm2DecoderLayer
 from mlx_lm.models.lfm2 import ModelArgs as Lfm2ModelArgs
 
-from .base import BaseModelOutput, mean_pooling, normalize_embeddings
+from .base import BaseModelOutput, normalize_embeddings
+from .pooling import mean_pooling
 
 
 @dataclass

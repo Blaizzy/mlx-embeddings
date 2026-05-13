@@ -655,23 +655,27 @@ class TestModels(unittest.TestCase):
         dummy_tokenizer = DummyTokenizer()
         dummy_image_processor = MagicMock()
         dummy_image_processor.merge_size = 2
+        dummy_auto_tokenizer = MagicMock()
+        dummy_auto_tokenizer.from_pretrained.return_value = dummy_tokenizer
+        dummy_auto_image_processor = MagicMock()
+        dummy_auto_image_processor.from_pretrained.return_value = dummy_image_processor
 
         with (
             patch.object(
-                qwen3_vl.processor.AutoTokenizer,
-                "from_pretrained",
-                return_value=dummy_tokenizer,
+                qwen3_vl.processor,
+                "AutoTokenizer",
+                dummy_auto_tokenizer,
             ) as mock_tokenizer,
             patch.object(
-                qwen3_vl.processor.AutoImageProcessor,
-                "from_pretrained",
-                return_value=dummy_image_processor,
+                qwen3_vl.processor,
+                "AutoImageProcessor",
+                dummy_auto_image_processor,
             ) as mock_image_processor,
         ):
             processor = qwen3_vl.Processor.from_pretrained("dummy-model")
 
-        mock_tokenizer.assert_called_once()
-        mock_image_processor.assert_called_once()
+        mock_tokenizer.from_pretrained.assert_called_once()
+        mock_image_processor.from_pretrained.assert_called_once()
         self.assertIs(processor.tokenizer, dummy_tokenizer)
         self.assertIs(processor.image_processor, dummy_image_processor)
         self.assertEqual(processor.processor.chat_template, "dummy-template")

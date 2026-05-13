@@ -1,11 +1,12 @@
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, Tuple
 
 import mlx.core as mx
 import mlx.nn as nn
 
-from .base import BaseModelArgs, BaseModelOutput, mean_pooling, normalize_embeddings
+from .base import BaseModelArgs, BaseModelOutput, normalize_embeddings
+from .pooling import pool_by_config
 
 
 @dataclass
@@ -25,7 +26,7 @@ class ModelArgs(BaseModelArgs):
     output_past: bool = True
     pad_token_id: int = 1
     position_embedding_type: str = "absolute"
-    pooling_config: dict = None
+    pooling_config: dict = field(default_factory=lambda: {"pooling_mode": "mean"})
 
 
 class XLMRobertaEmbeddings(nn.Module):
@@ -352,8 +353,9 @@ class Model(nn.Module):
             self.pooler(sequence_output) if self.pooler is not None else None
         )
 
-        # normalized features
-        text_embeds = mean_pooling(sequence_output, attention_mask)
+        text_embeds = pool_by_config(
+            sequence_output, attention_mask, self.config.pooling_config
+        )
         text_embeds = normalize_embeddings(text_embeds)
 
         return BaseModelOutput(

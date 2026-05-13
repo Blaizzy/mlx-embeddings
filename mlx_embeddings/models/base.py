@@ -38,16 +38,6 @@ class ViTModelOutput:
     vision_model_output: Optional[mx.array] = None
 
 
-def mean_pooling(token_embeddings: mx.array, attention_mask: mx.array):
-    input_mask_expanded = mx.expand_dims(attention_mask, -1)
-    input_mask_expanded = mx.broadcast_to(
-        input_mask_expanded, token_embeddings.shape
-    ).astype(mx.float32)
-    sum_embeddings = mx.sum(token_embeddings * input_mask_expanded, axis=1)
-    sum_mask = mx.maximum(mx.sum(input_mask_expanded, axis=1), 1e-9)
-    return sum_embeddings / sum_mask
-
-
 def normalize_embeddings(embeddings, p=2, axis=-1, keepdims=True, eps=1e-9):
     return embeddings / mx.maximum(
         mx.linalg.norm(embeddings, ord=p, axis=axis, keepdims=keepdims), eps
