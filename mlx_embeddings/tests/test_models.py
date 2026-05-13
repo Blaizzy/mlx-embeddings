@@ -325,6 +325,44 @@ class TestModels(unittest.TestCase):
             text_embeds_is_sequence=False,
         )
 
+    def test_modernbert_model_sequence_classification(self):
+        from mlx_embeddings.models import modernbert
+
+        config = modernbert.ModelArgs(
+            architectures=["ModernBertForSequenceClassification"],
+            model_type="modernbert",
+            hidden_size=768,
+            num_hidden_layers=22,
+            intermediate_size=1152,
+            num_attention_heads=12,
+            max_position_embeddings=8192,
+            vocab_size=50368,
+            id2label={"0": "LABEL_0"},
+            label2id={"LABEL_0": 0},
+            classifier_pooling="mean",
+        )
+        model = modernbert.Model(config)
+
+        batch_size = 1
+        seq_length = 5
+
+        model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
+
+        inputs = mx.array([[0, 1, 2, 3, 4]])
+        outputs = model(inputs)
+
+        self.assertEqual(model.config.model_type, "modernbert")
+        self.assertEqual(len(model.model.layers), config.num_hidden_layers)
+        self.assertEqual(outputs.last_hidden_state.dtype, mx.float32)
+        self.assertEqual(
+            outputs.last_hidden_state.shape, (batch_size, config.hidden_size)
+        )
+        self.assertIsNotNone(outputs.pooler_output)
+        self.assertEqual(outputs.pooler_output.shape, (batch_size, 1))
+        # sigmoid output should be between 0 and 1
+        self.assertTrue(mx.all(outputs.pooler_output >= 0.0).item())
+        self.assertTrue(mx.all(outputs.pooler_output <= 1.0).item())
+
     def test_siglip_model(self):
         from mlx_embeddings.models import siglip
 

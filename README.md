@@ -178,6 +178,39 @@ for idx, logit in enumerate(predictions.tolist()):
     print(f"{label}: {logit:.3f}")
 ```
 
+#### Text Reranking
+
+To rerank documents against a query using a cross-encoder reranker model:
+
+```python
+import mlx.core as mx
+from mlx_embeddings.utils import load, generate
+
+# Load the reranker model and tokenizer
+model, tokenizer = load("Alibaba-NLP/gte-reranker-modernbert-base")
+
+# Define query-document pairs
+pairs = [
+    ["what is the capital of China?", "Beijing"],
+    ["how to implement quick sort in python?", "Introduction of quick sort"],
+    ["how to implement quick sort in python?", "The weather is nice today"],
+]
+
+# Generate reranking scores
+output = generate(model, tokenizer, texts=pairs, max_length=8192)
+scores = output.pooler_output.squeeze()
+
+mx.eval(scores)
+
+# Print results
+print("Reranking scores:")
+for pair, score in zip(pairs, scores.tolist()):
+    print(f"  Query: {pair[0]}")
+    print(f"  Document: {pair[1]}")
+    print(f"  Score: {score:.4f}")
+    print()
+```
+
 #### Token Classification (PII detection)
 
 `openai/privacy-filter` is a bidirectional 1.5B-parameter / 50M-active sparse-MoE token classifier that tags personally identifiable information (PII) with BIOES spans over 8 categories (person, email, phone, URL, address, date, account number, secret).
