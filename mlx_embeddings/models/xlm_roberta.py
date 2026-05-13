@@ -26,9 +26,7 @@ class ModelArgs(BaseModelArgs):
     output_past: bool = True
     pad_token_id: int = 1
     position_embedding_type: str = "absolute"
-    pooling_config: dict = field(
-        default_factory=lambda: {"pooling_mode": "mean"}
-    )
+    pooling_config: dict = field(default_factory=lambda: {"pooling_mode": "mean"})
 
 
 class XLMRobertaEmbeddings(nn.Module):

@@ -23,9 +23,7 @@ class ModelArgs(BaseModelArgs):
     initializer_range: float = 0.02
     layer_norm_eps: float = 1e-12
     vocab_size: int = 30522
-    pooling_config: dict = field(
-        default_factory=lambda: {"pooling_mode": "mean"}
-    )
+    pooling_config: dict = field(default_factory=lambda: {"pooling_mode": "mean"})
 
 
 class BertEmbeddings(nn.Module):

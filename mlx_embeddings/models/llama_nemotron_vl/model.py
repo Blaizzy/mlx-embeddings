@@ -7,9 +7,9 @@ import mlx.nn as nn
 import numpy as np
 
 from ..base import BaseModelArgs, BaseModelOutput, normalize_embeddings
-from ..pooling import mean_pooling
 from ..llama_bidirec import LlamaBidirectionalModel
 from ..llama_bidirec import ModelArgs as LlamaBidirectModelArgs
+from ..pooling import mean_pooling
 from ..siglip import SiglipVisionTransformer
 from ..siglip import VisionConfig as SiglipVisionConfig
 
