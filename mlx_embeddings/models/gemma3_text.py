@@ -6,7 +6,8 @@ import mlx.nn as nn
 from mlx_lm.models.base import create_attention_mask
 from mlx_lm.models.gemma3_text import ModelArgs, RMSNorm, TransformerBlock
 
-from .base import BaseModelOutput, mean_pooling, normalize_embeddings
+from .base import BaseModelOutput, normalize_embeddings
+from .pooling import mean_pooling
 
 
 class Gemma3Model(nn.Module):

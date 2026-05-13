@@ -5,7 +5,8 @@ from typing import Optional, Tuple
 import mlx.core as mx
 import mlx.nn as nn
 
-from .base import BaseModelArgs, BaseModelOutput, normalize_embeddings, pool_by_config
+from .base import BaseModelArgs, BaseModelOutput, normalize_embeddings
+from .pooling import pool_by_config
 
 
 @dataclass
@@ -25,7 +26,7 @@ class ModelArgs(BaseModelArgs):
     output_past: bool = True
     pad_token_id: int = 1
     position_embedding_type: str = "absolute"
-    pooling_config: Optional[dict] = field(
+    pooling_config: dict = field(
         default_factory=lambda: {"pooling_mode": "mean"}
     )
 

@@ -233,6 +233,10 @@ def convert(
         for file in files:
             shutil.copy(file, mlx_path)
 
+    src_pooling = model_path / "1_Pooling"
+    if src_pooling.is_dir():
+        shutil.copytree(src_pooling, mlx_path / "1_Pooling", dirs_exist_ok=True)
+
     tokenizer.save_pretrained(mlx_path)
 
     save_config(config, config_path=mlx_path / "config.json")
