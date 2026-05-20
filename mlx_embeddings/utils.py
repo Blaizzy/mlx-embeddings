@@ -34,6 +34,16 @@ class ModelNotFoundError(Exception):
 def _get_model_arch(config: dict):
     model_type = config["model_type"].replace("-", "_")
     model_type = MODEL_REMAPPING.get(model_type, model_type)
+
+    # Bidirectional encoder variants share the same upstream
+    # `model_type` as the decoder base they're derived from
+    # (e.g. voyage-4-nano has `model_type="qwen3"` and signals the
+    # encoder shape with `use_bidirectional_attention=True`). Route
+    # those to the matching `_bidirec` module so they get the
+    # encoder-style mask + pooling + optional projection head.
+    if model_type == "qwen3" and config.get("use_bidirectional_attention") is True:
+        model_type = "qwen3_bidirec"
+
     try:
         return importlib.import_module(f"mlx_embeddings.models.{model_type}")
     except ImportError:
