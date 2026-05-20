@@ -18,6 +18,7 @@ MLX-Embeddings supports a variety of model architectures for text embedding task
 - BERT (Bidirectional Encoder Representations from Transformers)
 - ModernBERT (modernized bidirectional encoder-only Transformer model)
 - Qwen3 (Qwen3's embedding model)
+- Qwen3 Bidirectional (Qwen3-based bidirectional encoders with optional Matryoshka projection head, e.g. voyage-4-nano)
 - Qwen3-VL (multimodal Qwen3-VL embedding and reranking model)
 - Llama Bidirectional (Llama-based bidirectional embedding models, e.g. NVIDIA NV-Embed)
 - Llama Nemotron VL (multimodal vision-language embedding model with SigLIP vision + bidirectional Llama)
