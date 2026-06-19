@@ -19,6 +19,7 @@ MLX-Embeddings supports a variety of model architectures for text embedding task
 - ModernBERT (modernized bidirectional encoder-only Transformer model)
 - Qwen3 (Qwen3's embedding model)
 - Qwen3-VL (multimodal Qwen3-VL embedding and reranking model)
+- LFM2 (Liquid AI LFM2 bidirectional retrieval models: LFM2-ColBERT late interaction and LFM2.5-Embedding dense bi-encoder)
 - Llama Bidirectional (Llama-based bidirectional embedding models, e.g. NVIDIA NV-Embed)
 - Llama Nemotron VL (multimodal vision-language embedding model with SigLIP vision + bidirectional Llama)
 - OpenAI Privacy Filter (bidirectional GPT-OSS variant for PII token classification with sparse MoE, GQA + attention sinks, and YARN RoPE)
@@ -101,6 +102,34 @@ scores = model.process(inputs, processor=processor)
 
 mx.eval(scores)
 print(scores.shape)  # (3,)
+print(scores)
+```
+
+### LFM2.5-Embedding (dense bi-encoder)
+
+`LiquidAI/LFM2.5-Embedding-350M` is a multilingual dense bi-encoder. It is bidirectional, CLS-pooled, and produces a single normalized 1024-dim vector per text. Use the asymmetric prompts the model was trained with: prefix queries with `query: ` and passages with `document: `.
+
+```python
+import mlx.core as mx
+from mlx_embeddings import load, generate
+
+model, tokenizer = load("LiquidAI/LFM2.5-Embedding-350M")
+
+queries = [
+    "query: What is the capital of France?",
+    "query: Which city is Japan's capital?",
+]
+documents = [
+    "document: Paris is the capital and largest city of France.",
+    "document: Tokyo is the capital of Japan.",
+    "document: Berlin is the capital and largest city of Germany.",
+]
+
+q_emb = generate(model, tokenizer, texts=queries).text_embeds       # (2, 1024), normalized
+d_emb = generate(model, tokenizer, texts=documents).text_embeds     # (3, 1024), normalized
+
+scores = q_emb @ d_emb.T  # cosine similarity; rows = queries, cols = documents
+mx.eval(scores)
 print(scores)
 ```
 
