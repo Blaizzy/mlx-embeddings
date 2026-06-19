@@ -279,6 +279,78 @@ class TestModels(unittest.TestCase):
             last_hidden_state_is_sequence=True,
         )
 
+    def test_lfm2_embedding_model(self):
+        from mlx_embeddings.models import lfm2
+
+        config = lfm2.ModelArgs(
+            model_type="lfm2",
+            hidden_size=1024,
+            num_hidden_layers=16,
+            num_attention_heads=16,
+            num_key_value_heads=8,
+            max_position_embeddings=128000,
+            vocab_size=65536,
+            norm_eps=1e-05,
+            layer_types=[
+                "conv",
+                "conv",
+                "full_attention",
+                "conv",
+                "conv",
+                "full_attention",
+                "conv",
+                "conv",
+                "full_attention",
+                "conv",
+                "full_attention",
+                "conv",
+                "full_attention",
+                "conv",
+                "full_attention",
+                "conv",
+            ],
+            conv_bias=False,
+            conv_L_cache=3,
+            block_dim=1024,
+            block_ff_dim=6656,
+            block_multiple_of=256,
+            block_ffn_dim_multiplier=1.0,
+            block_auto_adjust_ff_dim=True,
+            rope_theta=1000000.0,
+            pooling_config={
+                "word_embedding_dimension": 1024,
+                "pooling_mode_cls_token": True,
+                "pooling_mode_mean_tokens": False,
+                "include_prompt": True,
+            },
+        )
+        model = lfm2.Model(config)
+
+        # Dense bi-encoder: no projection head, CLS-pooled single vector.
+        self.assertTrue(model.is_dense_embedding)
+        self.assertFalse(hasattr(model, "dense"))
+        self.assertEqual(model.config.out_features, config.hidden_size)
+
+        self.model_test_runner(
+            model,
+            config.model_type,
+            config.num_hidden_layers,
+            text_embeds_is_sequence=False,
+            last_hidden_state_is_sequence=True,
+        )
+
+        # Lock the keyword API that generate() relies on (model(**inputs)).
+        model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
+        outputs = model(
+            input_ids=mx.array([[1, 2, 3, 4]], dtype=mx.int32),
+            attention_mask=mx.ones((1, 4), dtype=mx.int32),
+        )
+        self.assertEqual(outputs.last_hidden_state.shape, (1, 4, config.hidden_size))
+        self.assertEqual(outputs.text_embeds.shape, (1, config.hidden_size))
+        self.assertTrue(
+            mx.allclose(mx.linalg.norm(outputs.text_embeds, axis=-1), mx.ones((1,)))
+        )
+
     def test_modernbert_model_mask_token(self):
         from mlx_embeddings.models import modernbert
 
