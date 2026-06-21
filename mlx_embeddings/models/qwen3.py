@@ -207,7 +207,9 @@ class Qwen3Attention(nn.Module):
 
         Args:
             hidden_states: Input hidden states, shape (batch_size, seq_len, hidden_size)
-            attention_mask: Attention mask, shape (batch_size, 1, seq_len, seq_len)
+            attention_mask: Either a dense additive mask of shape
+                (batch_size, 1, seq_len, seq_len) or the string ``"causal"``
+                (passed through to ``mx.fast.scaled_dot_product_attention``).
 
         Returns:
             Attention output, shape (batch_size, seq_len, hidden_size)
@@ -257,10 +259,32 @@ class Qwen3Attention(nn.Module):
 
             attn_weights = (query_states @ key_states.transpose(0, 1, 3, 2)) * scale
 
-            if attention_mask is not None:
-                attn_weights = attn_weights + attention_mask
+            mask = attention_mask
+            if isinstance(mask, str):
+                # Fast SDPA accepts mask="causal"; the manual path needs an
+                # explicit additive mask. For square self-attention
+                # (T_q == T_kv) lower-right causal equals lower-triangular.
+                if mask == "causal":
+                    t_q = query_states.shape[-2]
+                    tri = mx.tril(mx.ones((t_q, t_q), dtype=mx.bool_))
+                    mask = mx.where(tri, 0.0, -mx.inf).astype(attn_weights.dtype)
+                else:
+                    # Bare raise: implicit __context__ chaining keeps the original
+                    # fast-SDPA error visible ("During handling of...") without
+                    # claiming it *caused* this unsupported-mask error.
+                    raise ValueError(f"Unsupported string attention mask: {mask!r}")
+
+            if mask is not None:
+                attn_weights = attn_weights + mask
 
             attn_weights = mx.softmax(attn_weights, axis=-1)
+            # Fully-masked rows (e.g. a left-padding query position whose only
+            # causal keys are themselves padded) softmax to NaN. The fused SDPA
+            # path returns finite rows for this case, so match it: zero the NaNs
+            # to stop them propagating into later layers through the causal
+            # residual stream. Such rows are padding positions discarded by
+            # last_token_pool, so zeroing them does not affect any real output.
+            attn_weights = mx.where(mx.isnan(attn_weights), 0.0, attn_weights)
             attn_output = attn_weights @ value_states
 
         # Reshape back to (batch_size, seq_len, hidden_size)
@@ -392,7 +416,9 @@ class Qwen3Model(nn.Module):
 
         Args:
             input_ids: Input token IDs, shape (batch_size, seq_len)
-            attention_mask: Attention mask, shape (batch_size, seq_len) or (batch_size, 1, seq_len, seq_len)
+            attention_mask: Attention mask, shape (batch_size, seq_len) or
+                (batch_size, 1, seq_len, seq_len). The 2D form must use 0/1
+                integer values (1 = attended, 0 = padded).
 
         Returns:
             Hidden states, shape (batch_size, seq_len, hidden_size)
@@ -402,23 +428,40 @@ class Qwen3Model(nn.Module):
         # Get token embeddings
         hidden_states = self.embed_tokens(input_ids)
 
-        # Create or process attention mask
+        # Create or process attention mask.
+        #
+        # When there are no padded positions (single input, or an equal-length
+        # batch) use MLX's fused "causal" mask instead of materializing a dense
+        # (batch, 1, seq, seq) additive mask. That dense mask is O(batch * seq^2)
+        # and overflows Metal's max buffer at long context (e.g. batch=32,
+        # seq=32768 -> 128 GiB). The fused kernel uses O(1) mask memory and is
+        # numerically identical for square self-attention (T_q == T_kv) -- and
+        # bit-identical on the MLX/Metal versions tested.
         if attention_mask is None:
-            # Create causal mask for autoregressive generation
-            attention_mask = self._create_causal_mask(seq_length, hidden_states.dtype)
+            # Direct-call path: the top-level Model.__call__ converts None into
+            # an all-ones 2D mask before reaching here, so this branch is hit
+            # only when Qwen3Model is called directly.
+            attention_mask = "causal"
         elif attention_mask.ndim == 2:
-            # Convert padding mask to additive mask and combine with causal mask
-            # attention_mask shape: (batch_size, seq_len) -> (batch_size, 1, 1, seq_len)
-            padding_mask = attention_mask[:, None, None, :]
-            padding_mask = mx.where(padding_mask == 0, -mx.inf, 0.0).astype(
-                hidden_states.dtype
-            )
-
-            # Create causal mask
-            causal_mask = self._create_causal_mask(seq_length, hidden_states.dtype)
-
-            # Combine masks (broadcast padding mask to match causal mask shape)
-            attention_mask = causal_mask + padding_mask
+            # The 2D mask is a 0/1 padding mask (1 = attend, 0 = padded), not an
+            # additive mask. `bool(...)` forces a host eval, which is illegal
+            # under mx.compile / mx.vmap; the embedding forward is not compiled,
+            # but guard the read so a future compiled caller degrades to the
+            # (always correct) dense path instead of crashing on it.
+            try:
+                unpadded = bool((attention_mask == 1).all())
+            except ValueError:
+                unpadded = False  # tracing (compile/vmap): take the dense path
+            if unpadded:
+                attention_mask = "causal"
+            else:
+                # Padded batch: build the dense additive mask (O(batch * seq^2)).
+                padding_mask = attention_mask[:, None, None, :]
+                padding_mask = mx.where(padding_mask == 0, -mx.inf, 0.0).astype(
+                    hidden_states.dtype
+                )
+                causal_mask = self._create_causal_mask(seq_length, hidden_states.dtype)
+                attention_mask = causal_mask + padding_mask
 
         # Apply transformer layers
         for layer in self.layers:

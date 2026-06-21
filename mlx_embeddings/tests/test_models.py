@@ -725,5 +725,140 @@ class TestModels(unittest.TestCase):
         self.assertTrue(mx.all(scores <= 1.0).item())
 
 
+class TestQwen3CausalMask(unittest.TestCase):
+    def _small_config(self):
+        from mlx_embeddings.models import qwen3
+
+        return qwen3.ModelArgs(
+            hidden_size=64,
+            num_hidden_layers=2,
+            intermediate_size=128,
+            num_attention_heads=4,
+            num_key_value_heads=2,  # GQA: exercises mx.repeat path
+            head_dim=16,
+            vocab_size=100,
+            rms_norm_eps=1e-6,
+        )
+
+    def test_attention_fallback_handles_causal_string(self):
+        from mlx_embeddings.models import qwen3
+
+        mx.random.seed(0)
+        config = self._small_config()
+        attn = qwen3.Qwen3Attention(config)
+        mx.eval(attn.parameters())
+
+        h = mx.random.normal((2, 5, config.hidden_size))
+        out_fast = attn(h, attention_mask="causal")
+        mx.eval(out_fast)
+
+        # Force the manual fallback by making fast SDPA raise.
+        with patch(
+            "mlx.core.fast.scaled_dot_product_attention",
+            side_effect=RuntimeError("forced fallback"),
+        ) as mock_sdpa:
+            out_fallback = attn(h, attention_mask="causal")
+            mx.eval(out_fallback)
+        mock_sdpa.assert_called()
+
+        self.assertTrue(
+            mx.allclose(out_fast, out_fallback, atol=1e-4).item(),
+            "manual fallback must match fast SDPA for a causal mask",
+        )
+
+    def test_fallback_left_padding_no_nan(self):
+        # Left padding makes the leading causal query rows fully masked; in the
+        # manual fallback those rows softmax to NaN. Verify the fallback zeroes
+        # them so NaN does not leak into the pooled embedding (regression for the
+        # forced-fallback left-padding path the OOM fix touches).
+        from mlx_embeddings.models import qwen3
+
+        mx.random.seed(0)
+        config = self._small_config()
+        model = qwen3.Model(config)
+        mx.eval(model.parameters())
+
+        ids = mx.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
+        am_left = mx.array([[0, 0, 1, 1, 1], [0, 1, 1, 1, 1]], dtype=mx.int32)
+
+        with patch(
+            "mlx.core.fast.scaled_dot_product_attention",
+            side_effect=RuntimeError("forced fallback"),
+        ) as mock_sdpa:
+            out = model(ids, am_left).text_embeds
+            mx.eval(out)
+        mock_sdpa.assert_called()
+
+        self.assertFalse(
+            bool(mx.isnan(out).any().item()),
+            "manual fallback must not leak NaN from fully-masked left-padding rows",
+        )
+        self.assertEqual(out.shape, (2, config.hidden_size))
+
+    def test_attention_fallback_rejects_unknown_string_mask(self):
+        from mlx_embeddings.models import qwen3
+
+        mx.random.seed(0)
+        config = self._small_config()
+        attn = qwen3.Qwen3Attention(config)
+        mx.eval(attn.parameters())
+
+        h = mx.random.normal((2, 5, config.hidden_size))
+        with patch(
+            "mlx.core.fast.scaled_dot_product_attention",
+            side_effect=RuntimeError("forced fallback"),
+        ):
+            with self.assertRaises(ValueError):
+                mx.eval(attn(h, attention_mask="full"))
+
+    def test_model_skips_dense_mask_when_unpadded(self):
+        from mlx_embeddings.models import qwen3
+
+        mx.random.seed(0)
+        config = self._small_config()
+        model = qwen3.Model(config)
+        mx.eval(model.parameters())
+
+        ids = mx.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
+
+        # Spy on the dense-mask builder. Assigning a plain function to the class
+        # makes it a bound method, so `self` is passed normally.
+        calls = []
+        original = qwen3.Qwen3Model._create_causal_mask
+
+        def spy(self, seq_length, dtype):
+            calls.append(seq_length)
+            return original(self, seq_length, dtype)
+
+        qwen3.Qwen3Model._create_causal_mask = spy
+        try:
+            # All-ones mask (no padding) -> fused "causal", no dense mask built.
+            am_ones = mx.ones((2, 5), dtype=mx.int32)
+            out_ones = model(ids, am_ones).text_embeds
+            mx.eval(out_ones)
+            self.assertEqual(calls, [], "unpadded input must not build a dense mask")
+
+            # Padded mask -> dense path unchanged, dense mask IS built.
+            calls.clear()
+            am_pad = mx.array([[0, 0, 1, 1, 1], [0, 1, 1, 1, 1]], dtype=mx.int32)
+            out_pad = model(ids, am_pad).text_embeds
+            mx.eval(out_pad)
+            self.assertGreater(
+                len(calls), 0, "padded input must still build a dense mask"
+            )
+
+            # Core forward with attention_mask=None -> fused "causal".
+            calls.clear()
+            hidden = model.model(ids, attention_mask=None)
+            mx.eval(hidden)
+            self.assertEqual(calls, [], "None mask must not build a dense mask")
+        finally:
+            qwen3.Qwen3Model._create_causal_mask = original
+
+        self.assertEqual(out_ones.shape, (2, config.hidden_size))
+        self.assertEqual(out_pad.shape, (2, config.hidden_size))
+        self.assertEqual(hidden.shape, (2, 5, config.hidden_size))
+
+
 if __name__ == "__main__":
     unittest.main()
