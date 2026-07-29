@@ -60,6 +60,124 @@ def _get_classes(config: dict):
     return arch.Model, arch.ModelArgs, None, None
 
 
+_SENTENCE_TRANSFORMER_FILES = (
+    "config_sentence_transformers.json",
+    "sentence_bert_config.json",
+)
+
+EMBEDDINGS_CONFIG_KEY = "mlx_embeddings"
+
+# Embedding architectures whose ``model_type`` has no generative twin, so the
+# type alone is a safe label. Types that are also used by chat/VLM models
+# (``qwen3``, ``qwen3_vl``, ``gemma3_text``, ``lfm2``) are intentionally omitted:
+# the type cannot tell an embedder from its generative twin, so those are
+# resolved per model by the config stamp or the pooling fallback.
+_LABELED_EMBEDDING_MODELS = {
+    "bert": "text",
+    "modernbert": "text",
+    "xlm_roberta": "text",
+    "llama_bidirec": "text",
+    "siglip": "vision",
+    "colqwen2_5": "vision",
+    "colidefics3": "vision",
+}
+
+
+def _is_sentence_transformer(model_path: Optional[Union[str, Path]]) -> bool:
+    """Whether the repository declares a sentence-transformers pooling step.
+
+    Pooling is the artifact that turns a backbone into an embedder, so its
+    presence — not the model family — is what distinguishes an embedding model
+    such as Qwen3-Embedding from the identically-architected Qwen3 chat model.
+    """
+    if model_path is None:
+        return False
+    path = Path(model_path)
+    if (path / "1_Pooling" / "config.json").exists():
+        return True
+    if any((path / name).exists() for name in _SENTENCE_TRANSFORMER_FILES):
+        return True
+    modules = path / "modules.json"
+    if modules.exists():
+        try:
+            entries = json.loads(modules.read_text())
+        except (OSError, ValueError):
+            return False
+        return any("Pooling" in str(entry.get("type", "")) for entry in entries)
+    return False
+
+
+def _embedding_modality(config: Dict[str, Any]) -> str:
+    vision_markers = ("vision_config", "vision_tower", "image_processor_type")
+    return "vision" if any(marker in config for marker in vision_markers) else "text"
+
+
+def embedding_metadata(config: Dict[str, Any]) -> Dict[str, str]:
+    """The stamp :func:`convert` writes into ``config.json`` so :func:`classify`
+    can identify a converted model without heuristics.
+
+    Returns ``{"kind": "embedding", "modality": "text" | "vision"}``. Modality
+    comes from whether the architecture exposes both a text and a vision config.
+    """
+    try:
+        _, _, text_config, vision_config = _get_classes(config)
+        modality = (
+            "vision"
+            if text_config is not None and vision_config is not None
+            else "text"
+        )
+    except (ImportError, ValueError, KeyError):
+        modality = _embedding_modality(config)
+    return {"kind": "embedding", "modality": modality}
+
+
+def classify(
+    config: Dict[str, Any], model_path: Optional[Union[str, Path]] = None
+) -> Dict[str, Any]:
+    """Classify a model as an embedding model (and its modality) without loading weights.
+
+    Resolution order:
+
+    1. An explicit ``config["mlx_embeddings"]["kind"]`` stamp written by
+       :func:`convert`. Authoritative, and the only signal that can distinguish
+       an embedder from an identically-architected generative model (e.g.
+       Qwen3-Embedding vs the Qwen3 chat model).
+    2. A ``model_type`` in ``_LABELED_EMBEDDING_MODELS`` — the maintained set of
+       embedding architectures whose type has no generative twin.
+    3. Otherwise a sentence-transformers pooling layout (a ``1_Pooling/``
+       directory, ``config_sentence_transformers.json``,
+       ``sentence_bert_config.json``, or a ``modules.json`` Pooling module),
+       which covers text embedders not converted by this library.
+
+    Args:
+        config: The parsed ``config.json``.
+        model_path: Local path to the model directory, used for the pooling
+            fallback. Without it, only the stamp and labeled type are consulted.
+
+    Returns:
+        ``{"is_embedding": bool, "modality": "text" | "vision" | None}``.
+    """
+    stamp = config.get(EMBEDDINGS_CONFIG_KEY)
+    if isinstance(stamp, dict) and stamp.get("kind"):
+        is_embedding = stamp["kind"] == "embedding"
+        modality = stamp.get("modality") or _embedding_modality(config)
+        return {
+            "is_embedding": is_embedding,
+            "modality": modality if is_embedding else None,
+        }
+
+    model_type = str(config.get("model_type", "")).lower().replace("-", "_")
+    labeled_modality = _LABELED_EMBEDDING_MODELS.get(model_type)
+    if labeled_modality is not None:
+        return {"is_embedding": True, "modality": labeled_modality}
+
+    is_embedding = _is_sentence_transformer(model_path)
+    return {
+        "is_embedding": is_embedding,
+        "modality": _embedding_modality(config) if is_embedding else None,
+    }
+
+
 def get_model_path(path_or_hf_repo: str, revision: Optional[str] = None) -> Path:
     """
     Ensures the model is available locally. If the path does not exist locally,
@@ -620,3 +738,30 @@ def generate(
         outputs = model(**inputs)
 
     return outputs
+
+
+def embed(
+    model: nn.Module,
+    processor: Union[PreTrainedTokenizer, TokenizerWrapper, AutoProcessor],
+    texts: Union[str, List[str]],
+    max_length: int = 512,
+    **kwargs,
+) -> List[List[float]]:
+    """Return normalized text embeddings for ``texts`` as plain Python lists.
+
+    A thin convenience wrapper over :func:`generate` that extracts the
+    normalized ``text_embeds`` and materializes them as one row vector per
+    input string, ready to be serialized (e.g. by an OpenAI-compatible
+    ``/v1/embeddings`` endpoint).
+    """
+    if isinstance(texts, str):
+        texts = [texts]
+    outputs = generate(model, processor, texts, max_length=max_length, **kwargs)
+    embeddings = getattr(outputs, "text_embeds", None)
+    if embeddings is None:
+        raise ValueError(
+            "The model did not return `text_embeds`; it may not be a text "
+            "embedding model."
+        )
+    mx.eval(embeddings)
+    return embeddings.tolist()

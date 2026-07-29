@@ -8,5 +8,5 @@ __email__ = "prince.gdt@gmail.com"
 os.environ.setdefault("TRANSFORMERS_NO_ADVISORY_WARNINGS", "1")
 
 from .convert import convert
-from .utils import generate, load
+from .utils import classify, embed, generate, load
 from .version import __version__

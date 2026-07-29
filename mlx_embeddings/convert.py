@@ -10,6 +10,8 @@ import mlx.nn as nn
 from mlx.utils import tree_flatten, tree_unflatten
 
 from .utils import (
+    EMBEDDINGS_CONFIG_KEY,
+    embedding_metadata,
     fetch_from_hub,
     get_model_path,
     save_config,
@@ -239,6 +241,7 @@ def convert(
 
     tokenizer.save_pretrained(mlx_path)
 
+    config[EMBEDDINGS_CONFIG_KEY] = embedding_metadata(config)
     save_config(config, config_path=mlx_path / "config.json")
 
     if upload_repo is not None:
