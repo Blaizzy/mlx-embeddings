@@ -540,6 +540,44 @@ class TestModels(unittest.TestCase):
             config.num_hidden_layers,
         )
 
+    def test_qwen3_last_token_pool(self):
+        from mlx_embeddings.models.qwen3 import last_token_pool
+
+        hidden = mx.random.normal((3, 5, 8))
+
+        # Right padding: last valid token per sequence
+        mask = mx.array([[1, 1, 1, 0, 0], [1, 1, 1, 1, 1], [1, 0, 0, 0, 0]])
+        pooled = last_token_pool(hidden, mask)
+        self.assertTrue(mx.allclose(pooled[0], hidden[0, 2]))
+        self.assertTrue(mx.allclose(pooled[1], hidden[1, 4]))
+        self.assertTrue(mx.allclose(pooled[2], hidden[2, 0]))
+
+        # Left padding: last position for every sequence
+        mask = mx.array([[0, 0, 1, 1, 1], [1, 1, 1, 1, 1], [0, 0, 0, 0, 1]])
+        pooled = last_token_pool(hidden, mask)
+        for i in range(3):
+            self.assertTrue(mx.allclose(pooled[i], hidden[i, 4]))
+
+        # No mask: last position
+        pooled = last_token_pool(hidden, None)
+        self.assertTrue(mx.allclose(pooled, hidden[:, -1]))
+
+    def test_qwen3_last_token_pool_compile_safe(self):
+        # Regression: a Python `if` on a lazy mask comparison forced an eval,
+        # which raised "[eval] Attempting to eval an array during function
+        # transformations" under mx.compile and silently pushed servers
+        # (e.g. oMLX) onto the eager fallback path.
+        from mlx_embeddings.models.qwen3 import last_token_pool
+
+        hidden = mx.random.normal((2, 5, 8))
+        mask = mx.array([[1, 1, 1, 0, 0], [1, 1, 1, 1, 1]])
+
+        compiled = mx.compile(last_token_pool)
+        pooled = compiled(hidden, mask)
+        mx.eval(pooled)
+
+        self.assertTrue(mx.allclose(pooled, last_token_pool(hidden, mask)))
+
     def test_qwen3_vl_model(self):
         from mlx_embeddings.models import qwen3_vl
 
