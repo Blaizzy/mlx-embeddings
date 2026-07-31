@@ -25,15 +25,16 @@ def last_token_pool(
     if attention_mask is None:
         return last_hidden_states[:, -1]
 
-    # Check if we have left padding (all sequences end with valid tokens)
-    left_padding = attention_mask[:, -1].sum() == attention_mask.shape[0]
-    if left_padding:
-        return last_hidden_states[:, -1]
-    else:
-        # Find the last valid token position for each sequence
-        sequence_lengths = attention_mask.sum(axis=1) - 1
-        batch_size = last_hidden_states.shape[0]
-        return last_hidden_states[mx.arange(batch_size), sequence_lengths]
+    # Select each sequence's last valid token position with pure array ops.
+    # A Python `if` on a lazy comparison (the previous left-padding check)
+    # forces an eval, which breaks under mx.compile/vmap with
+    # "[eval] Attempting to eval an array during function transformations".
+    # max(position where mask != 0) handles left padding, right padding, and
+    # no padding uniformly, and works for integer or float masks.
+    positions = mx.arange(attention_mask.shape[1])
+    sequence_lengths = mx.max(mx.where(attention_mask != 0, positions, 0), axis=1)
+    batch_size = last_hidden_states.shape[0]
+    return last_hidden_states[mx.arange(batch_size), sequence_lengths]
 
 
 @dataclass
