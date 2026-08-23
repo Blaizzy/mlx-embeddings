@@ -109,8 +109,17 @@ class Model(nn.Module):
             0.0,
             -mx.inf,
         )
+        # Quantized checkpoints pack weights as uint32; casting the additive
+        # mask to that dtype silently destroys the -inf padding entries and
+        # pad tokens leak into attention. Use a floating dtype instead,
+        # preferring the compute dtype of the first real parameter.
+        mask_dtype = next(
+            (p.dtype for p in self.parameters()
+             if mx.issubdtype(p.dtype, mx.floating)),
+            mx.float16,
+        )
         extended_attention_mask = extended_attention_mask.astype(
-            self.model.embed_tokens.weight.dtype
+            mask_dtype
         )
 
         out = self.model(inputs, extended_attention_mask)
