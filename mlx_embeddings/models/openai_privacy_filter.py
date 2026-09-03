@@ -22,6 +22,10 @@ class ModelArgs(BaseModelArgs):
     num_key_value_heads: int = 2
     head_dim: int = 64
     sliding_window: int = 128
+    # Above this many tokens the local band is resolved one query tile at a
+    # time instead of as a dense [L, L] mask, which is O(L^2) in memory.
+    attention_tile_threshold: int = 4096
+    attention_tile_size: int = 512
     max_position_embeddings: int = 131072
     rms_norm_eps: float = 1e-5
     attention_bias: bool = True
@@ -122,18 +126,53 @@ class OpenAIPrivacyFilterAttention(nn.Module):
         q = self.rope(q)
         k = self.rope(k)
 
-        out = scaled_dot_product_attention(
-            q,
-            k,
-            v,
-            cache=None,
-            scale=self.sm_scale,
-            mask=mask,
-            sinks=self.sinks.astype(q.dtype),
-        )
+        sinks = self.sinks.astype(q.dtype)
+        if isinstance(mask, BandedAttentionMask):
+            out = self._banded_attention(q, k, v, mask, sinks)
+        else:
+            out = scaled_dot_product_attention(
+                q,
+                k,
+                v,
+                cache=None,
+                scale=self.sm_scale,
+                mask=mask,
+                sinks=sinks,
+            )
 
         out = out.swapaxes(1, 2).reshape(B, L, -1)
         return self.o_proj(out)
+
+    def _banded_attention(
+        self,
+        q: mx.array,
+        k: mx.array,
+        v: mx.array,
+        band: "BandedAttentionMask",
+        sinks: mx.array,
+    ) -> mx.array:
+        """Attend tile by tile, so no dense [L, L] mask is ever materialised.
+
+        Every query in a tile can only reach keys within ``window`` positions, so
+        the tile carries all of them and each softmax, sink included, is exactly
+        the one the dense path would compute.
+        """
+        parts = []
+        for start in range(0, band.seq_len, band.tile_size):
+            end = min(start + band.tile_size, band.seq_len)
+            key_start, key_end, tile_mask = band.tile(start, end)
+            parts.append(
+                scaled_dot_product_attention(
+                    q[..., start:end, :],
+                    k[..., key_start:key_end, :],
+                    v[..., key_start:key_end, :],
+                    cache=None,
+                    scale=self.sm_scale,
+                    mask=tile_mask,
+                    sinks=sinks,
+                )
+            )
+        return parts[0] if len(parts) == 1 else mx.concatenate(parts, axis=-2)
 
 
 class OpenAIPrivacyFilterMLP(nn.Module):
@@ -185,6 +224,49 @@ class OpenAIPrivacyFilterEncoderLayer(nn.Module):
         return x + h
 
 
+class BandedAttentionMask:
+    """A symmetric local-attention band resolved lazily, one query tile at a time.
+
+    The dense form of this mask is ``[L, L]``: 2 GB in bfloat16 for a 32k-token
+    document, before the int32 index grid used to build it. Holding the band
+    description instead and slicing it per tile keeps peak memory proportional to
+    the tile size.
+    """
+
+    def __init__(
+        self,
+        seq_len: int,
+        window: int,
+        pad_mask: Optional[mx.array],
+        dtype: mx.Dtype,
+        tile_size: int,
+    ) -> None:
+        self.seq_len = seq_len
+        self.window = window
+        self.pad_mask = pad_mask
+        self.dtype = dtype
+        self.tile_size = tile_size
+
+    def tile(self, start: int, end: int) -> tuple[int, int, mx.array]:
+        """Return the key range reachable from ``[start, end)`` and its mask."""
+        key_start = max(0, start - self.window)
+        key_end = min(self.seq_len, end + self.window)
+        q_idx = mx.arange(start, end)[:, None]
+        k_idx = mx.arange(key_start, key_end)[None, :]
+        local = mx.abs(q_idx - k_idx) <= self.window
+        mask = mx.where(
+            local, mx.array(0.0, dtype=self.dtype), mx.array(-mx.inf, dtype=self.dtype)
+        )[None, None, :, :]
+        if self.pad_mask is not None:
+            pad = mx.where(
+                self.pad_mask[:, key_start:key_end].astype(mx.bool_),
+                mx.array(0.0, dtype=self.dtype),
+                mx.array(-mx.inf, dtype=self.dtype),
+            )
+            mask = mask + pad[:, None, None, :]
+        return key_start, key_end, mask
+
+
 def _bidirectional_sliding_window_mask(
     seq_len: int,
     window: int,
@@ -220,6 +302,8 @@ class OpenAIPrivacyFilterModel(nn.Module):
         ]
         self.norm = nn.RMSNorm(config.hidden_size, eps=config.rms_norm_eps)
         self.sliding_window = config.sliding_window
+        self.attention_tile_threshold = config.attention_tile_threshold
+        self.attention_tile_size = config.attention_tile_size
 
     def __call__(
         self,
@@ -233,9 +317,18 @@ class OpenAIPrivacyFilterModel(nn.Module):
             h = self.embed_tokens(input_ids)
 
         seq_len = h.shape[1]
-        mask = _bidirectional_sliding_window_mask(
-            seq_len, self.sliding_window, attention_mask, h.dtype
-        )
+        if seq_len > self.attention_tile_threshold:
+            mask = BandedAttentionMask(
+                seq_len,
+                self.sliding_window,
+                attention_mask,
+                h.dtype,
+                self.attention_tile_size,
+            )
+        else:
+            mask = _bidirectional_sliding_window_mask(
+                seq_len, self.sliding_window, attention_mask, h.dtype
+            )
 
         for layer in self.layers:
             h = layer(h, mask)
