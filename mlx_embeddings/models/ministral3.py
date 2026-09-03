@@ -11,7 +11,11 @@ from mlx_lm.models.ministral3 import (
 )
 
 from .base import BaseModelOutput, normalize_embeddings
-from .pooling import mean_pooling
+
+try:
+    from .pooling import mean_pooling
+except ImportError:  # mlx-embeddings 0.1.0 compatibility
+    from .base import mean_pooling
 
 
 @dataclass
