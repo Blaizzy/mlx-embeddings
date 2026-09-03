@@ -517,6 +517,88 @@ class TestModels(unittest.TestCase):
         self.assertEqual(outputs.logits.shape, (1, 5, config.num_labels))
         self.assertEqual(outputs.last_hidden_state.dtype, mx.float32)
 
+    def test_openai_privacy_filter_tiled_band_matches_dense(self):
+        """Tiling the local band must not change the attention it computes."""
+        from mlx_embeddings.models import openai_privacy_filter
+
+        config = openai_privacy_filter.ModelArgs(
+            model_type="openai_privacy_filter",
+            vocab_size=64,
+            hidden_size=32,
+            intermediate_size=32,
+            num_hidden_layers=2,
+            num_attention_heads=4,
+            num_key_value_heads=2,
+            head_dim=8,
+            sliding_window=4,
+            max_position_embeddings=128,
+            num_local_experts=4,
+            num_experts_per_tok=2,
+            rms_norm_eps=1e-5,
+        )
+        model = openai_privacy_filter.Model(config)
+        model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
+
+        seq_len = 24
+        inputs = mx.array([[(i * 7) % config.vocab_size for i in range(seq_len)]])
+        attention_mask = mx.ones((1, seq_len), dtype=mx.int32)
+
+        model.model.attention_tile_threshold = seq_len * 2
+        dense = model(inputs, attention_mask=attention_mask).logits
+        mx.eval(dense)
+
+        for tile_size in (3, 5, 8, seq_len):
+            model.model.attention_tile_threshold = 0
+            model.model.attention_tile_size = tile_size
+            tiled = model(inputs, attention_mask=attention_mask).logits
+            mx.eval(tiled)
+            self.assertTrue(
+                mx.allclose(dense, tiled, atol=1e-4).item(),
+                f"tiled attention diverged at tile_size={tile_size}",
+            )
+
+    def test_openai_privacy_filter_tiled_band_honours_padding(self):
+        """Padded key positions stay masked when the band is resolved per tile."""
+        from mlx_embeddings.models import openai_privacy_filter
+
+        config = openai_privacy_filter.ModelArgs(
+            model_type="openai_privacy_filter",
+            vocab_size=64,
+            hidden_size=32,
+            intermediate_size=32,
+            num_hidden_layers=2,
+            num_attention_heads=4,
+            num_key_value_heads=2,
+            head_dim=8,
+            sliding_window=4,
+            max_position_embeddings=128,
+            num_local_experts=4,
+            num_experts_per_tok=2,
+            rms_norm_eps=1e-5,
+        )
+        model = openai_privacy_filter.Model(config)
+        model.update(tree_map(lambda p: p.astype(mx.float32), model.parameters()))
+
+        lengths = [16, 11]
+        width = max(lengths)
+        rows = [[(i * 5 + r) % config.vocab_size for i in range(width)] for r in range(2)]
+        inputs = mx.array(rows)
+        mask_rows = [[1] * length + [0] * (width - length) for length in lengths]
+        attention_mask = mx.array(mask_rows)
+
+        model.model.attention_tile_threshold = width * 2
+        dense = model(inputs, attention_mask=attention_mask).logits
+        model.model.attention_tile_threshold = 0
+        model.model.attention_tile_size = 4
+        tiled = model(inputs, attention_mask=attention_mask).logits
+        mx.eval(dense, tiled)
+
+        for row, length in enumerate(lengths):
+            self.assertTrue(
+                mx.allclose(dense[row, :length], tiled[row, :length], atol=1e-4).item(),
+                f"tiled attention diverged on row {row}",
+            )
+
     def test_qwen3_model(self):
         from mlx_embeddings.models import qwen3
 
