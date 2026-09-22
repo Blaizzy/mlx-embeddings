@@ -26,6 +26,12 @@ class ModelArgs(BaseModelArgs):
     global_attn_every_n_layers: int = 3
     local_attention: int = 128
     local_rope_theta: float = 10000
+    # ``transformers>=5`` stopped emitting the flat ``global_rope_theta`` /
+    # ``local_rope_theta`` fields above and writes a nested mapping instead:
+    #   "rope_parameters": {"full_attention": {"rope_theta": ..., "rope_type": ...},
+    #                       "sliding_attention": {...}}
+    # It is kept here so it survives ``from_dict``; ``_rope_theta_for`` reads it.
+    rope_parameters: Optional[Dict[str, Any]] = None
     embedding_dropout: float = 0.0
     mlp_bias: bool = False
     mlp_dropout: float = 0.0
@@ -125,6 +131,30 @@ class ModernBertMLP(nn.Module):
         return self.Wo(self.drop(self.act(input) * gate))
 
 
+def _rope_theta_for(
+    config: ModelArgs, attention: str, flat_value: Optional[float], default: float
+) -> float:
+    """The RoPE base for one attention type, from either config dialect.
+
+    ``transformers>=5`` moved the per-attention-type RoPE base into a nested
+    ``rope_parameters`` mapping and stopped writing the flat
+    ``global_rope_theta`` / ``local_rope_theta`` fields. Those dataclass defaults
+    are still non-``None``, so the guard below passed and the default silently
+    won: sliding-attention layers were built with base ``10000`` where the
+    checkpoint intended ``160000`` (measured min per-token cosine 0.99672 vs
+    0.99999966 once resolved). The nested value is authoritative; the flat field
+    is the pre-5 fallback.
+    """
+    params = getattr(config, "rope_parameters", None)
+    if isinstance(params, dict):
+        entry = params.get(attention)
+        if isinstance(entry, dict) and entry.get("rope_theta") is not None:
+            return float(entry["rope_theta"])
+    if flat_value is not None:
+        return float(flat_value)
+    return default
+
+
 class ModernBertAttention(nn.Module):
     """Performs multi-headed self attention on a batch of unpadded sequences.
     For now, only supports the Scaled Dot-Product Attention (SDPA) implementation.
@@ -157,9 +187,14 @@ class ModernBertAttention(nn.Module):
         else:
             self.local_attention = (-1, -1)
 
-        rope_theta = config.global_rope_theta
-        if self.local_attention != (-1, -1) and config.local_rope_theta is not None:
-            rope_theta = config.local_rope_theta
+        if self.local_attention != (-1, -1):
+            rope_theta = _rope_theta_for(
+                config, "sliding_attention", config.local_rope_theta, 10000.0
+            )
+        else:
+            rope_theta = _rope_theta_for(
+                config, "full_attention", config.global_rope_theta, 160000.0
+            )
 
         self.rotary_emb = nn.RoPE(dims=self.head_dim, base=rope_theta)
 
