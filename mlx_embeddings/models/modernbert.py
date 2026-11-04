@@ -46,6 +46,7 @@ class ModelArgs(BaseModelArgs):
     classifier_pooling: Literal["cls", "mean"] = "mean"
     classifier_dropout = 0.0  # for Sequence Classification
     classifier_bias = False  # for Sequence Classification
+    classifier_activation: str = "gelu"  # for Sequence Classification and MLM head
     sparse_prediction = True  # for MLM
     sparse_pred_ignore_index = -100  # for MLM
     is_regression: Optional[bool] = None  # for Sequence Classification
@@ -370,6 +371,17 @@ class ModernBertModel(nn.Module):
         return global_attention_mask.astype(dtype), sliding_window_mask.astype(dtype)
 
 
+def _classifier_activation(name: str) -> nn.Module:
+    """Activation for the prediction head, named as in the HF config."""
+    if name == "gelu":
+        return nn.GELU(approx="precise")
+    if name == "silu":
+        return nn.SiLU()
+    raise ValueError(
+        f"Unsupported classifier_activation {name!r}; expected 'gelu' or 'silu'."
+    )
+
+
 class ModernBertPredictionHead(nn.Module):
     def __init__(self, config: ModelArgs):
         super().__init__()
@@ -377,7 +389,7 @@ class ModernBertPredictionHead(nn.Module):
         self.dense = nn.Linear(
             config.hidden_size, config.hidden_size, config.classifier_bias
         )
-        self.act = nn.GELU(approx="precise")
+        self.act = _classifier_activation(config.classifier_activation)
         self.norm = nn.LayerNorm(
             config.hidden_size, eps=config.norm_eps, bias=config.norm_bias
         )

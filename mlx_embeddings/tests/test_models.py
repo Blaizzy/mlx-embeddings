@@ -302,6 +302,66 @@ class TestModels(unittest.TestCase):
             last_hidden_state_is_sequence=True,
         )
 
+    def _modernbert_head_config(self, **extra):
+        from mlx_embeddings.models import modernbert
+
+        return modernbert.ModelArgs(
+            architectures=["ModernBertForSequenceClassification"],
+            model_type="modernbert",
+            hidden_size=16,
+            num_hidden_layers=1,
+            intermediate_size=32,
+            num_attention_heads=2,
+            max_position_embeddings=64,
+            vocab_size=100,
+            **extra,
+        )
+
+    def test_modernbert_head_activation_defaults_to_gelu(self):
+        import mlx.nn as nn
+        from mlx_embeddings.models import modernbert
+
+        head = modernbert.ModernBertPredictionHead(self._modernbert_head_config())
+
+        self.assertIsInstance(head.act, nn.GELU)
+
+    def test_modernbert_head_activation_follows_classifier_activation(self):
+        import mlx.nn as nn
+        from mlx_embeddings.models import modernbert
+
+        config = self._modernbert_head_config(classifier_activation="silu")
+        head = modernbert.ModernBertPredictionHead(config)
+        x = mx.random.normal((2, 16))
+
+        self.assertIsInstance(head.act, nn.SiLU)
+        expected = head.norm(nn.silu(head.dense(x)))
+        self.assertTrue(mx.allclose(head(x), expected, atol=1e-6))
+
+    def test_modernbert_classifier_activation_is_read_from_a_config_dict(self):
+        from mlx_embeddings.models import modernbert
+
+        args = modernbert.ModelArgs.from_dict(
+            {
+                "model_type": "modernbert",
+                "vocab_size": 100,
+                "hidden_size": 16,
+                "num_hidden_layers": 1,
+                "intermediate_size": 32,
+                "num_attention_heads": 2,
+                "classifier_activation": "silu",
+            }
+        )
+
+        self.assertEqual(args.classifier_activation, "silu")
+
+    def test_modernbert_head_rejects_an_unsupported_activation(self):
+        from mlx_embeddings.models import modernbert
+
+        config = self._modernbert_head_config(classifier_activation="swoosh")
+
+        with self.assertRaisesRegex(ValueError, "classifier_activation"):
+            modernbert.ModernBertPredictionHead(config)
+
     def test_modernbert_model_embeddings(self):
         from mlx_embeddings.models import modernbert
 
