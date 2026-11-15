@@ -29,6 +29,7 @@ class ModelArgs(BaseModelArgs):
     embedding_dropout: float = 0.0
     mlp_bias: bool = False
     mlp_dropout: float = 0.0
+    hidden_activation: str = "gelu"
     pad_token_id = 50283
     eos_token_id = 50282
     bos_token_id = 50281
@@ -98,6 +99,25 @@ class ModernBertEmbeddings(nn.Module):
         return embeddings
 
 
+def _hidden_activation(name: str) -> nn.Module:
+    """Activation for the encoder MLP, named as in the HF config.
+
+    Hugging Face's "gelu" is the exact (erf) form, which is MLX's default
+    ``nn.GELU()``. MLX's ``approx="precise"`` is the tanh approximation, which
+    HF calls "gelu_pytorch_tanh" / "gelu_new".
+    """
+    if name == "gelu":
+        return nn.GELU()
+    if name in ("gelu_pytorch_tanh", "gelu_new"):
+        return nn.GELU(approx="precise")
+    if name == "silu":
+        return nn.SiLU()
+    raise ValueError(
+        f"Unsupported hidden_activation {name!r}; expected 'gelu', "
+        "'gelu_pytorch_tanh', 'gelu_new' or 'silu'."
+    )
+
+
 class ModernBertMLP(nn.Module):
     """Applies the GLU at the end of each ModernBERT layer.
 
@@ -111,7 +131,7 @@ class ModernBertMLP(nn.Module):
         self.Wi = nn.Linear(
             config.hidden_size, config.intermediate_size * 2, bias=config.mlp_bias
         )
-        self.act = nn.GELU(approx="precise")
+        self.act = _hidden_activation(config.hidden_activation)
         self.drop = nn.Dropout(p=config.mlp_dropout)
         self.Wo = nn.Linear(
             int(config.intermediate_size), config.hidden_size, bias=config.mlp_bias
