@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 """Tests for `mlx_embeddings` package."""
+import math
 import unittest
 from unittest.mock import MagicMock, patch
 
@@ -324,6 +325,73 @@ class TestModels(unittest.TestCase):
             last_hidden_state_is_sequence=False,
             text_embeds_is_sequence=False,
         )
+
+    def _modernbert_mlp_config(self, **extra):
+        from mlx_embeddings.models import modernbert
+
+        return modernbert.ModelArgs(
+            model_type="modernbert",
+            hidden_size=16,
+            num_hidden_layers=1,
+            intermediate_size=32,
+            num_attention_heads=2,
+            max_position_embeddings=64,
+            vocab_size=100,
+            **extra,
+        )
+
+    def test_modernbert_mlp_activation_defaults_to_exact_gelu(self):
+        from mlx_embeddings.models import modernbert
+
+        mlp = modernbert.ModernBertMLP(self._modernbert_mlp_config())
+        # The exact and tanh forms differ most (~4.7e-4) near x = -2.7.
+        x = mx.array([-2.7, -1.0, 0.0, 1.0, 3.0])
+        exact = 0.5 * x * (1 + mx.erf(x / math.sqrt(2)))
+
+        self.assertTrue(mx.allclose(mlp.act(x), exact, atol=1e-6))
+
+    def test_modernbert_mlp_activation_follows_hidden_activation(self):
+        import mlx.nn as nn
+
+        from mlx_embeddings.models import modernbert
+
+        x = mx.array([-2.7, -1.0, 0.0, 1.0, 3.0])
+        tanh_gelu = (
+            0.5 * x * (1 + mx.tanh(math.sqrt(2 / math.pi) * (x + 0.044715 * x**3)))
+        )
+        for name in ("gelu_pytorch_tanh", "gelu_new"):
+            config = self._modernbert_mlp_config(hidden_activation=name)
+            mlp = modernbert.ModernBertMLP(config)
+            self.assertTrue(mx.allclose(mlp.act(x), tanh_gelu, atol=1e-6), name)
+
+        config = self._modernbert_mlp_config(hidden_activation="silu")
+        mlp = modernbert.ModernBertMLP(config)
+        self.assertIsInstance(mlp.act, nn.SiLU)
+
+    def test_modernbert_hidden_activation_is_read_from_a_config_dict(self):
+        from mlx_embeddings.models import modernbert
+
+        args = modernbert.ModelArgs.from_dict(
+            {
+                "model_type": "modernbert",
+                "vocab_size": 100,
+                "hidden_size": 16,
+                "num_hidden_layers": 1,
+                "intermediate_size": 32,
+                "num_attention_heads": 2,
+                "hidden_activation": "gelu_pytorch_tanh",
+            }
+        )
+
+        self.assertEqual(args.hidden_activation, "gelu_pytorch_tanh")
+
+    def test_modernbert_mlp_rejects_an_unsupported_activation(self):
+        from mlx_embeddings.models import modernbert
+
+        config = self._modernbert_mlp_config(hidden_activation="swoosh")
+
+        with self.assertRaisesRegex(ValueError, "hidden_activation"):
+            modernbert.ModernBertMLP(config)
 
     def test_siglip_model(self):
         from mlx_embeddings.models import siglip
